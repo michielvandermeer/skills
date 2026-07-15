@@ -18,6 +18,8 @@ The issue tracker and triage label vocabulary should have been provided to you â
 
 <spec-template>
 
+4. Run `/validate-spec` on the spec document you just created. 
+
 ## Problem Statement
 
 The problem that the user is facing, from the user's perspective.
