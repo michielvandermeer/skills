@@ -1,7 +1,6 @@
 ---
 name: improve-data-structures
 description: Review recent spike/work for data structures or organizing models that would materially simplify the code.
-disable-model-invocation: true
 ---
 
 Review the work we have just been doing and look specifically for cleanup opportunities where a better data structure or organizing model would make the code simpler, safer, or easier to extend.

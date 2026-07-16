@@ -1,7 +1,6 @@
 ---
 name: validate-spec
 description: Validate a plan, spec, or the current conversation against this repo's own template rules and the current codebase — fix stale references and contradictions in place, flag real decisions as open questions.
-disable-model-invocation: true
 ---
 
 # Validate Spec
