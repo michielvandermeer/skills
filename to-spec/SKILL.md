@@ -16,9 +16,11 @@ The issue tracker and triage label vocabulary should have been provided to you â
 
 3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
 
-<spec-template>
+4. Run `/validate-spec` on the spec document you just created.
 
-4. Run `/validate-spec` on the spec document you just created. 
+5. Commit all artifacts created during this session.
+
+<spec-template>
 
 ## Problem Statement
 
