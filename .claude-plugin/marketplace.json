@@ -1,0 +1,14 @@
+{
+  "name": "mvdmio",
+  "owner": {
+    "name": "Michiel van der Meer",
+    "email": "michiel@mvdm.io"
+  },
+  "plugins": [
+    {
+      "name": "skills",
+      "source": "./",
+      "description": "A collection of software-engineering skills for Claude Code — code review, TDD, spec/plan workflows, bug diagnosis, domain modeling, and more. Based on Matt Pocock's skills (https://github.com/mattpocock/skills)."
+    }
+  ]
+}

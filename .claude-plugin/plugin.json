@@ -1,0 +1,13 @@
+{
+  "name": "skills",
+  "displayName": "mvdmio Skills",
+  "description": "A collection of software-engineering skills for Claude Code — code review, TDD, spec/plan workflows, bug diagnosis, domain modeling, and more. Based on Matt Pocock's skills (https://github.com/mattpocock/skills).",
+  "author": {
+    "name": "Michiel van der Meer",
+    "email": "michiel@mvdm.io"
+  },
+  "homepage": "https://github.com/michielvandermeer/skills",
+  "repository": "https://github.com/michielvandermeer/skills",
+  "license": "MIT",
+  "keywords": ["skills", "code-review", "tdd", "spec", "workflow", "software-engineering"]
+}
