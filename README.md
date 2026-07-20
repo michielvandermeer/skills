@@ -52,9 +52,9 @@ The `skills/` directory is discovered automatically by the plugin loader — no 
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
-| `grilling` | Grill the user relentlessly about a plan or design. |
-| `grill-me` | A relentless interview to sharpen a plan or design. |
-| `grill-with-docs` | A relentless interview that also produces ADRs and a glossary as you go. |
+| `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
+| `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
+| `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `implement` | Implement a piece of work based on a spec or set of tickets. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then grill the one you pick. |
