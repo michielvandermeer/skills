@@ -59,12 +59,12 @@ The `skills/` directory is discovered automatically by the plugin loader — no 
 | `implement` | Implement a piece of work based on a spec or set of tickets. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then grill the one you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
+| `migrate-doc-layout` | Move spec, idea, reference, and architecture-review documents into this repo's canonical `.agents/` layout. |
 | `prototype` | Build a throwaway prototype to answer a design question. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
-| `setup-matt-pocock-skills` | Configure a repo for these skills — issue tracker, triage labels, domain doc layout. |
 | `tdd` | Test-driven development. |
-| `to-spec` | Turn the current conversation into a spec and publish it to the project issue tracker. |
-| `triage` | Move issues and external PRs through a triage state machine into agent-ready briefs. |
+| `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
+| `triage` | Move issues through a triage state machine into agent-ready briefs. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
 | `wayfinder` | Plan a huge chunk of work as a shared map of investigation tickets, resolved one at a time. |
 | `writing-great-skills` | Reference for writing and editing skills well. |

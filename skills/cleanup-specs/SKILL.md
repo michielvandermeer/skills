@@ -4,5 +4,5 @@ description: "Removes all Spec, Plan, and Idea documents that have been implemen
 disable-model-invocation: true
 ---
 
-Go through the Idea, Plan, and Spec documents and remove all that have been implemented.
+Go through the Idea (`.agents/ideas/`) and Spec (`.agents/specs/`) documents and remove all that have been implemented.
 Do not just look at the status in the document; verify their status in the codebase.

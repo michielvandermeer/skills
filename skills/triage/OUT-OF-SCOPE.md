@@ -48,9 +48,9 @@ interface ThemeConfig {
 
 ## Prior requests
 
-- #42 — "Add dark mode support"
-- #87 — "Night theme for accessibility"
-- #134 — "Dark theme option"
+- [Add dark mode support](../ui-theming/issues/01-dark-mode.md)
+- [Night theme for accessibility](../accessibility/issues/02-night-theme.md)
+- [Dark theme option](../settings/issues/04-dark-theme.md)
 ```
 
 ### Naming the file
@@ -83,7 +83,7 @@ The maintainer may:
 
 ## When to write to `.out-of-scope/`
 
-Only when an **enhancement** (not a bug) is *rejected* as `wontfix`. This applies to enhancement PRs exactly as it does to issues — a rejected PR is recorded here so the same request doesn't return as fresh code.
+Only when an **enhancement** (not a bug) is *rejected* as `wontfix`.
 
 Do **not** write here when something is closed as `wontfix` because it's **already implemented**. That's a built feature, not a rejected one; recording it would poison the dedup checks with false rejections. Instead, the closing comment points to where the feature already lives.
 
@@ -93,8 +93,8 @@ The flow:
 2. Check if a matching `.out-of-scope/` file already exists
 3. If yes: append the new issue to the "Prior requests" list
 4. If no: create a new file with the concept name, decision, reason, and first prior request
-5. Post a comment on the issue explaining the decision and mentioning the `.out-of-scope/` file
-6. Close the issue with the `wontfix` label
+5. Append a comment to the issue file explaining the decision and mentioning the `.out-of-scope/` file
+6. Set the issue file's `Status:` line to `wontfix`
 
 ## Updating or removing out-of-scope files
 

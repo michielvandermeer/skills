@@ -33,9 +33,9 @@ Apply the **deletion test** to anything you suspect is shallow: would deleting i
 
 Determine a timestamp that you can use to write the following two files with the same timestamp.
 
-Write explanations of your findings to `.agents/architecture-review/<timestamp>.md` in a way that can be used in a `/grill-with-docs` session.
+Write explanations of your findings to `.agents/architecture-reviews/<timestamp>.md` in a way that can be used in a `/grill-with-docs` session.
 
-Write a self-contained HTML file to `.agents/architecture-review/<timestamp>.html`. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
+Write a self-contained HTML file to `.agents/architecture-reviews/<timestamp>.html`. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
 
 The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via CDN** for diagrams where a graph/flow/sequence reliably communicates the structure. Mix Mermaid with hand-crafted CSS/SVG visuals — use Mermaid when relationships are graph-shaped (call graphs, dependencies, sequences), and hand-built divs/SVG when you want something more editorial (mass diagrams, cross-sections, collapse animations). Each candidate gets a **before/after visualisation**. Be visual.
 

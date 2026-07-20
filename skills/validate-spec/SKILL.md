@@ -11,9 +11,9 @@ Validate a plan, spec, idea doc, or conversation against the checklist below. A 
 
 ### 1. Pin the target
 
-A path or slug the user names; otherwise the plan/idea already under discussion; otherwise the most recently touched file under `.agents/plans/` or `.agents/ideas/`. Ask if none of these resolve.
+A path or slug the user names; otherwise the plan/idea already under discussion; otherwise the most recently touched file under `.agents/specs/` or `.agents/ideas/`. Ask if none of these resolve.
 
-Note the doc's type — an **idea** (`.agents/ideas/`) or a **plan/spec** (`.agents/plans/`) — the Shape check below differs by type. If the target exists only in the conversation so far (not yet published), validate it there and restate the corrected version in chat instead of writing a file.
+Note the doc's type — an **idea** (`.agents/ideas/`) or a **plan/spec** (`.agents/specs/`) — the Shape check below differs by type. If the target exists only in the conversation so far (not yet published), validate it there and restate the corrected version in chat instead of writing a file.
 
 ### 2. Read the whole target once
 
@@ -29,7 +29,7 @@ Go section by section through the doc, checking every applicable item below agai
   - idea: Motivation, Goal, Decisions (locked), Out of scope, Open questions.
   - plan/spec: Problem Statement, Solution, User Stories, Implementation Decisions, Testing Decisions, Out of Scope, Further Notes.
 
-  A `Status:` line sits under the H1 with a valid value ([triage-labels.md](../../ref/triage-labels.md)). An idea doc carries none of the banned implementation detail — file paths, class/method names, schemas, code blocks, PR sequencing ([issue-tracker.md](../../ref/issue-tracker.md)).
+  A `Status:` line sits under the H1 with a valid value (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, or `wontfix`). An idea doc carries none of the banned implementation detail — file paths, class/method names, schemas, code blocks.
 
 - **Internal consistency** — no User Story lacking matching Implementation Decision coverage; no Out of Scope bullet that a Decision or Testing Decision then contradicts; no Decision resting on an Open Question still unresolved.
 
