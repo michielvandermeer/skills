@@ -4,6 +4,8 @@ These skills are derived from Matt Pocock's skills, which support GitHub, GitLab
 
 (`to-spec` was inlined the same way at first, but [ADR-0002](0002-agents-doc-layout.md) moved specs out of the issue tracker entirely — see there for the current behavior.)
 
+(The tracker's location later moved from `.scratch/<feature-slug>/` to `.agents/issues/<feature-slug>/`, with the redundant nested `issues/` subfolder dropped — see [ADR-0003](0003-tracker-under-agents.md). The fixed-local, no-per-repo-config decision recorded here is unaffected; only the path changed.)
+
 ## Consequences
 
 - These skills can no longer be pointed at a GitHub or GitLab tracker. Restoring that would mean reintroducing the tracker-abstraction layer this decision removed.

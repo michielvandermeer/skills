@@ -58,3 +58,14 @@ After each move, grep the repo for the old path and the old bare filename. Updat
 ### 6. Report
 
 Summarize what moved (old → new) and which files had references updated. Note anything left in place because it couldn't be classified even after asking.
+
+## Also: the legacy `.scratch/` tracker
+
+Repos that adopted these skills before [ADR-0003](../../docs/adr/0003-tracker-under-agents.md) keep their issue tracker under `.scratch/` — `triage` issues at `.scratch/<slug>/issues/<NN>-<slug>.md` and `wayfinder` maps at `.scratch/<effort>/map.md`. The tracker now lives at `.agents/issues/<slug>/`, with the nested `issues/` subfolder flattened away: tickets sit directly in the per-slug directory, maps alongside them.
+
+Unlike the documents above, this is a mechanical directory move, not a content-shape classification — relocate the whole tree rather than classifying file by file:
+
+- `.scratch/<slug>/issues/<NN>-<slug>.md` → `.agents/issues/<slug>/<NN>-<slug>.md` (lift tickets up one level)
+- `.scratch/<slug>/map.md` → `.agents/issues/<slug>/map.md`
+
+Fold it into the same present → confirm → `git mv` → fix-references flow as the document moves, then remove the now-empty `.scratch/` tree. Watch for a `<slug>/<NN>-<slug>.md` that would collide with an existing ticket at the destination, and treat it like any other collision in step 3.
