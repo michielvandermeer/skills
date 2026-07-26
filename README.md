@@ -1,28 +1,101 @@
 # mvdmio Skills
 
-A collection of software-engineering [skills](https://docs.claude.com/en/docs/claude-code/skills) for Claude Code, distributed as a Claude Code **plugin**. This repository is both the plugin and its own single-plugin **marketplace**, so you can install everything with two commands.
+A collection of software-engineering [skills](https://docs.claude.com/en/docs/claude-code/skills) for Claude Code, distributed as a Claude Code **plugin**. This repository is both the plugin and its own single-plugin **marketplace**, so adding the marketplace and installing the plugin gets you every skill below.
 
 These skills are based on [Matt Pocock's skills](https://github.com/mattpocock/skills) — see [Credits](#credits).
 
 ## Install
 
-Add the marketplace, then install the plugin:
+**1. Add the marketplace.** This registers the catalog; nothing is installed yet.
 
 ```
 /plugin marketplace add michielvandermeer/skills
-/plugin install skills@mvdmio
 ```
 
 `/plugin marketplace add` also accepts the full git URL (`git@github.com:michielvandermeer/skills.git`) if you prefer SSH.
+
+**2. Install the plugin.** This opens a scope picker.
+
+```
+/plugin install skills@mvdmio
+```
+
+| Scope | Where it applies | Written to |
+|-------|------------------|------------|
+| **User** | you, in every project | `~/.claude/settings.json` |
+| **Project** | everyone working on this repo | `.claude/settings.json` (committed) |
+| **Local** | you, in this repo only | `.claude/settings.local.json` |
+
+Pick **user** unless you specifically want to share the plugin with collaborators on one repo. The scope you choose matters later — `/plugin update` targets one scope at a time (see [Updating](#updating)).
+
+**3. Activate it.** Plugins load at startup, so a fresh install is inert until you reload:
+
+```
+/reload-plugins
+```
+
+**4. Check it worked.** `/plugin list` shows the installed version. Skills are namespaced by plugin name, so they invoke as `/skills:<name>`:
+
+```
+/skills:code-review
+/skills:tdd
+```
+
+### Non-interactive install
+
+The same two steps from a shell, for dotfiles or provisioning scripts:
+
+```sh
+claude plugin marketplace add michielvandermeer/skills
+claude plugin install skills@mvdmio --scope user
+```
 
 ## Updating
 
 Installed plugins are cached under `~/.claude/plugins/cache/`; they are **not** committed into your consuming repos.
 
-This plugin has **no pinned version**, so every commit to the default branch is treated as a new version — installed copies always track the latest.
+This plugin has **no pinned version**, so Claude Code uses the git commit SHA as the version — every commit to the default branch is a new version.
 
-- **Manual:** `/plugin update skills` (or `claude plugin update skills` from the CLI).
-- **Automatic:** Claude Code auto-updates plugins in the background.
+### Manual
+
+```
+/plugin update skills@mvdmio
+```
+
+Or `claude plugin update skills@mvdmio` from the CLI. Two things to watch:
+
+- **Use the qualified `skills@mvdmio` id.** The bare name `skills` can fail to resolve with `Plugin "skills" not found`.
+- **Both default to `--scope user`.** If you installed at project or local scope, pass the matching `--scope` or the update won't find your install:
+
+  ```sh
+  claude plugin update skills@mvdmio --scope project
+  ```
+
+Updates apply on restart, or run `/reload-plugins` to pick them up in the current session.
+
+### Automatic
+
+Auto-update is **off by default for this plugin.** Claude Code enables it only for official Anthropic marketplaces; third-party ones like this must opt in. Two ways:
+
+- **UI:** `/plugin` → **Marketplaces** → `mvdmio` → **Enable auto-update**.
+- **Settings:** add `"autoUpdate": true` to the `mvdmio` entry under `extraKnownMarketplaces` in `~/.claude/settings.json`:
+
+  ```json
+  {
+    "extraKnownMarketplaces": {
+      "mvdmio": {
+        "source": { "source": "github", "repo": "michielvandermeer/skills" },
+        "autoUpdate": true
+      }
+    }
+  }
+  ```
+
+> The flag is only read from **user**, `--settings`, and managed settings. Setting it in a repo's `.claude/settings.json` or `.claude/settings.local.json` is ignored, so it can't be enabled on your collaborators' behalf from a checked-out repo — each person opts in on their own machine.
+
+Once enabled, Claude Code refreshes the marketplace and its plugins shortly after a session starts (a random delay of up to ten minutes, so the running session keeps the version it launched with). You'll be prompted to run `/reload-plugins`, or the new version loads on next launch.
+
+Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Code's own. To keep plugin updates while pinning Claude Code, set `FORCE_AUTOUPDATE_PLUGINS=1` alongside it.
 
 > To switch to deliberate, versioned releases instead, add a `version` field to `.claude-plugin/plugin.json`; consumers would then update only when you bump it.
 
