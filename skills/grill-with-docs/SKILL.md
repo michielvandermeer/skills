@@ -5,3 +5,5 @@ disable-model-invocation: true
 ---
 
 Run a `/grilling` session, using the `/domain-modeling` skill.
+
+Once the session is done, run `/to-spec`

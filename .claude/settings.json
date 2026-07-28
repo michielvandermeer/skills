@@ -1,4 +1,12 @@
 {
+  "extraKnownMarketplaces": {
+    "mvdmio": {
+      "source": {
+        "source": "github",
+        "repo": "michielvandermeer/skills"
+      }
+    }
+  },
   "enabledPlugins": {
     "skills@mvdmio": true
   }

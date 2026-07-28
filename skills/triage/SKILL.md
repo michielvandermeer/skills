@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Move issues through a small state machine of triage roles.
 
-Issues live as markdown files under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, one feature per directory, numbered from `01`. A `Status:` line near the top of the file records the current triage role. Comments and conversation history append to the bottom of the file under a `## Comments` heading.
+Issues live as markdown files under `.agents/issues/<feature-slug>/<NN>-<slug>.md`, one feature per directory, numbered from `01`. A `Status:` line near the top of the file records the current triage role. Comments and conversation history append to the bottom of the file under a `## Comments` heading.
 
 Every comment appended to an issue file during triage **must** start with this disclaimer:
 
@@ -51,7 +51,7 @@ The maintainer invokes `/triage` and describes what they want in natural languag
 
 ## Show what needs attention
 
-Scan `.scratch/*/issues/*.md` for their `Status:` line and present three buckets, oldest first:
+Scan `.agents/issues/*/*.md` (ignoring any `map.md`) for their `Status:` line and present three buckets, oldest first:
 
 1. **No `Status:` line** — never triaged.
 2. **`needs-triage`** — evaluation in progress.
