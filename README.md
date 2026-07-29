@@ -129,7 +129,7 @@ The `skills/` directory is discovered automatically by the plugin loader — no 
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
-| `implement` | Implement a piece of work based on a spec or set of tickets. |
+| `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then grill the one you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `migrate-doc-layout` | Move spec, idea, reference, and architecture-review documents into this repo's canonical `.agents/` layout. |
