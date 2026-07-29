@@ -9,6 +9,10 @@ A collection of software-engineering skills for Claude Code, distributed as a pl
 **Idea**:
 A loose, untriaged thought captured at `.agents/ideas/<slug>.md`. Not yet shaped into anything actionable.
 
+**Refinement**:
+The functional description of a change agreed by Product, QA, and Development in a `/refine` session, at `.agents/refinements/<slug>.md` with an HTML twin beside it — intent, use cases, and the delta against today, deliberately silent on implementation. Terminal: a Spec may be grilled out of it later, but nothing consumes it automatically.
+_Avoid_: functional spec, requirements doc, BRD
+
 **Spec**:
 The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`.
 _Avoid_: PRD, plan, design doc

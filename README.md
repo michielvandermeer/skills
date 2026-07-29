@@ -134,6 +134,7 @@ The `skills/` directory is discovered automatically by the plugin loader — no 
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `migrate-doc-layout` | Move spec, idea, reference, and architecture-review documents into this repo's canonical `.agents/` layout. |
 | `prototype` | Build a throwaway prototype to answer a design question. |
+| `refine` | Grill a change into a functional description with Product, QA, and Development in the room. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
 | `triage` | Move issues through a triage state machine into agent-ready briefs. |
