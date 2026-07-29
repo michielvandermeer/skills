@@ -38,7 +38,7 @@ Pick **user** unless you specifically want to share the plugin with collaborator
 
 ```
 /skills:code-review
-/skills:tdd
+/skills:implement
 ```
 
 ### Non-interactive install
@@ -108,7 +108,7 @@ Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Co
 │   └── marketplace.json   # marketplace catalog (this repo is its own marketplace)
 ├── skills/                # one directory per skill, each with a SKILL.md
 │   ├── code-review/
-│   ├── tdd/
+│   ├── implement/
 │   └── ...
 ├── LICENSE
 └── README.md
@@ -135,7 +135,6 @@ The `skills/` directory is discovered automatically by the plugin loader — no 
 | `migrate-doc-layout` | Move spec, idea, reference, and architecture-review documents into this repo's canonical `.agents/` layout. |
 | `prototype` | Build a throwaway prototype to answer a design question. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
-| `tdd` | Test-driven development. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
 | `triage` | Move issues through a triage state machine into agent-ready briefs. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |

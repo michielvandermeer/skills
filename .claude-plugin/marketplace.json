@@ -8,7 +8,7 @@
     {
       "name": "skills",
       "source": "./",
-      "description": "A collection of software-engineering skills for Claude Code — code review, TDD, spec/plan workflows, bug diagnosis, domain modeling, and more. Based on Matt Pocock's skills (https://github.com/mattpocock/skills)."
+      "description": "A collection of software-engineering skills for Claude Code — code review, spec-driven implementation, bug diagnosis, domain modeling, and more. Based on Matt Pocock's skills (https://github.com/mattpocock/skills)."
     }
   ]
 }
