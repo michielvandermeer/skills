@@ -6,8 +6,5 @@
         "repo": "michielvandermeer/skills"
       }
     }
-  },
-  "enabledPlugins": {
-    "skills@mvdmio": true
   }
 }
