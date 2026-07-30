@@ -47,6 +47,10 @@ The section a Step agent appends to its own Step file recording what it built. T
 **Deviation**:
 Anything a Step agent did that contradicts the Spec or changes what a later Step must do. The one piece of a Step's detail the Driving session does carry forward.
 
+**Spec-bound dispatch**:
+A sub-agent whose work is fully determined by a document decided before it was dispatched — a Spec, a Step, a research question. It exercises no judgement the document has not already settled, and so runs at reduced effort. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
+_Avoid_: cheap agent, worker, low-tier agent
+
 **Tracer bullet**:
 A vertical slice that cuts a narrow but complete path through every layer (schema, API, UI, tests), rather than a horizontal slice of one layer. The shape every Step takes.
 

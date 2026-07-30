@@ -106,15 +106,30 @@ Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Co
 ├── .claude-plugin/
 │   ├── plugin.json        # plugin manifest (name, metadata)
 │   └── marketplace.json   # marketplace catalog (this repo is its own marketplace)
+├── agents/                # sub-agents the skills dispatch, one markdown file each
+│   ├── explorer.md
+│   ├── implementer.md
+│   └── researcher.md
+├── docs/adr/              # architecture decision records
 ├── skills/                # one directory per skill, each with a SKILL.md
 │   ├── code-review/
 │   ├── implement/
 │   └── ...
+├── CONTEXT.md             # the vocabulary these skills share
 ├── LICENSE
 └── README.md
 ```
 
-The `skills/` directory is discovered automatically by the plugin loader — no `skills` field in the manifest is required.
+The `skills/` and `agents/` directories are discovered automatically by the plugin loader — no manifest fields are required. Agents register under a scoped name, so `agents/implementer.md` is dispatched as `skills:implementer`.
+
+## Sub-agent cost tiers
+
+These skills pin the model and effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
+
+- A **spec-bound dispatch** works to a document settled before it started, so it runs cheaper — `skills:implementer` at Sonnet, and all three shipped agents at `effort: medium`.
+- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s planner, both `/code-review` reviewers, the `/improve-data-structures` pass, and the `/codebase-design` design-it-twice fan-out.
+
+> **These skills assume a session on Opus or above.** The tiers are absolute, not relative to your session, so starting a Sonnet or Haiku session does **not** scale them down — a Haiku session gets Sonnet step agents and spends more than you chose. [ADR-0007](docs/adr/0007-pinned-subagent-model-tiers.md) records why it works that way and what it costs.
 
 ## Skills
 

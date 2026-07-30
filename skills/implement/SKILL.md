@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, one three-line report per step, and any deviations — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session.
 
-Use `general-purpose` sub-agents throughout. They share the worktree, so run them one at a time.
+Sub-agents share the worktree, so run them one at a time. Step agents are `skills:implementer`, pinned to a cheaper tier because their scope was decided before they started. The planner, the reviewer, and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md).
 
 ## Process
 
@@ -32,7 +32,7 @@ A planner that fails or returns no steps **halts** the run.
 
 ### 3. Run each step in `NN` order
 
-Dispatch a fresh sub-agent per step. Hand it paths and let it read what it needs:
+Dispatch a fresh `skills:implementer` per step. Hand it paths and let it read what it needs:
 
 - the spec, and its own step file
 - an instruction to read the `## Outcome` of every lower-numbered step file before starting

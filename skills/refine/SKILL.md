@@ -16,7 +16,7 @@ Derive a kebab-case slug from the change itself rather than the ticket key. If `
 
 ## 2. Establish today
 
-**Today** is yours to establish from the code, never the room's to supply. A Dev in the room will volunteer it; it reaches the document once you have read the code yourself. Explore with a sub-agent, and a resume re-establishes today because the code may have moved.
+**Today** is yours to establish from the code, never the room's to supply. A Dev in the room will volunteer it; it reaches the document once you have read the code yourself. Explore with a `skills:explorer` sub-agent, and a resume re-establishes today because the code may have moved.
 
 Two findings are surfaced before round 1 rather than grilled around:
 
