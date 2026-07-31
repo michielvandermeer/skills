@@ -72,6 +72,10 @@ Every decision on the Design tree whose prerequisites are already settled — wh
 A frontier item with more than one defensible answer, where a different answer visibly changes what gets built. Numbered `Q1`, `Q2` continuously across a session; options within one lettered `a`, `b`, `c`.
 _Avoid_: open question — that is a parked item on a Refinement, not a live Question
 
+**Explainer**:
+The one to three sentences opening every Question, saying what the question is about and what rides on the answer. Written for someone who has never seen the thing being asked about. Distinct from a **Gloss**, which introduces a skill's own vocabulary rather than the subject matter.
+_Avoid_: framing sentence, preamble, context
+
 **Declaration**:
 A frontier item with one defensible answer, reasoned out and stated flat rather than asked. Numbered `D1`, `D2` continuously across a session, and silence accepts it.
 _Avoid_: assumption

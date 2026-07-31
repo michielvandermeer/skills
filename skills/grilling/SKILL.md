@@ -39,12 +39,16 @@ Subject: functional (correct me if not)
 
 Q1. **Does an expired export stay downloadable?**
 
+An export is a file we generate on request and keep for a while. This decides what someone sees when they open the link after that window closes.
+
 - a. Deleted on expiry — storage stays flat, and someone who bookmarked the link gets a bare 404. ← recommended
 - b. Kept and marked expired — the link still resolves and can say why, at the cost of unbounded growth.
 
 *My recommendation: a* — the bookmarked-link case is rare enough to answer with a generic message.
 
 Q2. **What should we call the window an export stays valid for?**
+
+This name goes into the schema, the API, and the screen, so it is expensive to change later.
 
 *My recommendation:* `retention`, since that is the word the storage layer already uses.
 
@@ -56,7 +60,9 @@ D2. Retention is one fixed window for every user.
 
 A blank line separates questions; declarations run tight.
 
-Letter the options where the choice is closed, one per line carrying its own cost, and mark your pick twice — `← recommended` on the option, and a `*My recommendation:*` line carrying the reason. An open question has nothing to letter, so it gets the recommendation line alone, as Q2 does. A framing sentence above the options earns its place only where the options don't already say it. I answer by letter: `Q1: b`.
+Every question opens with an **explainer** — one to three sentences saying what the question is about and what rides on the answer, written for someone who has never seen the thing you are asking about. It sets the question up and stops there: costs stay on the option lines, and the reason for your pick stays on the recommendation line.
+
+Letter the options where the choice is closed, one per line carrying its own cost, and mark your pick twice — `← recommended` on the option, and a `*My recommendation:*` line carrying the reason. An open question has nothing to letter, so it gets the recommendation line alone, as Q2 does. I answer by letter: `Q1: b`.
 
 `Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating, one line where one line does it.
 
