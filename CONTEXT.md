@@ -50,10 +50,44 @@ _Avoid_: definition block, glossary entry
 The plain-words introduction a skill gives its own vocabulary the first time that vocabulary appears — "the frontier (the questions I can ask now)". What buys a skill the right to use a term it defined rather than spelling the idea out every time.
 _Avoid_: definition, footnote, explainer, aside
 
-### Execution
+### Sessions
 
 **Driving session**:
 The main agent session a user invokes a skill in. It orchestrates and holds the low-resolution view; it delegates detail work to sub-agents so its context stays small.
+
+**Design tree**:
+The shape a `/grilling` session maps: every decision branching into the decisions that hang off it.
+
+**Round**:
+One batch of questions a Driving session puts to the user at once, covering the whole frontier, followed by a wait for answers.
+
+**Frontier**:
+Every decision on the Design tree whose prerequisites are already settled — what a Round can ask without guessing at answers it hasn't heard. An empty frontier ends the session.
+
+**Question**:
+A frontier item with more than one defensible answer, where a different answer visibly changes what gets built. Numbered `Q1`, `Q2` continuously across a session; options within one lettered `a`, `b`, `c`.
+_Avoid_: open question — that is a parked item on a Refinement, not a live Question
+
+**Declaration**:
+A frontier item with one defensible answer, reasoned out and stated flat rather than asked. Numbered `D1`, `D2` continuously across a session, and silence accepts it.
+_Avoid_: assumption
+
+**Subject**:
+What a session is about, named on one line in its first Round and classified `functional` or `technical` by where the user's judgement is needed rather than by which half is bigger.
+
+**Altitude**:
+How deep a Round grills, set by the Subject. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
+
+**Docs pass**:
+The background exploration that opens a `/refine` session — `CONTEXT.md`, the ADRs, and recent git history, read before any code. Cheap enough to land while round 1 is still being answered.
+
+**Code walk**:
+The background exploration of the affected code in a `/refine` session, aimed by the intent the room settled in round 1. It confirms or corrects what the Docs pass wrote.
+
+**Room's clock**:
+The scarce resource in a `/refine` session: an idle minute costs as many minutes as there are people in the call. What justifies reading in the background, batching code-dependent questions into one probe per round, and stopping the room only for the closing read-back.
+
+### Execution
 
 **Planner**:
 The sub-agent that reads a Spec, explores the codebase, and writes the Step files. Returns only a compact index to the Driving session — never the Step bodies.
@@ -71,17 +105,8 @@ Anything a Step agent did that contradicts the Spec or changes what a later Step
 A sub-agent whose work is fully determined by a document decided before it was dispatched — a Spec, a Step, a research question. It exercises no judgement the document has not already settled, and so runs at reduced effort. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
 _Avoid_: cheap agent, worker, low-tier agent
 
-**Docs pass**:
-The background exploration that opens a `/refine` session — `CONTEXT.md`, the ADRs, and recent git history, read before any code. Cheap enough to land while round 1 is still being answered.
-
-**Code walk**:
-The background exploration of the affected code in a `/refine` session, aimed by the intent the room settled in round 1. It confirms or corrects what the Docs pass wrote.
-
 **Provisional today**:
 A `How it works today` written from the Docs pass and not yet confirmed by the Code walk, labelled as such in the Session document — documents lag code. The Complete document is written after the Code walk lands, so it can never carry one.
-
-**Room's clock**:
-The scarce resource in a `/refine` session: an idle minute costs as many minutes as there are people in the call. What justifies reading in the background, batching code-dependent questions into one probe per round, and stopping the room only for the closing read-back.
 
 **Tracer bullet**:
 A vertical slice that cuts a narrow but complete path through every layer (schema, API, UI, tests), rather than a horizontal slice of one layer. The shape every Step takes.

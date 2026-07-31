@@ -37,12 +37,16 @@ Subject: functional (correct me if not)          ← round 1 only
 
 ## Round 1
 
-1. **The question, in bold, on one line.**
-   One or two lines of context — the trade-off, what each answer costs.
-   *My recommendation:* your pick, with the reason in a clause.
+Q1. **Does an expired export stay downloadable?**
 
-2. **The next question.**
-   ...
+- a. Deleted on expiry — storage stays flat, and someone who bookmarked the link gets a bare 404. ← recommended
+- b. Kept and marked expired — the link still resolves and can say why, at the cost of unbounded growth.
+
+*My recommendation: a* — the bookmarked-link case is rare enough to answer with a generic message.
+
+Q2. **What should we call the window an export stays valid for?**
+
+*My recommendation:* `retention`, since that is the word the storage layer already uses.
 
 ### Declarations
 
@@ -50,7 +54,13 @@ D1. The decision, stated flat, one line where one line does it.
 D2. ...
 ```
 
-Both sequences run continuously across the whole session, so round 2 picks up where round 1 stopped. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating.
+A blank line separates questions, so it is always obvious where one ends. Declarations run tight — a one-line `D` cannot collide with its neighbour.
+
+Letter the options whenever the choice is closed, and carry each option's cost on its own line, so the cost of `b` sits on the line you read when you pick `b`. A framing sentence above the options is welcome where the options need it and omitted where they don't. An open question has nothing to letter: recommend in prose, as Q2 does.
+
+Mark your pick twice — `← recommended` on the option to skim, and a `*My recommendation:*` line carrying the reason. Answer by letter: `Q1: b`.
+
+`Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating.
 
 ## Raising altitude
 
