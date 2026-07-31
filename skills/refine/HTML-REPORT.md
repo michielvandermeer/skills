@@ -101,3 +101,5 @@ Plain English at the altitude of the room. The domain nouns come from `CONTEXT.m
 Actors, screens, states, and observable outcomes are the whole vocabulary, in prose and in the boxes on a diagram alike — architecture nouns stay out. Where a statement seems to need one, name the behaviour instead: *"the planner sees the new date immediately"*, not *"the projection updates synchronously"*.
 
 Every claim about today traces to the markdown's `How it works today`, which traces to the code. An unsettled detail about after is an open question, not a confident box on a diagram.
+
+A mid-session render can catch a **provisional today**. Carry its label into the render, so the room reads that section as a document rather than as the code.

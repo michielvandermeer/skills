@@ -8,28 +8,42 @@ disable-model-invocation: true
 
 Run a refinement session: several people in one **room**, one keyboard, working out *what* we want to change in the application. The outcome is a **Refinement** — intent, use cases, and the **delta** against **today** — deliberately silent on implementation.
 
+**The room's clock** is the scarce resource: an idle minute costs as many minutes as there are people in the call. Reading happens in the background, and the room is stopped only where stopping is worth it.
+
 ## 1. Take the input
 
 A Jira ticket key or URL, an Idea at `.agents/ideas/<slug>.md`, or a sentence typed into the invocation. Retrieve a ticket through whatever MCP tools this session has; an Idea is read and left in place.
 
 Derive a kebab-case slug from the change itself rather than the ticket key. If `.agents/refinements/<slug>.md` already exists, this is a **resume**: read it, replay what it has settled as declarations, and grill only what is open — everything absent from the document is open.
 
-## 2. Establish today
+## 2. Dispatch the exploration
 
-**Today** is yours to establish from the code, never the room's to supply. A Dev in the room will volunteer it; it reaches the document once you have read the code yourself. Explore with a `skills:explorer` sub-agent, and a resume re-establishes today because the code may have moved.
+**Today** is yours to establish from the code, never the room's to supply, and never with the room stopped. Three `skills:explorer` background agents, differing only in what you ask them:
 
-Two findings are surfaced before round 1 rather than grilled around:
+- **Docs pass** — `CONTEXT.md`, the ADRs, recent git history. Aimed by the input, out as the session opens.
+- **Already-built probe** — does this change already ship? Aimed by the ticket, out as the session opens.
+- **Code walk** — how the affected area actually works. Aimed by **intent**, so it waits for round 1.
 
-- **Already built** — the change exists. Say where it lives.
-- **Contradiction** — the room's account of today disagrees with the code. Name it.
+The docs pass lands mid-round and writes a **provisional today**. The code walk replaces it with the confirmed section and the label goes.
 
-Done when `How it works today` is written from the code and both findings are surfaced or ruled out.
+Dispatch the code walk once round 1 closes, whether or not intent settled — aimed from the ticket if it has to be, re-dispatched when intent turns out to be somewhere else.
+
+Two findings interrupt the room the moment they arrive, mid-round if need be:
+
+- **Already built** — the change exists. Say where it lives. Raised by the probe and the code walk alone: a false positive here ends a session that should have run.
+- **Contradiction** — two accounts of today disagree. Name which two — the room's, the documents', the code's — and treat the code as the one that is right.
+
+Everything else waits for the round to close.
+
+Done when the dispatches are out, not when they return. A resume dispatches the same way, and re-verifies an inherited `How it works today` only when a question touches it.
 
 ## 3. Grill at functional altitude
 
-Run the `/grilling` skill with the subject pinned to **functional**, and hold it there for the whole session however far the room wants to drop. Run the `/domain-modeling` skill alongside it: terms the room settles land in `CONTEXT.md` as they settle, ADRs offered on the three-part test.
+**Round 1 is yours, and it is intent only.** It goes out the moment the input is read and the first two agents are dispatched — bare, because intent questions need nothing from the code. No use-case or delta question until the room has agreed *why* the change is wanted; a room that hasn't agreed why produces use cases encoding three different goals.
 
-The frontier decides the rounds, with one gate: **intent first**. No use-case or delta question until the room has agreed *why* the change is wanted — a room that hasn't agreed why produces use cases encoding three different goals.
+From round 2 the frontier decides the rounds. Run the `/grilling` skill with the subject pinned to **functional**, and hold it there for the whole session however far the room wants to drop. Run the `/domain-modeling` skill alongside it: terms the room settles land in `CONTEXT.md` as they settle, ADRs offered on the three-part test.
+
+`/grilling` treats a running exploration as an unsettled prerequisite; here it deliberately is not, and the frontier is grilled around it. A question that genuinely needs code does wait, but **batch them**: dispatch every code-dependent question a round surfaced as one probe, so the room's clock stops once per round rather than once per question.
 
 Hunt edge cases: every use case leaves the session carrying at least one scenario that is not the happy path.
 
@@ -40,6 +54,8 @@ Done when every branch of the frontier is settled or parked.
 ## 4. Write live
 
 Append to `.agents/refinements/<slug>.md` as the session runs, so an interrupted one leaves something for a resume to pick up. Each round's answers are in the document before the next round's questions go out.
+
+Section order in the file is fixed, but sections fill as their content arrives: `Intent` is settled while `How it works today` is still provisional.
 
 ```markdown
 # <Change title>
@@ -52,7 +68,7 @@ Why we want this and whose problem it solves.
 
 ## How it works today
 
-What the affected area does today, read from the code.
+What the affected area does today, read from the code. Headed `(provisional — from the documents)` until the code walk confirms it.
 
 ## What changes
 
@@ -82,7 +98,7 @@ If they split it, finish the current document on the change the room came for, a
 
 ## 6. Close
 
-1. Read the settled picture back to the room and wait for their confirmation.
+1. Read the settled picture back to the room and wait for their confirmation. If the code walk has not returned, wait for it first: the read-back is what the room signs off, so it is the one stop on the room's clock worth paying for, and it carries a confirmed today.
 2. Render the twin at `.agents/refinements/<slug>.html` and open it — `start <path>` on Windows, `open` on macOS, `xdg-open` on Linux — reporting the absolute path. Render mid-session too, whenever the room asks for the picture. See [HTML-REPORT.md](HTML-REPORT.md).
 3. If the session started from a Jira ticket, offer write-back — a comment or a replacement of the description, the room's choice. Show what it would replace and wait for a yes. Send the markdown converted to Jira markup, with a line pointing at the repo path of the twin.
 4. Commit both files.
