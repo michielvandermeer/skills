@@ -39,20 +39,18 @@ Repo name, date, and a compact legend: solid box = module, dashed line = seam, r
 
 ## Candidate card
 
-The diagrams carry the weight. Prose is sparse, plain, and uses the glossary terms (from the `/codebase-design` skill) without ceremony.
+The diagrams carry the weight; prose is sparse and plain.
 
-Each candidate is one `<article>`:
+Each candidate is one `<article>`. `SKILL.md` fixes which parts a card carries — these are the ones with a rendering worth pinning:
 
-- **Title** — short, names the deepening (e.g. "Collapse the Order intake pipeline").
-- **Badge row** — recommendation strength (`Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate), plus a tag for the dependency category (`in-process`, `local-substitutable`, `ports & adapters`, `mock`).
+- **Badge row** — recommendation strength as a badge (`Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate), plus a tag for the dependency category (`in-process`, `local-substitutable`, `ports & adapters`, `mock`).
+- **What this does** — body text directly under the badge row, ahead of the file list: a reader who doesn't work on this area needs it before anything about shape. The report's existing style, no new panel or colour.
 - **Files** — monospaced list, `font-mono text-sm`.
 - **Before / After diagram** — the centrepiece. Two columns, side by side. See patterns below.
-- **Problem** — one sentence. What hurts.
-- **Solution** — one sentence. What changes.
 - **Wins** — bullets, ≤6 words each. e.g. "Tests hit one interface", "Pricing logic stops leaking", "Delete 4 shallow wrappers".
-- **ADR callout** (if applicable) — one line in an amber-tinted box.
+- **ADR callout** — one line in an amber-tinted box.
 
-The diagram stands on its own: where it would need a paragraph to be understood, redraw it.
+The diagram stands on its own: where it would need a paragraph to be understood, redraw it. **What this does** is the one prose block that survives that rule, because it explains the *functionality* rather than the *drawing*.
 
 ## Diagram patterns
 
@@ -108,6 +106,8 @@ One larger card. Candidate name, one sentence on why, anchor link to its card. T
 Plain English, concise — but the architectural nouns and verbs come straight from the `/codebase-design` skill. Concision is not an excuse to drift.
 
 **Use exactly:** module, interface, implementation, depth, deep, shallow, seam, adapter, leverage, locality.
+
+**Except in What this does**, which speaks the domain — `CONTEXT.md`'s vocabulary, held to **Plain language**. The one place on the card that talks about the product rather than its shape.
 
 **The translation table**, for when a looser word suggests itself first — component, service, unit → *module* · API, signature → *interface* · boundary → *seam* · layer, wrapper → *module*. The glossary word is always the one that ships.
 

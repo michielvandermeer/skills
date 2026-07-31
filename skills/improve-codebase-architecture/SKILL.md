@@ -33,36 +33,46 @@ Apply the **deletion test** to anything you suspect is shallow: would deleting i
 
 Done when every candidate has survived the deletion test and names the modules it touches.
 
-### 2. Write the report
+### 2. Describe what each candidate does
 
-Determine a timestamp, and write both files into `.agents/architecture-reviews/<timestamp>/`.
+Shortlist the candidates, then dispatch a second `skills:explorer` sub-agent scoped to them. The first pass hunts friction across the whole codebase; this one describes only what survived it. For each candidate it returns:
 
-Write explanations of your findings to `report.md` in that folder, in a way that can be used in a `/grill-with-docs` session.
+- **What the affected code does**, in domain terms — scoped to the functionality the architectural problem sits inside, not a tour of the surrounding area.
+- **What triggers it** — the *shapes* of the entry points rather than an enumeration of call sites. Where the code has no user-facing surface, name the real consumer: another module, a scheduled run, a CLI invocation.
 
-Write a self-contained HTML file to `report.html` beside it. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
+Read from the code, never inferred from file or module names, and held to **Plain language** — pitched at a colleague who knows the product but not this corner of it, so `CONTEXT.md` terms go undefined and area mechanics unassumed.
 
-The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via CDN** for diagrams. Reach for Mermaid when relationships are graph-shaped (call graphs, dependencies, sequences), and hand-built divs/SVG when you want something editorial (mass diagrams, cross-sections, collapse animations). See [HTML-REPORT.md](HTML-REPORT.md) for the full scaffold, diagram patterns, and styling guidance.
+Where the pass cannot establish what the code does, the candidate stays and the card says so: nobody being able to tell what a module does is the strongest evidence of the friction this skill exists to find, and the Problem line makes exactly that argument.
 
-For each candidate, render a card with:
+Done when every shortlisted candidate has a description, or an explicit statement that one could not be established.
 
-- **Files** — which files/modules are involved
-- **Problem** — why the current architecture is causing friction
-- **Solution** — plain English description of what would change
-- **Benefits** — explained in terms of locality and leverage, and how tests would improve
-- **Before / After diagram** — side-by-side, custom-drawn, illustrating the shallowness and the deepening
-- **Recommendation strength** — one of `Strong`, `Worth exploring`, `Speculative`, rendered as a badge
+### 3. Write the report
+
+Determine a timestamp, and write two files into `.agents/architecture-reviews/<timestamp>/`: `report.md`, written so a `/grill-with-docs` session can pick it up, and a self-contained `report.html` beside it. Both carry the same candidates with the same parts — neither summarises the other. Open the HTML for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
+
+Every candidate is one card, carrying:
+
+- **Title** — short, names the deepening.
+- **What this does** — step 2's description, 1–4 sentences, leading the card ahead of the file list. One sentence is a complete answer where one sentence is the truth.
+- **Files** — which files/modules are involved.
+- **Problem** — one sentence on why the current architecture causes friction.
+- **Solution** — one sentence on what would change.
+- **Wins** — the gain in terms of locality and leverage, and how tests improve.
+- **Before / After diagram** — side by side, illustrating the shallowness and the deepening.
+- **Recommendation strength** — `Strong`, `Worth exploring`, or `Speculative`.
+- **ADR callout** — where the candidate contradicts an ADR, a warning reading _"contradicts ADR-0007 — but worth reopening because…"_. Surface the contradiction only where the friction is real enough to warrant reopening that decision, and the bar for real is friction you have observed in the code.
 
 End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
 
-**Where a candidate contradicts an ADR**, surface it only when the friction is real enough to warrant reopening that decision, and mark it in the card — a warning callout reading _"contradicts ADR-0007 — but worth reopening because…"_. The bar is friction you have actually observed in the code, which keeps the report to candidates the reader can act on.
+The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via CDN** for diagrams. Reach for Mermaid when relationships are graph-shaped (call graphs, dependencies, sequences), and hand-built divs/SVG when you want something editorial (mass diagrams, cross-sections, collapse animations). See [HTML-REPORT.md](HTML-REPORT.md) for the scaffold, how each part renders, diagram patterns, and styling.
 
-The report stops at candidates: each one says what would change and why it helps, and the interface behind the seam is step 3's work with the user in the room.
+The report stops at candidates: each one says what would change and why it helps, and the interface behind the seam is step 4's work with the user in the room.
 
-Done when both files are written, every candidate has a card carrying all six parts, and the user has been asked which one they want to explore.
+Done when both files are written, every candidate has a card carrying all eight parts plus an ADR callout where one applies, and the user has been asked which one they want to explore.
 
-### 3. Grilling loop
+### 4. Grilling loop
 
-Once the user picks a candidate, run the `/grilling` skill to walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
+Once the user picks a candidate, run the `/grilling` skill to walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive. The card's **What this does** is already established; the session starts from it rather than re-deriving it.
 
 Side effects happen inline as decisions crystallize — run the `/domain-modeling` skill to keep the domain model current as you go:
 

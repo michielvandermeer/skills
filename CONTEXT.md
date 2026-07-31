@@ -19,6 +19,10 @@ The Refinement a `/refine` session writes as it runs, at `.agents/refinements/<s
 **Complete document**:
 The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Seven fixed sections — Introduction, Open Questions, Use cases, Scope, Out-of-scope, Technical details, Notes — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, and the thing written back to a Jira ticket.
 
+**Architecture review**:
+The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/`, holding `report.md` and an HTML twin beside it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system, then grilled into a Spec with `/grill-with-docs`.
+_Avoid_: audit, tech-debt report, architecture report
+
 **Spec**:
 The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`.
 _Avoid_: PRD, plan, design doc
