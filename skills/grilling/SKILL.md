@@ -23,7 +23,7 @@ Open round 1 by naming the **subject** on one line — `Subject: functional (cor
 
 The subject sets the **altitude** you grill at:
 
-- **Functional** — grill high: what we are trying to achieve, how it should behave, what happens at the edges. Technology, structure, and test strategy are yours to settle from precedent already in the codebase, stated as declarations.
+- **Functional** — grill high: what we are trying to achieve, how it should behave, what happens at the edges. Technology and structure are yours to settle from precedent already in the codebase, stated as declarations.
 - **Technical** — grill low, into the detail. Get there by way of the functional goal, which is clear enough once you could hold up a candidate option and say whether it serves that goal. Until then, keep grilling high.
 
 Testing is a question only when testing is itself the subject; elsewhere, a declaration.
@@ -33,7 +33,7 @@ Testing is a question only when testing is itself the subject; elsewhere, a decl
 Hold this format every session:
 
 ```
-Subject: functional (correct me if not)          ← round 1 only
+Subject: functional (correct me if not)
 
 ## Round 1
 
@@ -50,17 +50,15 @@ Q2. **What should we call the window an export stays valid for?**
 
 ### Declarations
 
-D1. The decision, stated flat, one line where one line does it.
-D2. ...
+D1. Exports go to the object store already behind the reports feature.
+D2. Retention is one fixed window for every user.
 ```
 
-A blank line separates questions, so it is always obvious where one ends. Declarations run tight — a one-line `D` cannot collide with its neighbour.
+A blank line separates questions; declarations run tight.
 
-Letter the options whenever the choice is closed, and carry each option's cost on its own line, so the cost of `b` sits on the line you read when you pick `b`. A framing sentence above the options is welcome where the options need it and omitted where they don't. An open question has nothing to letter: recommend in prose, as Q2 does.
+Letter the options where the choice is closed, one per line carrying its own cost, and mark your pick twice — `← recommended` on the option, and a `*My recommendation:*` line carrying the reason. An open question has nothing to letter, so it gets the recommendation line alone, as Q2 does. A framing sentence above the options earns its place only where the options don't already say it. I answer by letter: `Q1: b`.
 
-Mark your pick twice — `← recommended` on the option to skim, and a `*My recommendation:*` line carrying the reason. Answer by letter: `Q1: b`.
-
-`Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating.
+`Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating, one line where one line does it.
 
 ## Raising altitude
 
