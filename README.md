@@ -147,7 +147,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then grill the one you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
-| `migrate-doc-layout` | Move spec, idea, reference, and architecture-review documents into this repo's canonical `.agents/` layout. |
+| `migrate-doc-layout` | Move spec, idea, reference, refinement, and architecture-review documents into this repo's canonical `.agents/` layout. |
 | `prototype` | Build a throwaway prototype to answer a design question. |
 | `refine` | Grill a change into a functional description with Product, QA, and Development in the room. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |

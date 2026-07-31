@@ -1,6 +1,8 @@
 # HTML Report Format
 
-The Refinement's twin: a single self-contained HTML file beside its markdown. Tailwind and Mermaid both come from CDNs. This is what the room looks at while they talk and what Product forwards afterwards — it is read by people who will never open the codebase.
+A single self-contained HTML file rendered from the Refinement's markdown. Tailwind and Mermaid both come from CDNs. This is what the room looks at while they talk and what Product forwards afterwards — it is read by people who will never open the codebase.
+
+Two renders, same format. A mid-session render writes `session.html` from `session.md`; the closing render writes `complete.html` from `complete.md`. The sections below are the closing shape — a mid-session render maps `Intent` to `introduction` and `What changes` to `scope`, and shows `technical-details` only once the code walk has landed something for it.
 
 ## Scaffold
 
@@ -24,11 +26,13 @@ The Refinement's twin: a single self-contained HTML file beside its markdown. Ta
   <body class="bg-stone-50 text-slate-900 font-sans">
     <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
       <header>...</header>
-      <section id="intent">...</section>
-      <section id="what-changes">...</section>
-      <section id="use-cases" class="space-y-10">...</section>
+      <section id="introduction">...</section>
       <section id="open-questions">...</section>
+      <section id="use-cases" class="space-y-10">...</section>
+      <section id="scope">...</section>
       <section id="out-of-scope">...</section>
+      <section id="technical-details">...</section>
+      <section id="notes">...</section>
     </main>
   </body>
 </html>
@@ -38,9 +42,11 @@ The Refinement's twin: a single self-contained HTML file beside its markdown. Ta
 
 Change title, date, source (Jira key as a link, or the idea path), and a one-line statement of intent. Stone-tinted = today, emerald-tinted = after; say so in a compact legend. No introduction paragraph.
 
-## What changes
+Every section of the markdown gets its section here, in the markdown's order, including the ones carrying `None` — the fixed shape is the point, and a reader who finds six headings in the HTML and seven in the Jira ticket reconciles them by hand.
 
-The delta, as bullets a Product manager can read aloud. Where the change replaces existing behaviour, render it as a two-column `today → after` pair rather than prose.
+## Scope
+
+The work, as bullets a Product manager can read aloud. This is the section that answers "what are we doing", so keep it items rather than prose.
 
 ## Use-case card
 
@@ -92,7 +98,15 @@ Hand-built boxes: one `<div>` per screen or dialog with its key elements listed 
 
 ## Open questions
 
-One amber card, each question with who owes the answer. A Refinement with three named open questions is doing its job; leave them prominent rather than tucked at the bottom of a page nobody scrolls.
+One amber card, each question with who owes the answer. A Refinement with three named open questions is doing its job, and it sits second precisely so nobody scrolls past it.
+
+## Technical details
+
+One compact card, prose only. This is the one section written for the developer who will pick the change up rather than for the room, and it holds the constraints they will work within. The tone rule below bites hardest here: state each constraint as behaviour the room would recognise, which is also the test for whether it belongs in a Refinement at all.
+
+## Notes
+
+One plain card. Nothing to render cleverly — it exists so useful context has somewhere to go instead of being dropped.
 
 ## Tone
 
@@ -100,6 +114,6 @@ Plain English at the altitude of the room. The domain nouns come from `CONTEXT.m
 
 Actors, screens, states, and observable outcomes are the whole vocabulary, in prose and in the boxes on a diagram alike — architecture nouns stay out. Where a statement seems to need one, name the behaviour instead: *"the planner sees the new date immediately"*, not *"the projection updates synchronously"*.
 
-Every claim about today traces to the markdown's `How it works today`, which traces to the code. An unsettled detail about after is an open question, not a confident box on a diagram.
+Every claim about today traces to `session.md`'s `How it works today`, which traces to the code — including in a `complete.html`, whose today-claims are condensed from that section rather than sourced anywhere new. An unsettled detail about after is an open question, not a confident box on a diagram.
 
-A mid-session render can catch a **provisional today**. Carry its label into the render, so the room reads that section as a document rather than as the code.
+A mid-session render can catch a **provisional today**. Carry its label into the render, so the room reads that section as a document rather than as the code. A `complete.html` is rendered after the code walk has landed, so it never carries one.

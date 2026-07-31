@@ -1,6 +1,6 @@
 # HTML Report Format
 
-The architectural review is rendered as a single self-contained HTML file in the OS temp directory. Tailwind and Mermaid both come from CDNs. Mermaid handles graph-shaped diagrams reliably; hand-built divs and inline SVG handle the more editorial visuals (mass diagrams, cross-sections). Mix the two — don't lean on Mermaid for everything, it'll start to look generic.
+The architectural review is rendered as a single self-contained HTML file at `.agents/architecture-reviews/<timestamp>/report.html`. Tailwind and Mermaid both come from CDNs. Mermaid handles graph-shaped diagrams reliably; hand-built divs and inline SVG handle the more editorial visuals (mass diagrams, cross-sections). Mix the two across the report — a page of Mermaid alone reads as generic.
 
 ## Scaffold
 
@@ -52,11 +52,11 @@ Each candidate is one `<article>`:
 - **Wins** — bullets, ≤6 words each. e.g. "Tests hit one interface", "Pricing logic stops leaking", "Delete 4 shallow wrappers".
 - **ADR callout** (if applicable) — one line in an amber-tinted box.
 
-No paragraphs of explanation. If the diagram needs a paragraph to be understood, redraw the diagram.
+The diagram stands on its own: where it would need a paragraph to be understood, redraw it.
 
 ## Diagram patterns
 
-Pick the pattern that fits the candidate. Mix them. Don't make every diagram look the same — variety is part of the point.
+Pick the pattern that fits the candidate, and vary it across candidates — the report should read as a set of drawings, each chosen for what it shows.
 
 ### Mermaid graph (the workhorse for dependencies / call flow)
 
@@ -109,7 +109,7 @@ Plain English, concise — but the architectural nouns and verbs come straight f
 
 **Use exactly:** module, interface, implementation, depth, deep, shallow, seam, adapter, leverage, locality.
 
-**Never substitute:** component, service, unit (for module) · API, signature (for interface) · boundary (for seam) · layer, wrapper (for module, when you mean module).
+**The translation table**, for when a looser word suggests itself first — component, service, unit → *module* · API, signature → *interface* · boundary → *seam* · layer, wrapper → *module*. The glossary word is always the one that ships.
 
 **Phrasings that fit the style:**
 
@@ -118,6 +118,6 @@ Plain English, concise — but the architectural nouns and verbs come straight f
 - "Deepen: one interface, one place to test."
 - "Two adapters justify the seam: HTTP in prod, in-memory in tests."
 
-**Wins bullets** name the gain in glossary terms: *"locality: bugs concentrate in one module"*, *"leverage: one interface, N call sites"*, *"interface shrinks; implementation absorbs the wrappers"*. Don't write *"easier to maintain"* or *"cleaner code"* — those terms aren't in the glossary and don't earn their place.
+**Wins bullets** name the gain in glossary terms: *"locality: bugs concentrate in one module"*, *"leverage: one interface, N call sites"*, *"interface shrinks; implementation absorbs the wrappers"*. Every win names which glossary property improved, so a reader can check the claim against the diagram.
 
-No hedging, no throat-clearing, no "it's worth noting that…". If a sentence could be a bullet, make it a bullet. If a bullet could be cut, cut it. If a term isn't in the `/codebase-design` glossary, reach for one that is before inventing a new one.
+Every sentence carries a claim. If a sentence could be a bullet, make it a bullet. If a bullet could be cut, cut it. Where a term is missing from the `/codebase-design` glossary, reach for the nearest one that is in it before coining anything.

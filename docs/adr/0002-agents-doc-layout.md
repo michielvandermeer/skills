@@ -1,3 +1,7 @@
+---
+status: partially superseded by ADR-0008
+---
+
 # Canonical `.agents/` layout for specs, ideas, references, and architecture reviews
 
 These skills previously had no single fixed location for the documents they read and write: `validate-spec` looked for specs under `.agents/plans/`, `improve-codebase-architecture` wrote reviews to a singular `.agents/architecture-review/`, and `code-review`'s coding-standards discovery had no preferred spot at all. We fixed a canonical layout — specs at `.agents/specs/<slug>.md`, ideas at `.agents/ideas/<slug>.md`, ADRs at `docs/adr/` (unchanged), skill-supporting reference docs at `.agents/refs/`, architecture reviews at `.agents/architecture-reviews/` — and updated every skill that reads or writes these to agree on it.
@@ -7,4 +11,5 @@ As part of this, `to-spec` was decoupled from the `.scratch/` issue tracker (see
 ## Consequences
 
 - Consuming repos with docs in the old locations (`.agents/plans/`, ad hoc reference docs, a singular `.agents/architecture-review/`) need to run `/migrate-doc-layout` once to conform.
+- Architecture reviews since moved to a folder per review, and Refinements were added on the same rule — see [ADR-0008](0008-session-output-gets-a-folder.md). The flat-file-per-document layout still holds for Specs, Ideas, and references.
 - `code-review`'s standards-source discovery checks `.agents/refs/` first but still falls back to root-level `CODING_STANDARDS.md`/`CONTRIBUTING.md` if that's what a repo already has — `.agents/refs/` is the canonical spot for new docs, not an exclusive one.

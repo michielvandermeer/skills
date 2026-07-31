@@ -10,8 +10,14 @@ A collection of software-engineering skills for Claude Code, distributed as a pl
 A loose, untriaged thought captured at `.agents/ideas/<slug>.md`. Not yet shaped into anything actionable.
 
 **Refinement**:
-The functional description of a change agreed by Product, QA, and Development in a `/refine` session, at `.agents/refinements/<slug>.md` with an HTML twin beside it — intent, use cases, and the delta against today, deliberately silent on implementation. Terminal: a Spec may be grilled out of it later, but nothing consumes it automatically.
+The functional description of a change agreed by Product, QA, and Development in a `/refine` session — intent, use cases, and the delta against today, deliberately silent on implementation. Lives in a folder of its own at `.agents/refinements/<slug>/`, holding a Session document and a Complete document. Terminal: a Spec may be grilled out of it later, but nothing consumes it automatically.
 _Avoid_: functional spec, requirements doc, BRD
+
+**Session document**:
+The Refinement a `/refine` session writes as it runs, at `.agents/refinements/<slug>/session.md`. Shaped for live append and for a resume to read: intent, the full read-from-code account of today, the delta, use cases, parked questions. It survives the close, so a settled change can be reopened.
+
+**Complete document**:
+The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Seven fixed sections — Introduction, Open Questions, Use cases, Scope, Out-of-scope, Technical details, Notes — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, and the thing written back to a Jira ticket.
 
 **Spec**:
 The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`.
@@ -29,6 +35,20 @@ An incoming request moving through the `/triage` state machine, at `.agents/issu
 
 **Map**:
 The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog.
+
+### Communication
+
+**Plain language**:
+Writing pitched at a reader who does not know this repo, in the sense of ISO 24495-1:2023. The standard every piece of text a skill puts in front of a person is held to.
+_Avoid_: simple English, simplified language, readability
+
+**Definition site**:
+Text whose job is to fix the meaning of a term — a `CONTEXT.md` entry, a glossary heading, an ADR passage that coins a name. The one place precision outranks **Plain language**, because careful words paid once are what make the shorthand safe to use everywhere else.
+_Avoid_: definition block, glossary entry
+
+**Gloss**:
+The plain-words introduction a skill gives its own vocabulary the first time that vocabulary appears — "the frontier (the questions I can ask now)". What buys a skill the right to use a term it defined rather than spelling the idea out every time.
+_Avoid_: definition, footnote, explainer, aside
 
 ### Execution
 
@@ -58,7 +78,10 @@ The background exploration that opens a `/refine` session — `CONTEXT.md`, the 
 The background exploration of the affected code in a `/refine` session, aimed by the intent the room settled in round 1. It confirms or corrects what the Docs pass wrote.
 
 **Provisional today**:
-A `How it works today` written from the Docs pass and not yet confirmed by the Code walk, labelled as such in the document — documents lag code. No Refinement closes with one.
+A `How it works today` written from the Docs pass and not yet confirmed by the Code walk, labelled as such in the Session document — documents lag code. The Complete document is written after the Code walk lands, so it can never carry one.
+
+**Room's clock**:
+The scarce resource in a `/refine` session: an idle minute costs as many minutes as there are people in the call. What justifies reading in the background, batching code-dependent questions into one probe per round, and stopping the room only for the closing read-back.
 
 **Tracer bullet**:
 A vertical slice that cuts a narrow but complete path through every layer (schema, API, UI, tests), rather than a horizontal slice of one layer. The shape every Step takes.
