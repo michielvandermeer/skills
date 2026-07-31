@@ -1,13 +1,13 @@
 ---
 name: grilling
-description: Grill the user relentlessly about a plan or design, round by round. Use when the user wants to stress-test a plan before building, or uses any 'grill' trigger phrases.
+description: Grill the user relentlessly about a plan or design, round by round. Use when the user wants to stress-test a plan before building, or when another skill needs the round format.
 ---
 
 Grill me relentlessly until we reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
 Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled — the questions you can ask *now* without guessing at answers you haven't heard yet. Ask the whole frontier in one round, however large that is, then wait for my answers.
 
-My answers reshape the tree. Recompute the frontier before each round: a question that depends on another still open belongs to a *later* round.
+My answers reshape the tree. Recompute the frontier before each round.
 
 ## Facts, decisions, declarations
 
@@ -27,6 +27,10 @@ The subject sets the **altitude** you grill at:
 - **Technical** — grill low, into the detail. Get there by way of the functional goal, which is clear enough once you could hold up a candidate option and say whether it serves that goal. Until then, keep grilling high.
 
 Testing is a question only when testing is itself the subject; elsewhere, a declaration.
+
+When I accept every recommendation in a round verbatim, or show any sign of annoyance, offer to raise the altitude: one line naming what you would stop asking about and turn into declarations, which I can decline.
+
+Raising altitude means fewer and broader questions. It bottoms out at the functional decisions — those stay questions however much I agree with you, because they are the ones only I can answer. When I ask for more detail, drop the altitude again.
 
 ## The shape of a round
 
@@ -60,19 +64,13 @@ D2. Retention is one fixed window for every user.
 
 A blank line separates questions; declarations run tight.
 
-Every question opens with an **explainer** — one to three sentences saying what the question is about and what rides on the answer, written for someone who has never seen the thing you are asking about. It sets the question up and stops there: costs stay on the option lines, and the reason for your pick stays on the recommendation line.
+Every question opens with an **explainer** — one to three sentences saying what the question is about and what rides on the answer, written for someone who has never seen the thing you are asking about. It sets the question up and stops there.
 
 Letter the options where the choice is closed, one per line carrying its own cost, and mark your pick twice — `← recommended` on the option, and a `*My recommendation:*` line carrying the reason. An open question has nothing to letter, so it gets the recommendation line alone, as Q2 does. I answer by letter: `Q1: b`.
 
 `Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating, one line where one line does it.
 
 A round is read at speed, often late in a long day of them. Run the `/plain-language` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
-
-## Raising altitude
-
-When I accept every recommendation in a round verbatim, or show any sign of annoyance, offer to raise the altitude: one line naming what you would stop asking about and turn into declarations, which I can decline.
-
-Raising altitude means fewer and broader questions. It bottoms out at the functional decisions — those stay questions however much I agree with you, because they are the ones only I can answer. When I ask for more detail, drop the altitude again.
 
 ## Done
 
