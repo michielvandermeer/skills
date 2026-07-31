@@ -12,6 +12,8 @@ Run a refinement session: several people in one **room**, one keyboard, working 
 
 The session writes two documents, both templated in [DOCUMENTS.md](DOCUMENTS.md): a **session document** the room fills as it talks, and a **complete document** it signs off.
 
+Run the `/plain-language` skill, then hold a stricter bar than it asks for: every sentence can be read aloud once, in a room, to someone who does not write code. That binds the rounds, both documents, and the Jira write-back. A room cannot go back and re-read a hard sentence.
+
 ## 1. Take the input
 
 A Jira ticket key or URL, an Idea at `.agents/ideas/<slug>.md`, or a sentence typed into the invocation. Retrieve a ticket through whatever MCP tools this session has; an Idea is read and left in place.

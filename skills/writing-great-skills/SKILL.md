@@ -71,6 +71,8 @@ Hunt for opportunities to refactor skills to use leading words. A triad spelled 
 
 You win twice over: fewer tokens, _and_ a sharper hook for the agent to hang its thinking on. Assume every skill is carrying restatements that leading words retire — go find them.
 
+A leading word earns its density in the skill's own prose, which only the agent reads. What a skill puts in front of a **person** runs at the bar the `/plain-language` skill sets, where a term the reader cannot look up earns a one-clause gloss or gets replaced outright. Both hold at once: dense source, plain output.
+
 ## Failure modes
 
 Use these to diagnose issues the user may be having with the skill.

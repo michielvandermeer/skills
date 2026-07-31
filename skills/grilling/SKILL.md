@@ -60,6 +60,8 @@ Letter the options where the choice is closed, one per line carrying its own cos
 
 `Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating, one line where one line does it.
 
+A round is read at speed, often late in a long day of them. Run the `/plain-language` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
+
 ## Raising altitude
 
 When I accept every recommendation in a round verbatim, or show any sign of annoyance, offer to raise the altitude: one line naming what you would stop asking about and turn into declarations, which I can decline.

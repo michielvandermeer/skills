@@ -16,6 +16,8 @@ Wayfinder is **planning** by default: each ticket resolves a decision, and the m
 
 Every map and ticket has a **name** — the `#` heading at the top of its file. In everything the human reads — narration, the map's Decisions-so-far — refer to it by that name, never by a bare filename or `NN`. A wall of `01, 02, 03` is illegible; names read at a glance. The filename and link don't vanish — a name wraps its link — but they ride *inside* the name, never stand in for it.
 
+Everything the human reads also runs at the bar the `/plain-language` skill sets. A map outlives the session that drew it, and its later readers cannot look up a word only this skill defines. The **Not yet specified** heading is that rule already applied.
+
 ## The Map
 
 The map is `.agents/issues/<effort>/map.md` — the canonical artifact. Its tickets are sibling files alongside it in `.agents/issues/<effort>/`.

@@ -101,6 +101,8 @@ If the maintainer says "move the rate-limiting issue to ready-for-agent", trust 
 
 Capture everything resolved during grilling under "established so far" so the work isn't lost. Questions must be specific and actionable, not "please provide more info".
 
+Run the `/plain-language` skill before writing any comment to the tracker. The reporter reads it, and they may not work on this codebase at all.
+
 ## Resuming a previous session
 
 If prior triage notes exist on the issue, read them, check whether the reporter has answered any outstanding questions, and present an updated picture before continuing. Don't re-ask resolved questions.

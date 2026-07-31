@@ -110,7 +110,7 @@ One plain card. Nothing to render cleverly — it exists so useful context has s
 
 ## Tone
 
-Plain English at the altitude of the room. The domain nouns come from `CONTEXT.md` — if the glossary says Order, the report says Order, not "the order record".
+The bar is the one in [SKILL.md](SKILL.md): every sentence readable aloud once, to someone who does not write code. The domain nouns come from `CONTEXT.md` — if the glossary says Order, the report says Order, not "the order record".
 
 Actors, screens, states, and observable outcomes are the whole vocabulary, in prose and in the boxes on a diagram alike — architecture nouns stay out. Where a statement seems to need one, name the behaviour instead: *"the planner sees the new date immediately"*, not *"the projection updates synchronously"*.
 

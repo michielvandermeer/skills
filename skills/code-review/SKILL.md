@@ -56,6 +56,8 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 Send a single message with two `Agent` tool calls. Use the `general-purpose` subagent for both.
 
+Both briefs end with the same instruction: "Run the `/plain-language` skill and write your findings to its bar." You present their reports nearly verbatim, so the plainness has to come from them.
+
 **Standards sub-agent prompt** — include:
 
 - The full diff command and commit list.

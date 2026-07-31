@@ -17,4 +17,6 @@ What the session still owes:
 
 Read `skills/writing-great-skills/SKILL.md` and match it. Its house style is the standard this repo holds itself to — leading words over restatement, aggressive pruning of no-ops, positive phrasing over prohibition.
 
+That density is for the source, which only the agent reads. Anything a skill puts in front of a *person* runs at the bar in `skills/plain-language/SKILL.md` — see [ADR-0009](docs/adr/0009-plain-language-for-output-not-source.md).
+
 `CONTEXT.md` is the glossary for how the skills talk about the documents they read and write, and about each other. Use its terms exactly; add to it when a change coins one. It is a glossary and nothing else — rules belong in an ADR.

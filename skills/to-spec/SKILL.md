@@ -11,7 +11,7 @@ This skill takes the current conversation context and codebase understanding and
 
 2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
 
-3. Write the spec using the template below to `.agents/specs/<feature-slug>.md` (a kebab-case slug derived from the feature, creating the directory if needed), with `Status: ready-for-agent` as a line under the H1 — no need for additional triage.
+3. Write the spec using the template below to `.agents/specs/<feature-slug>.md` (a kebab-case slug derived from the feature, creating the directory if needed), with `Status: ready-for-agent` as a line under the H1 — no need for additional triage. Run the `/plain-language` skill first: a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar.
 
 4. Run `/validate-spec` on the spec document you just created.
 

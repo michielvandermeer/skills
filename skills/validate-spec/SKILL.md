@@ -43,6 +43,6 @@ Go section by section through the doc, checking every applicable item below agai
 
 ### 4. Report
 
-Under 200 words: what you corrected, and what's still open as a question.
+Under 200 words, at the bar the `/plain-language` skill sets: what you corrected, and what's still open as a question.
 
 Done when every checklist item has been checked against every section it applies to, and every finding is either corrected in place or listed as an open question — none silently dropped.

@@ -50,6 +50,8 @@ Done when every shortlisted candidate has a description, or an explicit statemen
 
 Determine a timestamp, and write two files into `.agents/architecture-reviews/<timestamp>/`: `report.md`, written so a `/grill-with-docs` session can pick it up, and a self-contained `report.html` beside it. Both carry the same candidates with the same parts — neither summarises the other. Open the HTML for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
 
+Run the `/plain-language` skill before writing either file. A review is read with a team who work on different parts of the system, so a card lands with people who have never opened the code it describes.
+
 Every candidate is one card, carrying:
 
 - **Title** — short, names the deepening.

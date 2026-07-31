@@ -23,7 +23,7 @@ Evaluate:
 
 If there is a clear, low-risk cleanup that fits the current task scope, make it and run the relevant checks. If the cleanup is larger, speculative, or would distract from the current goal, do not implement it; instead return a concise recommendation with the proposed shape and why it is worth or not worth doing.
 
-Return:
+Return, at the bar the `/plain-language` skill sets:
 1. Verdict: `implement`, `recommend`, or `skip`.
 2. Opportunity: the concrete data structure or organizing model, or `none`.
 3. Why: the complexity it removes and the invariants it makes clearer.
