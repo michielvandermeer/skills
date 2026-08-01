@@ -42,7 +42,7 @@ Dispatch a fresh `skills:implementer` per step. Hand it paths and let it read wh
 
 Tell it the footprint is a guess: where the code disagrees, the code wins, and the drift goes in its `## Outcome` so its successors inherit the correction.
 
-Require of it: **green before it finishes** — every project on its footprint's `Projects:` line, widening to the whole suite when that line names more than one, and on the last step regardless. It then appends its `## Outcome` to its step file, sets that file's `Status: done`, and commits its code and its step file together in one commit.
+Require of it: **green before it finishes** — every project on its footprint's `Projects:` line, and the whole suite on the last step, which is where anything the footprints missed surfaces. It then appends its `## Outcome` to its step file, sets that file's `Status: done`, and commits its code and its step file together in one commit.
 
 Its entire response is three lines:
 

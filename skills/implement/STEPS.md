@@ -13,7 +13,7 @@ Each step is a **tracer bullet**:
 - It cuts a narrow but **complete** path through every layer — schema, API, UI, tests — never a horizontal slice of one layer.
 - It is demoable or verifiable on its own.
 - It fits in a single fresh context window.
-- It leaves green every project in its **footprint** — and the whole suite, when that footprint spans more than one project. Every step agent is held to this, so a step that cannot end green is mis-sliced.
+- It leaves green every project in its **footprint**. Every step agent is held to this, so a step that cannot end green is mis-sliced.
 
 Slice to whatever number of steps the spec actually needs. A small spec legitimately yields one step.
 
