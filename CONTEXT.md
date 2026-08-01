@@ -98,13 +98,17 @@ The scarce resource in a `/refine` session: an idle minute costs as many minutes
 ### Execution
 
 **Planner**:
-The sub-agent that reads a Spec, explores the codebase, and writes the Step files. Returns only a compact index to the Driving session — never the Step bodies.
+The sub-agent that reads a Spec, explores the codebase, and writes the Step files — each with the Footprint its exploration found. Returns only a compact index to the Driving session — never the Step bodies.
 
 **Step agent**:
-The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes itself, leaves the test suite green, commits, and returns a fixed three-line report.
+The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes itself, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
+
+**Footprint**:
+The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite that Step runs.
+_Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
 
 **Outcome**:
-The section a Step agent appends to its own Step file recording what it built. The channel by which a Step agent informs its successors, bypassing the Driving session's context entirely.
+The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong. The channel by which a Step agent informs its successors, bypassing the Driving session's context entirely.
 
 **Deviation**:
 Anything a Step agent did that contradicts the Spec or changes what a later Step must do. The one piece of a Step's detail the Driving session does carry forward.
