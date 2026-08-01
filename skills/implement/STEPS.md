@@ -59,16 +59,14 @@ Projects: <the projects that must be green when this step finishes>
 
 `## Outcome` and the flip of `Status:` to `done` belong to the step agent — you write the file as shown above and it takes over from there.
 
+Write behaviour, not code. The one exception is a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape): inline the decision-rich part in `## What to build` and say where it came from. Everything else goes stale between planning and execution.
+
 ## The footprint
 
 You walked the codebase to slice these steps. The **footprint** is where that walk lands: the files each step is expected to touch, the symbols inside them that matter, and the projects that must stay green. Write it down and the step agent starts from your map instead of repeating your walk.
 
-It costs you a second pass over what you already found, and it buys back far more — re-discovery is a quarter of every step agent's time.
-
 Three rules keep it honest:
 
-- **Files and symbols, nothing more.** No snippets, no ordering, no layer-by-layer plan. Behaviour belongs in `## What to build`, and a footprint that starts explaining *how* has turned into a plan the step agent will follow off a cliff.
+- **A map, nothing more.** Where the work lands, and there it stops. A footprint that starts explaining *how* has turned into a plan the step agent will follow off a cliff.
 - **A guess, not a contract.** Earlier steps move code, so a later step's footprint drifts. The step agent follows the code where the two disagree and records the drift in its `## Outcome`. Write your best guess and let it be corrected.
-- **Name every project.** The `Projects:` line decides how much test suite that step has to run, so a project you leave out is a project nobody checks.
-
-Snippets stay out of step files for the same reason paths used to: they go stale between planning and execution. The one exception is a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape) — inline the decision-rich part in `## What to build` and say where it came from.
+- **Name every project.** A project you leave off the `Projects:` line is a project nobody checks until the last step.
