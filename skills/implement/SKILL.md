@@ -40,6 +40,8 @@ Dispatch a fresh `skills:implementer` per step. Hand it paths and let it read wh
 - the spec's Testing Decisions, which govern what it tests
 - the deviations reported by earlier steps, when there are any
 
+Tell it that it starts in your working directory, rather than handing it a path to work inside — the second wording buys a `cd` on the front of every command it runs.
+
 Tell it the footprint is a guess: where the code disagrees, the code wins, and the drift goes in its `## Outcome` so its successors inherit the correction.
 
 Require of it: **green before it finishes** — every project on its footprint's `Projects:` line, and the whole suite on the last step, which is where anything the footprints missed surfaces. It then appends its `## Outcome` to its step file, sets that file's `Status: done`, and commits its code and its step file together in one commit.
