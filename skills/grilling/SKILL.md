@@ -28,7 +28,9 @@ The subject sets the **altitude** you grill at:
 
 Testing is a question only when testing is itself the subject; elsewhere, a declaration.
 
-When I accept every recommendation in a round verbatim, or show any sign of annoyance, offer to raise the altitude: one line naming what you would stop asking about and turn into declarations, which I can decline.
+The size of the change sets where you start, and most sessions are one change to a system that already works — so start high. Grill **scope** before anything else: what this change covers, and what it leaves alone. Once scope is settled, ride what already exists and aim for the smallest change that does the work — an edge case the existing code already handles is a declaration, and so is an obvious refactor on the way.
+
+When I accept every recommendation in a round verbatim, or show any sign of annoyance, raise the altitude — one line naming what you are turning into declarations, which I can decline.
 
 Raising altitude means fewer and broader questions. It bottoms out at the functional decisions — those stay questions however much I agree with you, because they are the ones only I can answer. When I ask for more detail, drop the altitude again.
 

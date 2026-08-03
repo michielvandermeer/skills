@@ -32,13 +32,13 @@ One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md
 _Avoid_: ticket, task, chunk, phase
 
 **Ticket**:
-An open question on a `/wayfinder` map, at `.agents/issues/<effort>/<NN>-<slug>.md`. A Ticket resolves a *decision*; it does not deliver code. Distinct from a Step, which delivers code and decides nothing.
+A fork in the way on a `/wayfinder` map, at `.agents/issues/<effort>/<NN>-<slug>.md` — a point where the effort could go two ways, and the one it takes changes what gets built. A Ticket resolves that choice; it does not deliver code. Distinct from a Step, which delivers code and decides nothing.
 
 **Issue**:
 An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`. Carries `Category:` and `Status:` lines.
 
 **Map**:
-The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog.
+The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog. Every Map ends in a Spec, so its Destination names the change that Spec will cover rather than which artifact the effort produces.
 
 ### Communication
 
