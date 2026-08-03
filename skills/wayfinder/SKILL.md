@@ -10,7 +10,7 @@ The destination is always the same: a Spec at `.agents/specs/<slug>.md`, ready t
 
 ## Plan, don't do
 
-Wayfinder is **planning**: the map is done when the way is clear — nothing left to decide before someone goes and does the thing. The pull to just do the work is the signal you've reached the edge of the map, and the Spec is where you put it. Produce decisions, not deliverables.
+Wayfinder is **planning**: it produces decisions, not deliverables. The pull to just do the work is the signal you've reached the edge of the map, and the Spec is where you put it.
 
 ## Forks in the road
 
@@ -82,7 +82,7 @@ Blocking is recorded as a `Blocked by: NN, NN` line near the top of the ticket f
 
 The answer isn't part of the body — it's recorded on resolution (see [Work through the map](#work-through-the-map)). Assets created while resolving a ticket are linked from the ticket file, not pasted in.
 
-A ticket that turns out to sit past the destination is ruled **out of scope** rather than resolved — set `Status: out-of-scope` (see "Out of scope" below). This keeps it off the frontier without misrepresenting it as a resolved decision.
+A ticket that sits past the destination gets `Status: out-of-scope` rather than an answer — see [Out of scope](#out-of-scope).
 
 ## Ticket Types
 
@@ -95,7 +95,7 @@ Every ticket is either **HITL** — human in the loop, worked *with* a human who
 
 ## Fog of war
 
-The map is _deliberately_ incomplete: don't chart what you can't yet see. Beyond the live tickets lies the **fog of war** — the dim view of decisions and investigations you can tell are coming but can't yet pin down, because they hang on questions still open. Resolving a ticket clears the fog ahead of it, graduating whatever's now specifiable into fresh tickets — one at a time, until the way to the destination is clear and no tickets remain.
+The map is _deliberately_ incomplete: don't chart what you can't yet see. Beyond the live tickets lies the **fog of war** — the dim view of decisions and investigations you can tell are coming but can't yet pin down, because they hang on questions still open. Resolving a ticket clears the fog ahead of it, graduating whatever's now specifiable into fresh tickets — one at a time.
 
 The map's **Not yet specified** section is where that dim view is written down: the suspected question, the area to revisit later. It's the undiscovered frontier _toward_ the destination — everything here is in scope, just not sharp enough to ticket. Write as loosely or as fully as the view allows; it doubles as a signpost for collaborators reading where the effort is headed.
 
@@ -129,7 +129,7 @@ User invokes with a loose idea.
 
 ### Work through the map
 
-User invokes with a map (path or effort name). A ticket is **optional** — without one, you pick the next decision, not the user.
+User invokes with a map (path or effort name). A ticket is **optional** — without one, you pick the next fork, not the user.
 
 1. Load the **map** — the low-res view, not every ticket body.
 2. Choose the ticket. If the user named one, use it. Otherwise take the first frontier ticket in order. **Claim it**: set `Status: claimed` before any work.

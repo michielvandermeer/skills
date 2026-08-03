@@ -26,9 +26,9 @@ The subject sets the **altitude** you grill at:
 - **Functional** — grill high: what we are trying to achieve, how it should behave, what happens at the edges. Technology and structure are yours to settle from precedent already in the codebase, stated as declarations.
 - **Technical** — grill low, into the detail. Get there by way of the functional goal, which is clear enough once you could hold up a candidate option and say whether it serves that goal. Until then, keep grilling high.
 
-Testing is a question only when testing is itself the subject; elsewhere, a declaration.
-
 The size of the change sets where you start, and most sessions are one change to a system that already works — so start high. Grill **scope** before anything else: what this change covers, and what it leaves alone. Once scope is settled, ride what already exists and aim for the smallest change that does the work — an edge case the existing code already handles is a declaration, and so is an obvious refactor on the way.
+
+Testing is a question only when testing is itself the subject; elsewhere, a declaration.
 
 When I accept every recommendation in a round verbatim, or show any sign of annoyance, raise the altitude — one line naming what you are turning into declarations, which I can decline.
 
