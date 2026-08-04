@@ -19,7 +19,7 @@ Silence is consent — a declaration I say nothing about stands. An objection re
 
 ## Altitude
 
-Open round 1 by naming the **subject** on one line — `Subject: functional (correct me if not)` — and leave it there unless it changes, in which case say so and why. When a subject is genuinely mixed, classify by where *my* judgement is needed rather than by which half is bigger.
+Open round 1 with an **orientation** — one to three plain sentences that name what we are grilling, written for someone who opened this tab cold among several sessions. Then name the **subject** on one line — `Subject: functional (correct me if not)` — and leave it there unless it changes, in which case say so and why. When a subject is genuinely mixed, classify by where *my* judgement is needed rather than by which half is bigger.
 
 The subject sets the **altitude** you grill at:
 
@@ -39,6 +39,8 @@ Raising altitude means fewer and broader questions. It bottoms out at the functi
 Hold this format every session:
 
 ```
+We're deciding what happens when someone opens an export link after it has expired, and what to call the window that file stays valid for.
+
 Subject: functional (correct me if not)
 
 ## Round 1
@@ -64,7 +66,7 @@ D1. Exports go to the object store already behind the reports feature.
 D2. Retention is one fixed window for every user.
 ```
 
-A blank line separates questions; one declaration per line, packed tight.
+A blank line separates questions; one declaration per line, packed tight. The orientation is round 1 only.
 
 Every question opens with an **explainer** — one to three sentences saying what the question is about and what rides on the answer, written for someone who has never seen the thing you are asking about. It sets the question up and stops there.
 
