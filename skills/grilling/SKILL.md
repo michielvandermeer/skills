@@ -64,7 +64,7 @@ D1. Exports go to the object store already behind the reports feature.
 D2. Retention is one fixed window for every user.
 ```
 
-A blank line separates questions; declarations run tight.
+A blank line separates questions; one declaration per line, packed tight.
 
 Every question opens with an **explainer** — one to three sentences saying what the question is about and what rides on the answer, written for someone who has never seen the thing you are asking about. It sets the question up and stops there.
 

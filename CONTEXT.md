@@ -77,7 +77,7 @@ The one to three sentences opening every Question, saying what the question is a
 _Avoid_: framing sentence, preamble, context
 
 **Declaration**:
-A frontier item with one defensible answer, reasoned out and stated flat rather than asked. Numbered `D1`, `D2` continuously across a session, and silence accepts it.
+A frontier item with one defensible answer, reasoned out and stated flat rather than asked. Numbered `D1`, `D2` continuously across a session, one per line; silence accepts it.
 _Avoid_: assumption
 
 **Subject**:
