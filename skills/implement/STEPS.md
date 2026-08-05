@@ -13,7 +13,7 @@ Each step is a **tracer bullet**:
 - It cuts a narrow but **complete** path through every layer — schema, API, UI, tests — never a horizontal slice of one layer.
 - It is demoable or verifiable on its own.
 - It fits in a single fresh context window.
-- It leaves the full test suite green. Every step agent is held to this, so a step that cannot end green is mis-sliced.
+- It leaves green every project in its **footprint**. Every step agent is held to this, so a step that cannot end green is mis-sliced.
 
 Slice to whatever number of steps the spec actually needs. A small spec legitimately yields one step.
 
@@ -44,6 +44,13 @@ Status: pending
 
 <the end-to-end behaviour this step makes work, from the user's perspective — not a layer-by-layer implementation list>
 
+## Footprint
+
+Projects: <the projects that must be green when this step finishes>
+
+- `path/to/file` — `SymbolName`, `OtherSymbol`
+- `path/to/other/file` — <what lives here that this step touches>
+
 ## Acceptance criteria
 
 - [ ] Criterion 1
@@ -52,4 +59,14 @@ Status: pending
 
 `## Outcome` and the flip of `Status:` to `done` belong to the step agent — you write the file as shown above and it takes over from there.
 
-Write behaviour, not file paths or code snippets — those go stale between planning and execution. The exception is a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape); inline the decision-rich part and say where it came from.
+Write behaviour, not code. The one exception is a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape): inline the decision-rich part in `## What to build` and say where it came from. Everything else goes stale between planning and execution.
+
+## The footprint
+
+You walked the codebase to slice these steps. The **footprint** is where that walk lands: the files each step is expected to touch, the symbols inside them that matter, and the projects that must stay green. Write it down and the step agent starts from your map instead of repeating your walk.
+
+Three rules keep it honest:
+
+- **A map, nothing more.** Where the work lands, and there it stops. A footprint that starts explaining *how* has turned into a plan the step agent will follow off a cliff.
+- **A guess, not a contract.** Earlier steps move code, so a later step's footprint drifts. The step agent follows the code where the two disagree and records the drift in its `## Outcome`. Write your best guess and let it be corrected.
+- **Name every project.** A project you leave off the `Projects:` line is a project nobody checks until the last step.

@@ -32,13 +32,13 @@ One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md
 _Avoid_: ticket, task, chunk, phase
 
 **Ticket**:
-An open question on a `/wayfinder` map, at `.agents/issues/<effort>/<NN>-<slug>.md`. A Ticket resolves a *decision*; it does not deliver code. Distinct from a Step, which delivers code and decides nothing.
+A fork in the way on a `/wayfinder` map, at `.agents/issues/<effort>/<NN>-<slug>.md` — a point where the effort could go two ways, and the one it takes changes what gets built. A Ticket resolves that choice; it does not deliver code. Distinct from a Step, which delivers code and decides nothing.
 
 **Issue**:
 An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`. Carries `Category:` and `Status:` lines.
 
 **Map**:
-The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog.
+The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog. Every Map ends in a Spec, so its Destination names the change that Spec will cover rather than which artifact the effort produces.
 
 ### Communication
 
@@ -72,12 +72,20 @@ Every decision on the Design tree whose prerequisites are already settled — wh
 A frontier item with more than one defensible answer, where a different answer visibly changes what gets built. Numbered `Q1`, `Q2` continuously across a session; options within one lettered `a`, `b`, `c`.
 _Avoid_: open question — that is a parked item on a Refinement, not a live Question
 
+**Explainer**:
+The one to three sentences opening every Question, saying what the question is about and what rides on the answer. Written for someone who has never seen the thing being asked about. Distinct from a **Gloss**, which introduces a skill's own vocabulary rather than the subject matter.
+_Avoid_: framing sentence, preamble, context
+
 **Declaration**:
-A frontier item with one defensible answer, reasoned out and stated flat rather than asked. Numbered `D1`, `D2` continuously across a session, and silence accepts it.
+A frontier item with one defensible answer, reasoned out and stated flat rather than asked. Numbered `D1`, `D2` continuously across a session, one per line; silence accepts it.
 _Avoid_: assumption
 
+**Orientation**:
+The one to three plain sentences that open round 1 of a `/grilling` session, naming what is being grilled so a reader who landed on the tab cold among several can place it. Round 1 only.
+_Avoid_: summary, preamble, blurb, lede
+
 **Subject**:
-What a session is about, named on one line in its first Round and classified `functional` or `technical` by where the user's judgement is needed rather than by which half is bigger.
+The altitude a `/grilling` session grills at, named on one line in its first Round and classified `functional` or `technical` by where the user's judgement is needed rather than by which half is bigger.
 
 **Altitude**:
 How deep a Round grills, set by the Subject. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
@@ -94,13 +102,17 @@ The scarce resource in a `/refine` session: an idle minute costs as many minutes
 ### Execution
 
 **Planner**:
-The sub-agent that reads a Spec, explores the codebase, and writes the Step files. Returns only a compact index to the Driving session — never the Step bodies.
+The sub-agent that reads a Spec, explores the codebase, and writes the Step files — each with the Footprint its exploration found. Returns only a compact index to the Driving session — never the Step bodies.
 
 **Step agent**:
-The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes itself, leaves the test suite green, commits, and returns a fixed three-line report.
+The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes itself, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
+
+**Footprint**:
+The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite that Step runs.
+_Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
 
 **Outcome**:
-The section a Step agent appends to its own Step file recording what it built. The channel by which a Step agent informs its successors, bypassing the Driving session's context entirely.
+The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong. The channel by which a Step agent informs its successors, bypassing the Driving session's context entirely.
 
 **Deviation**:
 Anything a Step agent did that contradicts the Spec or changes what a later Step must do. The one piece of a Step's detail the Driving session does carry forward.

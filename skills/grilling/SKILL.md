@@ -1,13 +1,13 @@
 ---
 name: grilling
-description: Grill the user relentlessly about a plan or design, round by round. Use when the user wants to stress-test a plan before building, or uses any 'grill' trigger phrases.
+description: Grill the user relentlessly about a plan or design, round by round. Use when the user wants to stress-test a plan before building, or when another skill needs the round format.
 ---
 
 Grill me relentlessly until we reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
 Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled — the questions you can ask *now* without guessing at answers you haven't heard yet. Ask the whole frontier in one round, however large that is, then wait for my answers.
 
-My answers reshape the tree. Recompute the frontier before each round: a question that depends on another still open belongs to a *later* round.
+My answers reshape the tree. Recompute the frontier before each round.
 
 ## Facts, decisions, declarations
 
@@ -19,25 +19,35 @@ Silence is consent — a declaration I say nothing about stands. An objection re
 
 ## Altitude
 
-Open round 1 by naming the **subject** on one line — `Subject: functional (correct me if not)` — and leave it there unless it changes, in which case say so and why. When a subject is genuinely mixed, classify by where *my* judgement is needed rather than by which half is bigger.
+Open round 1 with an **orientation** — one to three plain sentences that name what we are grilling, written for someone who opened this tab cold among several sessions. Then name the **subject** on one line — `Subject: functional (correct me if not)` — and leave it there unless it changes, in which case say so and why. When a subject is genuinely mixed, classify by where *my* judgement is needed rather than by which half is bigger.
 
 The subject sets the **altitude** you grill at:
 
 - **Functional** — grill high: what we are trying to achieve, how it should behave, what happens at the edges. Technology and structure are yours to settle from precedent already in the codebase, stated as declarations.
 - **Technical** — grill low, into the detail. Get there by way of the functional goal, which is clear enough once you could hold up a candidate option and say whether it serves that goal. Until then, keep grilling high.
 
+The size of the change sets where you start, and most sessions are one change to a system that already works — so start high. Grill **scope** before anything else: what this change covers, and what it leaves alone. Once scope is settled, ride what already exists and aim for the smallest change that does the work — an edge case the existing code already handles is a declaration, and so is an obvious refactor on the way.
+
 Testing is a question only when testing is itself the subject; elsewhere, a declaration.
+
+When I accept every recommendation in a round verbatim, or show any sign of annoyance, raise the altitude — one line naming what you are turning into declarations, which I can decline.
+
+Raising altitude means fewer and broader questions. It bottoms out at the functional decisions — those stay questions however much I agree with you, because they are the ones only I can answer. When I ask for more detail, drop the altitude again.
 
 ## The shape of a round
 
 Hold this format every session:
 
 ```
+We're deciding what happens when someone opens an export link after it has expired, and what to call the window that file stays valid for.
+
 Subject: functional (correct me if not)
 
 ## Round 1
 
 Q1. **Does an expired export stay downloadable?**
+
+An export is a file we generate on request and keep for a while. This decides what someone sees when they open the link after that window closes.
 
 - a. Deleted on expiry — storage stays flat, and someone who bookmarked the link gets a bare 404. ← recommended
 - b. Kept and marked expired — the link still resolves and can say why, at the cost of unbounded growth.
@@ -45,6 +55,8 @@ Q1. **Does an expired export stay downloadable?**
 *My recommendation: a* — the bookmarked-link case is rare enough to answer with a generic message.
 
 Q2. **What should we call the window an export stays valid for?**
+
+This name goes into the schema, the API, and the screen, so it is expensive to change later.
 
 *My recommendation:* `retention`, since that is the word the storage layer already uses.
 
@@ -54,19 +66,15 @@ D1. Exports go to the object store already behind the reports feature.
 D2. Retention is one fixed window for every user.
 ```
 
-A blank line separates questions; declarations run tight.
+A blank line separates questions; one declaration per line, packed tight. The orientation is round 1 only.
 
-Letter the options where the choice is closed, one per line carrying its own cost, and mark your pick twice — `← recommended` on the option, and a `*My recommendation:*` line carrying the reason. An open question has nothing to letter, so it gets the recommendation line alone, as Q2 does. A framing sentence above the options earns its place only where the options don't already say it. I answer by letter: `Q1: b`.
+Every question opens with an **explainer** — one to three sentences saying what the question is about and what rides on the answer, written for someone who has never seen the thing you are asking about. It sets the question up and stops there.
+
+Letter the options where the choice is closed, one per line carrying its own cost, and mark your pick twice — `← recommended` on the option, and a `*My recommendation:*` line carrying the reason. An open question has nothing to letter, so it gets the recommendation line alone, as Q2 does. I answer by letter: `Q1: b`.
 
 `Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating, one line where one line does it.
 
 A round is read at speed, often late in a long day of them. Run the `/plain-language` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
-
-## Raising altitude
-
-When I accept every recommendation in a round verbatim, or show any sign of annoyance, offer to raise the altitude: one line naming what you would stop asking about and turn into declarations, which I can decline.
-
-Raising altitude means fewer and broader questions. It bottoms out at the functional decisions — those stay questions however much I agree with you, because they are the ones only I can answer. When I ask for more detail, drop the altitude again.
 
 ## Done
 
