@@ -8,10 +8,12 @@ disable-model-invocation: true
 
 Surface architectural friction and propose **deepening opportunities** — refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
 
-Two vocabularies carry the whole skill, and every candidate is written in both:
+Two vocabularies shape exploration and design:
 
-- **Architecture** comes from the `/codebase-design` skill — **module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**, and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Run it, and use those words exactly: where a sentence reaches for a looser word, the precise one is always available.
+- **Architecture** comes from the `/codebase-design` skill — **module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**, and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Run it, and use those words exactly while you hunt friction and shape a deepening: where a sentence reaches for a looser word, the precise one is always available.
 - **Domain** comes from `CONTEXT.md`, which gives names to good seams. If the glossary defines "Order", a candidate concerns the Order intake module.
+
+The report a person reads is a different surface: it sits under `/plain-language`, with one exception named in step 3.
 
 ADRs in `docs/adr/` record decisions this skill takes as settled.
 
@@ -57,19 +59,27 @@ Done when every shortlisted candidate has a description, or an explicit statemen
 
 Determine a timestamp, and write two files into `.agents/architecture-reviews/<timestamp>/`: `report.md`, written so a `/grill-with-docs` session can pick it up, and a self-contained `report.html` beside it. Both carry the same candidates with the same parts — neither summarises the other. Open the HTML for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
 
-Run the `/plain-language` skill before writing either file. A review is read with a team who work on different parts of the system, so a card lands with people who have never opened the code it describes.
+Run the `/plain-language` skill before writing either file. That skill is the bar for every human-facing sentence in both files: Title, What this does, What triggers it, Problem, Solution, Wins, Top recommendation, ADR callouts, and diagram labels that carry a claim. Files stay paths. The sole exception: `/codebase-design` terms may appear bare — module, interface, implementation, depth, deep, shallow, seam, adapter, leverage, locality — when they are the natural claim. Leave a clear plain sentence in plain words; denser glossary form is not a consistency goal. Spell each code mechanism in words a cold reader already holds ("read the set, change it, write it back"), not a report-only nickname, acronym, or private type/method name.
+
+A review is read with a team who work on different parts of the system, so a card lands with people who have never opened the code it describes. Use as many sentences as the claim needs; one is fine when one is enough.
 
 Every candidate is one card, carrying:
 
 - **Title** — short, names the deepening.
 - **What this does** — step 2's description, 1–4 sentences, leading the card ahead of the file list. One sentence is a complete answer where one sentence is the truth.
+- **What triggers it** — step 2's entry-point shapes.
 - **Files** — which files/modules are involved.
-- **Problem** — one sentence on why the current architecture causes friction.
-- **Solution** — one sentence on what would change.
-- **Wins** — the gain in terms of locality and leverage, and how tests improve.
+- **Problem** — why the current architecture causes friction.
+- **Solution** — what would change.
+- **Wins** — short bullets when short stays clear. Name locality or leverage when that is the gain, and how tests improve.
 - **Before / After diagram** — side by side, illustrating the shallowness and the deepening.
 - **Recommendation strength** — `Strong`, `Worth exploring`, or `Speculative`.
 - **ADR callout** — where the candidate contradicts an ADR, a warning reading _"contradicts ADR-0007 — but worth reopening because…"_. Surface the contradiction only where the friction is real enough to warrant reopening that decision, and the bar for real is friction you have observed in the code.
+
+**Problem, same claim twice** — write the first form:
+
+- *Write:* Business Issue and Interested Party each keep their own full copy of the same response-link rules: replace the whole set in one write; add or remove one link by reading the set and writing it back; allow only four target kinds; resolve the target the same way on both sides. Callers learn nearly as much as the implementation holds, twice over, so both modules are shallow.
+- *Packed (avoid):* Two full stacks carry the same depth — replace-set, RMW, four-kind allow-list, twin resolvers — so the interface is nearly as complex as the implementation twice over.
 
 End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
 
@@ -77,7 +87,7 @@ The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via C
 
 The report stops at candidates: each one says what would change and why it helps, and the interface behind the seam is step 4's work with the user in the room.
 
-Done when both files are written, every candidate has a card carrying all eight parts plus an ADR callout where one applies, and the user has been asked which one they want to explore.
+Done when both files are written, every candidate has a card carrying all parts plus an ADR callout where one applies, every human-facing sentence holds the plainness bar above, and the user has been asked which one they want to explore.
 
 ### 4. Grilling loop
 

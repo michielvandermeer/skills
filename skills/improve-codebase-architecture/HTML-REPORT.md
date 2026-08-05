@@ -39,18 +39,20 @@ Repo name, date, and a compact legend: solid box = module, dashed line = seam, r
 
 ## Candidate card
 
-The diagrams carry the weight; prose is sparse and plain.
+The diagrams carry the weight; prose is plain and only as short as clarity allows. Prose rules live in `SKILL.md` step 3; this file only pins how each part renders.
 
 Each candidate is one `<article>`. `SKILL.md` fixes which parts a card carries — these are the ones with a rendering worth pinning:
 
 - **Badge row** — recommendation strength as a badge (`Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate), plus a tag for the dependency category (`in-process`, `local-substitutable`, `ports & adapters`, `mock`).
 - **What this does** — body text directly under the badge row, ahead of the file list: a reader who doesn't work on this area needs it before anything about shape. The report's existing style, no new panel or colour.
+- **What triggers it** — body text under What this does when the card carries it; same style, no special panel.
 - **Files** — monospaced list, `font-mono text-sm`.
 - **Before / After diagram** — the centrepiece. Two columns, side by side. See patterns below.
-- **Wins** — bullets, ≤6 words each. e.g. "Tests hit one interface", "Pricing logic stops leaking", "Delete 4 shallow wrappers".
+- **Problem / Solution** — body text; length is whatever the claim needs.
+- **Wins** — bullets, short when short stays clear. e.g. "Tests hit one interface", "Pricing logic stops leaking into callers", "Bugs in response links concentrate in one module".
 - **ADR callout** — one line in an amber-tinted box.
 
-The diagram stands on its own: where it would need a paragraph to be understood, redraw it. **What this does** is the one prose block that survives that rule, because it explains the *functionality* rather than the *drawing*.
+The diagram stands on its own: where it would need a paragraph to be understood, redraw it.
 
 ## Diagram patterns
 
@@ -99,25 +101,13 @@ Before: a tree of function calls rendered as nested boxes. After: the same tree 
 
 ## Top recommendation section
 
-One larger card. Candidate name, one sentence on why, anchor link to its card. That's it.
+One larger card. Candidate name, why, anchor link to its card. That's it.
 
 ## Tone
 
-Plain English, concise — but the architectural nouns and verbs come straight from the `/codebase-design` skill. Concision is not an excuse to drift.
+Prose rules live in `SKILL.md` step 3. Diagrams may label shape with `/codebase-design` terms (shallow vs deep, a seam, leakage). Phrasings that fit when the claim is architectural:
 
-**Use exactly:** module, interface, implementation, depth, deep, shallow, seam, adapter, leverage, locality.
-
-**Except in What this does**, which speaks the domain — `CONTEXT.md`'s vocabulary, held to **Plain language**. The one place on the card that talks about the product rather than its shape.
-
-**The translation table**, for when a looser word suggests itself first — component, service, unit → *module* · API, signature → *interface* · boundary → *seam* · layer, wrapper → *module*. The glossary word is always the one that ships.
-
-**Phrasings that fit the style:**
-
-- "Order intake module is shallow — interface nearly matches the implementation."
+- "Order intake module is shallow — its interface is nearly as complex as its implementation."
 - "Pricing leaks across the seam."
-- "Deepen: one interface, one place to test."
-- "Two adapters justify the seam: HTTP in prod, in-memory in tests."
-
-**Wins bullets** name the gain in glossary terms: *"locality: bugs concentrate in one module"*, *"leverage: one interface, N call sites"*, *"interface shrinks; implementation absorbs the wrappers"*. Every win names which glossary property improved, so a reader can check the claim against the diagram.
-
-Every sentence carries a claim. If a sentence could be a bullet, make it a bullet. If a bullet could be cut, cut it. Where a term is missing from the `/codebase-design` glossary, reach for the nearest one that is in it before coining anything.
+- "Deepen into one interface so tests and callers share one place."
+- "Two adapters justify the seam: HTTP in production, in-memory in tests."
