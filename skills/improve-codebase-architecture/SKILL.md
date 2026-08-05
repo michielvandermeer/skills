@@ -19,9 +19,16 @@ ADRs in `docs/adr/` record decisions this skill takes as settled.
 
 ### 1. Explore
 
+**Scope before you scan — YAGNI.** Deepening pays off by making future changes easier, so weight the parts of the codebase that have recently changed. Decide *where* to look before you look:
+
+- If the user named a direction — a module, a subsystem, a pain point — take it.
+- Otherwise walk back a good stretch of commit history (`git log --oneline`, ~20 commits) and let the hot spots pull attention first. If the changes are scattered with no clear hot spot, widen the net.
+
+A deepening opportunity in code nobody touches is a refactor you'll never cash in.
+
 Read `CONTEXT.md` and any ADRs covering the area you're touching first.
 
-Then use the Agent tool with `subagent_type=skills:explorer` to walk the codebase. Explore organically, following friction where you feel it rather than sweeping for a fixed checklist. These are the shapes friction usually takes:
+Then use the Agent tool with `subagent_type=skills:explorer` to walk the codebase, biased to that scope. Explore organically, following friction where you feel it rather than sweeping for a fixed checklist. These are the shapes friction usually takes:
 
 - Understanding one concept requires bouncing between many small modules.
 - A module is **shallow** — its interface is nearly as complex as its implementation.

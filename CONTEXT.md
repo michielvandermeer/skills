@@ -31,8 +31,9 @@ _Avoid_: PRD, plan, design doc
 One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md`. A tracer bullet: a narrow but complete path through every layer, sized to one fresh agent context, verifiable on its own. Steps exist only for the duration of an `/implement` run and are deleted with the Spec they came from.
 _Avoid_: ticket, task, chunk, phase
 
-**Ticket**:
-A fork in the way on a `/wayfinder` map, at `.agents/issues/<effort>/<NN>-<slug>.md` — a point where the effort could go two ways, and the one it takes changes what gets built. A Ticket resolves that choice; it does not deliver code. Distinct from a Step, which delivers code and decides nothing.
+**Decision ticket** (everyday: **ticket**):
+A question on a `/wayfinder` map at `.agents/issues/<effort>/<NN>-<slug>.md` whose resolution is a decision — not a slice of a build to execute. A fork in the way: the effort could go two ways, and the one it takes changes what gets built. It does not deliver code. Distinct from a Step, which delivers code and decides nothing.
+_Avoid_: investigation ticket, implementation ticket
 
 **Issue**:
 An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`. Carries `Category:` and `Status:` lines.

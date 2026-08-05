@@ -15,7 +15,7 @@ What the session still owes:
 
 ## Before editing a skill
 
-Read `skills/writing-great-skills/SKILL.md` and match it. Its house style is the standard this repo holds itself to — leading words over restatement, aggressive pruning of no-ops, positive phrasing over prohibition.
+Read `skills/writing-for-agents/SKILL.md` and match it. Its house style is the standard this repo holds itself to — leading words over restatement, aggressive pruning of no-ops, positive phrasing over prohibition, environment as source of truth rather than a cache of lookups.
 
 That density is for the source, which only the agent reads. Anything a skill puts in front of a *person* runs at the bar in `skills/plain-language/SKILL.md` — see [ADR-0009](docs/adr/0009-plain-language-for-output-not-source.md).
 
@@ -23,4 +23,4 @@ That density is for the source, which only the agent reads. Anything a skill put
 
 ## After editing a skill
 
-You MUST run `/writing-great-skills` on all skill files that changed after making the changes.
+You MUST run `/writing-for-agents` on all skill files that changed after making the changes.
