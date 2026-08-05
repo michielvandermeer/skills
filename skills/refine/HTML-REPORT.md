@@ -1,8 +1,12 @@
 # HTML Report Format
 
-A single self-contained HTML file rendered for the room and for Product to forward afterwards — people who will never open the codebase. Both renders are **user-facing** and hold the plain-language bar in [SKILL.md](SKILL.md).
+Self-contained HTML for the room and for Product to forward — people who never open the codebase. Both renders are **user-facing** and hold **room language** from [SKILL.md](SKILL.md).
 
-Two renders. A mid-session render writes `session.html` from `session.md`; the closing render writes `complete.html` from `complete.md`. The sections below are the closing shape. A mid-session render maps `Intent` to `introduction` and `What changes` to `scope`, includes open questions, use cases, and out of scope, and restates `How it works today` as behaviour and observable limits only — no modules, paths, or types — even when `session.md` holds the full code account for resume.
+Two renders: mid-session `session.html` from `session.md`; closing `complete.html` from `complete.md`. Sections below are the closing shape.
+
+## Mid-session render
+
+Map `Intent` → `introduction`, `What changes` → `scope`. Include open questions, use cases, and out of scope. Restate `How it works today` as behaviour and observable limits (room language), even when `session.md` holds full-fidelity code for resume. Carry a **provisional today** label when present. Omit `notes` until synthesis.
 
 ## Scaffold
 
@@ -37,17 +41,15 @@ Two renders. A mid-session render writes `session.html` from `session.md`; the c
 </html>
 ```
 
-A mid-session render has no `notes` section until synthesis; it may show a behavioural today under introduction (or a sibling block) when `How it works today` has content. It never grows a technical-details slot.
-
 ## Header
 
-Change title, date, source (Jira key as a link, or the idea path), and a one-line statement of intent. Stone-tinted = today, emerald-tinted = after; say so in a compact legend. No introduction paragraph.
+Change title, date, source (Jira key as a link, or the idea path), and a one-line statement of intent. Stone-tinted = today, emerald-tinted = after; say so in a compact legend.
 
-Every section of the Complete markdown gets its section here, in the markdown's order, including the ones carrying `None` — the fixed shape is the point, and a reader who finds the same six headings in the HTML and the Jira ticket can trust they match.
+Every Complete section appears here in markdown order, including those carrying `None` — the fixed shape is the point, and HTML and Jira share the same six headings.
 
 ## Scope
 
-The work, as bullets a Product manager can read aloud. This is the section that answers "what are we doing", so keep it items rather than prose.
+The work as bullets a Product manager can read aloud — items rather than prose.
 
 ## Use-case card
 
@@ -57,7 +59,7 @@ QA reads the scenarios as the thing they will test against, so keep each one con
 
 ## Visual vocabulary
 
-Pick the one that fits the use case. Mix across the report.
+Pick the one that fits the use case. Mix across the report. Diagram labels use the same vocabulary as the prose: actors, screens, states, observable outcomes.
 
 ### Today / after flow pair (the workhorse)
 
@@ -91,26 +93,24 @@ A Mermaid `stateDiagram-v2` of the statuses something moves through, with transi
 
 ### Decision table (for the edge cases)
 
-An HTML table: one row per condition combination the grilling surfaced, columns for the condition inputs and one for the expected outcome. This is where parked and settled edge cases become visibly distinct — settled rows carry their outcome, parked rows carry a `?` and a link to the open question.
+An HTML table: one row per condition combination the grilling surfaced, columns for the condition inputs and one for the expected outcome. Settled rows carry their outcome; parked rows carry a `?` and a link to the open question.
 
 ### Screen flow (when the change is UI-shaped)
 
-Hand-built boxes: one `<div>` per screen or dialog with its key elements listed as `text-xs` lines inside, arrows as inline SVG between them. Wireframe weight, not pixel-accurate — the point is which screens exist and in what order, not what they look like.
+Hand-built boxes: one `<div>` per screen or dialog with its key elements listed as `text-xs` lines inside, arrows as inline SVG between them. Wireframe weight — which screens exist and in what order.
 
 ## Open questions
 
-One amber card, each question with who owes the answer. A Refinement with three named open questions is doing its job, and it sits second precisely so nobody scrolls past it.
+One amber card, each question with who owes the answer. Sits second so it is not scrolled past.
 
 ## Notes
 
-One plain card. Constraints of today that bind the change, plus useful context the other sections omit — the pickup bag, not a design section.
+One plain card: constraints of today that bind the change, plus useful context the other sections omit.
 
 ## Tone
 
-The bar is the one in [SKILL.md](SKILL.md): every sentence readable aloud once, to someone who does not write code. The domain nouns come from `CONTEXT.md` — if the glossary says Order, the report says Order, not "the order record".
+Room language from [SKILL.md](SKILL.md). Domain nouns come from `CONTEXT.md` — if the glossary says Order, the report says Order.
 
-Actors, screens, states, and observable outcomes are the whole vocabulary, in prose and in the boxes on a diagram alike — architecture nouns stay out. Where a statement seems to need one, name the behaviour instead: *"the planner sees the new date immediately"*, not *"the projection updates synchronously"*.
+Every claim about today traces to `session.md`'s `How it works today`, which traces to the code. In `complete.html`, today-claims condense into Introduction and Notes rather than a new source. An unsettled detail about after is an open question, not a confident box on a diagram.
 
-Every claim about today traces to `session.md`'s `How it works today`, which traces to the code — including in a `complete.html`, whose today-claims are condensed into Introduction and Notes rather than sourced anywhere new. An unsettled detail about after is an open question, not a confident box on a diagram.
-
-A mid-session render can catch a **provisional today**. Carry its label into the behavioural restatement, so the room reads that section as a document rather than as the code. A `complete.html` is rendered after the code walk has landed, so it never carries one.
+A `complete.html` is rendered after the code walk has landed, so it never carries a provisional today.

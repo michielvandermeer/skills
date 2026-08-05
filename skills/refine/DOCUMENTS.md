@@ -1,10 +1,10 @@
 # The two documents
 
-A `/refine` session writes two markdown documents into `.agents/refinements/<slug>/`. The Session document is resume infrastructure the agent fills as the session runs; the Complete document is the user-facing picture the room signs off and that may be written back to Jira. Both templates live here, beside the mapping between them.
+Templates and the mapping a `/refine` session uses when writing `.agents/refinements/<slug>/`. **`session.md`** is resume infrastructure; **`complete.md`** is user-facing (what the room signs off and may write back to Jira).
 
 ## Session document — `session.md`
 
-Not user-facing. Shaped for live append and for a resume to re-open the change without re-deriving today. Section order is fixed, but sections fill as their content arrives: `Intent` is settled while `How it works today` is still provisional.
+Shaped for live append and for a resume to re-open the change without re-deriving today. Section order is fixed; sections fill as content arrives: `Intent` may settle while `How it works today` is still provisional.
 
 ```markdown
 # <Change title>
@@ -41,7 +41,7 @@ The delta, functionally — short enough to skim.
 
 ## Complete document — `complete.md`
 
-User-facing. All six sections are always present, in this order, carrying `None` where the session settled nothing: a missing heading reads as an oversight, `None` reads as a decision the room made.
+All six sections always present, in this order, carrying `None` where the session settled nothing: a missing heading reads as an oversight, `None` reads as a decision the room made.
 
 ```markdown
 # <Change title>
@@ -73,12 +73,12 @@ What we are doing as part of this project, as work items. The one place work car
 
 ## Notes
 
-Constraints and implications of today that bind the change, plus anything useful to know before picking this up that the sections above leave unsaid. A constraint of today passes; a chosen approach belongs in a Spec ([ADR-0005](../../docs/adr/0005-refinement-is-terminal-and-functional-only.md)).
+Constraints and implications of today that bind the change, plus anything useful before pickup that the sections above leave unsaid. A constraint of today belongs here; a chosen approach belongs in a Spec ([ADR-0005](../../docs/adr/0005-refinement-is-terminal-and-functional-only.md)).
 ```
 
 ## The mapping
 
-The Complete document is synthesised, not renamed. Four of its sections come straight across; two draw from `How it works today` or are written fresh:
+Synthesise Complete from the Session document — rename nothing.
 
 | Complete section | Comes from |
 |---|---|
@@ -87,6 +87,6 @@ The Complete document is synthesised, not renamed. Four of its sections come str
 | Use cases | `Use Cases` verbatim, `Differs from today` included |
 | Scope | `What changes`, restated as work items |
 | Out-of-scope | `Out of Scope`, plus links to any split-off stubs |
-| Notes | Constraints and implications of today from `How it works today`, plus what the room knows that no section above carries |
+| Notes | Constraints and implications of today from `How it works today`, plus what no section above carries |
 
-`How it works today` feeds Complete without appearing as its own section: pain to `Introduction`, constraints to `Notes`. The full read-from-code account stays only in `session.md` — which survives the close, so a settled change can be reopened and every today-claim still traces to the code.
+`How it works today` feeds Complete without its own Complete heading: pain → `Introduction`, constraints → `Notes`. The full read-from-code account stays only in `session.md`.
