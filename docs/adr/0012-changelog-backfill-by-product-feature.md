@@ -1,0 +1,3 @@
+# Changelog backfill groups by product feature, not by merge
+
+`/document-changes` records one **Changelog entry** per product-visible change. Going forward, `/implement` supplies that boundary (one run, one entry per affected context). Git history does not: repos that land with rebase and fast-forward leave almost no merge commits — in `mvdmio-suite`, on the order of one percent — so "one entry per merge onto the default branch" would miss nearly every shipped feature. Manual backfill therefore clusters commits into logical product features from subjects, bodies, and paths, keeps only what a product user could notice, and dates each entry from the last product-facing commit in the cluster.

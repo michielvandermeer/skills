@@ -73,7 +73,11 @@ Two sub-agents follow, in this order, each reporting in the same three lines and
 
 Each commits its own work.
 
-### 5. Land the branch
+### 5. Document the change
+
+Run `/document-changes` in **implement mode** while the Spec and step Outcomes are still on disk — after review/improve, before delete and land. It prepends product-facing **Changelog** entries beside each affected context's `CONTEXT.md` and commits when it wrote; when nothing is product-visible it reports that and leaves the tree clean.
+
+### 6. Land the branch
 
 Delete the spec, any idea or issue document it came from, and the whole `.agents/steps/<slug>/` directory — the work they describe is now in the code. Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
 
@@ -86,7 +90,7 @@ Each remaining command runs where its branch is checked out, and that constraint
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips `EnterWorktree`. Step 5 drops its `ExitWorktree` call and its `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips `EnterWorktree`. Step 6 drops its `ExitWorktree` call and its `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch.
 
 ## Halting
 

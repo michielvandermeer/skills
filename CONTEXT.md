@@ -41,6 +41,14 @@ An incoming request moving through the `/triage` state machine, at `.agents/issu
 **Map**:
 The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog. Every Map ends in a Spec, so its Destination names the change that Spec will cover rather than which artifact the effort produces.
 
+**Changelog**:
+The product-facing history of a context, at `CHANGELOG.md` beside that context's `CONTEXT.md` (one file per context in a multi-context repo). Newest **Changelog entry** at the top. Written for people who use the product, not for people who build it.
+_Avoid_: release notes, Keep a Changelog, commit log, NEWS
+
+**Changelog entry**:
+One shipped, product-visible change recorded in a Changelog: a dated title of at most six words and a body of at most three sentences, in **Plain language** with no development jargon. One entry per `/implement` run per context that changed; backfill groups git history into the same shape by logical product feature, not by merge commit.
+_Avoid_: release bullet, commit message, patch note
+
 ### Communication
 
 **Plain language**:

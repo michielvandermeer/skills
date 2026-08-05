@@ -139,6 +139,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `code-review` | Review changes since a fixed point along two axes — Standards and Spec — in parallel sub-agents. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
+| `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement` and for manual backfill. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
