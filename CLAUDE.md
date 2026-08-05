@@ -1,26 +1,22 @@
 # mvdmio Skills
 
-This repo *is* the skills. Every change here is an edit to prose in a `SKILL.md` or a supporting reference file — there is no application to run and no test suite.
+This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting reference file.
 
-## Grilling sessions end in edits, not a Spec
+## Grilling ends in skill edits
 
-`/grill-with-docs` normally chains into `/to-spec`. **In this repo it does not.** When a grilling session reaches shared understanding, apply the changes to the skill files directly.
+`/grill-with-docs` normally chains into `/to-spec`. Here, when a grilling session's frontier is empty, edit the skill files directly — skip `/to-spec` and `/implement`. The driving session already holds the design tree; the work is a handful of markdown edits. A Spec only briefs a later `/implement` session that lacks that context.
 
-A Spec exists to brief an `/implement` agent session that will not have the design conversation in its context. Here the driving session already holds the whole design tree, and the work is a handful of markdown edits — so writing `.agents/specs/<slug>.md` first buys nothing and adds a document to keep current. The same goes for `/implement`: edit the files.
+Still owes:
 
-What the session still owes:
+- `/domain-modeling`: `CONTEXT.md` entries for terms settled, ADRs in `docs/adr/` on the three-part test
+- A commit covering every file the change touched
 
-- `CONTEXT.md` entries for terms it settled, and ADRs in `docs/adr/` on the three-part test — that is `/domain-modeling` doing its job, not spec overhead.
-- A commit covering every file the change touched.
+## Editing agent documents
 
-## Before editing a skill
+Match `skills/writing-for-agents/SKILL.md` on every skill file, `AGENTS.md`, or `CLAUDE.md` you edit. Run `/writing-for-agents` on them after.
 
-Read `skills/writing-for-agents/SKILL.md` and match it. Its house style is the standard this repo holds itself to — leading words over restatement, aggressive pruning of no-ops, positive phrasing over prohibition, environment as source of truth rather than a cache of lookups.
+Human-facing skill output runs at `skills/plain-language/SKILL.md` — see [ADR-0009](docs/adr/0009-plain-language-for-output-not-source.md).
 
-That density is for the source, which only the agent reads. Anything a skill puts in front of a *person* runs at the bar in `skills/plain-language/SKILL.md` — see [ADR-0009](docs/adr/0009-plain-language-for-output-not-source.md).
+`CONTEXT.md` is the glossary for how the skills talk about the documents they read and write, and about each other. Use its terms exactly; add to it when a change coins one. Rules belong in an ADR.
 
-`CONTEXT.md` is the glossary for how the skills talk about the documents they read and write, and about each other. Use its terms exactly; add to it when a change coins one. It is a glossary and nothing else — rules belong in an ADR.
-
-## After editing a skill
-
-You MUST run `/writing-for-agents` on all skill files that changed after making the changes.
+Before commit, run `/document-changes`.
