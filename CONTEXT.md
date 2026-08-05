@@ -14,10 +14,10 @@ The functional description of a change agreed by Product, QA, and Development in
 _Avoid_: functional spec, requirements doc, BRD
 
 **Session document**:
-The Refinement a `/refine` session writes as it runs, at `.agents/refinements/<slug>/session.md`. Shaped for live append and for a resume to read: intent, the full read-from-code account of today, the delta, use cases, parked questions. It survives the close, so a settled change can be reopened.
+The Refinement a `/refine` session writes as it runs, at `.agents/refinements/<slug>/session.md`. Resume infrastructure, not user-facing: intent, the full read-from-code account of today (including code anchors), the delta, use cases, parked questions. It survives the close, so a settled change can be reopened without re-deriving today.
 
 **Complete document**:
-The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Seven fixed sections — Introduction, Open Questions, Use cases, Scope, Out-of-scope, Technical details, Notes — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, and the thing written back to a Jira ticket.
+The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Six fixed sections — Introduction, Open Questions, Use cases, Scope, Out-of-scope, Notes — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, user-facing, and the thing written back to a Jira ticket. Constraints of today land in Notes; the code walkthrough stays only in the Session document.
 
 **Architecture review**:
 The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/`, holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system, then grilled into a Spec with `/grill-with-docs`.

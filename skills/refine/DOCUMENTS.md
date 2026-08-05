@@ -1,10 +1,10 @@
 # The two documents
 
-A `/refine` session writes two markdown documents into `.agents/refinements/<slug>/`. The Session document is the one the room fills as it talks; the Complete document is the one it signs off. Both templates live here, beside the mapping between them.
+A `/refine` session writes two markdown documents into `.agents/refinements/<slug>/`. The Session document is resume infrastructure the agent fills as the session runs; the Complete document is the user-facing picture the room signs off and that may be written back to Jira. Both templates live here, beside the mapping between them.
 
 ## Session document — `session.md`
 
-Shaped for live append and for a resume to read. Section order is fixed, but sections fill as their content arrives: `Intent` is settled while `How it works today` is still provisional.
+Not user-facing. Shaped for live append and for a resume to re-open the change without re-deriving today. Section order is fixed, but sections fill as their content arrives: `Intent` is settled while `How it works today` is still provisional.
 
 ```markdown
 # <Change title>
@@ -17,7 +17,7 @@ Why we want this and whose problem it solves.
 
 ## How it works today
 
-What the affected area does today, read from the code. Headed `(provisional — from the documents)` until the code walk confirms it.
+What the affected area does today, read from the code — full fidelity for resume, including code anchors. Headed `(provisional — from the documents)` until the code walk confirms it.
 
 ## What changes
 
@@ -41,7 +41,7 @@ The delta, functionally — short enough to skim.
 
 ## Complete document — `complete.md`
 
-All seven sections are always present, in this order, carrying `None` where the session settled nothing: a missing heading reads as an oversight, `None` reads as a decision the room made.
+User-facing. All six sections are always present, in this order, carrying `None` where the session settled nothing: a missing heading reads as an oversight, `None` reads as a decision the room made.
 
 ```markdown
 # <Change title>
@@ -71,18 +71,14 @@ What we are doing as part of this project, as work items. The one place work car
 
 - <thing>, and why
 
-## Technical details
-
-The ground a developer will stand on: constraints and implications the code walk read out of the code, held at "important, not too detailed". The test is whether a room with no Development present could have signed the section off — a constraint of today passes, a chosen approach belongs in a Spec ([ADR-0005](../../docs/adr/0005-refinement-is-terminal-and-functional-only.md)).
-
 ## Notes
 
-Anything useful to know before picking this up that the sections above leave unsaid.
+Constraints and implications of today that bind the change, plus anything useful to know before picking this up that the sections above leave unsaid. A constraint of today passes; a chosen approach belongs in a Spec ([ADR-0005](../../docs/adr/0005-refinement-is-terminal-and-functional-only.md)).
 ```
 
 ## The mapping
 
-The Complete document is synthesised, not renamed. Four of its sections come straight across; the fifth is a split, and two are new:
+The Complete document is synthesised, not renamed. Four of its sections come straight across; two draw from `How it works today` or are written fresh:
 
 | Complete section | Comes from |
 |---|---|
@@ -91,7 +87,6 @@ The Complete document is synthesised, not renamed. Four of its sections come str
 | Use cases | `Use Cases` verbatim, `Differs from today` included |
 | Scope | `What changes`, restated as work items |
 | Out-of-scope | `Out of Scope`, plus links to any split-off stubs |
-| Technical details | `How it works today`, keeping the constraints and leaving the walkthrough behind |
-| Notes | New at synthesis: what the room knows that no section above carries |
+| Notes | Constraints and implications of today from `How it works today`, plus what the room knows that no section above carries |
 
-`How it works today` is the one section that splits. Its pain goes to `Introduction` and its constraints to `Technical details`, while the full read-from-code account stays in `session.md` — which survives the close, so a settled change can be reopened and every today-claim still traces to the code.
+`How it works today` feeds Complete without appearing as its own section: pain to `Introduction`, constraints to `Notes`. The full read-from-code account stays only in `session.md` — which survives the close, so a settled change can be reopened and every today-claim still traces to the code.
