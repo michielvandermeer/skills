@@ -154,7 +154,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `refine` | Grill a change into a functional description with Product, QA, and Development in the room. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
-| `triage` | Move issues through a triage state machine into agent-ready briefs. |
+| `triage` | Move issues through a triage state machine; buildable work ends as a Spec. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
 | `wayfinder` | Plan a huge chunk of work as a shared map of decision tickets, resolved one at a time. |
 | `writing-for-agents` | Reference for writing any document an agent consumes — skills, AGENTS.md, CLAUDE.md. |

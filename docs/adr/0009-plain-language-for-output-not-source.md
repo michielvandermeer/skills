@@ -14,6 +14,6 @@ The cost buys two things a file cannot. The rule reaches the agent even from a s
 
 - A durable document spends plain words rather than a gloss, because it travels. A Refinement is written back to a Jira ticket, and a Spec is read weeks later by someone who was never in the room. Where a template fixes a section name, the name stays and carries its gloss underneath.
 - `/refine` holds a stricter bar than the rest on its user-facing surfaces (rounds, both HTML renders, `complete.md`, Jira): readable aloud once, in a room, to someone who does not write code. The Session document is resume infrastructure and may stay dense.
-- Text written for a sub-agent is unchanged — a Step, an agent brief, a handoff.
+- Text written for a sub-agent is unchanged — a Step, a handoff.
 - Nothing checks output against the bar. A checking pass would run on every round and every document, and it would degrade into a rubber stamp. If the bar starts getting ignored, that is when a check earns its cost.
 - The ADRs written before this one, and `README.md`, were left as they are.

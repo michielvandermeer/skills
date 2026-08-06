@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-08-07: Triage ends as Spec
+When `/triage` finishes work you can build, it writes a Spec and removes the issue file. Clear issues skip the interview; unclear ones use `/grill-with-docs` first. Open issues still use needs-info, ready-for-human, and wontfix — agent-ready briefs on issues are gone.
+
 ## 2026-08-05: Changelog of product changes
 `/document-changes` writes a Changelog beside each CONTEXT.md — one plain entry per shipped product change, newest first. `/implement` runs it before land, so each run that changes a context leaves a record a product user can read.
 

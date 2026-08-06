@@ -36,4 +36,4 @@ So a durable document spends the plain words rather than a **Gloss**: *"what we 
 
 ## Where the bar stops
 
-Text written for a sub-agent stays as it is — a Step, an agent brief, a handoff. Agents do not tire, and a document read only by one carries no reader to protect.
+Text written for a sub-agent stays as it is — a Step, a handoff. Agents do not tire, and a document read only by one carries no reader to protect.

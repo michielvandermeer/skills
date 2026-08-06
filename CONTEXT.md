@@ -36,7 +36,7 @@ A question on a `/wayfinder` map at `.agents/issues/<effort>/<NN>-<slug>.md` who
 _Avoid_: investigation ticket, implementation ticket
 
 **Issue**:
-An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`. Carries `Category:` and `Status:` lines.
+An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`. Carries `Category:` and `Status:` lines. A buildable issue ends as a **Spec**; `/triage` deletes the issue file once that Spec is written. Surviving states are `needs-triage`, `needs-info`, `ready-for-human`, and `wontfix` — not agent-ready (that status lives on Specs).
 
 **Map**:
 The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog. Every Map ends in a Spec, so its Destination names the change that Spec will cover rather than which artifact the effort produces.

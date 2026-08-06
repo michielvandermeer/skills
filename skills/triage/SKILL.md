@@ -1,12 +1,12 @@
 ---
 name: triage
-description: Move issues through a state machine of triage roles — categorise, verify, grill if needed, and write agent-ready briefs.
+description: Move issues through a state machine of triage roles — categorise, verify, grill if needed, and end buildable work as a Spec.
 disable-model-invocation: true
 ---
 
 # Triage
 
-Move issues through a small state machine of triage roles.
+Move issues through a small state machine of triage roles. A **buildable** issue ends as a Spec via `/to-spec` (or `/grill-with-docs` when the solution is not yet clear); the issue file is then deleted. Non-buildable paths keep the issue with a status and a comment.
 
 Issues live as markdown files under `.agents/issues/<feature-slug>/<NN>-<slug>.md`, one feature per directory, numbered from `01`. A `Status:` line near the top of the file records the current triage role. Comments and conversation history append to the bottom of the file under a `## Comments` heading.
 
@@ -18,7 +18,6 @@ Every comment appended to an issue file during triage **must** start with this d
 
 ## Reference docs
 
-- [AGENT-BRIEF.md](AGENT-BRIEF.md) — how to write durable agent briefs
 - [OUT-OF-SCOPE.md](OUT-OF-SCOPE.md) — how the `.out-of-scope/` knowledge base works
 
 ## Roles
@@ -28,17 +27,18 @@ Two **category** roles:
 - `bug` — something is broken
 - `enhancement` — new feature or improvement
 
-Five **state** roles:
+Four **state** roles (issues only; Specs use their own `Status:` from `/to-spec`):
 
 - `needs-triage` — maintainer needs to evaluate
 - `needs-info` — waiting on reporter for more information
-- `ready-for-agent` — fully specified, ready for an AFK agent
-- `ready-for-human` — needs human implementation
+- `ready-for-human` — needs a person, not an AFK agent (judgment, secrets, manual testing, or the maintainer will do the work)
 - `wontfix` — will not be actioned
 
-Every triaged issue should carry exactly one category role and one state role, recorded verbatim as `Category:` and `Status:` lines near the top of the file (e.g. `Category: bug`, `Status: needs-triage`). If state roles conflict, flag it and ask the maintainer before doing anything else.
+Every open issue should carry exactly one category role and one state role, recorded verbatim as `Category:` and `Status:` lines near the top of the file (e.g. `Category: bug`, `Status: needs-triage`). If state roles conflict, flag it and ask the maintainer before doing anything else.
 
-State transitions: an unlabeled issue normally goes to `needs-triage` first; from there it moves to `needs-info`, `ready-for-agent`, `ready-for-human`, or `wontfix`. `needs-info` returns to `needs-triage` once the reporter replies. The maintainer can override at any time — flag transitions that look unusual and ask before proceeding.
+State transitions: an unlabeled issue normally goes to `needs-triage` first; from there it moves to `needs-info`, `ready-for-human`, `wontfix`, or the success path (Spec then delete). `needs-info` returns to `needs-triage` once the reporter replies. The maintainer can override at any time — flag transitions that look unusual and ask before proceeding.
+
+There is no `ready-for-agent` status on issues. Agent-ready work is a Spec with `Status: ready-for-agent` under `.agents/specs/`.
 
 ## Invocation
 
@@ -46,8 +46,8 @@ The maintainer invokes `/triage` and describes what they want in natural languag
 
 - "Show me anything that needs my attention"
 - "Let's look at the rate-limiting issue"
-- "Move the rate-limiting issue to ready-for-agent"
-- "What's ready for agents to pick up?"
+- "Spec the rate-limiting issue"
+- "What's waiting on the reporter?"
 
 ## Show what needs attention
 
@@ -63,16 +63,16 @@ Show counts and a one-line summary per item. Let the maintainer pick.
 
 1. **Gather context.** Read the full issue file (body and any `## Comments`). Parse any prior triage notes so you don't re-ask resolved questions. Explore the codebase using the project's domain glossary, respecting ADRs in the area. Run two checks against the codebase: (a) **redundancy** — search for an existing implementation of the requested behavior by domain concept (not just the request's wording), and report where you looked. If found, it's an already-implemented `wontfix` (step 5). (b) **prior rejection** — read `.out-of-scope/*.md` and surface any that resembles this request.
 
-2. **Recommend.** Tell the maintainer your category and state recommendation with reasoning, plus a brief codebase summary relevant to the request — including whether it's already implemented. Wait for direction.
+2. **Classify.** Decide category and the next path from the evidence. On a **clear, buildable** path, do not wait for a go-ahead: declare category, continue through verify, then the success path. Still stop and confirm for `needs-info`, `wontfix`, or `ready-for-human`, and when the recommendation itself is uncertain.
 
-3. **Verify the claim.** Before any grilling, check that the claim holds up. For a bug, reproduce it from the reporter's steps. Report what happened: confirmed (with code path), failed, or insufficient detail (a strong `needs-info` signal). A confirmed verification makes a much stronger agent brief.
+3. **Verify the claim.** Before grilling or writing a Spec, check that the claim holds up. For a bug, reproduce it from the reporter's steps. Report what happened: confirmed (with code path), failed, or insufficient detail (a strong `needs-info` signal). Confirmed verification strengthens the Spec.
 
-4. **Grill (if needed).** If the request needs fleshing out, run the `/grilling` and `/domain-modeling` skills together — grill it into shape round by round, sharpening domain terms and updating `CONTEXT.md`/ADRs inline as decisions land.
+4. **Shape if needed.** If the request is clear enough to solve without questions for the user, skip this step. If it is not, run `/grill-with-docs` — the issue body and comments are the seed; comments only add what is not already there. `/grill-with-docs` ends in `/to-spec` when the solution is clear. Grilling can still land on `needs-info`, `ready-for-human`, or `wontfix` instead of a Spec.
 
-5. **Apply the outcome:** set the issue file's `Status:` line to the new role, then append the relevant comment under its `## Comments` heading.
-   - `ready-for-agent` — append an agent brief ([AGENT-BRIEF.md](AGENT-BRIEF.md)).
-   - `ready-for-human` — same structure as an agent brief, but note why it can't be delegated (judgment calls, external access, design decisions, manual testing).
-   - `needs-info` — append triage notes (template below).
+5. **Apply the outcome:**
+   - **Success (buildable, solution clear)** — run `/to-spec` if a Spec was not already written in step 4. Then **delete the issue file**. Do not flip status first. The Spec is the only handoff; `/implement` reads Specs.
+   - `ready-for-human` — set `Status: ready-for-human` and append a short comment: why a person is needed, what is already known, and what is blocked. Do not restate the whole request; the issue body feeds a later `/grill-with-docs` or human session.
+   - `needs-info` — set the status and append triage notes (template below).
    - `wontfix` — set `Status: wontfix`, with the comment depending on *why*:
      - **Already implemented** — the change already exists in the codebase. Point to where it lives; do **not** write to `.out-of-scope/` (that KB is for *rejected* requests, not built ones).
      - **Rejected (bug)** — polite explanation.
@@ -81,7 +81,9 @@ Show counts and a one-line summary per item. Let the maintainer pick.
 
 ## Quick state override
 
-If the maintainer says "move the rate-limiting issue to ready-for-agent", trust them and apply the role directly. Confirm what you're about to do (role change, comment), then act. Skip grilling. If moving to `ready-for-agent` without a grilling session, ask whether they want to write an agent brief.
+If the maintainer says "spec the rate-limiting issue" (or the old "move … to ready-for-agent"), treat that as the success path: if the issue is still unclear, run `/grill-with-docs`; otherwise run `/to-spec`; then delete the issue. Confirm what you're about to do, then act.
+
+If they set `needs-info`, `ready-for-human`, or `wontfix` explicitly, trust them: confirm the role change and comment, then apply. Skip grilling unless they ask for it.
 
 ## Needs-info template
 
