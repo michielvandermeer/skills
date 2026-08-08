@@ -15,12 +15,14 @@ Sub-agents share the worktree, so run them one at a time. Step agents are `skill
 
 Derive `<slug>`: the spec's filename without its extension when the argument names one, otherwise a kebab-case slug from the argument.
 
-A prior run is **in flight** when `.claude/worktrees/<slug>/.agents/steps/<slug>/` exists — the planner got that far, so the worktree does too. Check first, because it decides which worktree you enter:
+A prior run is **in flight** when any linked git worktree contains `.agents/steps/<slug>/` — the planner got that far, so a worktree holds those steps. Find it with `git worktree list` (or the host's equivalent). Check first, because it decides which worktree you enter:
 
-- **In flight** → call `EnterWorktree` with `path: .claude/worktrees/<slug>`, then `git reset --hard && git clean -fd` to drop whatever the halted step left behind. The steps are already planned: skip step 2 and resume at the lowest-numbered step whose `Status:` is not `done`.
-- **Fresh** → call `EnterWorktree` with `name: <slug>`, then `git rebase master`. The tool branches from `origin/master` by default, and the rebase puts the run on the master you actually have.
+- **In flight** → put the session's working directory on that worktree's path, then `git reset --hard && git clean -fd` to drop whatever the halted step left behind. The steps are already planned: skip step 2 and resume at the lowest-numbered step whose `Status:` is not `done`.
+- **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git rebase master` so the run sits on the master you actually have:
+  - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Record the branch name it chose when that name is not `<slug>`.
+  - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
 
-Use the `EnterWorktree` tool, not `git worktree add`, which leaves the session in the original directory. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
+The session must work *inside* the worktree for the rest of the run — creating a worktree alone is not enough. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
 
 ### 2. Plan the steps
 
@@ -81,16 +83,16 @@ Run `/document-changes` in **implement mode** while the Spec and step Outcomes a
 
 Delete the spec, any idea or issue document it came from, and the whole `.agents/steps/<slug>/` directory — the work they describe is now in the code. Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
 
-Each remaining command runs where its branch is checked out, and that constraint fixes the order:
+Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
 1. From the worktree, still on the branch: `git rebase master`, resolving any conflicts. (The branch lives here, so only the worktree can rebase it.)
-2. Call `ExitWorktree` with `action: "keep"` to return the session to the original directory, preserving the branch and its commits.
+2. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 3. From the original directory: `git merge --ff-only <branch>`. (master lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward; if it errors, master moved during the session — re-enter the worktree, rebase again, and retry.
 4. `git worktree remove <path>` and `git branch -d <branch>`.
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips `EnterWorktree`. Step 6 drops its `ExitWorktree` call and its `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch.
 
 ## Halting
 
