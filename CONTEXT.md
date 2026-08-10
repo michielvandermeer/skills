@@ -23,6 +23,10 @@ The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/com
 The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/`, holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system, then grilled into a Spec with `/grill-with-docs`.
 _Avoid_: audit, tech-debt report, architecture report
 
+**Prototype**:
+Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A `/prototype` session builds it on a branch of its own, hands it to a person to play with, then deletes that branch. None of the code survives, so the **Spec** the session writes carries the question the prototype answered and what playing with it settled.
+_Avoid_: spike, POC, demo, mockup
+
 **Spec**:
 The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`.
 _Avoid_: PRD, plan, design doc

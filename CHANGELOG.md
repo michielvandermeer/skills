@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-08-11: Prototype sessions end in a Spec
+`/prototype` now builds in a worktree of its own, so your working copy stays clean while you try the demo out. Once you give your verdict, the session writes a Spec naming the question the prototype answered and what you settled, then removes the worktree and deletes its branch. The prototype itself does not survive, so the Spec is the record, and `/implement` builds the real code from it.
+
 ## 2026-08-07: Triage ends as Spec
 When `/triage` finishes work you can build, it writes a Spec and removes the issue file. Clear issues skip the interview; unclear ones use `/grill-with-docs` first. Open issues still use needs-info, ready-for-human, and wontfix — agent-ready briefs on issues are gone.
 

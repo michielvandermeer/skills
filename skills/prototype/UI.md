@@ -87,26 +87,24 @@ Behaviour:
 - Clicking an arrow updates the URL search param (use the framework's router — `router.replace` on Next, `navigate` on React Router, etc) so the variant is shareable and reload-stable.
 - Keyboard: `←` and `→` arrow keys also cycle. Don't intercept arrow keys when an `<input>`, `<textarea>`, or `[contenteditable]` is focused.
 - Visually distinct from the page (e.g. high-contrast pill, subtle shadow) so it's obviously not part of the design being evaluated.
-- Hidden in production builds — gate on `process.env.NODE_ENV !== 'production'` or an equivalent check, so a stray prototype merge can't ship the bar to users.
 
 Put the switcher in a single shared component so both sub-shapes can reuse it. Locate it wherever shared UI lives in the project.
 
-### 5. Hand it over
+### 5. Read the feedback
 
-Surface the URL (and the `?variant=` keys). The user will flip through whenever they get to it. The interesting feedback is usually **"I want the header from B with the sidebar from C"** — that's the actual design they want.
+Hand-over belongs to the [SKILL](SKILL.md). The UI-specific part is what to listen for. The useful answer is rarely "B". It is usually **"I want the header from B with the sidebar from C"** — that combination is the design the user actually wants, and it is the one the Spec has to describe.
 
-### 6. Capture the answer and clean up
+### 6. Carry the winning design into the Spec
 
-Once a variant has won, capture the answer — which variant and why — then capture the prototype the way the [SKILL](SKILL.md) describes. Fold the winner into the real code and move the rest onto the throwaway branch, not into main:
+No variant survives the cleanup, so the Spec describes the winning design in words someone who never saw the variants can build from: the layout, the information hierarchy, and the primary affordance. Name the host it lands on too:
 
-- **Sub-shape A** — fold the winner into the existing page; drop the losing variants and the switcher from main.
-- **Sub-shape B** — promote the winning variant to a real route; drop the throwaway route and the switcher from main.
+- **Sub-shape A** — the existing page whose rendering this design replaces.
+- **Sub-shape B** — the new route it needs, and why no existing page could host it.
 
-The full set of variants is the primary source, so it lands on the throwaway branch, not the bin — variant components and the switcher left in the main branch rot fast and confuse the next reader.
+The variant components, the switcher, and any throwaway route go with the worktree. Whoever builds this for real writes it fresh: the variants were written under prototype constraints, with no tests and minimal error handling.
 
 ## Anti-patterns
 
 - **Variants that differ only in colour or copy.** That's a tweak, not a prototype. Real variants disagree about structure.
 - **Sharing too much code between variants.** A shared `<Header>` is fine; a shared `<Layout>` defeats the point. Each variant should be free to throw out the layout.
 - **Wiring variants to real mutations.** Read-only prototypes are fine. If a variant needs to mutate, point it at a stub — the question is "what should this look like", not "does the backend work".
-- **Promoting the prototype directly to production.** The variant code was written under prototype constraints (no tests, minimal error handling). Rewrite it properly when you fold it in.
