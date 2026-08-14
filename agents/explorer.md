@@ -1,6 +1,6 @@
 ---
 name: explorer
-description: Walks a codebase read-only and reports what it finds, without changing anything. Dispatched by /improve-codebase-architecture and /refine to establish what the code does today.
+description: Walks a codebase read-only and reports what it finds, without changing anything. Dispatched by /improve-codebase-architecture, /refine, and /codebase-audit.
 effort: medium
 disallowedTools: Write, Edit
 ---

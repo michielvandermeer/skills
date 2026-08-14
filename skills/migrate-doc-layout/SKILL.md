@@ -16,6 +16,7 @@ These skills assume a fixed per-repo layout for the documents they read and writ
 | Skill-supporting reference (coding standards, etc.) | `.agents/refs/<slug>.md` |
 | Refinement | `.agents/refinements/<slug>/` — `session.md`, `complete.md`, and their `.html` renders |
 | Architecture review | `.agents/architecture-reviews/<timestamp>/` — `report.md` and `report.html` |
+| Codebase audit | `.agents/codebase-audits/<timestamp>/` — `report.md` |
 
 Older projects — or ones that adopted these skills before this layout existed — often have the same kinds of documents scattered elsewhere (`.agents/plans/`, `docs/specs/`, a root `CODING_STANDARDS.md`, etc.). This skill finds them and relocates them.
 
@@ -41,6 +42,7 @@ Classify each remaining document by what it actually contains, matching the temp
 - **Reference / skill-supporting doc**: documents how code should be written or how the repo/team works — coding standards, contribution guidelines, style guides. Common filenames: `CODING_STANDARDS.md`, `CONTRIBUTING.md`, `STYLEGUIDE.md`.
 - **Refinement**: the `/refine` shape — Introduction, Open Questions, Use cases, Scope, Out-of-scope, Notes for a finished one; Intent, How it works today, What changes, Use Cases for one still in session. Functional throughout, with no implementation decisions and no `Status:` line. (Older finished Refinements may still carry a `Technical details` section; treat that as Complete-shaped and migrate the file as-is.)
 - **Architecture review**: matches the report shape from `/improve-codebase-architecture` — cards with What this does/Files/Problem/Solution/Wins/Before-After diagram/Recommendation strength, a Top recommendation section. A review written before the current card contract says `Benefits` where this one says `Wins`, and carries no `What this does` at all. Usually a `.md`/`.html` pair sharing a timestamp.
+- **Codebase audit**: matches the report shape from `/codebase-audit` — a coverage-contract table of subsystems with ownership boundaries and queued/recommend/skip status, recommendations with evidence/scope/risk/validation, explicit skips, and a priority ranking. Usually a `report.md` in a timestamp folder.
 
 A document that matches no shape cleanly is **unclassified** — carry it to step 3 as such and let the user say what it is.
 

@@ -137,6 +137,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 |-------|-------------|
 | `cleanup-specs` | Removes all Spec, Plan, and Idea documents that have been implemented. |
 | `code-review` | Review changes since a fixed point along two axes — Standards and Spec — in parallel sub-agents. |
+| `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
 | `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement` and for manual backfill. |
@@ -148,7 +149,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then grill the one you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
-| `migrate-doc-layout` | Move spec, idea, reference, refinement, and architecture-review documents into this repo's canonical `.agents/` layout. |
+| `migrate-doc-layout` | Move spec, idea, reference, refinement, architecture-review, and codebase-audit documents into this repo's canonical `.agents/` layout. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `refine` | Grill a change into a functional description with Product, QA, and Development in the room. |
