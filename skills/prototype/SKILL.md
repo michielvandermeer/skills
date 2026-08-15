@@ -7,7 +7,7 @@ description: Build a throwaway prototype to answer a design question, then turn 
 
 A prototype is **throwaway code that answers a question**. The question decides the shape.
 
-The prototype does not survive its own session. It is built in a worktree, played with, and deleted with that worktree. The Spec written at the end is the only record.
+It is built in a worktree and played with. The lasting record is `.agents/prototypes/<slug>/` — the Spec points at that folder. The worktree and its branch go.
 
 ## Process
 
@@ -44,19 +44,20 @@ When the user is not reachable, **end early**: commit the prototype on its branc
 
 ### 5. End in a Spec
 
-The verdict is the session's only lasting output, so everything worth keeping goes into the Spec before the cleanup. `<branch>` is `prototype/<slug>`, or the name recorded in step 2 when a host tool chose another.
+The verdict decides what the Spec will say; the folder is the playable record the Spec points at. `<branch>` is `prototype/<slug>`, or the name recorded in step 2 when a host tool chose another.
 
-1. Return the session to the original checkout — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-2. Run `/to-spec` there. The Spec names **the question the prototype was built to answer** and **what playing with it settled**, on top of everything a Spec normally carries.
-3. Remove the worktree and delete the branch: `git worktree remove --force <path>`, then `git branch -D <branch>`.
+1. Write `.agents/prototypes/<slug>/` on the original checkout: a logic demo already in that folder in the worktree copies as the folder; a UI prototype copies its in-app prototype files (variants, switcher, throwaway route) into it.
+2. Return the session to the original checkout — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
+3. Run `/to-spec` there. The Spec names **the question the prototype was built to answer**, **what playing with it settled**, and **`.agents/prototypes/<slug>/`**.
+4. Remove the worktree and delete the branch: `git worktree remove --force <path>`, then `git branch -D <branch>`.
 
-A verdict that kills the idea ends with no Spec. Report what was learned, clean up the same way, and write an ADR only when the decision passes the three-part test in `/domain-modeling`.
+A verdict that kills the idea ends with no Spec and no folder. Report what was learned, remove the worktree and branch the same way, and write an ADR only when the decision passes the three-part test in `/domain-modeling`.
 
-The Spec is the whole handover. Real code gets built from it later, by `/implement`.
+The Spec is the handover. Real code gets built from it later, by `/implement`.
 
 ## Rules that apply to both
 
-1. **Throwaway from day one, and clearly marked as such.** Locate the prototype code close to where it will actually be used (next to the module or page it's prototyping for) so context is obvious — but name it so a casual reader can see it's a prototype, not production. For throwaway UI routes, obey whatever routing convention the project already uses; don't invent a new top-level structure.
+1. **Throwaway from day one, and clearly marked as such.** A logic demo is written in the folder. A UI prototype mounts in the app next to the page it's prototyping so context is obvious — name those files so a casual reader can see they're a prototype, not production. For throwaway UI routes, obey whatever routing convention the project already uses.
 2. **Trivial to run.** A UI prototype starts from one command in the project's task runner — `pnpm <name>`, `python <path>`, `bun <path>`, etc. A logic demo is a single HTML file the user double-clicks. Either way, no thinking required to start it.
 3. **No persistence by default.** State lives in memory. Persistence is the thing the prototype is _checking_, not something it should depend on. If the question explicitly involves a database, hit a scratch DB or a local file with a clear "PROTOTYPE — wipe me" name.
 4. **Skip the polish.** No tests, no error handling beyond what makes the prototype _runnable_, no abstractions. The point is to learn something fast.
@@ -64,8 +65,8 @@ The Spec is the whole handover. Real code gets built from it later, by `/impleme
 
 ## Serving a larger effort
 
-A `/wayfinder` prototype ticket, or a `/grilling` session reaching for a demo mid-design, invokes `/prototype` from a session that is already in a worktree. That session stops after step 4: hand the verdict back to the effort, whose own Spec carries it. Leave the worktree and its branch to the effort that opened them.
+A `/wayfinder` prototype ticket, or a `/grilling` session reaching for a demo mid-design, invokes `/prototype` from a session that is already in a worktree. That session hands over, writes the folder in this tree, and stops: the verdict and the path go back to the effort, whose own Spec names both. Leave the worktree and its branch to the effort that opened them.
 
 ## Worktree waived
 
-The prototype files sit in the checkout. Step 2 builds there, and step 5 keeps its ordering with one substitution: delete those files by hand where it would have removed the worktree.
+The prototype files sit in the checkout. Step 2 builds there. Step 5 writes the folder in this checkout (no copy from a worktree) and removes in-app prototype files that are not the folder.

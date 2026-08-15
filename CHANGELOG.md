@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-08-15: Prototypes stay for Specs
+After you give a verdict, `/prototype` keeps the demo at `.agents/prototypes/<slug>/` and the Spec points at that folder. The worktree and its branch still go, so your working copy stays clean.
+
 ## 2026-08-14: Audit a whole codebase
 You can now ask for a read-only check of a whole app that looks for simpler data structures and clearer ownership. It writes a report and does not change your code.
 

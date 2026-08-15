@@ -28,7 +28,7 @@ The output of a `/codebase-audit` run at `.agents/codebase-audits/<timestamp>/`,
 _Avoid_: architecture review, tech-debt report, DSA audit
 
 **Prototype**:
-Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A `/prototype` session builds it on a branch of its own, hands it to a person to play with, then deletes that branch. None of the code survives, so the **Spec** the session writes carries the question the prototype answered and what playing with it settled.
+Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A `/prototype` session leaves it at `.agents/prototypes/<slug>/` so the **Spec** can point at what was played with.
 _Avoid_: spike, POC, demo, mockup
 
 **Spec**:

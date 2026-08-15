@@ -17,6 +17,7 @@ These skills assume a fixed per-repo layout for the documents they read and writ
 | Refinement | `.agents/refinements/<slug>/` — `session.md`, `complete.md`, and their `.html` renders |
 | Architecture review | `.agents/architecture-reviews/<timestamp>/` — `report.md` and `report.html` |
 | Codebase audit | `.agents/codebase-audits/<timestamp>/` — `report.md` |
+| Prototype | `.agents/prototypes/<slug>/` |
 
 Older projects — or ones that adopted these skills before this layout existed — often have the same kinds of documents scattered elsewhere (`.agents/plans/`, `docs/specs/`, a root `CODING_STANDARDS.md`, etc.). This skill finds them and relocates them.
 

@@ -30,11 +30,11 @@ The right shape depends on the question:
 - **A small set of pure functions** over a plain data type. Good when there's no implicit current state — just transformations.
 - **A class or module with a clear method surface** when the logic genuinely owns ongoing internal state.
 
-Pick whichever shape best fits the question being asked, *not* whichever is easiest to wire to a page. Keep it pure: no DOM, no `document`, no button handlers reaching inside it. The page calls into it; nothing flows the other direction. Purity is what lets the module outlive the prototype: it can be read straight into the Spec at the end, where the page around it cannot.
+Pick whichever shape best fits the question being asked, *not* whichever is easiest to wire to a page. Keep it pure: no DOM, no `document`, no button handlers reaching inside it. The page calls into it; nothing flows the other direction. Purity is what lets the module lift into the Spec: the page around it cannot.
 
 ### 3. Build the shareable HTML file
 
-One file, plain HTML/CSS/JS — no framework, no bundler, no server, everything inline so it opens by double-click and survives being emailed around. Anyone should be able to run it by opening it.
+One file, plain HTML/CSS/JS — no framework, no bundler, no server, everything inline so it opens by double-click and survives being emailed around. Write it in the folder the [SKILL](SKILL.md) names. Anyone should be able to run it by opening it.
 
 Write it for a non-developer. Every label is in **domain language**, not code — buttons and state read like the business, not the reducer. Explain in plain words what's happening. Run the `/plain-language` skill before writing labels a person will read.
 
@@ -51,7 +51,7 @@ Keep it beautiful but restrained: clean typography, generous spacing, one accent
 
 ### 4. Carry the module into the Spec
 
-Hand-over and the ending belong to the [SKILL](SKILL.md). One thing is logic-specific: the validated reducer, machine, or function set encodes the decision better than prose can, so it goes into the Spec whole. The HTML shell around it is deleted with the rest.
+Hand-over and the ending belong to the [SKILL](SKILL.md). One thing is logic-specific: the validated reducer, machine, or function set encodes the decision better than prose can, so it goes into the Spec whole. The HTML stays in the folder so the Spec can point at a playable record.
 
 ## Anti-patterns
 

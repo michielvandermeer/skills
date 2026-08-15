@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0017
+---
+
 # A prototype is deleted, and its Spec is the record
 
 `/prototype` used to build in the working checkout, fold the validated decision into real code itself, and park the prototype on a lasting `prototype/<name>` branch as a primary source. A `/prototype` session now runs inside a git worktree on that branch, the way `/implement` runs inside one, and ends by writing a Spec in the original checkout and then removing the worktree and force-deleting the branch. The prototype does not survive its own session. Because nothing else is left, the Spec must name the question the prototype was built to answer and what playing with it settled; a snippet that encodes a decision better than prose — a reducer, a state machine, a schema — is inlined under `/to-spec`'s existing rule. `/prototype` folds nothing into real code, so the Spec is the handover to `/implement`, and `/prototype` joins `/triage` ([ADR-0013](0013-triage-ends-in-a-spec.md)) and `/wayfinder` ([ADR-0011](0011-every-wayfinder-map-ends-in-a-spec.md)) as an effort that ends in one.

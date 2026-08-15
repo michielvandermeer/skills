@@ -96,12 +96,12 @@ Hand-over belongs to the [SKILL](SKILL.md). The UI-specific part is what to list
 
 ### 6. Carry the winning design into the Spec
 
-No variant survives the cleanup, so the Spec describes the winning design in words someone who never saw the variants can build from: the layout, the information hierarchy, and the primary affordance. Name the host it lands on too:
+The Spec describes the winning design in words someone who never saw the variants can build from: the layout, the information hierarchy, and the primary affordance. Name the host it lands on too, and the folder the [SKILL](SKILL.md) names:
 
 - **Sub-shape A** — the existing page whose rendering this design replaces.
 - **Sub-shape B** — the new route it needs, and why no existing page could host it.
 
-The variant components, the switcher, and any throwaway route go with the worktree. Whoever builds this for real writes it fresh: the variants were written under prototype constraints, with no tests and minimal error handling.
+The in-app variant components, the switcher, and any throwaway route go with the worktree. Their copies in the folder are the record a later Spec can open. Whoever builds this for real writes it fresh: the variants were written under prototype constraints, with no tests and minimal error handling.
 
 ## Anti-patterns
 
