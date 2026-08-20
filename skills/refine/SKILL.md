@@ -1,21 +1,23 @@
 ---
 name: refine
-description: A round-by-round session with Product, QA, and Development that settles a change functionally — intent, use cases, and the delta against today.
+description: A room session that determines a change's scope — what is in this project and what is not — so a developer can start /grill-with-docs.
 disable-model-invocation: true
 ---
 
 # Refine
 
-Run a refinement session: several people in one **room**, one keyboard, working out *what* we want to change in the application. The outcome is a **Refinement** — intent, use cases, and the **delta** against **today** — functional only ([ADR-0005](../../docs/adr/0005-refinement-is-terminal-and-functional-only.md)).
+Run a refinement session: several people in one **room**, one keyboard, determining **Scope** — what is part of this project and what is not. The outcome is a **Refinement**: a briefing a developer uses to start `/grill-with-docs`. Silent on implementation ([ADR-0018](../../docs/adr/0018-refine-determines-scope-via-prototype.md)).
 
-**The room's clock** is the scarce resource: an idle minute costs as many minutes as there are people in the call. Reading happens in the background; stop the room only where stopping is worth it.
+**The room's clock** is the scarce resource: an idle minute costs as many minutes as there are people in the call. Reading happens in the background. The room stops for the **Prototype** and the closing read-back.
+
+The session does minimal grilling, then a first Prototype, then the room **steers** from the demo.
 
 Two documents, templated in [DOCUMENTS.md](DOCUMENTS.md):
 
 - **`session.md`** — **resume** infrastructure. Full-fidelity today (code anchors included) so a later session reopens without re-deriving.
 - **`complete.md`** — what the room signs off.
 
-**User-facing** surfaces — live rounds, `session.html`, `complete.md`, `complete.html`, Jira — run at **room language**: every sentence readable aloud once to someone who does not write code. Run `/plain-language`, then hold that stricter bar. Resume density in `session.md` is exempt ([ADR-0010](../../docs/adr/0010-refine-user-facing-surfaces.md)).
+**User-facing** surfaces — live rounds, `complete.md`, `complete.html`, Jira — run at **room language**: every sentence readable aloud once to someone who does not write code. Run `/plain-language`, then hold that stricter bar. Resume density in `session.md` is exempt ([ADR-0010](../../docs/adr/0010-refine-user-facing-surfaces.md)).
 
 ## 1. Take the input
 
@@ -23,7 +25,7 @@ A Jira ticket key or URL, an Idea at `.agents/ideas/<slug>.md`, or a sentence ty
 
 Derive a kebab-case slug from the change itself rather than the ticket key. Everything the session writes lands in `.agents/refinements/<slug>/`.
 
-A `complete.md` already there means the change is settled; reopening it is an explicit ask. Otherwise a `session.md` makes this a **resume**: read it, replay settled items as declarations, grill only what is open — everything absent from the document is open.
+A `complete.md` already there means the change is settled; reopening it is an explicit ask. Otherwise a `session.md` makes this a **resume**: read it, replay settled items as declarations, grill only what is open — everything absent from the document is open. A Prototype path already in the document resumes at step 5; a Prototype still in flight is resumed by `/prototype`.
 
 Done when you can state the change in a sentence and know whether this is a resume.
 
@@ -48,11 +50,13 @@ Everything else waits for the round to close.
 
 Done when the dispatches are out, not when they return. A resume dispatches the same way, and re-verifies an inherited `How it works today` only when a question touches it.
 
-## 3. Grill at functional altitude
+## 3. Grill just enough
 
-**Round 1 is yours, and it is intent only.** It goes out the moment the input is read and the first two agents are dispatched — bare, because intent questions need nothing from the code. Use cases and delta wait until the room has agreed *why*; a room that hasn't agreed why produces use cases encoding three different goals.
+**Round 1 is yours, and it is intent only.** It goes out the moment the input is read and the first two agents are dispatched — bare, because intent questions need nothing from the code.
 
-From round 2 the **frontier** (the questions whose prerequisites the room has already settled) decides the rounds. Run `/grilling` with the subject pinned to **functional** for the whole session, however far the room wants to drop.
+**Round 2 names the question the Prototype will answer** — which flow or screen the room will look at. Agreeing that question is the go-ahead to build.
+
+Run `/grilling` with the subject pinned to **functional** for the whole session.
 
 Run `/domain-modeling` **glossary-only**: settled terms land in `CONTEXT.md` as they settle, and stop there.
 
@@ -60,33 +64,37 @@ Price every option with a **room cost** first — user harm, support load, who g
 
 Speak today as behaviour in every live question. `/grilling` treats a running exploration as an unsettled prerequisite; here it deliberately is not, and the frontier is grilled around it. Code-dependent questions wait and **batch**: one probe per round for every code-dependent question that round surfaced, so the room's clock stops once rather than once per question. When the probe returns, frame each follow-up as *today does X — what should happen?* Options name outcomes.
 
-Every use case leaves carrying at least one scenario that is not the happy path.
-
 Any question can be **parked** — the room says "later, not this session"; it lands under `Open Questions` naming who owes the answer; that branch of the frontier closes.
-
-Done when every branch of the frontier is settled or parked, and every use case carries its non-happy-path scenario.
-
-## 4. Write the session document live
 
 Append to `.agents/refinements/<slug>/session.md` as the session runs. Write for resume: `How it works today` keeps the explorers' full account. Each round's answers are in the document before the next round's questions go out.
 
-When the room wants the picture mid-session, render `session.html` per [HTML-REPORT.md](HTML-REPORT.md). Only the closing render produces `complete.html`, so the filename never claims more than the session has settled.
+Done when intent is settled, the room has agreed or declined the Prototype question, and those answers are on disk in `session.md`.
 
-Done when the latest round's answers are on disk in `session.md`.
+## 4. Build the first Prototype
 
-## 5. Offer the split
+If the room declined a Prototype, skip to step 5.
 
-The moment the change looks like several changes — mid-round, any round — name the split out loud and let the room decide. Holding it until the end spends a whole session grilling a scope the room would have cut.
+Tell the room this wait is coming. Follow `/prototype` through handover for the question round 2 settled. It serves this effort. The Prototype does not wait for the Code walk.
 
-If they split it, finish the current document on the change the room came for, and create `.agents/refinements/<other-slug>/session.md` for each split-off carrying its intent and nothing else: a resumable Refinement, not a note. Link them from the closing document's `Out-of-scope`. A stub gets no `complete.md` and no HTML report — both are session outputs.
+Done when the file or URL is in the room's hands.
 
-Done when the room has decided, and every accepted split-off has a stub (or the room declined).
+## 5. Steer
+
+The Prototype is the conversation. The room reacts; revise the same Prototype until the room can name what is in and what is out. A new Prototype only if the question itself was wrong.
+
+Questions in text only for things a demo cannot show — who is allowed, compliance, what this project will not do. Same grilling rules as step 3, including batching.
+
+The moment the change looks like several changes, name the split out loud and let the room decide. If they split it, the other work goes on the out list, and each split-off gets `.agents/refinements/<other-slug>/session.md` carrying its intent and nothing else: a resumable Refinement, not a note. A stub gets no `complete.md` and no HTML report.
+
+Keep `session.md` current: in, out, the Prototype path, parked questions. When the room has named in and out, write `.agents/prototypes/<slug>/` as `/prototype` serving a larger effort describes.
+
+Done when `In scope` and `Out of scope` are written in `session.md` and the room has confirmed them, every text-only question is settled or parked, every accepted split-off has a stub (or the room declined), and the Prototype folder is on disk (or Prototype is `None`).
 
 ## 6. Synthesise the complete document
 
-If the code walk has not returned, wait for it: the read-back is the one stop on the room's clock worth paying for, and it needs a confirmed today.
+If the code walk has not returned, wait for it: the read-back needs a confirmed today.
 
-Read the settled Complete picture back to the room in room language — Introduction, use cases, scope, out-of-scope, open questions, Notes — and wait for confirmation.
+Read the settled Complete picture back to the room in room language — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — and wait for confirmation.
 
 Then write `.agents/refinements/<slug>/complete.md` from the template and mapping in [DOCUMENTS.md](DOCUMENTS.md).
 
@@ -96,10 +104,10 @@ Done when all six sections are present and each carries content or `None`.
 
 1. Render `.agents/refinements/<slug>/complete.html` and open it — `start <path>` on Windows, `open` on macOS, `xdg-open` on Linux — reporting the absolute path. See [HTML-REPORT.md](HTML-REPORT.md).
 2. If the session started from a Jira ticket, offer write-back. Replacing the description is the default (fixed structure in the ticket is the point); offer a comment instead when the room asks. Show what it would replace and wait for a yes. Send `complete.md` as Jira markup, with a line pointing at the repo path of `complete.html`.
-3. Commit the folder.
+3. Commit the Refinement folder and the Prototype folder it points at.
 
 `complete.md` is what was signed off; `complete.html` is rendered from it and never parsed. `session.md` remains the resume source for today-claims that trace to the code.
 
-Then stop — a Refinement is terminal. A Spec may be grilled out of it later with `/grill-with-docs` or `/to-spec`, the user's call in a session with a different room.
+Then stop — a Refinement is terminal. A developer starts `/grill-with-docs` from this document, in a session with a different room.
 
-Done when the HTML is open, any Jira write-back offer is resolved, the folder is committed, and the session has stopped.
+Done when the HTML is open, any Jira write-back offer is resolved, both folders are committed (Prototype `None` skips that folder), and the session has stopped.

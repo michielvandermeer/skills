@@ -1,6 +1,6 @@
 # Refine keeps a dense session document and thin user-facing surfaces
 
-A `/refine` session needs a full read-from-code account of today so a resume can reopen the change without re-deriving it, and a mixed Product/QA/Development room needs every spoken and shipped sentence to stay at functional altitude. We split those jobs: `session.md` is resume infrastructure and may keep code anchors; the live rounds, mid-session `session.html`, `complete.md`, `complete.html`, and Jira write-back are the only user-facing surfaces and restate today as behaviour. Mid-session HTML rewrites `How it works today` at render time rather than dual-writing a second today section, so the markdown file stays the single resume source of truth.
+A `/refine` session needs a full read-from-code account of today so a resume can reopen the change without re-deriving it, and a mixed Product/QA/Development room needs every spoken and shipped sentence to stay at functional altitude. We split those jobs: `session.md` is resume infrastructure and may keep code anchors; the live rounds, `complete.md`, `complete.html`, and Jira write-back are the only user-facing surfaces and restate today as behaviour. The Prototype is the picture during the session, so there is no mid-session HTML.
 
 ## Consequences
 

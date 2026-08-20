@@ -7,7 +7,7 @@ Keeping the playable files on the `prototype/<slug>` branch was rejected again: 
 ## Consequences
 
 - A later reader can open the folder a Spec points at and click through again.
-- `/to-spec` names `.agents/prototypes/<slug>/`. Decision-rich snippets (a reducer, a machine) may still be inlined; the folder is the playable record.
-- A `/prototype` that serves a larger effort writes the folder in that effort's tree and writes no Spec of its own.
+- `/to-spec` names `.agents/prototypes/<slug>/`. Decision-rich snippets (a reducer, a machine) may still be inlined; the folder is the playable record. A Refinement names the same path when `/refine` invoked the Prototype.
+- A `/prototype` that serves a larger effort writes the folder and writes no Spec of its own.
 - A verdict that kills the idea writes no folder and no Spec.
 - ADR-0015 is superseded for the "nothing survives" rule. The worktree, the host-shaped levers, the no-fold-into-real-code rule, and the Spec-as-handover rule stand.

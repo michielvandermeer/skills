@@ -152,7 +152,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `migrate-doc-layout` | Move spec, idea, reference, refinement, architecture-review, and codebase-audit documents into this repo's canonical `.agents/` layout. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
-| `refine` | Grill a change into a functional description with Product, QA, and Development in the room. |
+| `refine` | Determine a change's scope with Product, QA, and Development, via a prototype the room steers. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
 | `triage` | Move issues through a triage state machine; buildable work ends as a Spec. |

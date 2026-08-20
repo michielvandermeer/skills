@@ -3,6 +3,9 @@
 ## 2026-08-21: Fewer tiny grilling tickets
 `/wayfinder` puts leftover one-question grilling work in one Small questions ticket, so you start the skill less often. A tree of related questions still gets its own ticket. You still finish one ticket per session.
 
+## 2026-08-21: Refine scopes through a prototype
+`/refine` now settles what is in a project and what is not. After a short grilling it builds a prototype the room can steer, then writes a briefing a developer takes into `/grill-with-docs`.
+
 ## 2026-08-15: Prototypes stay for Specs
 After you give a verdict, `/prototype` keeps the demo at `.agents/prototypes/<slug>/` and the Spec points at that folder. The worktree and its branch still go, so your working copy stays clean.
 

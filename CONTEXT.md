@@ -10,14 +10,18 @@ A collection of software-engineering skills for Claude Code, distributed as a pl
 A loose, untriaged thought captured at `.agents/ideas/<slug>.md`. Not yet shaped into anything actionable.
 
 **Refinement**:
-The functional description of a change agreed by Product, QA, and Development in a `/refine` session — intent, use cases, and the delta against today, deliberately silent on implementation. Lives in a folder of its own at `.agents/refinements/<slug>/`, holding a Session document and a Complete document. Terminal: a Spec may be grilled out of it later, but nothing consumes it automatically.
+The description of a change's **Scope** agreed by Product, QA, and Development in a `/refine` session — what is part of this project and what is not — written so a developer can start a `/grill-with-docs` session from it. Deliberately silent on implementation. Lives in a folder of its own at `.agents/refinements/<slug>/`, holding a Session document and a Complete document. Terminal: nothing consumes it automatically.
 _Avoid_: functional spec, requirements doc, BRD
 
+**Scope**:
+What a `/refine` session determines: what is part of this project and what is not.
+_Avoid_: work items, backlog, requirements
+
 **Session document**:
-The Refinement a `/refine` session writes as it runs, at `.agents/refinements/<slug>/session.md`. Resume infrastructure, not user-facing: intent, the full read-from-code account of today (including code anchors), the delta, use cases, parked questions. It survives the close, so a settled change can be reopened without re-deriving today.
+The Refinement a `/refine` session writes as it runs, at `.agents/refinements/<slug>/session.md`. Resume infrastructure, not user-facing: intent, the full read-from-code account of today (including code anchors), in scope, out of scope, the Prototype path, parked questions. It survives the close, so a settled change can be reopened without re-deriving today.
 
 **Complete document**:
-The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Six fixed sections — Introduction, Open Questions, Use cases, Scope, Out-of-scope, Notes — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, user-facing, and the thing written back to a Jira ticket. Constraints of today land in Notes; the code walkthrough stays only in the Session document.
+The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Six fixed sections — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, user-facing, and the thing written back to a Jira ticket. How it works today is behaviour; the code walkthrough stays only in the Session document.
 
 **Architecture review**:
 The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/`, holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system, then grilled into a Spec with `/grill-with-docs`.
@@ -28,7 +32,7 @@ The output of a `/codebase-audit` run at `.agents/codebase-audits/<timestamp>/`,
 _Avoid_: architecture review, tech-debt report, DSA audit
 
 **Prototype**:
-Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A `/prototype` session leaves it at `.agents/prototypes/<slug>/` so the **Spec** can point at what was played with.
+Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A `/prototype` session leaves it at `.agents/prototypes/<slug>/` so a **Spec** or a **Refinement** can point at what was played with.
 _Avoid_: spike, POC, demo, mockup
 
 **Spec**:
@@ -124,7 +128,7 @@ The background exploration that opens a `/refine` session — `CONTEXT.md`, the 
 The background exploration of the affected code in a `/refine` session, aimed by the intent the room settled in round 1. It confirms or corrects what the Docs pass wrote.
 
 **Room's clock**:
-The scarce resource in a `/refine` session: an idle minute costs as many minutes as there are people in the call. What justifies reading in the background, batching code-dependent questions into one probe per round, and stopping the room only for the closing read-back.
+The scarce resource in a `/refine` session: an idle minute costs as many minutes as there are people in the call. What justifies reading in the background, and stopping the room only for the Prototype and the closing read-back.
 
 ### Execution
 

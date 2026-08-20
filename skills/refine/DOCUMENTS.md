@@ -2,9 +2,7 @@
 
 Templates and the mapping a `/refine` session uses when writing `.agents/refinements/<slug>/`. **`session.md`** is resume infrastructure; **`complete.md`** is user-facing (what the room signs off and may write back to Jira).
 
-## Session document — `session.md`
-
-Shaped for live append and for a resume to re-open the change without re-deriving today. Section order is fixed; sections fill as content arrives: `Intent` may settle while `How it works today` is still provisional.
+Both documents share these headings. Section order is fixed; session sections fill as content arrives. Session `How it works today` is full fidelity, including code anchors, and carries `(provisional — from the documents)` until the code walk confirms it. Complete `How it works today` is behaviour.
 
 ```markdown
 # <Change title>
@@ -17,76 +15,38 @@ Why we want this and whose problem it solves.
 
 ## How it works today
 
-What the affected area does today, read from the code — full fidelity for resume, including code anchors. Headed `(provisional — from the documents)` until the code walk confirms it.
+What the affected area does today.
 
-## What changes
+## In scope
 
-The delta, functionally — short enough to skim.
+What is part of this project, as user-facing outcomes.
 
-## Use Cases
+## Out of scope
 
-1. As an <actor>, I want <capability>, so that <benefit>
-   - **Scenario:** given <state>, when <the actor does this>, then <observable outcome>
-   - **Scenario:** <the non-happy path>
-   - *Differs from today:* <what the room does instead now>
+- <thing>, and why
+
+## Prototype
+
+Path, the question it answered, and what playing with it settled for Scope. `None` if the room declined a Prototype.
 
 ## Open Questions
 
 - <question> — owed by <who>
-
-## Out of Scope
-
-- <thing>, and why
 ```
 
-## Complete document — `complete.md`
-
-All six sections always present, in this order, carrying `None` where the session settled nothing: a missing heading reads as an oversight, `None` reads as a decision the room made.
-
-```markdown
-# <Change title>
-
-Source: <Jira key / `.agents/ideas/<slug>.md` / conversation>
-
-## Introduction
-
-What this change is about and why we are doing it — today's pain in a sentence or two, since that is the why.
-
-## Open Questions
-
-- <question> — owed by <who>
-
-## Use cases
-
-1. As an <actor>, I want <capability>, so that <benefit>
-   - **Scenario:** given <state>, when <the actor does this>, then <observable outcome>
-   - **Scenario:** <the non-happy path>
-   - *Differs from today:* <what the room does instead now>
-
-## Scope
-
-What we are doing as part of this project, as work items. The one place work carrying no user-facing story lands — migrations, removals, configuration.
-
-## Out-of-scope
-
-- <thing>, and why
-
-## Notes
-
-Constraints and implications of today that bind the change, plus anything useful before pickup that the sections above leave unsaid. A constraint of today belongs here; a chosen approach belongs in a Spec ([ADR-0005](../../docs/adr/0005-refinement-is-terminal-and-functional-only.md)).
-```
+On Complete, every section is always present, carrying `None` where the session settled nothing: a missing heading reads as an oversight, `None` reads as a decision the room made.
 
 ## The mapping
 
-Synthesise Complete from the Session document — rename nothing.
+Synthesise Complete from the Session document — rename nothing. Restate `How it works today` as behaviour. Constraints of today live there, not in a Notes section.
 
 | Complete section | Comes from |
 |---|---|
-| Introduction | `Intent`, plus today's pain in a sentence or two — that pain *is* the why |
+| Intent | `Intent` |
+| How it works today | `How it works today`, restated as behaviour |
+| In scope | `In scope` |
+| Out of scope | `Out of scope`, plus links to any split-off stubs |
+| Prototype | `Prototype` — path `.agents/prototypes/<slug>/`, the question, what playing settled for Scope |
 | Open Questions | `Open Questions` verbatim |
-| Use cases | `Use Cases` verbatim, `Differs from today` included |
-| Scope | `What changes`, restated as work items |
-| Out-of-scope | `Out of Scope`, plus links to any split-off stubs |
-| Notes | Constraints and implications of today from `How it works today`, plus what no section above carries |
 
-`How it works today` feeds Complete without its own Complete heading: pain → `Introduction`, constraints → `Notes`. The full read-from-code account stays only in `session.md`.
+The full read-from-code account stays only in `session.md`.

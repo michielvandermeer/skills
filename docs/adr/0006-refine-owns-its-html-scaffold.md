@@ -5,4 +5,4 @@ Both `/refine` and `/improve-codebase-architecture` render a self-contained Tail
 ## Consequences
 
 - The CDN scaffold exists twice. A future reader may take it for an oversight and try to DRY it — that consolidation is the thing this ADR exists to prevent.
-- The two files diverge freely: `/refine` needs as-is/to-be flow pairs, state diagrams, and decision tables, and needs architecture diagrams to stay out.
+- The two files diverge freely: `/refine` needs a briefing a Product manager can forward, with in/out tinting and a Prototype link, and needs architecture diagrams to stay out.

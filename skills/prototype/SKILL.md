@@ -7,7 +7,7 @@ description: Build a throwaway prototype to answer a design question, then turn 
 
 A prototype is **throwaway code that answers a question**. The question decides the shape.
 
-It is built in a worktree and played with. The lasting record is `.agents/prototypes/<slug>/` — the Spec points at that folder. The worktree and its branch go.
+It is built in a worktree and played with. The lasting record is `.agents/prototypes/<slug>/` — a Spec or a Refinement points at that folder. The worktree and its branch go.
 
 ## Process
 
@@ -65,7 +65,10 @@ The Spec is the handover. Real code gets built from it later, by `/implement`.
 
 ## Serving a larger effort
 
-A `/wayfinder` prototype ticket, or a `/grilling` session reaching for a demo mid-design, invokes `/prototype` from a session that is already in a worktree. That session hands over, writes the folder in this tree, and stops: the verdict and the path go back to the effort, whose own Spec names both. Leave the worktree and its branch to the effort that opened them.
+A `/wayfinder` prototype ticket, a `/grilling` session reaching for a demo mid-design, or a `/refine` session after the prototype question, invokes `/prototype` as part of a larger effort. Write no Spec. The parent document names `.agents/prototypes/<slug>/`.
+
+- **Already in a worktree** (wayfinder, grilling mid-design): hand over, write the folder in this tree, stop. Leave the worktree and its branch to the effort that opened them.
+- **Not in a worktree** (`/refine`): waive the worktree so the parent session stays on the checkout that holds the Refinement. Follow steps 1–4 on this checkout. The parent session's steering *is* the verdict loop — variants and revisions stay on this Prototype. When the parent session has settled the question, write the folder here and remove in-app prototype files that are not the folder, as [Worktree waived](#worktree-waived) does. Write no Spec.
 
 ## Worktree waived
 
