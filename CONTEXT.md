@@ -40,8 +40,18 @@ One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md
 _Avoid_: ticket, task, chunk, phase
 
 **Decision ticket** (everyday: **ticket**):
-A question on a `/wayfinder` map at `.agents/issues/<effort>/<NN>-<slug>.md` whose resolution is a decision — not a slice of a build to execute. A fork in the way: the effort could go two ways, and the one it takes changes what gets built. It does not deliver code. Distinct from a Step, which delivers code and decides nothing.
+A file on a `/wayfinder` map at `.agents/issues/<effort>/<NN>-<slug>.md` whose resolution is a decision — not a slice of a build to execute. The unit of claim and resolution. Distinct from a Step, which delivers code and decides nothing.
 _Avoid_: investigation ticket, implementation ticket
+
+**Fork**:
+A place a `/wayfinder` effort could go two ways, and the one it takes changes what gets built. What the map charts.
+
+**Focused**:
+A grilling **Decision ticket** whose **Fork** is a tree: more than one question already nameable, or one-question forks that block each other.
+
+**Small questions**:
+A grilling **Decision ticket** that holds leftover unblocked one-question **Forks**, even when the subjects differ. The heading is Small questions.
+_Avoid_: leftovers ticket, bundle, grab-bag
 
 **Issue**:
 An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`. Carries `Category:` and `Status:` lines. A buildable issue ends as a **Spec**; `/triage` deletes the issue file once that Spec is written. Surviving states are `needs-triage`, `needs-info`, `ready-for-human`, and `wontfix` — not agent-ready (that status lives on Specs).

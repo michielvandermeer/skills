@@ -14,7 +14,7 @@ Wayfinder is **planning**: it produces decisions, not deliverables. The pull to 
 
 ## Forks in the road
 
-A decision ticket is a **fork in the road**: two ways on, and the one you take changes what gets built. Everything between forks is just road — walk it, don't chart it.
+A **fork** is two ways on, and the one you take changes what gets built. Everything between forks is just road — walk it, don't chart it.
 
 Scope is the fork worth pressing hardest. *Do we cover this too? Does that case count?* Those are the user's to answer, and the answer moves the destination.
 
@@ -90,12 +90,30 @@ Every ticket is either **HITL** — human in the loop, worked *with* a human who
 
 - **Research** (AFK): Reading documentation, third-party APIs, or local resources like knowledge bases to surface a fact a decision waits on. Resolved by a `/research` **subagent** (see Chart the map). Use when knowledge outside the current working directory is required.
 - **Prototype** (HITL): Raise the fidelity of the discussion by making a cheap, rough, concrete artifact to react to — an outline, a rough take, a stub, or UI/logic code via the /prototype skill. A `/prototype` invoked here serves this effort: it hands its verdict back for the answer to record, saves the prototype so this map's own Spec can point at it, and leaves the worktree to the effort. Use when "how should it look" or "how should it behave" is the key question.
-- **Grilling** (HITL): Conversation via the /grilling and /domain-modeling skills, round by round. The default case.
+- **Grilling** (HITL): Conversation via the /grilling and /domain-modeling skills, round by round. The default case. Two shapes — see [Grilling tickets](#grilling-tickets).
 - **Task** (HITL or AFK): Manual work that must happen before a *decision* can be made — nothing to decide, prototype, or research, but the discussion is blocked until it's done. Signing up for a service so its API can be judged, provisioning access, moving data so its shape can be seen. This is the one type that *does* rather than decides — and it earns its place by unblocking a decision, not by delivering the destination. The agent drives it alone where it can (AFK); otherwise it hands the human a precise checklist (HITL). Resolved when the work is done; the answer records what was done and any resulting facts (credentials location, new URLs, row counts) later tickets depend on.
+
+## Grilling tickets
+
+Both shapes are `Type: grilling`.
+
+**Focused** — the fork is a tree: more than one question already nameable, or one-question forks that would block each other. Body and heading as any other ticket.
+
+**Small questions** — leftover unblocked one-question forks, subjects need not match. Body is one `## Question` listing each leftover as a short decision. Heading `Small questions`, then `Small questions 2`. At most one open.
+
+One-question means one closed choice and no follow-up already nameable.
+
+**Group** when creating grilling tickets — every grilling fork ends as a Focused ticket, a leftover in Small questions, or a blocked one-question standalone:
+
+1. Mint Focused tickets for trees.
+2. Leftover unblocked one-question forks join the unclaimed open Small questions (a singleton joins too) unless the 250K ceiling would be exceeded. With nothing to join: two or more mint Small questions; a singleton keeps a heading that names its fork.
+3. A blocked one-question grilling ticket stays until it unblocks, then it is a leftover — join or mint, and delete the standalone file.
+
+Resolving Small questions: `/grilling`, round 1 every leftover in the body, until that ticket's frontier is empty. Decisions-so-far: one line; the gist lists each decision.
 
 ## Fog of war
 
-The map is _deliberately_ incomplete: don't chart what you can't yet see. Beyond the live tickets lies the **fog of war** — the dim view of decisions and investigations you can tell are coming but can't yet pin down, because they hang on questions still open. Resolving a ticket clears the fog ahead of it, graduating whatever's now specifiable into fresh tickets — one at a time.
+The map is _deliberately_ incomplete: don't chart what you can't yet see. Beyond the live tickets lies the **fog of war** — the dim view of decisions and investigations you can tell are coming but can't yet pin down, because they hang on questions still open. Resolving a ticket clears the fog ahead of it, graduating whatever's now specifiable into fresh tickets.
 
 The map's **Not yet specified** section is where that dim view is written down: the suspected question, the area to revisit later. It's the undiscovered frontier _toward_ the destination — everything here is in scope, just not sharp enough to ticket. Write as loosely or as fully as the view allows; it doubles as a signpost for collaborators reading where the effort is headed.
 
@@ -122,9 +140,9 @@ Two modes. Either way, **never resolve more than one ticket per session** — wi
 
 User invokes with a loose idea.
 
-1. **Fix the scope.** Run one `/grilling` and `/domain-modeling` session on the change itself: what it covers, what it leaves alone, and which forks stand in the way. **If it surfaces no fog** — the way is already clear, the whole journey small enough for one session — you don't need a map. Stop and ask the user how they'd like to proceed.
+1. **Fix the scope.** Run one `/grilling` and `/domain-modeling` session on the change itself: what it covers, what it leaves alone, and which forks stand in the way. **If the way is already clear** — after grouping grilling forks, one session and no fog — you don't need a map. Stop and ask the user how they'd like to proceed.
 2. **Create the map** (`.agents/issues/<effort>/map.md`): Destination and Notes filled in, Decisions-so-far empty, the fog sketched into **Not yet specified**.
-3. **Create the tickets you can specify now** as files in `.agents/issues/<effort>/` — assign each its `NN` first, then wire `Blocked by:` lines in a **second pass** (a ticket needs its number before others can reference it). Wiring sorts them into the frontier and the blocked; everything you can't yet specify stays in the fog — the **Not yet specified** section.
+3. **Create the tickets you can specify now** as files in `.agents/issues/<effort>/`. **Group** grilling tickets per [Grilling tickets](#grilling-tickets), then assign each its `NN` first, then wire `Blocked by:` lines in a **second pass** (a ticket needs its number before others can reference it). Wiring sorts them into the frontier and the blocked; everything you can't yet specify stays in the fog — the **Not yet specified** section.
 4. **Fire the research subagents.** For each `research` ticket you just created, spin up a `/research` subagent in parallel — research is AFK, so charting does not wait on it. Each subagent captures findings on a throwaway `research/<name>` branch, leaves a context pointer on the ticket, writes `## Answer`, and sets `Status: resolved`.
 5. Stop — charting is one session's work; it hand-resolves nothing.
 
@@ -134,9 +152,9 @@ User invokes with a map (path or effort name). A ticket is **optional** — with
 
 1. Load the **map** — the low-res view, not every ticket body.
 2. Choose the ticket. If the user named one, use it. Otherwise take the first frontier ticket in order. **Claim it**: set `Status: claimed` before any work. Skip any research ticket still being burned down by a subagent from charting.
-3. Resolve it — **zoom as needed**: read the full body of any related or resolved ticket on demand; invoke the skills the `## Notes` block names. If in doubt, use `/grilling` and `/domain-modeling`. For a research ticket that was not fired at charting (graduated later), fire `/research` the same way rather than reading it in the driving session.
+3. Resolve it — **zoom as needed**: read the full body of any related or resolved ticket on demand; invoke the skills the `## Notes` block names. If in doubt, use `/grilling` and `/domain-modeling`. A grilling ticket resolves per [Grilling tickets](#grilling-tickets). For a research ticket that was not fired at charting (graduated later), fire `/research` the same way rather than reading it in the driving session.
 4. Record the resolution: append the answer under an `## Answer` heading in the ticket file, set `Status: resolved`, and **append a context pointer** to the map's Decisions-so-far in `map.md`.
-5. Add newly-surfaced tickets (create-then-wire); graduate any fog the answer has made specifiable, clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If any new ticket is `research`, fire its `/research` subagent immediately. If the answer reveals a ticket — this one or another — sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
+5. Add newly-surfaced tickets and graduate any fog the answer has made specifiable (**group** grilling per [Grilling tickets](#grilling-tickets), then create-then-wire), clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If any new ticket is `research`, fire its `/research` subagent immediately. If the answer reveals a ticket — this one or another — sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
 
 When no tickets remain, the way is clear and that session writes the destination: zoom every resolved ticket, then run `/to-spec`. It synthesises from the conversation, so the decisions have to be in it.
 
