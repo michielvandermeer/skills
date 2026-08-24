@@ -1,6 +1,6 @@
 # mvdmio Skills
 
-This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting reference file.
+This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting reference file. The host invokes the **installed plugin**, not this checkout. After committing skill files, update that install so the next session runs the new bodies.
 
 ## Grilling ends in skill edits
 
@@ -10,6 +10,7 @@ Still owes:
 
 - `/domain-modeling`: `CONTEXT.md` entries for terms settled, ADRs in `docs/adr/` on the three-part test
 - A commit covering every file the change touched
+- Update the installed plugin after that commit
 - `/retrospective` after that commit. `/grill-with-docs` still ends with Gather, then Present.
 
 ## Editing agent documents
