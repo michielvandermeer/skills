@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-08-24: Retrospective after every implement
+`/implement` finishes by suggesting changes to the files and tools that steer later agent runs, so the next session is cheaper or more reliable. You can also type `/retrospective` yourself. Suggestions appear in the chat; you apply them later if you want.
+
 ## 2026-08-21: Fewer tiny grilling tickets
 `/wayfinder` puts leftover one-question grilling work in one Small questions ticket, so you start the skill less often. A tree of related questions still gets its own ticket. You still finish one ticket per session.
 

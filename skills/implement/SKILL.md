@@ -5,9 +5,9 @@ argument-hint: "Which spec, issue, or idea to implement?"
 disable-model-invocation: true
 ---
 
-You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, one three-line report per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session.
+You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, one three-line report per step, any deviations, the review findings for as long as step 4 takes to hand them on, and the retrospective list from step 6 until step 8 — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session.
 
-Sub-agents share the worktree, so run them one at a time. Step agents are `skills:implementer`, pinned to a cheaper tier because their scope was decided before they started. The planner, the fixer, and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md).
+Sub-agents share the worktree, so run them one at a time. Step agents are `skills:implementer`, pinned to a cheaper tier because their scope was decided before they started. The planner, the fixer, the data-structures pass, and the retrospective gatherer are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md).
 
 ## Process
 
@@ -79,7 +79,11 @@ Each commits its own work.
 
 Run `/document-changes` in **implement mode** while the Spec and step Outcomes are still on disk — after review/improve, before delete and land. It prepends product-facing **Changelog** entries beside each affected context's `CONTEXT.md` and commits when it wrote; when nothing is product-visible it reports that and leaves the tree clean.
 
-### 6. Land the branch
+### 6. Gather the retrospective
+
+Run `/retrospective` **Gather** while the Spec and step Outcomes are still on disk — after document-changes, before delete. Hold the list it returns until step 8. On gatherer failure, hold `none` plus the failure line and continue to land.
+
+### 7. Land the branch
 
 Delete the spec, any idea or issue document it came from, and the whole `.agents/steps/<slug>/` directory — the work they describe is now in the code. Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
 
@@ -90,12 +94,16 @@ Each remaining command runs where its branch is checked out, and that constraint
 3. From the original directory: `git merge --ff-only <branch>`. (master lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward; if it errors, master moved during the session — re-enter the worktree, rebase again, and retry.
 4. `git worktree remove <path>` and `git branch -d <branch>`.
 
+### 8. Present the retrospective
+
+Run `/retrospective` **Present** on the list you hold.
+
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 7 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch.
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the spec, the step files, the branch, and the worktree exactly as they are — the completed steps are committed, and the run is resumable only because nothing was cleaned up. Report the step's number, its title, and what blocked it.
+A halt is non-destructive and it is the end of the session. Leave the spec, the step files, the branch, and the worktree exactly as they are — the completed steps are committed, and the run is resumable only because nothing was cleaned up. Report the step's number, its title, and what blocked it. A halt skips Gather and Present.
 
 Re-invoking `/implement` with the same argument picks the run back up at that step.
