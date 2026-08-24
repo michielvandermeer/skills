@@ -13,9 +13,11 @@ If this session already presented a retrospective, say so and stop.
 
 ## Callers
 
+Present only when the skill now calling you is `/retrospective` typed by the user, or is the named session skill the user typed. Otherwise return without presenting.
+
 **Typed.** Argument names a session, or empty for the current one. Gather, then present.
 
-**`/implement`.** Calls Gather, then Present, around land. Timing lives in that skill. See [ADR-0019](../../docs/adr/0019-implement-ends-with-a-non-blocking-retrospective.md).
+**Named session skills.** `/implement`, `/grill-with-docs`, `/triage`, `wayfinder`, `refine`, `/codebase-audit`, `improve-codebase-architecture`. Timing lives in that skill. `/implement` splits Gather and Present around land. See [ADR-0019](../../docs/adr/0019-implement-ends-with-a-non-blocking-retrospective.md), [ADR-0021](../../docs/adr/0021-named-session-skills-start-a-retrospective.md).
 
 ## Gather
 
@@ -27,7 +29,7 @@ Dispatch one `general-purpose` sub-agent. Hand it this file, `/writing-for-agent
 
 `/implement`: Spec, Step files (Outcomes, Footprints), deviations, the review findings, branch log vs the fixed point, plus the steering files the run used.
 
-Typed: the host's session logs for the current or named session, plus the steering files that session used. Look up log paths for this host. If the named session cannot be found, stop; the driving session presents that line. If logs for the current session are not on disk, brief the gatherer from what this conversation holds.
+Typed and every named caller except `/implement`: the host's session logs for the current or named session, plus the steering files that session used. Look up log paths for this host. If the named session cannot be found, stop; the driving session presents that line. If logs for the current session are not on disk, brief the gatherer from what this conversation holds.
 
 **Steering files** always include the repo's `AGENTS.md` / `CLAUDE.md` and the host's global always-loaded agent files, plus any file this session actually reached. See [ADR-0020](../../docs/adr/0020-retrospective-includes-global-agent-files.md).
 

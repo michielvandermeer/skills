@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-08-24: Retrospective after more skills
+`/grill-with-docs`, `/triage`, `wayfinder`, `refine`, `/codebase-audit`, and `improve-codebase-architecture` now finish by suggesting environment changes, the same as `/implement`. The skill you typed runs it. A session still waiting for you does not.
+
 ## 2026-08-24: Retrospective after every implement
 `/implement` finishes by suggesting changes to the files and tools that steer later agent runs, so the next session is cheaper or more reliable. You can also type `/retrospective` yourself. Suggestions appear in the chat; you apply them later if you want.
 

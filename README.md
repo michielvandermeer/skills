@@ -154,7 +154,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `refine` | Determine a change's scope with Product, QA, and Development, via a prototype the room steers. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
-| `retrospective` | Look at a finished session and suggest environment changes so later runs go better. `/implement` always runs one after land. |
+| `retrospective` | Look at a finished session and suggest environment changes so later runs go better. The session skill you typed runs one when it finishes. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
 | `triage` | Move issues through a triage state machine; buildable work ends as a Spec. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |

@@ -10,6 +10,7 @@ Still owes:
 
 - `/domain-modeling`: `CONTEXT.md` entries for terms settled, ADRs in `docs/adr/` on the three-part test
 - A commit covering every file the change touched
+- `/retrospective` after that commit. `/grill-with-docs` still ends with Gather, then Present.
 
 ## Editing agent documents
 

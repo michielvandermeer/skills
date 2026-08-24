@@ -70,7 +70,7 @@ Show counts and a one-line summary per item. Let the maintainer pick.
 4. **Shape if needed.** If the request is clear enough to solve without questions for the user, skip this step. If it is not, run `/grill-with-docs` — the issue body and comments are the seed; comments only add what is not already there. `/grill-with-docs` ends in `/to-spec` when the solution is clear. Grilling can still land on `needs-info`, `ready-for-human`, or `wontfix` instead of a Spec.
 
 5. **Apply the outcome:**
-   - **Success (buildable, solution clear)** — run `/to-spec` if a Spec was not already written in step 4. Then **delete the issue file**. Do not flip status first. The Spec is the only handoff; `/implement` reads Specs.
+   - **Success (buildable, solution clear)** — run `/to-spec` if a Spec was not already written in step 4. Do not set a status; the Spec is the only handoff; `/implement` reads Specs.
    - `ready-for-human` — set `Status: ready-for-human` and append a short comment: why a person is needed, what is already known, and what is blocked. Do not restate the whole request; the issue body feeds a later `/grill-with-docs` or human session.
    - `needs-info` — set the status and append triage notes (template below).
    - `wontfix` — set `Status: wontfix`, with the comment depending on *why*:
@@ -79,9 +79,11 @@ Show counts and a one-line summary per item. Let the maintainer pick.
      - **Rejected (enhancement)** — write to `.out-of-scope/`, link to it from a comment ([OUT-OF-SCOPE.md](OUT-OF-SCOPE.md)).
    - `needs-triage` — apply the role. Optional comment if there's partial progress.
 
+After any of these outcomes, run `/retrospective` Gather, then Present. On success, Gather first, then delete the issue file, then Present.
+
 ## Quick state override
 
-If the maintainer says "spec the rate-limiting issue" (or the old "move … to ready-for-agent"), treat that as the success path: if the issue is still unclear, run `/grill-with-docs`; otherwise run `/to-spec`; then delete the issue. Confirm what you're about to do, then act.
+If the maintainer says "spec the rate-limiting issue" (or the old "move … to ready-for-agent"), treat that as the success path in step 5. Confirm what you're about to do, then act.
 
 If they set `needs-info`, `ready-for-human`, or `wontfix` explicitly, trust them: confirm the role change and comment, then apply. Skip grilling unless they ask for it.
 

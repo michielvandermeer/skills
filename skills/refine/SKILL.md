@@ -105,9 +105,10 @@ Done when all six sections are present and each carries content or `None`.
 1. Render `.agents/refinements/<slug>/complete.html` and open it — `start <path>` on Windows, `open` on macOS, `xdg-open` on Linux — reporting the absolute path. See [HTML-REPORT.md](HTML-REPORT.md).
 2. If the session started from a Jira ticket, offer write-back. Replacing the description is the default (fixed structure in the ticket is the point); offer a comment instead when the room asks. Show what it would replace and wait for a yes. Send `complete.md` as Jira markup, with a line pointing at the repo path of `complete.html`.
 3. Commit the Refinement folder and the Prototype folder it points at.
+4. Run `/retrospective` Gather, then Present. The room is not held for it.
 
 `complete.md` is what was signed off; `complete.html` is rendered from it and never parsed. `session.md` remains the resume source for today-claims that trace to the code.
 
 Then stop — a Refinement is terminal. A developer starts `/grill-with-docs` from this document, in a session with a different room.
 
-Done when the HTML is open, any Jira write-back offer is resolved, both folders are committed (Prototype `None` skips that folder), and the session has stopped.
+Done when the HTML is open, any Jira write-back offer is resolved, both folders are committed (Prototype `None` skips that folder), the retrospective has Presented, and the session has stopped.

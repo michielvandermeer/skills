@@ -100,4 +100,6 @@ Side effects happen inline as decisions crystallize — run the `/domain-modelin
 - **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ The bar is that a future explorer would need the reason to avoid re-suggesting the same thing — a reason that outlives this week and isn't self-evident from the code.
 - **Want to explore alternative interfaces for the deepened module?** Run the `/codebase-design` skill and use its design-it-twice parallel sub-agent pattern.
 
-Done when the design tree's frontier is empty and every term the session coined is in `CONTEXT.md`.
+Once the design tree's frontier is empty and every term the session coined is in `CONTEXT.md`, run `/retrospective` Gather, then Present.
+
+Done when the frontier is empty, every coined term is in `CONTEXT.md`, and the retrospective has Presented.

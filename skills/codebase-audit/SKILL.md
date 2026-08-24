@@ -53,3 +53,7 @@ The audit is complete only when:
 - no file outside the audit folder has changed
 
 Give the user the report's absolute path and a short ranking of what to do first.
+
+Then run `/retrospective` Gather, then Present.
+
+Done when the retrospective has Presented.
