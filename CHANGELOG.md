@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-08-25: No suggestions after a session
+Skills no longer suggest environment changes when they finish, and you can no longer type `/retrospective`. A session ends when its own work is done.
+
 ## 2026-08-24: Retrospective after more skills
 `/grill-with-docs`, `/triage`, `wayfinder`, `refine`, `/codebase-audit`, and `improve-codebase-architecture` now finish by suggesting environment changes, the same as `/implement`. The skill you typed runs it. A session still waiting for you does not.
 

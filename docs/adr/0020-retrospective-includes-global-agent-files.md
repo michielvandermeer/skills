@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0022
+---
+
 # A retrospective looks at global agent files as well as the repo
 
 A **Retrospective** proposes changes to the host's global agent files (`AGENTS.md`, `CLAUDE.md`, and the same always-loaded files in the user scope) as well as the current repo. That holds for a named session skill's close and a typed `/retrospective`.

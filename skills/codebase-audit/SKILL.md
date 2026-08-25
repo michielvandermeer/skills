@@ -54,6 +54,4 @@ The audit is complete only when:
 
 Give the user the report's absolute path and a short ranking of what to do first.
 
-Then run `/retrospective` Gather, then Present.
-
-Done when the retrospective has Presented.
+Done when that list holds and the user has the path and the ranking.

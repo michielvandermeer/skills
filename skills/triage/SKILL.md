@@ -70,7 +70,7 @@ Show counts and a one-line summary per item. Let the maintainer pick.
 4. **Shape if needed.** If the request is clear enough to solve without questions for the user, skip this step. If it is not, run `/grill-with-docs` — the issue body and comments are the seed; comments only add what is not already there. `/grill-with-docs` ends in `/to-spec` when the solution is clear. Grilling can still land on `needs-info`, `ready-for-human`, or `wontfix` instead of a Spec.
 
 5. **Apply the outcome:**
-   - **Success (buildable, solution clear)** — run `/to-spec` if a Spec was not already written in step 4. Do not set a status; the Spec is the only handoff; `/implement` reads Specs.
+   - **Success (buildable, solution clear)** — run `/to-spec` if a Spec was not already written in step 4. Do not set a status; the Spec is the only handoff; `/implement` reads Specs. Then delete the issue file.
    - `ready-for-human` — set `Status: ready-for-human` and append a short comment: why a person is needed, what is already known, and what is blocked. Do not restate the whole request; the issue body feeds a later `/grill-with-docs` or human session.
    - `needs-info` — set the status and append triage notes (template below).
    - `wontfix` — set `Status: wontfix`, with the comment depending on *why*:
@@ -78,8 +78,6 @@ Show counts and a one-line summary per item. Let the maintainer pick.
      - **Rejected (bug)** — polite explanation.
      - **Rejected (enhancement)** — write to `.out-of-scope/`, link to it from a comment ([OUT-OF-SCOPE.md](OUT-OF-SCOPE.md)).
    - `needs-triage` — apply the role. Optional comment if there's partial progress.
-
-After any of these outcomes, run `/retrospective` Gather, then Present. On success, Gather first, then delete the issue file, then Present.
 
 ## Quick state override
 

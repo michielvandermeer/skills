@@ -121,10 +121,6 @@ The altitude a `/grilling` session grills at, named on one line in its first Rou
 **Altitude**:
 How deep a Round grills, set by the Subject. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
 
-**Retrospective**:
-A look at a finished session — the skill the user typed has reached its own done condition, not a halt or a wait — that proposes changes to the agent's environment (steering files, checks, navigation, tools, this plugin's skills when they are the workspace, and the host's global agent files) so later runs go better. Distinct from `/code-review`, which judges the product diff.
-_Avoid_: retro, postmortem
-
 **Docs pass**:
 The background exploration that opens a `/refine` session — `CONTEXT.md`, the ADRs, and recent git history, read before any code. Cheap enough to land while round 1 is still being answered.
 

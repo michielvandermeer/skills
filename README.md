@@ -127,7 +127,7 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 These skills pin the model and effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
 
 - A **spec-bound dispatch** works to a document settled before it started, so it runs cheaper — `skills:implementer` at Sonnet, and all three shipped agents at `effort: medium`.
-- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s planner, both `/code-review` reviewers, the `/improve-data-structures` pass, the `/retrospective` gatherer, and the `/codebase-design` design-it-twice fan-out.
+- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s planner, both `/code-review` reviewers, the `/improve-data-structures` pass, and the `/codebase-design` design-it-twice fan-out.
 
 > **These skills assume a session on Opus or above.** The tiers are absolute, not relative to your session, so starting a Sonnet or Haiku session does **not** scale them down — a Haiku session gets Sonnet step agents and spends more than you chose. [ADR-0007](docs/adr/0007-pinned-subagent-model-tiers.md) records why it works that way and what it costs.
 
@@ -154,7 +154,6 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `refine` | Determine a change's scope with Product, QA, and Development, via a prototype the room steers. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
-| `retrospective` | Look at a finished session and suggest environment changes so later runs go better. The session skill you typed runs one when it finishes. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
 | `triage` | Move issues through a triage state machine; buildable work ends as a Spec. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |

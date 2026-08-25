@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0022
+---
+
 # `/implement` ends with a retrospective that does not block land
 
 Every `/implement` run gathers a **Retrospective** before it deletes the Spec and Steps, lands the branch without waiting, then presents the suggestions in chat. You can still type `/retrospective` on the current session or a session you name. Other named session skills start one too; that list lives in [ADR-0021](0021-named-session-skills-start-a-retrospective.md).
