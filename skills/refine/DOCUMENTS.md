@@ -1,13 +1,13 @@
 # The two documents
 
-Templates and the mapping a `/refine` session uses when writing `.agents/refinements/<slug>/`. **`session.md`** is resume infrastructure; **`complete.md`** is user-facing (what the room signs off and may write back to Jira).
+Templates and the mapping a `/refine` session uses when writing `.agents/refinements/<slug>/`. **`session.md`** is resume infrastructure; **`complete.md`** is user-facing (what the room signs off and may write back to the Jira ticket or source markdown file).
 
 Both documents share these headings. Section order is fixed; session sections fill as content arrives. Session `How it works today` is full fidelity, including code anchors, and carries `(provisional — from the documents)` until the code walk confirms it. Complete `How it works today` is behaviour.
 
 ```markdown
 # <Change title>
 
-Source: <Jira key / `.agents/ideas/<slug>.md` / conversation>
+Source: <Jira key / markdown path / conversation>
 
 ## Intent
 
@@ -46,7 +46,7 @@ Synthesise Complete from the Session document — rename nothing. Restate `How i
 | How it works today | `How it works today`, restated as behaviour |
 | In scope | `In scope` |
 | Out of scope | `Out of scope`, plus links to any split-off stubs |
-| Prototype | `Prototype` — path `.agents/prototypes/<slug>/`, the question, what playing settled for Scope |
+| Prototype | `Prototype` — path `.agents/refinements/<slug>/prototype/`, the question, what playing settled for Scope |
 | Open Questions | `Open Questions` verbatim |
 
 The full read-from-code account stays only in `session.md`.

@@ -17,11 +17,11 @@ Two documents, templated in [DOCUMENTS.md](DOCUMENTS.md):
 - **`session.md`** — **resume** infrastructure. Full-fidelity today (code anchors included) so a later session reopens without re-deriving.
 - **`complete.md`** — what the room signs off.
 
-**User-facing** surfaces — live rounds, `complete.md`, `complete.html`, Jira — run at **room language**: every sentence readable aloud once to someone who does not write code. Run `/plain-language`, then hold that stricter bar. Resume density in `session.md` is exempt ([ADR-0010](../../docs/adr/0010-refine-user-facing-surfaces.md)).
+**User-facing** surfaces — live rounds, `complete.md`, write-back — run at **room language**: every sentence readable aloud once to someone who does not write code. Run `/plain-language`, then hold that stricter bar. Resume density in `session.md` is exempt ([ADR-0010](../../docs/adr/0010-refine-user-facing-surfaces.md)).
 
 ## 1. Take the input
 
-A Jira ticket key or URL, an Idea at `.agents/ideas/<slug>.md`, or a sentence typed into the invocation. Retrieve a ticket through whatever MCP tools this session has; an Idea is read and left in place.
+A Jira ticket key or URL, a markdown file, or a sentence typed into the invocation. Retrieve a ticket through whatever MCP tools this session has. An Idea at `.agents/ideas/<slug>.md` is the usual markdown file; any `.md` path is allowed. Read it; close may replace it.
 
 Derive a kebab-case slug from the change itself rather than the ticket key. Everything the session writes lands in `.agents/refinements/<slug>/`.
 
@@ -74,7 +74,7 @@ Done when intent is settled, the room has agreed or declined the Prototype quest
 
 If the room declined a Prototype, skip to step 5.
 
-Tell the room this wait is coming. Follow `/prototype` through handover for the question round 2 settled. It serves this effort. The Prototype does not wait for the Code walk.
+Tell the room this wait is coming. Follow `/prototype` through handover for the question round 2 settled. It serves this effort. Name `.agents/refinements/<slug>/prototype/` as the folder it writes. The Prototype does not wait for the Code walk.
 
 Done when the file or URL is in the room's hands.
 
@@ -84,9 +84,9 @@ The Prototype is the conversation. The room reacts; revise the same Prototype un
 
 Questions in text only for things a demo cannot show — who is allowed, compliance, what this project will not do. Same grilling rules as step 3, including batching.
 
-The moment the change looks like several changes, name the split out loud and let the room decide. If they split it, the other work goes on the out list, and each split-off gets `.agents/refinements/<other-slug>/session.md` carrying its intent and nothing else: a resumable Refinement, not a note. A stub gets no `complete.md` and no HTML report.
+The moment the change looks like several changes, name the split out loud and let the room decide. If they split it, the other work goes on the out list, and each split-off gets `.agents/refinements/<other-slug>/session.md` carrying its intent and nothing else: a resumable Refinement, not a note. A stub gets no `complete.md`.
 
-Keep `session.md` current: in, out, the Prototype path, parked questions. When the room has named in and out, write `.agents/prototypes/<slug>/` as `/prototype` serving a larger effort describes.
+Keep `session.md` current: in, out, the Prototype path, parked questions. When the room has named in and out, write the folder named in step 4 as `/prototype` serving a larger effort describes, or `None`.
 
 Done when `In scope` and `Out of scope` are written in `session.md` and the room has confirmed them, every text-only question is settled or parked, every accepted split-off has a stub (or the room declined), and the Prototype folder is on disk (or Prototype is `None`).
 
@@ -102,12 +102,12 @@ Done when all six sections are present and each carries content or `None`.
 
 ## 7. Close
 
-1. Render `.agents/refinements/<slug>/complete.html` and open it — `start <path>` on Windows, `open` on macOS, `xdg-open` on Linux — reporting the absolute path. See [HTML-REPORT.md](HTML-REPORT.md).
-2. If the session started from a Jira ticket, offer write-back. Replacing the description is the default (fixed structure in the ticket is the point); offer a comment instead when the room asks. Show what it would replace and wait for a yes. Send `complete.md` as Jira markup, with a line pointing at the repo path of `complete.html`.
-3. Commit the Refinement folder and the Prototype folder it points at.
+1. Report the absolute path of `.agents/refinements/<slug>/`. The Prototype is already in the room's hands.
+2. **Write-back.** If the session started from a Jira ticket or a markdown file, show the payload and wait for a yes. Jira payload is `complete.md` as Jira markup; a file payload is `complete.md` as markdown. A yes replaces the ticket description or overwrites the source file. A no leaves the source and continues. A typed sentence has no write-back.
+3. Commit the Refinement folder. Include the source markdown file when write-back overwrote a file in the repo.
 
-`complete.md` is what was signed off; `complete.html` is rendered from it and never parsed. `session.md` remains the resume source for today-claims that trace to the code.
+`complete.md` is what was signed off. `session.md` remains the resume source for today-claims that trace to the code.
 
 Then stop — a Refinement is terminal. A developer starts `/grill-with-docs` from this document, in a session with a different room.
 
-Done when the HTML is open, any Jira write-back offer is resolved, both folders are committed (Prototype `None` skips that folder), and the session has stopped.
+Done when the folder path is reported, write-back has a yes, a no, or no source, the Refinement folder is committed (Prototype `None` skips that subdirectory), and the session has stopped.

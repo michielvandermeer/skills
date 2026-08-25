@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-08-25: Refine close is simpler
+A `/refine` session overwrites the Jira ticket or markdown file it started from after you confirm the text, and no longer asks whether to replace, comment, or skip. It keeps the prototype in the refinement folder next to the briefing, and no longer writes an HTML report.
+
 ## 2026-08-25: No suggestions after a session
 Skills no longer suggest environment changes when they finish, and you can no longer type `/retrospective`. A session ends when its own work is done.
 

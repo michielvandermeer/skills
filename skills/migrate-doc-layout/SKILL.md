@@ -14,7 +14,7 @@ These skills assume a fixed per-repo layout for the documents they read and writ
 | Idea (feeds a `/grilling` session) | `.agents/ideas/<slug>.md` |
 | ADR | `docs/adr/<NNNN>-<slug>.md` |
 | Skill-supporting reference (coding standards, etc.) | `.agents/refs/<slug>.md` |
-| Refinement | `.agents/refinements/<slug>/` — `session.md`, `complete.md`, and their `.html` renders |
+| Refinement | `.agents/refinements/<slug>/` — `session.md`, `complete.md`, and `prototype/` when present |
 | Architecture review | `.agents/architecture-reviews/<timestamp>/` — `report.md` and `report.html` |
 | Codebase audit | `.agents/codebase-audits/<timestamp>/` — `report.md` |
 | Prototype | `.agents/prototypes/<slug>/` |

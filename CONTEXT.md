@@ -10,7 +10,7 @@ A collection of software-engineering skills for Claude Code, distributed as a pl
 A loose, untriaged thought captured at `.agents/ideas/<slug>.md`. Not yet shaped into anything actionable.
 
 **Refinement**:
-The description of a change's **Scope** agreed by Product, QA, and Development in a `/refine` session — what is part of this project and what is not — written so a developer can start a `/grill-with-docs` session from it. Deliberately silent on implementation. Lives in a folder of its own at `.agents/refinements/<slug>/`, holding a Session document and a Complete document. Terminal: nothing consumes it automatically.
+The description of a change's **Scope** agreed by Product, QA, and Development in a `/refine` session — what is part of this project and what is not — written so a developer can start a `/grill-with-docs` session from it. Deliberately silent on implementation. Lives in a folder of its own at `.agents/refinements/<slug>/`, holding a Session document, a Complete document, and a Prototype when the room used one. Terminal: nothing consumes it automatically.
 _Avoid_: functional spec, requirements doc, BRD
 
 **Scope**:
@@ -21,7 +21,7 @@ _Avoid_: work items, backlog, requirements
 The Refinement a `/refine` session writes as it runs, at `.agents/refinements/<slug>/session.md`. Resume infrastructure, not user-facing: intent, the full read-from-code account of today (including code anchors), in scope, out of scope, the Prototype path, parked questions. It survives the close, so a settled change can be reopened without re-deriving today.
 
 **Complete document**:
-The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Six fixed sections — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, user-facing, and the thing written back to a Jira ticket. How it works today is behaviour; the code walkthrough stays only in the Session document.
+The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Six fixed sections — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, user-facing, and the thing written back to the Jira ticket or markdown file the session started from. How it works today is behaviour; the code walkthrough stays only in the Session document.
 
 **Architecture review**:
 The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/`, holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system, then grilled into a Spec with `/grill-with-docs`.
@@ -32,7 +32,7 @@ The output of a `/codebase-audit` run at `.agents/codebase-audits/<timestamp>/`,
 _Avoid_: architecture review, tech-debt report, DSA audit
 
 **Prototype**:
-Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A `/prototype` session leaves it at `.agents/prototypes/<slug>/` so a **Spec** or a **Refinement** can point at what was played with.
+Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A **Spec** points at `.agents/prototypes/<slug>/`. A **Refinement** keeps its Prototype at `.agents/refinements/<slug>/prototype/`.
 _Avoid_: spike, POC, demo, mockup
 
 **Spec**:
