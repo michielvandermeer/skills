@@ -9,6 +9,8 @@ You are the **driving session**: you orchestrate, sub-agents implement. You hold
 
 Sub-agents share the worktree, so run them one at a time. Step agents are `skills:implementer`, pinned to a cheaper tier because their scope was decided before they started. The planner, the fixer, and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md).
 
+Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0024](../../docs/adr/0024-implement-agents-close-leftover-gaps.md).
+
 ## Process
 
 ### 1. Enter the worktree
@@ -58,20 +60,20 @@ Then **check the step structurally** — the step file reads `Status: done`, and
 
 Report one line to the user — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations into the next dispatch.
 
-A `blocked` report or a failed structural check earns exactly one retry: `git reset --hard && git clean -fd`, then re-dispatch the same step with the failure appended to its prompt. A second failure **halts** the run.
+A `blocked` report, a failed structural check, or a result that is a question earns exactly one retry: `git reset --hard && git clean -fd`, then re-dispatch the same step. Append a test or environment failure in its own words, or that the previous run returned a question instead of the report and the gap is still its to close. A second failure **halts** the run.
 
 Done when every file in `.agents/steps/<slug>/` reads `Status: done`.
 
 ### 4. Review and improve
 
-**Run `/code-review` yourself**, with `master` as the fixed point, and hold what its two axes report.
+**Run `/code-review` yourself**, with `master` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner. Hold what its two axes report.
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
 
-Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule:
+Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule. Hand each the Spec path (or that there is none) and that leftover choices are theirs to close from the findings, the Spec, and the code:
 
 1. **Fixes every finding**, both axes, from the findings you paste into its prompt. Retry-then-halt is the whole check on its work.
-2. Runs `/improve-data-structures` **and applies what it finds**.
+2. Runs `/improve-data-structures` and applies what it finds, or skips it.
 
 Each commits its own work.
 
@@ -96,6 +98,6 @@ Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to e
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the spec, the step files, the branch, and the worktree exactly as they are — the completed steps are committed, and the run is resumable only because nothing was cleaned up. Report the step's number, its title, and what blocked it.
+A halt is non-destructive and it is the end of the session. Leave the spec, the step files, the branch, and the worktree exactly as they are — the completed steps are committed, and the run is resumable only because nothing was cleaned up. Report the step's number, its title, and why it did not finish. Quote a test or environment failure. For a result that is a question, say the agent did not finish.
 
 Re-invoking `/implement` with the same argument picks the run back up at that step.

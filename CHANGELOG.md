@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-08-28: Implement agents decide themselves
+When `/implement` hits something the Spec or a Step did not settle, the agent working on it decides and keeps going. You still see a Deviation when the choice contradicts the Spec or changes a later Step.
+
 ## 2026-08-25: Refine close is simpler
 A `/refine` session overwrites the Jira ticket or markdown file it started from after you confirm the text, and no longer asks whether to replace, comment, or skip. It keeps the prototype in the refinement folder next to the briefing, and no longer writes an HTML report.
 

@@ -133,10 +133,10 @@ The scarce resource in a `/refine` session: an idle minute costs as many minutes
 ### Execution
 
 **Planner**:
-The sub-agent that reads a Spec, explores the codebase, and writes the Step files — each with the Footprint its exploration found. Returns only a compact index to the Driving session — never the Step bodies.
+The sub-agent that reads a Spec, explores the codebase, and writes the Step files — each with the Footprint its exploration found. Closes leftover behaviour the Spec did not name so the Step files share one reading. Returns only a compact index to the Driving session — never the Step bodies.
 
 **Step agent**:
-The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes itself, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
+The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes itself, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
 
 **Footprint**:
 The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite that Step runs.
@@ -149,7 +149,7 @@ The section a Step agent appends to its own Step file, recording what it built a
 Anything a Step agent did that contradicts the Spec or changes what a later Step must do. The one piece of a Step's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
-A sub-agent whose work is fully determined by a document decided before it was dispatched — a Spec, a Step, a research question. It exercises no judgement the document has not already settled, and so runs at reduced effort. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
+A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
 _Avoid_: cheap agent, worker, low-tier agent
 
 **Provisional today**:
