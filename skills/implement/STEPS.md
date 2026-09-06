@@ -1,8 +1,8 @@
 # Slicing a spec into steps
 
-You are the **planner** for an `/implement` run. Read the spec you were handed — or the issue, idea, or bare description, when that is all there is — explore the codebase, and write one file per **step** to `.agents/steps/<slug>/`. Return the index — one line per step, `NN | title | one-line deliverable` — and nothing else. A thinner source yields coarser steps; slice what you were given.
+You are the **planner** for an `/implement` run. Read the spec you were handed — or the issue, idea, or bare description, when that is all there is — explore the codebase, and write one file per **step** to `.agents/steps/<slug>/`. Commit the step files in one commit — `plan: <slug>` — before you return ([ADR-0028](../../docs/adr/0028-planner-commits-the-step-files.md)), then return the index and nothing else: one line per step, `NN | title | one-line deliverable`, the deliverable at most fifteen words naming what works, not which symbols change. A thinner source yields coarser steps; slice what you were given.
 
-Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Step agent shares it. Fill only silence — what the Spec already named stays as it is.
+Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Step agent shares it. Fill only silence — what the Spec already named stays as it is, and what the Spec's Out of Scope refuses stays out.
 
 Steps are executed strictly in `NN` order, one sub-agent each, in a shared worktree. **The numbering is the dependency order**: a step may rely on every lower-numbered step and none of the higher-numbered ones. Get that ordering right and there is nothing else to record about dependencies.
 
@@ -17,7 +17,7 @@ Each step is a **tracer bullet**:
 - It fits in a single fresh context window.
 - It leaves green every project in its **footprint**. Every step agent is held to this, so a step that cannot end green is mis-sliced.
 
-Slice to whatever number of steps the spec actually needs. A small spec legitimately yields one step.
+Slice to whatever number of steps the spec actually needs. A small spec legitimately yields one step. Documentation the Spec names rides the step whose behaviour it describes; no step exists only to document, to write the Changelog (`/document-changes` writes it after review), or to run the suite — the last real step leaves the whole suite green.
 
 ## Prefactor first
 
@@ -35,7 +35,7 @@ When even the batches cannot stay green alone, keep the sequence and let them sh
 
 ## Step file
 
-One file per step at `.agents/steps/<slug>/<NN>-<slug>.md`, numbered from `01`.
+One file per step at `.agents/steps/<slug>/<NN>-<step-slug>.md`, numbered from `01`, where `<step-slug>` is the step's own title in kebab case.
 
 ```markdown
 # <NN> — <Step title>
@@ -71,4 +71,5 @@ Three rules keep it honest:
 
 - **A map, nothing more.** Where the work lands, and there it stops. A footprint that starts explaining *how* has turned into a plan the step agent will follow off a cliff.
 - **A guess, not a contract.** Earlier steps move code, so a later step's footprint drifts. The step agent follows the code where the two disagree and records the drift in its `## Outcome`. Write your best guess and let it be corrected.
-- **Name every project.** A project you leave off the `Projects:` line is a project nobody checks until the last step.
+- **Name every project.** A project you leave off the `Projects:` line is a project nobody checks until the last step. `Projects: none` is for a change no project compiles.
+- **Another repository is planned last.** A file there is named by absolute path and `Projects:` names that repository's projects ([ADR-0026](../../docs/adr/0026-implement-never-leaves-the-repository.md)).

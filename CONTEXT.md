@@ -115,6 +115,14 @@ _Avoid_: assumption
 The one to three plain sentences that open round 1 of a `/grilling` session, naming what is being grilled so a reader who landed on the tab cold among several can place it. Round 1 only.
 _Avoid_: summary, preamble, blurb, lede
 
+**Read-back**:
+The closing round of a `/grilling` session once the Frontier is empty: the settled design restated in plain sentences, walking every surface and case the change touches, with no Questions and no new Declarations, ending in the ask for confirmation that we have reached a shared understanding. No Spec, ADR, or code is written before that confirmation.
+_Avoid_: recap, summary, closing round, confirmation round
+
+**Explorer**:
+The read-only sub-agent (`skills:explorer`) a Driving session dispatches with named fact questions about the code. The session carries its report, never the files it read.
+_Avoid_: scout, researcher, background reader
+
 **Subject**:
 The altitude a `/grilling` session grills at, named on one line in its first Round and classified `functional` or `technical` by where the user's judgement is needed rather than by which half is bigger.
 
@@ -133,7 +141,7 @@ The scarce resource in a `/refine` session: an idle minute costs as many minutes
 ### Execution
 
 **Planner**:
-The sub-agent that reads a Spec, explores the codebase, and writes the Step files — each with the Footprint its exploration found. Closes leftover behaviour the Spec did not name so the Step files share one reading. Returns only a compact index to the Driving session — never the Step bodies.
+The sub-agent that reads a Spec, explores the codebase, and writes the Step files — each with the Footprint its exploration found. Closes leftover behaviour the Spec did not name so the Step files share one reading. Commits the Step files in one commit, then returns only a compact index to the Driving session — never the Step bodies.
 
 **Step agent**:
 The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes itself, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
@@ -142,11 +150,15 @@ The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes 
 The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite that Step runs.
 _Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
 
+**Green**:
+Zero failures in the projects a Step's Footprint names, plus any verification the repo's conventions demand for the surface touched, measured against `master`: a failure that also fails on `master` at the merge-base is a Deviation to report, not the Step's to fix, and does not block landing.
+_Avoid_: passing, all tests pass, mostly green
+
 **Outcome**:
 The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong. The channel by which a Step agent informs its successors, bypassing the Driving session's context entirely.
 
 **Deviation**:
-Anything a Step agent did that contradicts the Spec or changes what a later Step must do. The one piece of a Step's detail the Driving session does carry forward.
+Anything a Step agent did that contradicts the Spec or changes what a later Step must do, and any failure it left red because `master` already fails it. The one piece of a Step's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
 A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.

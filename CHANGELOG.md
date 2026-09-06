@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-09-07: Grilling waits for its facts
+A `/grill-with-docs` session pulls first, sends background readers for every fact it needs from the code, and waits for their reports before asking the questions that depend on them. Facts only you hold are asked as questions.
+
+## 2026-09-07: Grilling ends with a read-back
+When nothing is left to ask, the session restates the settled design once, surface by surface, and asks you to confirm before it writes the spec. Glossary entries land as terms settle, ADRs are declarations you can decline, and a screen question goes to `/prototype` instead of lettered options.
+
+## 2026-09-07: Implement runs never push or publish
+An `/implement` run never pushes, publishes, or changes a live system; a Step that needs that stops the run and says so. Work in a second repository stays on an unpushed branch named in the final report.
+
+## 2026-09-07: Implement measures green against master
+A test that already fails on master is reported, not fixed, and does not block landing. When master moved during the run, `/implement` re-runs the affected projects before landing.
+
+## 2026-09-07: Implement plans survive a retry
+The Planner commits the Step files before the first Step runs, so a retry or resume cannot delete them. The Driving session hands paths and reads no Step or Spec itself. It also works on hosts whose shell forgets its directory, and in repos whose default branch is `main`.
+
 ## 2026-08-28: Implement agents decide themselves
 When `/implement` hits something the Spec or a Step did not settle, the agent working on it decides and keeps going. You still see a Deviation when the choice contradicts the Spec or changes a later Step.
 

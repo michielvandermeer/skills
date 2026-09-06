@@ -14,4 +14,6 @@ Effort pins avoid the problem entirely, because `medium` is below Claude Code's 
 
 Replacing the built-in `Explore` with `skills:explorer` also gives up a property of the built-in: `Explore` and `Plan` are the only sub-agents that skip the CLAUDE.md hierarchy and the parent session's git status. `skills:explorer` pays both on every dispatch. The trade holds because each skill dispatches one explorer per run, so that cost is fixed while the effort reduction applies across a whole codebase walk — but it inverts in a repo with a very large CLAUDE.md hierarchy.
 
+A host without a Sonnet tier dispatches step agents on its cheapest model that edits code; the pin names a tier, not a vendor.
+
 The saving is bounded and modest: Sonnet is 40% cheaper per token than Opus, and the pin covers implementation steps only. One retried Sonnet step costs more than the Opus run it replaced.

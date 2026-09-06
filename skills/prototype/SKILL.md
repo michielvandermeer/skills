@@ -58,16 +58,17 @@ The Spec is the handover. Real code gets built from it later, by `/implement`.
 ## Rules that apply to both
 
 1. **Throwaway from day one, and clearly marked as such.** A logic demo is written in the folder. A UI prototype mounts in the app next to the page it's prototyping so context is obvious — name those files so a casual reader can see they're a prototype, not production. For throwaway UI routes, obey whatever routing convention the project already uses.
-2. **Trivial to run.** A UI prototype starts from one command in the project's task runner — `pnpm <name>`, `python <path>`, `bun <path>`, etc. A logic demo is a single HTML file the user double-clicks. Either way, no thinking required to start it.
+2. **Trivial to run.** A UI prototype starts from one command in the project's task runner — `pnpm <name>`, `python <path>`, `bun <path>`, etc. — on a free port, leaving every process you did not start running. A logic demo is a single HTML file the user double-clicks. Either way, no thinking required to start it.
 3. **No persistence by default.** State lives in memory. Persistence is the thing the prototype is _checking_, not something it should depend on. If the question explicitly involves a database, hit a scratch DB or a local file with a clear "PROTOTYPE — wipe me" name.
 4. **Skip the polish.** No tests, no error handling beyond what makes the prototype _runnable_, no abstractions. The point is to learn something fast.
 5. **Surface the state.** After every action (logic) or on every variant switch (UI), print or render the full relevant state so the user can see what changed.
 
 ## Serving a larger effort
 
-A `/wayfinder` prototype ticket, a `/grilling` session reaching for a demo mid-design, or a `/refine` session after the prototype question, invokes `/prototype` as part of a larger effort. Write no Spec. The parent document names the folder.
+A `/wayfinder` prototype ticket, a `/grilling` session reaching for a demo mid-design, a `/grill-with-docs` session once its frontier is empty, or a `/refine` session after the prototype question, invokes `/prototype` as part of a larger effort. Write no Spec. The parent document names the folder.
 
 - **Already in a worktree** (wayfinder, grilling mid-design): hand over, write the folder in this tree, stop. Leave the worktree and its branch to the effort that opened them.
+- **Not in a worktree, `/grill-with-docs`**: follow steps 1–5 with step 5.3 left out — the folder is `.agents/prototypes/<slug>/`, and the parent's `/to-spec` names it.
 - **Not in a worktree** (`/refine`): waive the worktree so the parent session stays on the checkout that holds the Refinement. Follow steps 1–4 on this checkout. The parent session's steering *is* the verdict loop — variants and revisions stay on this Prototype. When the parent session has settled the question, write the folder the parent named and remove in-app prototype files that are not the folder, as [Worktree waived](#worktree-waived) does. Write no Spec.
 
 ## Worktree waived
