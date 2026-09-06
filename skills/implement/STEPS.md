@@ -1,6 +1,8 @@
 # Slicing a spec into steps
 
-You are the **planner** for an `/implement` run. Read the spec you were handed — or the issue, idea, or bare description, when that is all there is — explore the codebase, and write one file per **step** to `.agents/steps/<slug>/`. Commit the step files in one commit — `plan: <slug>` — before you return ([ADR-0028](../../docs/adr/0028-planner-commits-the-step-files.md)), then return the index and nothing else: one line per step, `NN | title | one-line deliverable`, the deliverable at most fifteen words naming what works, not which symbols change. A thinner source yields coarser steps; slice what you were given.
+You are the **planner** for an `/implement` run. Read the spec you were handed — or the issue, idea, or bare description, when that is all there is — explore the codebase, and write one file per **step** to `.agents/steps/<slug>/`. A thinner source yields coarser steps; slice what you were given.
+
+When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0028](../../docs/adr/0028-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | one-line deliverable`, the deliverable at most fifteen words naming what works.
 
 Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Step agent shares it. Fill only silence — what the Spec already named stays as it is, and what the Spec's Out of Scope refuses stays out.
 
@@ -17,7 +19,7 @@ Each step is a **tracer bullet**:
 - It fits in a single fresh context window.
 - It leaves green every project in its **footprint**. Every step agent is held to this, so a step that cannot end green is mis-sliced.
 
-Slice to whatever number of steps the spec actually needs. A small spec legitimately yields one step. Documentation the Spec names rides the step whose behaviour it describes; no step exists only to document, to write the Changelog (`/document-changes` writes it after review), or to run the suite — the last real step leaves the whole suite green.
+Slice to whatever number of steps the spec actually needs. A small spec legitimately yields one step. Every step delivers behaviour: documentation the Spec names rides the step whose behaviour it describes, the Changelog is `/document-changes`'s to write after review, and the last real step is the one that leaves the whole suite green.
 
 ## Prefactor first
 

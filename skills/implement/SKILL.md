@@ -5,9 +5,9 @@ argument-hint: "Which spec, issue, or idea to implement?"
 disable-model-invocation: true
 ---
 
-You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, one three-line report per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So until step 5 you hand paths and read nothing behind them — not the Spec, not a Step file or its Outcome, not the diff, not the code — beyond step 3's structural check. The sub-agent that needs a document reads it. While a sub-agent runs there is no parent work; wait for its report.
+You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, one three-line report per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 3's structural check and nothing more. While a sub-agent runs, waiting is the work.
 
-Sub-agents share the worktree, so run them one at a time, and before every dispatch make sure no sub-agent of this run is still running. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The planner, the fixer, and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md).
+Sub-agents share the worktree, so run them one at a time. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The planner, the fixer, and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0024](../../docs/adr/0024-implement-agents-close-leftover-gaps.md).
 
@@ -19,19 +19,19 @@ The run never leaves a local checkout: nothing pushes, publishes, or changes a l
 
 Derive `<slug>`: the spec's filename without its extension when the argument names one, otherwise a kebab-case slug from the argument.
 
-`master` here and below means the repository's default branch — `main` where that is what the repo uses. The main checkout's working tree is the user's: nothing in this run pulls over it, stashes it, or checks another branch out in it before step 6.
+`master` here and below means the repository's default branch — `main` where that is what the repo uses. The main checkout's working tree is the user's and stays as you found it until step 6.
 
 A prior run is **in flight** when any linked git worktree contains `.agents/steps/<slug>/` — the planner got that far, so a worktree holds those steps. Find it with `git worktree list` (or the host's equivalent). Check first, because it decides which worktree you enter:
 
 - **In flight** → a worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
   - Put the session's working directory on that worktree's path.
-  - `git reset --hard && git clean -fd` drops whatever the halted Step left behind; the Step files are committed, so the clean spares them. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
+  - `git reset --hard && git clean -fd` drops whatever the halted Step left behind. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
   - The Steps are already planned: skip step 2 and resume at the lowest-numbered Step whose `Status:` is not `done`, or at step 4 when every Step reads `done`.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git rebase master` so the run sits on the master you actually have:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
   - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
 
-The session must work *inside* the worktree for the rest of the run — creating a worktree alone is not enough. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it, then begin every command with `cd <that path> &&` (or `git -C <that path>`), scope every search to it, and carry it into every sub-agent prompt as the only directory the agent works in. A check that ran in the original directory is not a check. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
+The session must work *inside* the worktree for the rest of the run — creating a worktree alone is not enough. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it, then begin every command with `cd <that path> &&` (or `git -C <that path>`), scope every search to it, and carry it into every sub-agent prompt as the only directory the agent works in. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
 
 ### 2. Plan the steps
 
@@ -43,20 +43,21 @@ A planner that fails or returns no steps **halts** the run.
 
 ### 3. Run each step in `NN` order
 
-Dispatch a fresh `skills:implementer` per step. Hand it paths and let it read what it needs — the prompt carries paths, section names, the Step number and count, the earlier deviations verbatim, and the report format; it restates neither the Spec nor the Step:
+Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and section names — it reads what is behind them:
 
 - the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
 - an instruction to read the `## Outcome` of every lower-numbered step file before starting
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
 - the spec's Testing Decisions section, which governs what it tests
-- the deviations reported by earlier steps, when there are any
+- the deviations reported by earlier steps, verbatim, when there are any
+- its Step number and the total, and the report format below
 
 Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so its successors inherit the correction.
 
 Require of it: **green before it finishes**, then its `## Outcome` appended to its Step file, that file's `Status:` set to `done`, and its code and Step file committed together in one commit.
 
 - Green covers every project on its footprint's `Projects:` line, and the whole suite on the last Step.
-- Green is zero failures in those projects, measured against `master`: a failure that also fails on `master` at the merge-base is not this run's — the agent names the test on its deviations line and finishes, and it does not block landing; a failure that passes on `master` is red until fixed ([ADR-0027](../../docs/adr/0027-green-is-measured-against-master.md)).
+- Green is measured against `master` ([ADR-0027](../../docs/adr/0027-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
 - A verification the repo's own conventions demand for the surface the Step touches — a browser pass, a smoke run — counts toward green and is the Step agent's, run from the worktree.
 - `CHANGELOG.md` stays untouched whatever the repo's docs rules say; step 5 writes it.
 
@@ -68,7 +69,7 @@ built: <one sentence on what now works>
 deviations: <what contradicts the Spec or changes a later Step, or "none">
 ```
 
-A fact a successor needs goes in `## Outcome`, which the successor reads itself, not on the deviations line.
+A fact a successor needs goes in `## Outcome`; the successor reads it there.
 
 Then **check the step structurally** — `grep '^Status:'` on the Step file reads `done`, and `git log -1` shows a new commit. That is the whole check; open the Step file only when it fails. Step 4's review covers the rest.
 
@@ -118,6 +119,6 @@ The worktree, the review diff, and the land cover this repository only. Work a S
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the spec, the step files, the branch, and the worktree exactly as they are — the completed steps are committed, and the run is resumable only because nothing was cleaned up. Report the step's number, its title, and why it did not finish. Quote a test or environment failure. For a result that is a question, say the agent did not finish.
+A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, and the worktree exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report the Step's number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
 
 Re-invoking `/implement` with the same argument picks the run back up at that step.
