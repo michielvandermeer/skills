@@ -1,6 +1,6 @@
 # mvdmio Skills
 
-This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting reference file. The host invokes the **installed plugin**, not this checkout. After committing skill files, update that install so the next session runs the new bodies.
+This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting reference file. The host invokes the **installed plugin**, not this checkout.
 
 ## Grilling ends in skill edits
 
