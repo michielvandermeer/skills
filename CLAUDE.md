@@ -4,7 +4,7 @@ This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting
 
 ## Grilling ends in skill edits
 
-`/grill-with-docs` normally chains into `/to-spec`. Here, when a grilling session's frontier is empty, edit the skill files directly — skip `/to-spec` and `/implement`. The driving session already holds the design tree; the work is a handful of markdown edits. A Spec only briefs a later `/implement` session that lacks that context.
+`/grill-with-docs` normally chains into `/to-spec`. Here, when a grilling session's frontier is empty, edit the skill files directly — skip `/to-spec`, `/implement`, and `/implement-oneshot`. The driving session already holds the design tree; the work is a handful of markdown edits. A Spec only briefs a later `/implement` or `/implement-oneshot` session that lacks that context.
 
 Still owes:
 

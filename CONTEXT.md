@@ -36,7 +36,7 @@ Throwaway code built to answer one design question — whether a state model hol
 _Avoid_: spike, POC, demo, mockup
 
 **Spec**:
-The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`.
+The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement` and `/implement-oneshot`.
 _Avoid_: PRD, plan, design doc
 
 **Step**:
@@ -68,7 +68,7 @@ The product-facing history of a context, at `CHANGELOG.md` beside that context's
 _Avoid_: release notes, Keep a Changelog, commit log, NEWS
 
 **Changelog entry**:
-One shipped, product-visible change recorded in a Changelog: a dated title of at most six words and a body of at most three sentences, in **Plain language** with no development jargon. One entry per `/implement` run per context that changed; backfill groups git history into the same shape by logical product feature, not by merge commit.
+One shipped, product-visible change recorded in a Changelog: a dated title of at most six words and a body of at most three sentences, in **Plain language** with no development jargon. One entry per `/implement` or `/implement-oneshot` run per context that changed; backfill groups git history into the same shape by logical product feature, not by merge commit.
 _Avoid_: release bullet, commit message, patch note
 
 ### Communication
@@ -146,19 +146,23 @@ The sub-agent that reads a Spec, explores the codebase, and writes the Step file
 **Step agent**:
 The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes itself, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
 
+**Oneshot agent**:
+The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot`.
+_Avoid_: direct implementer, oneshot implementer, single-session agent, implement-direct
+
 **Footprint**:
 The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite that Step runs.
 _Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
 
 **Green**:
-Zero failures in the projects a Step's Footprint names, plus any verification the repo's conventions demand for the surface touched, measured against `master`: a failure that also fails on `master` at the merge-base is a Deviation to report, not the Step's to fix, and does not block landing.
+Zero failures in the projects a Step's Footprint names, or in the projects an Oneshot agent found in the codebase, plus any verification the repo's conventions demand for the surface touched, measured against `master`: a failure that also fails on `master` at the merge-base is a Deviation to report, not the run's to fix, and does not block landing.
 _Avoid_: passing, all tests pass, mostly green
 
 **Outcome**:
 The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong. The channel by which a Step agent informs its successors, bypassing the Driving session's context entirely.
 
 **Deviation**:
-Anything a Step agent did that contradicts the Spec or changes what a later Step must do, and any failure it left red because `master` already fails it. The one piece of a Step's detail the Driving session does carry forward.
+Anything a Step agent or Oneshot agent did that contradicts the Spec or changes what a later Step must do, and any failure it left red because `master` already fails it. The one piece of a run's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
 A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.

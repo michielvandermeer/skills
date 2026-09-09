@@ -109,11 +109,13 @@ Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Co
 ├── agents/                # sub-agents the skills dispatch, one markdown file each
 │   ├── explorer.md
 │   ├── implementer.md
+│   ├── oneshot.md
 │   └── researcher.md
 ├── docs/adr/              # architecture decision records
 ├── skills/                # one directory per skill, each with a SKILL.md
 │   ├── code-review/
 │   ├── implement/
+│   ├── implement-oneshot/
 │   └── ...
 ├── CONTEXT.md             # the vocabulary these skills share
 ├── LICENSE
@@ -126,7 +128,7 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 
 These skills pin the model and effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
 
-- A **spec-bound dispatch** works to a document settled before it started, so it runs cheaper — `skills:implementer` at Sonnet, and all three shipped agents at `effort: medium`.
+- A **spec-bound dispatch** works to a document settled before it started, so it runs cheaper — `skills:implementer` and `skills:oneshot` at Sonnet, and all four shipped agents at `effort: medium`.
 - Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s planner, both `/code-review` reviewers, the `/improve-data-structures` pass, and the `/codebase-design` design-it-twice fan-out.
 
 > **These skills assume a session on Opus or above.** The tiers are absolute, not relative to your session, so starting a Sonnet or Haiku session does **not** scale them down — a Haiku session gets Sonnet step agents and spends more than you chose. [ADR-0007](docs/adr/0007-pinned-subagent-model-tiers.md) records why it works that way and what it costs.
@@ -140,13 +142,14 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
-| `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement` and for manual backfill. |
+| `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, and for manual backfill. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
+| `implement-oneshot` | Implement a spec in one sub-agent session, skipping the Planner. Still reviews and improves data structures after. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then grill the one you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `migrate-doc-layout` | Move spec, idea, reference, refinement, architecture-review, and codebase-audit documents into this repo's canonical `.agents/` layout. |

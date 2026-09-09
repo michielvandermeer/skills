@@ -1,6 +1,6 @@
 ---
 name: document-changes
-description: Write product-facing Changelog entries beside each CONTEXT.md. Use when /implement finishes before Spec delete and land, when backfilling Changelog history from git, or the user runs /document-changes with an optional context name and date window.
+description: Write product-facing Changelog entries beside each CONTEXT.md. Use when /implement or /implement-oneshot finishes before Spec delete and land, when backfilling Changelog history from git, or the user runs /document-changes with an optional context name and date window.
 argument-hint: "[context] [from yyyy-mm-dd] [until yyyy-mm-dd]"
 ---
 
@@ -25,13 +25,13 @@ You are the **driving session**, or a `general-purpose` sub-agent at the session
 - Only a root `CONTEXT.md` → one Changelog beside it.
 - Manual name filter matches the map's app name (e.g. `Compliance`), case-insensitive.
 
-**Attribution.** Paths under an app root from the map → that context. Implement mode may also use the Spec and step **Footprints** when the diff is only under shared libraries. Manual library-only clusters: entry only when commit subjects clearly name one app; otherwise skip.
+**Attribution.** Paths under an app root from the map → that context. Implement mode may also use the Spec, and step **Footprints** when they exist, when the diff is only under shared libraries. Manual library-only clusters: entry only when commit subjects clearly name one app; otherwise skip.
 
 ## Product-visible
 
 An entry only for change a product user could notice — behaviour, screens, wording they see, workflows. Internal-only work (refactors, agent-doc cleanup, Spec/step chore drops, review-fix hardening of work already covered) produces no entry.
 
-Nothing product-visible → tell the user none was needed and stop. `/implement` still lands.
+Nothing product-visible → tell the user none was needed and stop. `/implement` and `/implement-oneshot` still land.
 
 ## Dedup
 
@@ -41,10 +41,10 @@ Skip any candidate whose full heading line already exists — exact match on `##
 
 ### Implement mode
 
-`/implement` calls this after review/improve, while Spec and step **Outcomes** are still on disk, before delete and land. Branch diff vs the fixed point (usually `master`) is available.
+`/implement` and `/implement-oneshot` call this after review/improve, while the Spec is still on disk, before delete and land. Branch diff vs the fixed point (usually `master`) is available.
 
 1. Resolve affected contexts from branch-diff paths (and Spec/Footprints for library-only work).
-2. For each affected context, draft **one** entry for the whole run from that context's product point of view. Prefer Spec problem/solution and Outcomes; use the diff only to confirm what landed.
+2. For each affected context, draft **one** entry for the whole run from that context's product point of view. Prefer Spec problem/solution and Outcomes when they exist; use the diff only to confirm what landed.
 3. Apply entry shape, product-visible filter, dedup.
 4. Prepend survivors; create files as needed.
 5. Commit on the current branch when any Changelog changed; otherwise no commit.

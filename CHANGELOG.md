@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-09: Oneshot implement without planning
+Type `/implement-oneshot` to build a spec in one agent session, without a plan of steps first. `/implement` still slices work into steps. Both still review, improve data structures, and land.
+
 ## 2026-09-09: Triage splits and parks
 When you run `/triage` on an email, a file, or a ticket, each separate problem becomes its own Spec or issue. Unclear work is saved as an issue that still needs information, a person, or a later grilling session. Work you will not do is not kept as a file.
 
