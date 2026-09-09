@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0030
+---
+
 # Triage ends in a Spec, not an agent brief
 
 `/triage` used to park buildable work as `ready-for-agent` on the issue file with an appended agent brief. Specs already own that handoff for `/implement`, and two contracts for the same job drift. Buildable triage now runs `/to-spec` when the issue is clear, or `/grill-with-docs` (which ends in `/to-spec`) when it is not, then deletes the issue file. Agent briefs and the issue `ready-for-agent` status are gone. Open issues keep only `needs-triage`, `needs-info`, `ready-for-human`, and `wontfix`.

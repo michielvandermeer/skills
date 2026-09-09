@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-09: Triage splits and parks
+When you run `/triage` on an email, a file, or a ticket, each separate problem becomes its own Spec or issue. Unclear work is saved as an issue that still needs information, a person, or a later grilling session. Work you will not do is not kept as a file.
+
 ## 2026-09-07: Grilling waits for its facts
 A `/grill-with-docs` session pulls first, sends background readers for every fact it needs from the code, and waits for their reports before asking the questions that depend on them. Facts only you hold are asked as questions.
 

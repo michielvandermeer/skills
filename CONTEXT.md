@@ -58,7 +58,7 @@ A grilling **Decision ticket** that holds leftover unblocked one-question **Fork
 _Avoid_: leftovers ticket, bundle, grab-bag
 
 **Issue**:
-An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`. Carries `Category:` and `Status:` lines. A buildable issue ends as a **Spec**; `/triage` deletes the issue file once that Spec is written. Surviving states are `needs-triage`, `needs-info`, `ready-for-human`, and `wontfix` — not agent-ready (that status lives on Specs).
+An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`, one file per distinct problem, carrying `Category:` and `Status:` lines. A buildable issue with a clear solution ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document.
 
 **Map**:
 The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog. Every Map ends in a Spec, so its Destination names the change that Spec will cover rather than which artifact the effort produces.
