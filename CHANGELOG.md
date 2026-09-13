@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-14: Review a spec before building
+Type `/review-spec` on the model you want as a second opinion. It proposes edits to the spec, writes the ones you pick by number, and then checks the file still holds together.
+
 ## 2026-09-13: Architecture review writes several files
 When the architecture report is ready, you choose which suggestions become Ideas and which become Specs. Only a change that is ready to build becomes a Spec. The session then stops so you can grill or implement those files yourself.
 

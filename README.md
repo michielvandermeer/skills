@@ -159,6 +159,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
 | `retro` | Look at a finished session and suggest environment changes so later runs go better. |
+| `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
 | `triage` | Sort incoming reports into Specs or parked Issues, one document per distinct problem. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |

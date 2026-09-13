@@ -43,6 +43,10 @@ _Avoid_: spike, POC, demo, mockup
 The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement` and `/implement-oneshot`.
 _Avoid_: PRD, plan, design doc
 
+**Unstated claim**:
+A claim a Spec treats as settled that it never states as a decision and that the code does not establish as fact.
+_Avoid_: assumption
+
 **Step**:
 One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md`. A tracer bullet: a narrow but complete path through every layer, sized to one fresh agent context, verifiable on its own. Steps exist only for the duration of an `/implement` run and are deleted with the Spec they came from.
 _Avoid_: ticket, task, chunk, phase
