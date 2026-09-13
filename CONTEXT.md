@@ -153,7 +153,7 @@ _Avoid_: postmortem, wrap-up, retro as a meeting
 ### Execution
 
 **Planner**:
-The sub-agent that reads a Spec, explores the codebase, and writes the Step files — each with the Footprint its exploration found and the Steps it is blocked by. Closes leftover behaviour the Spec did not name so the Step files share one reading. Commits the Step files in one commit, then returns only a compact index to the Driving session — never the Step bodies.
+The sub-agent that reads a Spec, walks the code only until every Step's Footprint can be filled, and writes the Step files — each with that Footprint and the Steps it is blocked by. It closes leftover behaviour the Spec did not name, commits the files in one commit, and returns only a compact index to the Driving session — never the Step bodies.
 
 **Ready**:
 A pending Step whose `Blocked by` Steps are all done. What `/implement` dispatches now; several Ready Steps run together.

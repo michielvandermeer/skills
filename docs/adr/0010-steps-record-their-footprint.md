@@ -24,3 +24,9 @@ Making the footprint binding was rejected outright. A Step agent that trusts a s
 As first written, this decision also widened a Step to the whole suite whenever its footprint named more than one project. Measuring the first run to use footprints retired that rule: 33 of its 34 footprints named four projects, because `Db`, `Web`, `Tests.Integration` and `Tests.Unit` is simply the shape of a feature here. The trigger we expected to fire rarely fired almost always, which would have made every Step run the whole suite — the regression this decision was supposed to avoid.
 
 The Step agents declined to follow it, running the named projects instead: 45 scoped runs across 14 Steps, median 3 each, and one whole-suite run in all of them. They were right, and the rule now says what they did.
+
+## Amendment — the walk stops at the Footprint
+
+This decision accepted a slower Planner as the cost of writing the Footprint down: a second pass over what the Planner already found, against 139 minutes of Step agents finding the same code again. It did not ask the Planner to keep reading after every Footprint can be filled.
+
+A walk that continues into neighbouring features, tests that will not appear on any Footprint, and documents the host already placed in context is not that second pass. Fourteen `/implement` Planner runs on 12–13 September 2026 showed that extra reading. One-Step plans finished in two to five minutes. Two-Step plans took nine to thirteen. Later rounds slowed as more files piled up. The Footprint is still written. The walk ends when it can be.
