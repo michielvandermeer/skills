@@ -28,7 +28,7 @@ Derive `<slug>`: a kebab-case slug of the question being prototyped. Check the c
 - **A `prototype/<slug>` branch exists** → an earlier run handed the prototype over and stopped before its verdict. Find its worktree with `git worktree list` (or the host's equivalent), put the session's working directory there, and resume at step 4. Leave that tree exactly as it stands: a reset or a clean destroys the prototype you came back for.
 - **Fresh** → open a worktree on branch `prototype/<slug>` and put the session's working directory inside it:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Record the branch name it chose when that name is not `prototype/<slug>`.
-  - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git worktree add` at `.agents/worktrees/prototype/<slug>` on branch `prototype/<slug>`, and change the session's working directory there.
+  - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/prototype/<slug>` on branch `prototype/<slug>`, and change the session's working directory there.
 
 The session must work *inside* the worktree for the rest of the run — creating a worktree alone is not enough. A fresh worktree carries no installed dependencies, so a UI prototype installs the project's before it can start — rule 2 promises the user one command. A prompt that explicitly waives the worktree takes [Worktree waived](#worktree-waived) instead.
 

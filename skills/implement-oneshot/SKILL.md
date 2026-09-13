@@ -25,12 +25,12 @@ Find linked worktrees with `git worktree list` (or the host's equivalent). Check
 
 - **`/implement` in flight** → `.agents/steps/<slug>/` exists in this checkout or in any linked worktree: stop and say `/implement` is already in flight.
 - **This skill in flight** → no Step files, and `git worktree list` shows a worktree on branch `<slug>`, or branch `<slug>` exists. A worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
-  - Put the session's working directory on that worktree's path. When the branch exists without a worktree, add one at `.agents/worktrees/<slug>` on branch `<slug>` first (ensure `.agents/worktrees/` is ignored; prefer a local ignore when the repo uses one).
+  - Put the session's working directory on that worktree's path. When the branch exists without a worktree, `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>` first (ensure `.agents/worktrees/` is ignored; prefer a local ignore when the repo uses one).
   - `git reset --hard && git clean -fd` drops whatever the halted agent left uncommitted. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
   - Skip to step 2.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git rebase master` so the run sits on the master you actually have:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
-  - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
+  - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
 
 The session must work *inside* the worktree for the rest of the run — creating a worktree alone is not enough. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it, then begin every command with `cd <that path> &&` (or `git -C <that path>`), scope every search to it, and carry it into every sub-agent prompt as the only directory the agent works in. An `/implement-oneshot` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
 

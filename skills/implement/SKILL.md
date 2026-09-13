@@ -30,7 +30,7 @@ A prior run is **in flight** when any linked git worktree contains `.agents/step
   - The Steps are already planned: skip step 2 and resume at step 3, or at step 4 when every Step reads `done` and no Step worktree remains.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git rebase master` so the run sits on the master you actually have:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
-  - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
+  - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
 
 The session must work *inside* the run worktree for the rest of the run — creating a worktree alone is not enough. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it, then begin every command with `cd <that path> &&` (or `git -C <that path>`), scope every search to it, and carry the run worktree path into every sub-agent prompt that works there. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
 
@@ -46,7 +46,7 @@ A planner that fails or returns no steps **halts** the run.
 
 Dispatch every Ready pending Step together (`Blocked by: none`, or every listed NN reading `Status: done`). For each one:
 
-1. Resolve the main checkout from `git worktree list` (the first worktree). Open a Step worktree there at `.agents/worktrees/<slug>-<NN>` on a new branch `<slug>-<NN>` starting at the run branch's current HEAD, with `git worktree add`, so this session stays in the run worktree.
+1. Resolve the main checkout from `git worktree list` (the first worktree). Open a Step worktree there at `.agents/worktrees/<slug>-<NN>` on a new branch `<slug>-<NN>` starting at the run branch's current HEAD, with `git -c checkout.workers=0 worktree add`, so this session stays in the run worktree.
 2. Dispatch a fresh `skills:implementer` whose only working directory is that Step worktree, with a prompt made of paths and section names — it reads what is behind them:
    - the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
    - an instruction to read the `## Outcome` of every Step file whose `Status:` is `done` before starting
