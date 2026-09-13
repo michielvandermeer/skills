@@ -134,7 +134,7 @@ A one-Step Spec still yields one Step file. A Planner that returns a design note
 
 ## Out of Scope
 
-- Pinning the Planner's model or effort. That contradicts [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) as written and is parked as `.agents/issues/implement/01-planner-session-effort.md`.
+- Pinning the Planner's model or effort. That contradicts [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) as written. A grilling kept session effort.
 
 - Fanning Explorers under the Planner. ADR-0010 rejected that.
 
