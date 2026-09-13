@@ -1,6 +1,6 @@
 # 01 — Bound the Planner walk
 
-Status: pending
+Status: done
 Blocked by: none
 
 ## What to build
@@ -34,15 +34,21 @@ Projects: none
 
 ## Acceptance criteria
 
-- [ ] The slicing rules end the walk when every Step file can be written, including Footprint and `Blocked by`.
-- [ ] A file is opened only if it might belong on a Footprint, or to settle a slice or blocker the Spec left to the code.
-- [ ] Host-provided documents are not opened again; historical Step files from other runs are not a template.
-- [ ] Filling Spec silence stays in `What to build` and uses the walk already done.
-- [ ] Tracer bullets, prefactor first, Wide refactor as expand–contract, overlapping Footprints as a blocking edge, the last Step blocked by every other Step, a thinner source yielding coarser Steps, and another repository planned last all remain.
-- [ ] The plan step halts when the steps directory is missing or empty, or when the Planner's reply is not the index, and does not dispatch an agent to write or commit the files.
-- [ ] The dirty-directory commit fallback remains.
-- [ ] A failed Planner leaves the worktree and the Spec in place; a missing or empty steps directory is a fresh plan on re-invoke.
-- [ ] Ready Steps still run together after a successful plan.
-- [ ] The `Planner` glossary entry names the bound; ADR-0010 says the paid slowness is recording the Footprint, not an unbounded extra walk.
-- [ ] `/implement-oneshot` is unchanged; the Planner remains one agent at the session's model and effort.
-- [ ] A one-Step Spec still yields one Step file; the Footprint still names files, symbols, and every project.
+- [x] The slicing rules end the walk when every Step file can be written, including Footprint and `Blocked by`.
+- [x] A file is opened only if it might belong on a Footprint, or to settle a slice or blocker the Spec left to the code.
+- [x] Host-provided documents are not opened again; historical Step files from other runs are not a template.
+- [x] Filling Spec silence stays in `What to build` and uses the walk already done.
+- [x] Tracer bullets, prefactor first, Wide refactor as expand–contract, overlapping Footprints as a blocking edge, the last Step blocked by every other Step, a thinner source yielding coarser Steps, and another repository planned last all remain.
+- [x] The plan step halts when the steps directory is missing or empty, or when the Planner's reply is not the index, and does not dispatch an agent to write or commit the files.
+- [x] The dirty-directory commit fallback remains.
+- [x] A failed Planner leaves the worktree and the Spec in place; a missing or empty steps directory is a fresh plan on re-invoke.
+- [x] Ready Steps still run together after a successful plan.
+- [x] The `Planner` glossary entry names the bound; ADR-0010 says the paid slowness is recording the Footprint, not an unbounded extra walk.
+- [x] `/implement-oneshot` is unchanged; the Planner remains one agent at the session's model and effort.
+- [x] A one-Step Spec still yields one Step file; the Footprint still names files, symbols, and every project.
+
+## Outcome
+
+Wrote the walk completion criterion, permission to read, and silence-fill-from-the-walk into `skills/implement/STEPS.md`. Plan step now succeeds only on an index reply with Step files on disk; otherwise it halts without a writer dispatch, keeps the dirty-directory commit fallback, and treats a missing or empty steps directory as a fresh plan on re-invoke. In-flight detection now keys off the run worktree (branch `<slug>`) as well as the steps path, so a failed Planner with no Step files still resumes into that worktree.
+
+Footprint drift: `CONTEXT.md` (`Planner`) and `docs/adr/0010-steps-record-their-footprint.md` (Amendment — the walk stops at the Footprint) already named the bound from the triage commit that landed this Spec; this Step did not edit them. Operational edits landed only in `STEPS.md` and `SKILL.md`. `/implement-oneshot` untouched.

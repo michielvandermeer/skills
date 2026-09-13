@@ -1,10 +1,16 @@
 # Slicing a spec into steps
 
-You are the **planner** for an `/implement` run. Read the spec you were handed — or the issue, idea, or bare description, when that is all there is — explore the codebase, and write one file per **step** to `.agents/steps/<slug>/`. A thinner source yields coarser steps; slice what you were given.
+You are the **planner** for an `/implement` run. Read the spec you were handed — or the issue, idea, or bare description, when that is all there is — walk the code until every Step file can be written, then write one file per **step** to `.agents/steps/<slug>/`. A thinner source yields coarser steps; slice what you were given.
+
+## The walk
+
+The walk is done when every Step file can be written — each Footprint filled, each `Blocked by` line set. Stop there even when more searching would find more context. A Spec that spans many files still gets a walk long enough to name them.
+
+Open a file only when it might belong on a Footprint, or to settle a slice or blocker the Spec left to the code. Documents the host already placed in this context stay already-read. The slicing rules document is the template for Step files; Step files from other runs are not.
+
+Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Step agent shares it — from the walk already done. Fill only silence — what the Spec already named stays as it is, and what the Spec's Out of Scope refuses stays out.
 
 When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0028](../../docs/adr/0028-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | blocked by: none|<NNs> | one-line deliverable`, the deliverable at most fifteen words naming what works.
-
-Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Step agent shares it. Fill only silence — what the Spec already named stays as it is, and what the Spec's Out of Scope refuses stays out.
 
 A Step may run as soon as every Step on its `Blocked by:` line is done; independent Steps run together. Number so every blocker has a lower NN than the Step that waits on it. The highest NN lists every other Step on `Blocked by:` — it is the one that leaves the whole suite green.
 
@@ -70,7 +76,7 @@ Write behaviour, not code. The one exception is a snippet that encodes a decisio
 
 ## The footprint
 
-You walked the codebase to slice these steps. The **footprint** is where that walk lands: the files each step is expected to touch, the symbols inside them that matter, and the projects that must stay green. Write it down and the step agent starts from your map instead of repeating your walk.
+You walked until each Footprint could be filled. The **footprint** is where that walk lands: the files each step is expected to touch, the symbols inside them that matter, and the projects that must stay green. Write it down and the step agent starts from your map instead of repeating your walk.
 
 Three rules keep it honest:
 

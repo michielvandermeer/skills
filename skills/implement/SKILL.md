@@ -21,13 +21,13 @@ Derive `<slug>`: the spec's filename without its extension when the argument nam
 
 `master` here and below means the repository's default branch — `main` where that is what the repo uses. The main checkout's working tree is the user's and stays as you found it until step 6.
 
-A prior run is **in flight** when any linked git worktree contains `.agents/steps/<slug>/`. Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). Branches named `<slug>-<NN>` are Step worktrees; they are not the session directory.
+Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). Branches named `<slug>-<NN>` are Step worktrees; they are not the session directory. A prior run is **in flight** when that run worktree exists, or when any linked worktree contains `.agents/steps/<slug>/`.
 
 - **In flight** → a run worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
   - Put the session's working directory on the run worktree's path.
   - `git reset --hard && git clean -fd` drops whatever a halted merge left in the run worktree. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
   - For each Step worktree: a lock means that Step agent is still live — leave it. A Step file that already reads `Status: done` is waiting to rebase onto the run branch: do that in step 3 before dispatching anything new. A not-done Step with no lock is reset in its worktree the same way, then treated as pending.
-  - The Steps are already planned: skip step 2 and resume at step 3, or at step 4 when every Step reads `done` and no Step worktree remains.
+  - When `.agents/steps/<slug>/` holds Step files, the Steps are already planned: skip step 2 and resume at step 3, or at step 4 when every Step reads `done` and no Step worktree remains. A missing or empty steps directory is a fresh plan — continue at step 2.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git rebase master` so the run sits on the master you actually have:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
   - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
@@ -40,7 +40,7 @@ Dispatch a **planner** sub-agent. Give it the spec path (or the argument text), 
 
 It returns the index and nothing else: one line per step, `NN | title | blocked by: none|<NNs> | one-line deliverable`.
 
-A planner that fails or returns no steps **halts** the run.
+The plan succeeded when that reply is the index and `.agents/steps/<slug>/` holds Step files. Otherwise **halt** — the planner failed, returned no steps, left the directory missing or empty, or replied with something other than the index. Do not dispatch another agent to write or commit the files; the dirty-directory commit above is the only Driving-session write for this step.
 
 ### 3. Run the Ready Steps
 
@@ -126,6 +126,6 @@ The worktree, the review diff, and the land cover this repository only. Work a S
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, the run worktree, and any Step worktrees exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report the Step's number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
+A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, the run worktree, and any Step worktrees exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why (missing or empty steps directory, reply that was not the index, or no steps); for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
 
-Re-invoking `/implement` with the same argument picks the run back up.
+Re-invoking `/implement` with the same argument picks the run back up — a missing or empty steps directory runs the Planner again; Step files already on disk resume at running Steps.
