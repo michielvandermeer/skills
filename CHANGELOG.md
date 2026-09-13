@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-14: Planner stops at the footprint
+When you type `/implement`, the Planner stops as soon as it can name the files each Step will touch, writes those files, and starts building. A plan that writes no files, or replies with a long note instead of the step list, stops the run so you can type `/implement` again. It does not send a second agent to invent the files.
+
 ## 2026-09-14: Review a spec before building
 Type `/review-spec` on the model you want as a second opinion. It proposes edits to the spec, writes the ones you pick by number, and then checks the file still holds together.
 
