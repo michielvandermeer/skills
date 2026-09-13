@@ -138,13 +138,21 @@ The background exploration of the affected code in a `/refine` session, aimed by
 **Room's clock**:
 The scarce resource in a `/refine` session: an idle minute costs as many minutes as there are people in the call. What justifies reading in the background, and stopping the room only for the Prototype and the closing read-back.
 
+**Retrospective**:
+Suggestions for the agent's environment after a session, presented by `/retro` when you type it. No skill starts one on its own.
+_Avoid_: postmortem, wrap-up, retro as a meeting
+
 ### Execution
 
 **Planner**:
-The sub-agent that reads a Spec, explores the codebase, and writes the Step files — each with the Footprint its exploration found. Closes leftover behaviour the Spec did not name so the Step files share one reading. Commits the Step files in one commit, then returns only a compact index to the Driving session — never the Step bodies.
+The sub-agent that reads a Spec, explores the codebase, and writes the Step files — each with the Footprint its exploration found and the Steps it is blocked by. Closes leftover behaviour the Spec did not name so the Step files share one reading. Commits the Step files in one commit, then returns only a compact index to the Driving session — never the Step bodies.
+
+**Ready**:
+A pending Step whose `Blocked by` Steps are all done. What `/implement` dispatches now; several Ready Steps run together.
+_Avoid_: frontier — that is grilling's word for questions whose prerequisites are settled
 
 **Step agent**:
-The sub-agent that implements exactly one Step. Reads the prior Steps' Outcomes itself, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
+The sub-agent that implements exactly one Step, in its own worktree. Reads the Outcomes of Steps already done, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
 
 **Oneshot agent**:
 The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot`.

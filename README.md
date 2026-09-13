@@ -148,7 +148,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
-| `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
+| `implement` | Implement a spec by slicing it into steps and running ready steps in parallel sub-agents. |
 | `implement-oneshot` | Implement a spec in one sub-agent session, skipping the Planner. Still reviews and improves data structures after. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then grill the one you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
@@ -157,6 +157,8 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `refine` | Determine a change's scope with Product, QA, and Development, via a prototype the room steers. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
+| `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
+| `retro` | Look at a finished session and suggest environment changes so later runs go better. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
 | `triage` | Sort incoming reports into Specs or parked Issues, one document per distinct problem. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |

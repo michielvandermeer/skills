@@ -54,7 +54,7 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 ### 4. Spawn both sub-agents in parallel
 
-Send a single message with two `Agent` tool calls. Use the `general-purpose` subagent for both.
+Spawn both in parallel, at this session's own model and effort — they carry judgement.
 
 Both briefs end with the same instruction: "Run the `/plain-language` skill and write your findings to its bar." You present their reports nearly verbatim, so the plainness has to come from them.
 

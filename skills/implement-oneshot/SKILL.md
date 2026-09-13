@@ -88,7 +88,7 @@ Delete the Spec and the Idea or Issue document the Spec came from — unless the
 
 Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
-1. From the worktree, still on the branch: `git rebase master`, resolving any conflicts. (The branch lives here, so only the worktree can rebase it.)
+1. From the worktree, still on the branch: `git rebase master`. A conflict is `/resolving-merge-conflicts` (the branch lives here, so only the worktree can rebase it).
    - A `CHANGELOG.md` conflict is always keep both, this run's entry above.
    - When the rebase replayed the branch onto commits master gained during the run, green is not known any more: build and run the whole suite before going on. A red run gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward.
 2. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.

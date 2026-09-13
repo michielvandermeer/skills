@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-13: Implement runs independent steps together
+When you type `/implement`, steps that do not wait on each other now run at the same time, each in its own copy of the project. They are folded back into one branch as they finish, so the history stays a straight line. A step that needs another still waits.
+
+## 2026-09-13: Type retro after a session
+Type `/retro` to get suggestions for the files and tools that steer later agent runs. Skills do not start this on their own. You apply a suggestion later if you want.
+
+## 2026-09-13: A skill for merge conflicts
+When a merge or rebase stops on a conflict, `/resolving-merge-conflicts` works through each hunk, keeps both sides' intent where it can, and finishes the operation. `/implement` uses it when folding steps together or landing the branch.
+
 ## 2026-09-09: Oneshot implement without planning
 Type `/implement-oneshot` to build a spec in one agent session, without a plan of steps first. `/implement` still slices work into steps. Both still review, improve data structures, and land.
 
