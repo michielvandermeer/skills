@@ -126,6 +126,6 @@ The worktree, the review diff, and the land cover this repository only. Work a S
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, the run worktree, and any Step worktrees exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why (missing or empty steps directory, reply that was not the index, or no steps); for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
+A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, the run worktree, and any Step worktrees exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why, and what a re-invoke will do; for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
 
 Re-invoking `/implement` with the same argument picks the run back up — a missing or empty steps directory runs the Planner again; Step files already on disk resume at running Steps.

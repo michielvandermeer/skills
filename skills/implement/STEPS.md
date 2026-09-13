@@ -1,10 +1,10 @@
 # Slicing a spec into steps
 
-You are the **planner** for an `/implement` run. Read the spec you were handed — or the issue, idea, or bare description, when that is all there is — walk the code until every Step file can be written, then write one file per **step** to `.agents/steps/<slug>/`. A thinner source yields coarser steps; slice what you were given.
+You are the **planner** for an `/implement` run. Read the spec you were handed — or the issue, idea, or bare description, when that is all there is — walk the code until every Step's Footprint can be filled, then write one file per **step** to `.agents/steps/<slug>/`. A thinner source yields coarser steps; slice what you were given.
 
 ## The walk
 
-The walk is done when every Step file can be written — each Footprint filled, each `Blocked by` line set. Stop there even when more searching would find more context. A Spec that spans many files still gets a walk long enough to name them.
+The walk is done when every Step's Footprint can be filled. Stop there even when more searching would find more context. A Spec that spans many files still gets a walk long enough to name them.
 
 Open a file only when it might belong on a Footprint, or to settle a slice or blocker the Spec left to the code. Documents the host already placed in this context stay already-read. The slicing rules document is the template for Step files; Step files from other runs are not.
 
@@ -76,7 +76,7 @@ Write behaviour, not code. The one exception is a snippet that encodes a decisio
 
 ## The footprint
 
-You walked until each Footprint could be filled. The **footprint** is where that walk lands: the files each step is expected to touch, the symbols inside them that matter, and the projects that must stay green. Write it down and the step agent starts from your map instead of repeating your walk.
+The **footprint** is where that walk lands: the files each step is expected to touch, the symbols inside them that matter, and the projects that must stay green. Write it down and the step agent starts from your map instead of repeating your walk.
 
 Three rules keep it honest:
 
