@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-13: Architecture review writes several files
+When the architecture report is ready, you choose which suggestions become Ideas and which become Specs. Only a change that is ready to build becomes a Spec. The session then stops so you can grill or implement those files yourself.
+
 ## 2026-09-13: Implement runs independent steps together
 When you type `/implement`, steps that do not wait on each other now run at the same time, each in its own copy of the project. They join one branch as they finish, so the history stays a straight line. A step that needs another still waits.
 

@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.
+description: Scan a codebase for deepening opportunities, present them as a visual HTML report, then write the Ideas and Specs you pick.
 disable-model-invocation: true
 ---
 
@@ -85,19 +85,27 @@ End the report with a **Top recommendation** section: which candidate you'd tack
 
 The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via CDN** for diagrams. Reach for Mermaid when relationships are graph-shaped (call graphs, dependencies, sequences), and hand-built divs/SVG when you want something editorial (mass diagrams, cross-sections, collapse animations). See [HTML-REPORT.md](HTML-REPORT.md) for the scaffold, how each part renders, diagram patterns, and styling.
 
-The report stops at candidates: each one says what would change and why it helps, and the interface behind the seam is step 4's work with the user in the room.
+The report stops at candidates: each one says what would change and why it helps.
 
-Done when both files are written, every candidate has a card carrying all parts plus an ADR callout where one applies, every human-facing sentence holds the plainness bar above, and the user has been asked which one they want to explore.
+Done when both files are written, every candidate has a card carrying all parts plus an ADR callout where one applies, and every human-facing sentence holds the plainness bar above.
 
-### 4. Grilling loop
+### 4. Close
 
-Once the user picks a candidate, run the `/grilling` skill to walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive. The card's **What this does** is already established; the session starts from it rather than re-deriving it.
+Run `/plain-language` before any sentence in this step a person will read.
 
-Side effects happen inline as decisions crystallize — run the `/domain-modeling` skill to keep the domain model current as you go:
+For each candidate, decide whether it is **Buildable**: `/implement` could start from the card without another design session. The test is the card, not the strength badge. A dispute that it is Buildable is itself evidence it needs grilling: list it as Idea-only.
 
-- **Naming a deepened module after a concept not in `CONTEXT.md`?** Add the term to `CONTEXT.md`. Create the file lazily if it doesn't exist.
-- **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
-- **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ The bar is that a future explorer would need the reason to avoid re-suggesting the same thing — a reason that outlives this week and isn't self-evident from the code.
-- **Want to explore alternative interfaces for the deepened module?** Run the `/codebase-design` skill and use its design-it-twice parallel sub-agent pattern.
+List every candidate in the chat as "can become a Spec" or "can only become an Idea", with one line saying why. Then ask which files to write. Where a Spec is allowed, they choose Spec or Idea. They may pick several of either, or none. An unnamed candidate stays only on the Architecture review.
 
-Done when the frontier is empty and every coined term is in `CONTEXT.md`.
+Wait for the picks.
+
+Each pick becomes its own file:
+
+- **Idea** — `.agents/ideas/<slug>.md` (kebab-case from the title). Sections: Motivation, Goal, Decisions (locked), Out of scope, Open questions, filled from the card. Name the Architecture review path. File paths and diagrams stay only on that review.
+- **Spec** — only when the card is Buildable. Run `/to-spec` scoped to that card alone. The card is the brief; a decision it did not settle stays unset in the Spec. Name the Architecture review path. A named Spec on a card that is not Buildable is written as an Idea, with the reason.
+
+Write Ideas first. Then one `/to-spec` per Spec pick. `/to-spec` commits the Spec. If Ideas exist and no Spec ran to commit them, commit those Idea files staged by name, on the branch you are on, without asking. Leave every other working-tree change alone.
+
+Then list each new file and the command that continues it: `/grill-with-docs` on an Idea, `/implement` on a Spec. Then stop.
+
+Done when every pick has a file on disk, or none were picked; any new file is listed with its next command; this session has stopped.

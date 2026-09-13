@@ -23,8 +23,12 @@ The Refinement a `/refine` session writes as it runs, at `.agents/refinements/<s
 **Complete document**:
 The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Six fixed sections — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, user-facing, and the thing written back to the Jira ticket or markdown file the session started from. How it works today is behaviour; the code walkthrough stays only in the Session document.
 
+**Buildable**:
+A proposed change whose Solution is clear enough that `/implement` can start without a further grilling session. `/triage` and `/improve-codebase-architecture` write a Spec only when the change is Buildable.
+_Avoid_: ready, agent-ready, clear solution
+
 **Architecture review**:
-The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/`, holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system, then grilled into a Spec with `/grill-with-docs`.
+The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/`, holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system; after the report, the session says which candidates are Buildable, then picked candidates become Ideas, or Specs when Buildable.
 _Avoid_: codebase audit, audit, tech-debt report, architecture report
 
 **Codebase audit**:
@@ -58,7 +62,7 @@ A grilling **Decision ticket** that holds leftover unblocked one-question **Fork
 _Avoid_: leftovers ticket, bundle, grab-bag
 
 **Issue**:
-An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`, one file per distinct problem, carrying `Category:` and `Status:` lines. A buildable issue with a clear solution ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document.
+An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`, one file per distinct problem, carrying `Category:` and `Status:` lines. A Buildable issue ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document.
 
 **Map**:
 The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog. Every Map ends in a Spec, so its Destination names the change that Spec will cover rather than which artifact the effort produces.

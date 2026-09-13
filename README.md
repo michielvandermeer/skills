@@ -150,7 +150,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `implement` | Implement a spec by slicing it into steps and running ready steps in parallel sub-agents. |
 | `implement-oneshot` | Implement a spec in one sub-agent session, skipping the Planner. Still reviews and improves data structures after. |
-| `improve-codebase-architecture` | Scan for deepening opportunities, report them, then grill the one you pick. |
+| `improve-codebase-architecture` | Scan for deepening opportunities, report them, then write the Ideas and Specs you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `migrate-doc-layout` | Move spec, idea, reference, refinement, architecture-review, and codebase-audit documents into this repo's canonical `.agents/` layout. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |

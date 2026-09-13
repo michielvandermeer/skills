@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 You are the **driving session**. Inspect the whole codebase for **material** simplifications in data structures, state representation, or organizing model. The only write is the **Codebase audit** at `.agents/codebase-audits/<timestamp>/report.md`. Leave every other file untouched — no tests, no implementation, no commit, no push.
 
-Distinct from `/improve-data-structures` (recent work, may implement) and `/improve-codebase-architecture` (module depth, then grill).
+Distinct from `/improve-data-structures` (recent work, may implement) and `/improve-codebase-architecture` (module depth, then Ideas and Specs).
 
 Continue until every identifiable subsystem has been reviewed and the report passes step 3.
 
