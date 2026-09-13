@@ -5,11 +5,11 @@ argument-hint: "[session]"
 disable-model-invocation: true
 ---
 
-Suggest improvements to the agent's **environment** so later runs are cheaper or more reliable. The environment only — `/code-review` and `/improve-data-structures` own the product diff.
+Suggest **environment** changes: files and tools that steer later runs, so those runs are cheaper or more reliable. `/code-review` and `/improve-data-structures` own the product diff.
 
-You are the **driving session**. Run `/writing-for-agents` for where each kind of change belongs, and `/plain-language` before you present.
+Run `/writing-for-agents` for where each kind of change belongs, and `/plain-language` before you present.
 
-The argument names a session, or is empty for the current one. If this session already presented a retrospective, say so and stop.
+The argument names a session, or is empty for the current one.
 
 ## Sources
 
@@ -28,8 +28,6 @@ Check every item. *Use when* is the evidence bar. Every suggestion is something 
 - **Tool economy** — expensive calls that could be cheaper, or a custom tool that wastes tokens. *Use when* the session made an expensive call.
 - **No-ops** — instructions in steering files that do not change behaviour. *Use when* those files are large.
 - **Information access** — logs, readonly third-party access, or other information the agent lacked. *Use when* a piece of information the session needed was unavailable.
-
-Prefer a pointer or an automated check over a new skill.
 
 ## Present
 

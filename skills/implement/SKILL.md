@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, which Steps are in flight, one three-line report per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 3's structural check and nothing more. While Step agents run, waiting is the work.
 
-A **Ready** Step (every blocker done) runs as soon as it is Ready, together with the others that are. Each Ready Step gets its own worktree off the run branch; fold it back before anything that was waiting on it starts. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The planner, the fixer, and the data-structures pass run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0031](../../docs/adr/0031-implement-runs-ready-steps-in-parallel.md).
+A **Ready** Step (every blocker done) runs as soon as it is Ready, together with the others that are. Each Ready Step gets its own worktree off the run branch; rebase it onto that branch before anything that was waiting on it starts. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The planner, the fixer, and the data-structures pass run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0031](../../docs/adr/0031-implement-runs-ready-steps-in-parallel.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0024](../../docs/adr/0024-implement-agents-close-leftover-gaps.md).
 
@@ -26,7 +26,7 @@ A prior run is **in flight** when any linked git worktree contains `.agents/step
 - **In flight** → a run worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
   - Put the session's working directory on the run worktree's path.
   - `git reset --hard && git clean -fd` drops whatever a halted merge left in the run worktree. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
-  - For each Step worktree: a lock means that Step agent is still live — leave it. A Step file that already reads `Status: done` is waiting to fold in: do the rebase-then-ff in step 3 before dispatching anything new. A not-done Step with no lock is reset in its worktree the same way, then treated as pending.
+  - For each Step worktree: a lock means that Step agent is still live — leave it. A Step file that already reads `Status: done` is waiting to rebase onto the run branch: do that in step 3 before dispatching anything new. A not-done Step with no lock is reset in its worktree the same way, then treated as pending.
   - The Steps are already planned: skip step 2 and resume at step 3, or at step 4 when every Step reads `done` and no Step worktree remains.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git rebase master` so the run sits on the master you actually have:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
@@ -44,9 +44,7 @@ A planner that fails or returns no steps **halts** the run.
 
 ### 3. Run the Ready Steps
 
-A Step is **Ready** when every NN on its `Blocked by:` line reads `Status: done` (`none` means Ready with the plan). The highest-numbered Step is Ready only when every other Step is `done` — it is the one that leaves the whole suite green.
-
-Dispatch every Ready pending Step together. For each one:
+Dispatch every Ready pending Step together (`Blocked by: none`, or every listed NN reading `Status: done`). For each one:
 
 1. Resolve the main checkout from `git worktree list` (the first worktree). Open a Step worktree there at `.agents/worktrees/<slug>-<NN>` on a new branch `<slug>-<NN>` starting at the run branch's current HEAD, with `git worktree add`, so this session stays in the run worktree.
 2. Dispatch a fresh `skills:implementer` whose only working directory is that Step worktree, with a prompt made of paths and section names — it reads what is behind them:
@@ -78,13 +76,13 @@ A fact a successor needs goes in `## Outcome`; the successor reads it there.
 
 Then **check the step structurally** — `grep '^Status:'` on the Step file in that worktree reads `done`, and `git log -1` on `<slug>-<NN>` shows a new commit. That is the whole check; open the Step file only when it fails. Step 4's review covers the rest.
 
-**Fold it in.** From the Step worktree, `git rebase` onto the run branch. From the run worktree, `git merge --ff-only <slug>-<NN>`. A conflict in either step is `/resolving-merge-conflicts`, with the stated goal: this run's commits, linear, this Step's intent preserved where it does not contradict an already-folded Step. Then `git worktree remove` the Step worktree and `git branch -d <slug>-<NN>`. Completions that arrive together fold in one at a time, lowest NN first.
+**Rebase onto the run branch.** From the Step worktree, `git rebase` onto the run branch. From the run worktree, `git merge --ff-only <slug>-<NN>`. A conflict in either step is `/resolving-merge-conflicts`, with the stated goal: this run's commits, linear, this Step's intent preserved where it does not contradict a Step already on the run branch. Then `git worktree remove` the Step worktree and `git branch -d <slug>-<NN>`. Completions that arrive together rebase one at a time, lowest NN first.
 
-Report one line to the user after each fold — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations verbatim into every later dispatch.
+Report one line to the user after each rebase — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations verbatim into every later dispatch.
 
 Dispatch any Step that just became Ready.
 
-A `blocked` report, a failed structural check, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry of **that** Step. When the host can resume the same agent, resume it once with one line: the step is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd` in its worktree, then re-dispatch the same step, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The failure is the Step agent's to diagnose. A second failure **halts** new dispatch; in-flight siblings finish folding or fail on their own, then the session ends.
+A `blocked` report, a failed structural check, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry of **that** Step. When the host can resume the same agent, resume it once with one line: the step is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd` in its worktree, then re-dispatch the same step, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The failure is the Step agent's to diagnose. A second failure **halts** new dispatch; in-flight siblings finish or fail on their own, then the session ends.
 
 Done when every file in `.agents/steps/<slug>/` reads `Status: done` and no Step worktree remains.
 
@@ -120,7 +118,7 @@ Each remaining command runs where its branch is checked out, and that constraint
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 3 runs Ready Steps **one at a time in this checkout** — skip the Step worktree and the fold; a shared tree cannot hold two editors. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 3 runs Ready Steps **one at a time in this checkout** — skip the Step worktree and the rebase; a shared tree cannot hold two editors. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch.
 
 ## Work in another repository
 

@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2026-09-13: Implement runs independent steps together
-When you type `/implement`, steps that do not wait on each other now run at the same time, each in its own copy of the project. They are folded back into one branch as they finish, so the history stays a straight line. A step that needs another still waits.
+When you type `/implement`, steps that do not wait on each other now run at the same time, each in its own copy of the project. They join one branch as they finish, so the history stays a straight line. A step that needs another still waits.
 
 ## 2026-09-13: Type retro after a session
 Type `/retro` to get suggestions for the files and tools that steer later agent runs. Skills do not start this on their own. You apply a suggestion later if you want.

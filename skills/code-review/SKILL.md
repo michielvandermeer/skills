@@ -54,7 +54,7 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 ### 4. Spawn both sub-agents in parallel
 
-Spawn both in parallel, at this session's own model and effort — they carry judgement.
+Spawn both in parallel, at this session's own model and effort.
 
 Both briefs end with the same instruction: "Run the `/plain-language` skill and write your findings to its bar." You present their reports nearly verbatim, so the plainness has to come from them.
 

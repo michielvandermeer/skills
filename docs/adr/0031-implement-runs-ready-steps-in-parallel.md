@@ -1,8 +1,8 @@
 # `/implement` runs Ready Steps in parallel
 
-`/implement` used to run Step agents one at a time in a shared worktree because the numbering was the dependency order and two editors cannot share a tree. Independent Steps now run together: the Planner records real `Blocked by:` edges, each Ready Step gets its own worktree off the run branch, and the Driving session folds it back with rebase-then-fast-forward so the run branch stays a linear commit stack. The highest-numbered Step still waits for every other Step and leaves the whole suite green. A waived worktree stays sequential, because there is only one checkout.
+`/implement` used to run Step agents one at a time in a shared worktree because the numbering was the dependency order and two editors cannot share a tree. Independent Steps now run together: the Planner records real `Blocked by:` edges, each Ready Step gets its own worktree off the run branch, and the Driving session rebases it onto the run branch so that branch stays a linear commit stack. The highest-numbered Step still waits for every other Step and leaves the whole suite green. A waived worktree stays sequential, because there is only one checkout.
 
-A merge commit per Step was rejected: land is still rebase onto `master` and fast-forward, and rebasing merge commits is a different operation. Inferring independence from footprint overlap at dispatch time was rejected: the Planner already walked the code, and overlapping footprints are a blocking edge it writes down. A merger sub-agent on every fold was rejected: a clean rebase is the Driving session's, and a conflict is `/resolving-merge-conflicts`.
+A merge commit per Step was rejected: land is still rebase onto `master` and fast-forward, and rebasing merge commits is a different operation. Inferring independence from footprint overlap at dispatch time was rejected: the Planner already walked the code, and overlapping footprints are a blocking edge it writes down. A merger sub-agent on every rebase was rejected: a clean rebase is the Driving session's, and a conflict is `/resolving-merge-conflicts`.
 
 ## Consequences
 

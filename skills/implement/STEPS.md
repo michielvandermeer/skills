@@ -6,7 +6,7 @@ When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0
 
 Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Step agent shares it. Fill only silence — what the Spec already named stays as it is, and what the Spec's Out of Scope refuses stays out.
 
-**The numbering is a topological order**, not the execution schedule. A Step may run as soon as every Step on its `Blocked by:` line is done; independent Steps run together. Number so every blocker has a lower NN than the Step that waits on it. The highest NN waits for every other Step — it is the one that leaves the whole suite green.
+A Step may run as soon as every Step on its `Blocked by:` line is done; independent Steps run together. Number so every blocker has a lower NN than the Step that waits on it. The highest NN lists every other Step on `Blocked by:` — it is the one that leaves the whole suite green.
 
 `Blocked by: none` means Ready with the plan. Overlapping footprints are a blocking edge: the later NN lists the earlier. A chain still works: each Step lists the previous number, and the run is sequential.
 
