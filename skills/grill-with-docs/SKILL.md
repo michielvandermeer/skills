@@ -10,4 +10,4 @@ Run a `/grilling` session, using the `/domain-modeling` skill. The glossary entr
 
 When the request asks for a `/prototype`, or a question turns out to need one, run it after the frontier is empty and before `/to-spec`; its verdict is the last set of declarations, and the Spec names its folder.
 
-Once the read-back is confirmed, run `/to-spec`.
+Once the read-back is confirmed, run `/to-spec`. Then run `/retro`.

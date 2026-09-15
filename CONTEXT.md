@@ -147,8 +147,16 @@ The background exploration of the affected code in a `/refine` session, aimed by
 The scarce resource in a `/refine` session: an idle minute costs as many minutes as there are people in the call. What justifies reading in the background, and stopping the room only for the Prototype and the closing read-back.
 
 **Retrospective**:
-Suggestions for the agent's environment after a session, presented by `/retro` when you type it. No skill starts one on its own.
+Suggestions for the agent's environment after a session. **High-priority** suggestions are applied without asking; the rest appear only in the summary. A **Named session skill** starts one when it finishes; you can also type `/retro`.
 _Avoid_: postmortem, wrap-up, retro as a meeting
+
+**Named session skill**:
+A user-typed skill that starts a **Retrospective** when it finishes.
+_Avoid_: host skill, wrapping skill, parent skill
+
+**High-priority**:
+A **Retrospective** suggestion whose pain will recur every turn or every session. Includes a judgement-call coding standard and a new check when this session demonstrated them.
+_Avoid_: mechanical-only, severity
 
 ### Execution
 

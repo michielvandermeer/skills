@@ -11,6 +11,7 @@ Still owes:
 - `/domain-modeling`: `CONTEXT.md` entries for terms settled, ADRs in `docs/adr/` on the three-part test
 - A commit covering every file the change touched
 - Update the installed plugin after that commit
+- Then run `/retro`
 
 ## Editing agent documents
 

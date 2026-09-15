@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-15: Retro runs after session skills
+`/implement` and the other session skills now finish by updating the files and tools that steer later runs, then listing what they did. You can still type `/retro`. The important changes land without a confirm step.
+
 ## 2026-09-14: Planner stops at the footprint
 When you type `/implement`, the Planner stops as soon as it can name the files each Step will touch, writes those files, and starts building. A plan that writes no files, or replies with a long note instead of the step list, stops the run so you can type `/implement` again. It does not send a second agent to invent the files.
 

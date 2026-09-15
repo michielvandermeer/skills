@@ -143,7 +143,7 @@ User invokes with a loose idea.
 1. **Fix the scope.** Run one `/grilling` and `/domain-modeling` session on the change itself: what it covers, what it leaves alone, and which forks stand in the way. **If the way is already clear** — after grouping grilling forks, one session and no fog — you don't need a map. Stop and ask the user how they'd like to proceed.
 2. **Create the map** (`.agents/issues/<effort>/map.md`): Destination and Notes filled in, Decisions-so-far empty, the fog sketched into **Not yet specified**.
 3. **Create the tickets you can specify now** as files in `.agents/issues/<effort>/`. **Group** grilling tickets per [Grilling tickets](#grilling-tickets), then assign each its `NN` first, then wire `Blocked by:` lines in a **second pass** (a ticket needs its number before others can reference it). Wiring sorts them into the frontier and the blocked; everything you can't yet specify stays in the fog — the **Not yet specified** section.
-4. **Fire the research subagents.** For each `research` ticket you just created, spin up a `/research` subagent in parallel — research is AFK, so charting does not wait on it. Each subagent captures findings on a throwaway `research/<name>` branch, leaves a context pointer on the ticket, writes `## Answer`, and sets `Status: resolved`. Then stop — charting is one session's work; it hand-resolves nothing.
+4. **Fire the research subagents.** For each `research` ticket you just created, spin up a `/research` subagent in parallel — research is AFK, so charting does not wait on it. Each subagent captures findings on a throwaway `research/<name>` branch, leaves a context pointer on the ticket, writes `## Answer`, and sets `Status: resolved`. Then run `/retro`. Charting is one session's work; it hand-resolves nothing.
 
 ### Work through the map
 
@@ -155,6 +155,6 @@ User invokes with a map (path or effort name). A ticket is **optional** — with
 4. Record the resolution: append the answer under an `## Answer` heading in the ticket file, set `Status: resolved`, and **append a context pointer** to the map's Decisions-so-far in `map.md`.
 5. Add newly-surfaced tickets and graduate any fog the answer has made specifiable (**group** grilling per [Grilling tickets](#grilling-tickets), then create-then-wire), clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If any new ticket is `research`, fire its `/research` subagent immediately. If the answer reveals a ticket — this one or another — sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
 
-When no tickets remain, the way is clear and that session writes the destination: zoom every resolved ticket, then run `/to-spec`. It synthesises from the conversation, so the decisions have to be in it.
+When tickets remain, run `/retro`. When no tickets remain, the way is clear and that session writes the destination: zoom every resolved ticket, then run `/to-spec`. It synthesises from the conversation, so the decisions have to be in it. Then run `/retro`.
 
 The user may run unblocked tickets in parallel, so expect other sessions to be editing the `.agents/issues/` files concurrently.

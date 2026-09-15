@@ -86,4 +86,4 @@ Done: every named problem has exactly one ending on disk, or is not filed, and e
 
 End with a summary the people in the session can follow up from. For every problem: what it was, and either the path plus `Status:` of the Spec or Issue, or that it was not filed and why. The summary is the review.
 
-Done: the summary lists every problem this run handled.
+Done: the summary lists every problem this run handled. Then run `/retro`.

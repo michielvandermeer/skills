@@ -1,5 +1,5 @@
 ---
-status: partially superseded by ADR-0032
+status: partially superseded by ADR-0032 and ADR-0036
 ---
 
 # Sessions end when the skill you typed is done

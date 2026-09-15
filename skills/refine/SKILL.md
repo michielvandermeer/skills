@@ -108,6 +108,6 @@ Done when all six sections are present and each carries content or `None`.
 
 `complete.md` is what was signed off. `session.md` remains the resume source for today-claims that trace to the code.
 
-Then stop — a Refinement is terminal. A developer starts `/grill-with-docs` from this document, in a session with a different room.
+Then run `/retro`. A Refinement is terminal. A developer starts `/grill-with-docs` from this document, in a session with a different room.
 
-Done when the folder path is reported, write-back has a yes, a no, or no source, the Refinement folder is committed (Prototype `None` skips that subdirectory), and the session has stopped.
+Done when the folder path is reported, write-back has a yes, a no, or no source, the Refinement folder is committed (Prototype `None` skips that subdirectory), and `/retro` has finished.

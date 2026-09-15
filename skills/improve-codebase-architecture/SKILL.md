@@ -106,6 +106,6 @@ Each pick becomes its own file:
 
 Write Ideas first. Then one `/to-spec` per Spec pick. `/to-spec` commits the Spec. If Ideas exist and no Spec ran to commit them, commit those Idea files staged by name, on the branch you are on, without asking. Leave every other working-tree change alone.
 
-Then list each new file and the command that continues it: `/grill-with-docs` on an Idea, `/implement` on a Spec. Then stop.
+Then list each new file and the command that continues it: `/grill-with-docs` on an Idea, `/implement` on a Spec. Then run `/retro`.
 
-Done when every pick has a file on disk, or none were picked; any new file is listed with its next command; this session has stopped.
+Done when every pick has a file on disk, or none were picked; any new file is listed with its next command; and `/retro` has finished.
