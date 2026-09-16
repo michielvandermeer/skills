@@ -29,7 +29,7 @@ Go section by section through the doc, checking every applicable item below agai
   - idea: Motivation, Goal, Decisions (locked), Out of scope, Open questions.
   - plan/spec: Problem Statement, Solution, User Stories, Implementation Decisions, Testing Decisions, Out of Scope, Further Notes.
 
-  A `Status:` line sits under the H1 with a valid value (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, or `wontfix`). An idea doc carries none of the banned implementation detail — file paths, class/method names, schemas, code blocks.
+  A plan/spec carries `Status: ready-for-agent` under the H1 — the only valid value. An old Issue label (`needs-triage`, `needs-info`, `ready-for-human`) on that line is a fact: correct it to `ready-for-agent`. A `wontfix` Status is a question: the file should not be a Spec. An idea doc carries no Status line and none of the banned implementation detail — file paths, class/method names, schemas, code blocks.
 
 - **Internal consistency** — no User Story lacking matching Implementation Decision coverage; no Out of Scope bullet that a Decision or Testing Decision then contradicts; no Decision resting on an Open Question still unresolved.
 
