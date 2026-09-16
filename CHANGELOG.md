@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-16: Retro writes this repo only
+`/retro` now changes only files in the repository you have open. A suggestion for a skill, a user-wide file, or anything else outside that tree stays in the list so you can do it yourself. The important ones are marked and listed first.
+
 ## 2026-09-16: Refine finishes with a Spec
 Type `/refine` with an Idea or a Jira ticket. The session asks you what the change should do, offers a prototype, writes a Spec, and puts a short summary back on that Idea or ticket. It finishes in one sitting, and the records that remain are the Spec and the updated Idea or ticket.
 

@@ -1,3 +1,7 @@
+---
+status: partially superseded by ADR-0037
+---
+
 # Named session skills start a retrospective that applies high-priority changes
 
 A **Named session skill** starts a **Retrospective** when it finishes. The list is `/implement`, `/implement-oneshot`, `/grill-with-docs`, `/triage`, `/wayfinder`, `/refine`, `/codebase-audit`, and `/improve-codebase-architecture`. You can also type `/retro`; that path is the same apply-and-summarise work.

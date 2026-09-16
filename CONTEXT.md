@@ -127,8 +127,12 @@ The altitude a `/grilling` session grills at, named on one line in its first Rou
 **Altitude**:
 How deep a Round grills, set by the Subject. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
 
+**Owned file**:
+A file this git repository contains in its working tree as its own file. Not a cached plugin copy, and not a file in the user config tree.
+_Avoid_: in-scope file, workspace file
+
 **Retrospective**:
-Suggestions for the agent's environment after a session. **High-priority** suggestions are applied without asking; the rest appear only in the summary. A **Named session skill** starts one when it finishes; you can also type `/retro`.
+Suggestions for the agent's environment after a session. **High-priority** suggestions for **Owned files** are applied without asking; everything else appears only in the summary, including suggestions for files this repository does not own. A **Named session skill** starts one when it finishes; you can also type `/retro`.
 _Avoid_: postmortem, wrap-up, retro as a meeting
 
 **Named session skill**:

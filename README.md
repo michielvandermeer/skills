@@ -158,7 +158,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `refine` | Take an Idea or Jira ticket through grilling, an optional Prototype, and a Spec, then write a plain-language summary back. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
-| `retro` | Look at a finished session, apply high-priority environment changes, and summarise the rest. Skills such as `/implement` start this when they finish. |
+| `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
 | `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
 | `triage` | Sort incoming reports into Specs or parked Issues, one document per distinct problem. |
