@@ -30,7 +30,7 @@ Throwaway code built to answer one design question — whether a state model hol
 _Avoid_: spike, POC, demo, mockup
 
 **Spec**:
-The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement` and `/implement-oneshot`.
+The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement` and `/implement-oneshot`. Written only when there is a change to implement; it carries `Status: ready-for-agent`. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
 **Unstated claim**:
