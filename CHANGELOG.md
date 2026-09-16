@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-16: Refine finishes with a Spec
+Type `/refine` with an Idea or a Jira ticket. The session asks you what the change should do, offers a prototype, writes a Spec, and puts a short summary back on that Idea or ticket. It finishes in one sitting, and the records that remain are the Spec and the updated Idea or ticket.
+
 ## 2026-09-15: Retro runs after session skills
 `/implement` and the other session skills now finish by updating the files and tools that steer later runs, then listing what they did. You can still type `/retro`. The important changes land without a confirm step.
 

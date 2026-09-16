@@ -7,21 +7,11 @@ A collection of software-engineering skills for Claude Code, distributed as a pl
 ### Work documents
 
 **Idea**:
-A loose, untriaged thought captured at `.agents/ideas/<slug>.md`. Not yet shaped into anything actionable.
-
-**Refinement**:
-The description of a change's **Scope** agreed by Product, QA, and Development in a `/refine` session — what is part of this project and what is not — written so a developer can start a `/grill-with-docs` session from it. Deliberately silent on implementation. Lives in a folder of its own at `.agents/refinements/<slug>/`, holding a Session document, a Complete document, and a Prototype when the room used one. Terminal: nothing consumes it automatically.
-_Avoid_: functional spec, requirements doc, BRD
+A thought captured at `.agents/ideas/<slug>.md`. Loose until a `/refine` session overwrites it with a plain-language summary of the Spec — the problem, the solution, and the user stories — and a `Spec:` line pointing at that file.
 
 **Scope**:
 What a `/refine` session determines: what is part of this project and what is not.
 _Avoid_: work items, backlog, requirements
-
-**Session document**:
-The Refinement a `/refine` session writes as it runs, at `.agents/refinements/<slug>/session.md`. Resume infrastructure, not user-facing: intent, the full read-from-code account of today (including code anchors), in scope, out of scope, the Prototype path, parked questions. It survives the close, so a settled change can be reopened without re-deriving today.
-
-**Complete document**:
-The Refinement a `/refine` session signs off, at `.agents/refinements/<slug>/complete.md`. Six fixed sections — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — every one always present, carrying `None` where the session settled nothing. Synthesised from the Session document rather than renamed out of it, user-facing, and the thing written back to the Jira ticket or markdown file the session started from. How it works today is behaviour; the code walkthrough stays only in the Session document.
 
 **Buildable**:
 A proposed change whose Solution is clear enough that `/implement` can start without a further grilling session. `/triage` and `/improve-codebase-architecture` write a Spec only when the change is Buildable.
@@ -36,7 +26,7 @@ The output of a `/codebase-audit` run at `.agents/codebase-audits/<timestamp>/`,
 _Avoid_: architecture review, tech-debt report, DSA audit
 
 **Prototype**:
-Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A **Spec** points at `.agents/prototypes/<slug>/`. A **Refinement** keeps its Prototype at `.agents/refinements/<slug>/prototype/`.
+Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A **Spec** points at `.agents/prototypes/<slug>/`.
 _Avoid_: spike, POC, demo, mockup
 
 **Spec**:
@@ -109,7 +99,7 @@ Every decision on the Design tree whose prerequisites are already settled — wh
 
 **Question**:
 A frontier item with more than one defensible answer, where a different answer visibly changes what gets built. Numbered `Q1`, `Q2` continuously across a session; options within one lettered `a`, `b`, `c`.
-_Avoid_: open question — that is a parked item on a Refinement, not a live Question
+_Avoid_: open question — that is a parked item, not a live Question
 
 **Explainer**:
 The one to three sentences opening every Question, saying what the question is about and what rides on the answer. Written for someone who has never seen the thing being asked about. Distinct from a **Gloss**, which introduces a skill's own vocabulary rather than the subject matter.
@@ -136,15 +126,6 @@ The altitude a `/grilling` session grills at, named on one line in its first Rou
 
 **Altitude**:
 How deep a Round grills, set by the Subject. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
-
-**Docs pass**:
-The background exploration that opens a `/refine` session — `CONTEXT.md`, the ADRs, and recent git history, read before any code. Cheap enough to land while round 1 is still being answered.
-
-**Code walk**:
-The background exploration of the affected code in a `/refine` session, aimed by the intent the room settled in round 1. It confirms or corrects what the Docs pass wrote.
-
-**Room's clock**:
-The scarce resource in a `/refine` session: an idle minute costs as many minutes as there are people in the call. What justifies reading in the background, and stopping the room only for the Prototype and the closing read-back.
 
 **Retrospective**:
 Suggestions for the agent's environment after a session. **High-priority** suggestions are applied without asking; the rest appear only in the summary. A **Named session skill** starts one when it finishes; you can also type `/retro`.
@@ -191,9 +172,6 @@ Anything a Step agent or Oneshot agent did that contradicts the Spec or changes 
 **Spec-bound dispatch**:
 A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
 _Avoid_: cheap agent, worker, low-tier agent
-
-**Provisional today**:
-A `How it works today` written from the Docs pass and not yet confirmed by the Code walk, labelled as such in the Session document — documents lag code. The Complete document is written after the Code walk lands, so it can never carry one.
 
 **Tracer bullet**:
 A vertical slice that cuts a narrow but complete path through every layer (schema, API, UI, tests), rather than a horizontal slice of one layer. The shape every Step takes.

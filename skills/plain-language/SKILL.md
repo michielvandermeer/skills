@@ -30,7 +30,7 @@ The test on any sentence: can the reader read it once and act?
 
 ## Documents outlive the session
 
-A document travels. A Refinement is written back to a Jira ticket, and a Spec is read cold weeks later by someone who was never in the room. That reader cannot ask what a word meant.
+A document travels. A `/refine` summary is written back to a Jira ticket or Idea, and a Spec is read cold weeks later by someone who was never in the session. That reader cannot ask what a word meant.
 
 So a durable document spends the plain words rather than a **Gloss**: *"what we do not know yet"*, not *"fog"*. Where a template fixes a section name, keep the name and gloss it once underneath.
 

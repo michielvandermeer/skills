@@ -38,7 +38,7 @@ The size of the change sets where you start, and most sessions are one change to
 
 - When my request already draws the scope, restate it as a declaration and offer nothing smaller.
 - When the request is open-ended, the scope question is round 1 on its own, because every other question hangs off its answer.
-- When the session starts from a written brief — an Idea, a Refinement, an Architecture review — D1 is your reading of it in your own words, including what you took from it as settled. Where the brief reads two ways that change what gets built, that is Q1, and the rest of the round waits.
+- When the session starts from a written brief — an Idea, a Jira ticket, an Architecture review — D1 is your reading of it in your own words, including what you took from it as settled. Where the brief reads two ways that change what gets built, that is Q1, and the rest of the round waits.
 
 Once scope is settled, ride what already exists and aim for the smallest change that does the work — an edge case the existing code already handles is a declaration, and so is an obvious refactor on the way. The smallest change is the default recommendation, not a position: when I choose a wider option than you recommended, or say the architecture is the point, recommend at that width for the rest of the session. A branch we cut as out of scope but still want is filed as an Idea where the repo keeps them and named in a declaration.
 

@@ -15,7 +15,7 @@ This skill takes the current conversation context and codebase understanding and
 
 4. Run `/validate-spec` on the spec document you just created.
 
-5. Commit the files this session created or changed — the Spec, glossary and ADR edits, Ideas, the prototype folder — staged by name, on the branch you are on, without asking. Leave every other working-tree change alone; another session may own it. When the session started from an Idea or Issue, leave that document in place with a `Spec:` line pointing at the new Spec; `/implement` deletes it at land. A Refinement stays as it is.
+5. Commit the files this session created or changed — the Spec, glossary and ADR edits, Ideas, the prototype folder — staged by name, on the branch you are on, without asking. Leave every other working-tree change alone; another session may own it. When the session started from an Idea or Issue, leave that document in place with a `Spec:` line pointing at the new Spec; `/implement` deletes it at land. When `/refine` is the caller, skip this step: use the slug the caller named, and leave commit and the `Spec:` line to `/refine`.
 
 <spec-template>
 

@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0036
+---
+
 # A Refine Prototype lives in the Refinement folder
 
 `/refine` used to name `.agents/prototypes/<slug>/` for the playable demo, the same root a Spec uses. A Refinement already has a folder for the files that belong to that session, and a second folder for the demo splits the briefing from the thing the room clicked. A Prototype built during Refine now lives at `.agents/refinements/<slug>/prototype/`. Spec-bound Prototypes stay at `.agents/prototypes/<slug>/`, because a Spec is a single file and has no folder to put them in.

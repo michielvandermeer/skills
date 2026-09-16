@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0036
+---
+
 # Refine determines Scope and briefs grill-with-docs
 
 `/refine` used to grill a full functional picture — intent, use cases, and the delta — and leave the room to pick `/grill-with-docs` or `/to-spec` later. The room finds textual grilling hard and a visual easy, so the session now does minimal grilling to a first Prototype, then steers from the demo until Scope is named: what is part of this project and what is not. The Complete document is a briefing a developer uses to start `/grill-with-docs`. It stays terminal and silent on implementation.

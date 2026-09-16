@@ -155,7 +155,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `migrate-doc-layout` | Move spec, idea, reference, refinement, architecture-review, and codebase-audit documents into this repo's canonical `.agents/` layout. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
-| `refine` | Determine a change's scope with Product, QA, and Development, via a prototype the room steers. |
+| `refine` | Take an Idea or Jira ticket through grilling, an optional Prototype, and a Spec, then write a plain-language summary back. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
 | `retro` | Look at a finished session, apply high-priority environment changes, and summarise the rest. Skills such as `/implement` start this when they finish. |

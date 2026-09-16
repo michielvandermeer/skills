@@ -11,7 +11,7 @@ A session producing several files that belong together gets a folder per session
 - `.agents/architecture-reviews/<timestamp>.md` → `.agents/architecture-reviews/<timestamp>/report.md`
 - `.agents/architecture-reviews/<timestamp>.html` → `.agents/architecture-reviews/<timestamp>/report.html`
 
-A flat Refinement is a finished one, so it becomes `complete.md`. The session document it was written from no longer exists, and the migration leaves it that way — a fabricated `session.md` would carry a today the code walk never confirmed.
+A flat Refinement is a finished one, so it becomes `complete.md`. The session document it was written from no longer exists, and the migration leaves it that way — a fabricated `session.md` would carry a today the code walk never confirmed. `/refine` no longer writes `.agents/refinements/`; this move is for folders that already exist.
 
 ## The `.scratch/` tracker
 

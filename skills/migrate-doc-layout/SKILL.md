@@ -14,7 +14,7 @@ These skills assume a fixed per-repo layout for the documents they read and writ
 | Idea (feeds a `/grilling` session) | `.agents/ideas/<slug>.md` |
 | ADR | `docs/adr/<NNNN>-<slug>.md` |
 | Skill-supporting reference (coding standards, etc.) | `.agents/refs/<slug>.md` |
-| Refinement | `.agents/refinements/<slug>/` — `session.md`, `complete.md`, and `prototype/` when present |
+| Refinement (legacy; `/refine` no longer writes these) | `.agents/refinements/<slug>/` — `session.md`, `complete.md`, and `prototype/` when present |
 | Architecture review | `.agents/architecture-reviews/<timestamp>/` — `report.md` and `report.html` |
 | Codebase audit | `.agents/codebase-audits/<timestamp>/` — `report.md` |
 | Prototype | `.agents/prototypes/<slug>/` |
@@ -41,7 +41,7 @@ Classify each remaining document by what it actually contains, matching the temp
 - **Idea**: has sections like Motivation, Goal, Decisions (locked), Out of scope, Open questions — the idea-doc shape `/validate-spec` checks against. Looser and earlier-stage than a spec; no implementation detail.
 - **ADR**: a short title plus 1-3 sentences of context/decision/why, optionally with Status frontmatter, Considered Options, or Consequences sections — the shape in `domain-modeling/ADR-FORMAT.md`. Usually sequentially numbered.
 - **Reference / skill-supporting doc**: documents how code should be written or how the repo/team works — coding standards, contribution guidelines, style guides. Common filenames: `CODING_STANDARDS.md`, `CONTRIBUTING.md`, `STYLEGUIDE.md`.
-- **Refinement**: the `/refine` shape — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions. Functional throughout, with no implementation decisions and no `Status:` line. Older finished ones may have Introduction, Use cases, Scope, Notes, and still older a `Technical details` section; treat those as Complete-shaped and migrate the file as-is.
+- **Refinement**: the legacy `/refine` shape — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions. Functional throughout, with no implementation decisions and no `Status:` line. Older finished ones may have Introduction, Use cases, Scope, Notes, and still older a `Technical details` section; treat those as Complete-shaped and migrate the file as-is. `/refine` no longer writes this shape.
 - **Architecture review**: matches the report shape from `/improve-codebase-architecture` — cards with What this does/Files/Problem/Solution/Wins/Before-After diagram/Recommendation strength, a Top recommendation section. A review written before the current card contract says `Benefits` where this one says `Wins`, and carries no `What this does` at all. Usually a `.md`/`.html` pair sharing a timestamp.
 - **Codebase audit**: matches the report shape from `/codebase-audit` — a coverage-contract table of subsystems with ownership boundaries and queued/recommend/skip status, recommendations with evidence/scope/risk/validation, explicit skips, and a priority ranking. Usually a `report.md` in a timestamp folder.
 
