@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-16: No-change grilling writes no Spec
+When you confirm a `/grill-with-docs` Read-back (the settled design restated) that we will not do the work, the session writes no Spec. It deletes the Issue or Idea it started from, says it wrote no Spec because nothing will be built, and still runs `/retro`. A Read-back that still names a change still writes a Spec.
+
 ## 2026-09-16: Specs carry only ready-for-agent
 `/validate-spec` now accepts only `Status: ready-for-agent` on a Spec. It rewrites a leftover `needs-triage`, `needs-info`, or `ready-for-human` line to that value. A `wontfix` Status is a question rather than work to build.
 
