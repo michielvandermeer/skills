@@ -4,9 +4,9 @@ This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting
 
 ## Grilling ends in skill edits
 
-`/grill-with-docs` normally chains into `/to-spec`. Here, when a grilling session's frontier is empty and the confirmed Read-back is a change, edit the skill files directly — skip `/to-spec`, `/implement`, and `/implement-oneshot`. The driving session already holds the design tree; the work is a handful of markdown edits. A Spec only briefs a later `/implement` or `/implement-oneshot` session that lacks that context.
+`/grill-with-docs` normally chains into `/to-spec`. Here, when a grilling session's Frontier is empty and the confirmed Read-back is a change to implement, edit the skill files directly — skip `/to-spec`, `/implement`, and `/implement-oneshot`. The Driving session already holds the Design tree; the work is a handful of markdown edits. A Spec only briefs a later `/implement` or `/implement-oneshot` session that lacks that context.
 
-When the confirmed Read-back is that nothing will be built, write no Spec and edit no skill files. Still run `/retro`.
+When the confirmed Read-back is work we will not do, skip `/to-spec` and the in-place skill edits. Still run `/retro`.
 
 When you edited skills, still owe:
 
