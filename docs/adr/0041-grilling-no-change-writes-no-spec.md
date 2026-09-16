@@ -10,3 +10,4 @@ Always writing a Spec was rejected so a no does not become a file `/implement` c
 - `/to-spec` typed on its own is unchanged: the user asked for a Spec.
 - `/refine`, `/wayfinder`, and `/prototype` still end in a Spec. Those sessions exist to produce one.
 - ADRs that wait for Spec time are not written when there is no Spec.
+- In this skills repo, steering that skips `/to-spec` to edit skills in place still skips both when the settled design is no change.
