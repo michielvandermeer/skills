@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-16: Specs carry only ready-for-agent
+`/validate-spec` now accepts only `Status: ready-for-agent` on a Spec. It rewrites a leftover `needs-triage`, `needs-info`, or `ready-for-human` line to that value. A `wontfix` Status is a question rather than work to build.
+
 ## 2026-09-16: Retro writes this repo only
 `/retro` now changes only files in the repository you have open. A suggestion for a skill, a user-wide file, or anything else outside that tree stays in the list so you can do it yourself. The important ones are marked and listed first.
 
