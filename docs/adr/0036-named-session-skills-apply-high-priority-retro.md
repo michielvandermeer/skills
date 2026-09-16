@@ -1,5 +1,5 @@
 ---
-status: partially superseded by ADR-0037
+status: partially superseded by ADR-0038
 ---
 
 # Named session skills start a retrospective that applies high-priority changes

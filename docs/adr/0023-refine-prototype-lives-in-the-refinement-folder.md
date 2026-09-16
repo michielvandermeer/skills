@@ -1,5 +1,5 @@
 ---
-status: superseded by ADR-0036
+status: superseded by ADR-0037
 ---
 
 # A Refine Prototype lives in the Refinement folder
