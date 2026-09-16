@@ -1,5 +1,5 @@
 ---
-status: superseded by ADR-0037
+status: superseded by ADR-0039
 ---
 
 # Refine determines Scope and briefs grill-with-docs
@@ -12,5 +12,5 @@ Use cases and work items were rejected: those are what `/grill-with-docs` settle
 
 - [ADR-0005](0005-refinement-is-terminal-and-functional-only.md) is superseded. Terminal and silent-on-implementation stand here.
 - The Complete document's six sections are Intent, How it works today, In scope, Out of scope, Prototype, Open Questions.
-- `/prototype` invoked from refine writes no Spec. The Refinement names `.agents/refinements/<slug>/prototype/` ([ADR-0023](0023-refine-prototype-lives-in-the-refinement-folder.md)).
+- `/prototype` invoked from refine writes no Spec. The Refinement names `.agents/refinements/<slug>/prototype/` ([ADR-0025](0025-refine-prototype-lives-in-the-refinement-folder.md)).
 - A developer, not the refine session, starts `/grill-with-docs`.

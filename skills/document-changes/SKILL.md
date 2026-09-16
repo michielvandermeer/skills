@@ -54,7 +54,7 @@ Skip any candidate whose full heading line already exists — exact match on `##
 User invoked. Optional filters: context name and/or `from` / `until` dates (inclusive). Defaults: every context in the map (or the single root context), full history.
 
 1. Read commits in range (path-limited per context when a name filter is set).
-2. Cluster into **logical product features** from subjects, bodies, and paths — not merge commits, not calendar-day buckets ([ADR-0012](../../docs/adr/0012-changelog-backfill-by-product-feature.md)). One cluster → one candidate. Keep product-visible clusters only.
+2. Cluster into **logical product features** from subjects, bodies, and paths — not merge commits, not calendar-day buckets ([ADR-0013](../../docs/adr/0013-changelog-backfill-by-product-feature.md)). One cluster → one candidate. Keep product-visible clusters only.
 3. Ship date = last product-facing commit author date in the cluster.
 4. Draft, dedup, prepend **unattended**. Report per context: titles written, titles skipped as duplicate, clusters skipped as not product-visible.
 

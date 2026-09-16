@@ -7,11 +7,11 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, the Oneshot agent implements. You hold one three-line report, any deviations, and the review findings for as long as step 3 takes to hand them on. Hand paths; the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
-The Oneshot agent is `skills:oneshot` (`agents/oneshot.md` at the plugin root), pinned to a cheaper tier because the Spec was decided before it started; a host without that tier uses its cheapest model that edits code. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0029](../../docs/adr/0029-implement-oneshot-is-a-second-command.md).
+The Oneshot agent is `skills:oneshot` (`agents/oneshot.md` at the plugin root), pinned to a cheaper tier because the Spec was decided before it started; a host without that tier uses its cheapest model that edits code. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0031](../../docs/adr/0031-implement-oneshot-is-a-second-command.md).
 
-Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0024](../../docs/adr/0024-implement-agents-close-leftover-gaps.md).
+Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. See [ADR-0026](../../docs/adr/0026-implement-never-leaves-the-repository.md).
+The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. See [ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md).
 
 ## Process
 
@@ -45,7 +45,7 @@ Dispatch `skills:oneshot` with a prompt made of paths and section names — it r
 - the report format below
 - that leftover choices are its to close from the Spec, the code, and existing patterns
 - that it finds the projects to leave Green from the codebase, then greens those and the whole suite
-- that Green is measured against `master` ([ADR-0027](../../docs/adr/0027-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed
+- that Green is measured against `master` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed
 - that a verification the repo's own conventions demand for the surface touched — a browser pass, a smoke run — counts toward green, run from the worktree
 - that `CHANGELOG.md` stays untouched whatever the repo's docs rules say; step 4 writes it
 
@@ -84,7 +84,7 @@ Run `/document-changes` in **implement mode** while the Spec is still on disk �
 
 ### 5. Land the branch
 
-Delete the Spec and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. The Prototype folder the Spec points at stays ([ADR-0017](../../docs/adr/0017-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
+Delete the Spec and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
 
 Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 

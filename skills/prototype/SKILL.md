@@ -7,7 +7,7 @@ description: Build a throwaway prototype to answer a design question, then turn 
 
 A prototype is **throwaway code that answers a question**. The question decides the shape.
 
-It is built in a worktree and played with. The lasting record is a folder the parent names — `.agents/prototypes/<slug>/` when a Spec will point at it ([ADR-0017](../../docs/adr/0017-prototypes-live-under-agents-prototypes.md)). The worktree and its branch go.
+It is built in a worktree and played with. The lasting record is a folder the parent names — `.agents/prototypes/<slug>/` when a Spec will point at it ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). The worktree and its branch go.
 
 ## Process
 

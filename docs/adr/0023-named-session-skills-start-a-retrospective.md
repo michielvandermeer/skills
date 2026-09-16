@@ -1,5 +1,5 @@
 ---
-status: superseded by ADR-0022
+status: superseded by ADR-0024
 ---
 
 # Named session skills start a retrospective when the skill you typed finishes

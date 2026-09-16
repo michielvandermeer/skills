@@ -7,7 +7,7 @@ argument-hint: "<idea path or Jira key>"
 
 # Refine
 
-One person, often a non-developer who knows the product. Start from an Idea or a Jira ticket. Grill until nothing is left to ask, ask for a Prototype, write a Spec, write a summary of that Spec back onto the Idea or ticket. Finish in this session ([ADR-0037](../../docs/adr/0037-refine-ends-in-a-spec.md)).
+One person, often a non-developer who knows the product. Start from an Idea or a Jira ticket. Grill until nothing is left to ask, ask for a Prototype, write a Spec, write a summary of that Spec back onto the Idea or ticket. Finish in this session ([ADR-0039](../../docs/adr/0039-refine-ends-in-a-spec.md)).
 
 Live rounds and the write-back run `/plain-language`.
 

@@ -8,4 +8,4 @@ A flag on `/implement` was rejected: only the human can tell whether this Spec f
 
 - Other skills do not start `/implement-oneshot`.
 - Both commands share the worktree and branch named `<slug>`. `/implement-oneshot` stops when Step files are present. `/implement` does not learn about a oneshot run; a leftover oneshot worktree fails worktree add the way any duplicate already does.
-- The Oneshot agent is Spec-bound and uses the same model pin as the Step agent ([ADR-0007](0007-pinned-subagent-model-tiers.md)). Leftover gaps, local-only runs, and green-against-master apply as they do to `/implement` ([ADR-0024](0024-implement-agents-close-leftover-gaps.md), [ADR-0026](0026-implement-never-leaves-the-repository.md), [ADR-0027](0027-green-is-measured-against-master.md)).
+- The Oneshot agent is Spec-bound and uses the same model pin as the Step agent ([ADR-0007](0007-pinned-subagent-model-tiers.md)). Leftover gaps, local-only runs, and green-against-master apply as they do to `/implement` ([ADR-0026](0026-implement-agents-close-leftover-gaps.md), [ADR-0028](0028-implement-never-leaves-the-repository.md), [ADR-0029](0029-green-is-measured-against-master.md)).

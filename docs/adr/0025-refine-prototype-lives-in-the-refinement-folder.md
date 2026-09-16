@@ -1,5 +1,5 @@
 ---
-status: superseded by ADR-0037
+status: superseded by ADR-0039
 ---
 
 # A Refine Prototype lives in the Refinement folder
@@ -10,6 +10,6 @@ Keeping Refine demos under `.agents/prototypes/` was rejected: two folders for o
 
 ## Consequences
 
-- [ADR-0017](0017-prototypes-live-under-agents-prototypes.md) still holds for Specs. Its line that a Refinement names the same path is superseded here.
-- [ADR-0018](0018-refine-determines-scope-via-prototype.md) still holds for how Refine uses a Prototype. The path it names does not.
+- [ADR-0018](0018-prototypes-live-under-agents-prototypes.md) still holds for Specs. Its line that a Refinement names the same path is superseded here.
+- [ADR-0019](0019-refine-determines-scope-via-prototype.md) still holds for how Refine uses a Prototype. The path it names does not.
 - `/prototype` serving Refine writes to the path the parent names, and Refine names `.agents/refinements/<slug>/prototype/`.

@@ -7,11 +7,11 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, which Steps are in flight, one three-line report per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 3's structural check and nothing more. While Step agents run, waiting is the work.
 
-A **Ready** Step (every blocker done) runs as soon as it is Ready, together with the others that are. Each Ready Step gets its own worktree off the run branch; rebase it onto that branch before anything that was waiting on it starts. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The planner, the fixer, and the data-structures pass run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0031](../../docs/adr/0031-implement-runs-ready-steps-in-parallel.md).
+A **Ready** Step (every blocker done) runs as soon as it is Ready, together with the others that are. Each Ready Step gets its own worktree off the run branch; rebase it onto that branch before anything that was waiting on it starts. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The planner, the fixer, and the data-structures pass run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0033](../../docs/adr/0033-implement-runs-ready-steps-in-parallel.md).
 
-Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0024](../../docs/adr/0024-implement-agents-close-leftover-gaps.md).
+Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and a Step that needs that **halts**. See [ADR-0026](../../docs/adr/0026-implement-never-leaves-the-repository.md).
+The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and a Step that needs that **halts**. See [ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md).
 
 ## Process
 
@@ -36,7 +36,7 @@ The session must work *inside* the run worktree for the rest of the run — crea
 
 ### 2. Plan the steps
 
-Dispatch a **planner** sub-agent. Give it the spec path (or the argument text), `<slug>`, and the absolute path to [STEPS.md](STEPS.md) in this skill's directory — those three and nothing else. It reads the slicing rules itself, writes one file per Step to `.agents/steps/<slug>/`, and commits them in one commit before returning, so the resets in steps 1 and 3 cannot delete a Step not yet done ([ADR-0028](../../docs/adr/0028-planner-commits-the-step-files.md)). When `git status` still shows that directory afterwards, commit it yourself as `plan: <slug>`.
+Dispatch a **planner** sub-agent. Give it the spec path (or the argument text), `<slug>`, and the absolute path to [STEPS.md](STEPS.md) in this skill's directory — those three and nothing else. It reads the slicing rules itself, writes one file per Step to `.agents/steps/<slug>/`, and commits them in one commit before returning, so the resets in steps 1 and 3 cannot delete a Step not yet done ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)). When `git status` still shows that directory afterwards, commit it yourself as `plan: <slug>`.
 
 It returns the index and nothing else: one line per step, `NN | title | blocked by: none|<NNs> | one-line deliverable`.
 
@@ -60,7 +60,7 @@ Tell it how far to trust its map: its footprint is a guess — where the code di
 Require of it: **green before it finishes**, then its `## Outcome` appended to its Step file, that file's `Status:` set to `done`, and its code and Step file committed together in one commit.
 
 - Green covers every project on its footprint's `Projects:` line, and the whole suite on the last Step.
-- Green is measured against `master` ([ADR-0027](../../docs/adr/0027-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
+- Green is measured against `master` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
 - A verification the repo's own conventions demand for the surface the Step touches — a browser pass, a smoke run — counts toward green and is the Step agent's, run from its worktree.
 - `CHANGELOG.md` stays untouched whatever the repo's docs rules say; step 5 writes it.
 
@@ -105,7 +105,7 @@ Run `/document-changes` in **implement mode** while the Spec and step Outcomes a
 
 ### 6. Land the branch
 
-Delete the Spec, the whole `.agents/steps/<slug>/` directory, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. The Prototype folder the Spec points at stays ([ADR-0017](../../docs/adr/0017-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
+Delete the Spec, the whole `.agents/steps/<slug>/` directory, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
 
 Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 

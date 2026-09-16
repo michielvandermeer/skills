@@ -1,5 +1,5 @@
 ---
-status: superseded by ADR-0030
+status: superseded by ADR-0032
 ---
 
 # Triage ends in a Spec, not an agent brief

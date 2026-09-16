@@ -6,5 +6,5 @@ Applying every file this session reached was rejected: the installed copy is a c
 
 ## Consequences
 
-- The global write in [ADR-0020](0020-retrospective-includes-global-agent-files.md) and [ADR-0036](0036-named-session-skills-apply-high-priority-retro.md) is superseded. Looking at those files stays.
+- The global write in [ADR-0022](0022-retrospective-includes-global-agent-files.md) and [ADR-0038](0038-named-session-skills-apply-high-priority-retro.md) is superseded. Looking at those files stays.
 - High-priority auto-apply for Owned files stays, in one repository commit.
