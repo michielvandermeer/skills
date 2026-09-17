@@ -77,7 +77,7 @@ A fact a successor needs goes in `## Outcome`; the successor reads it there.
 
 Then **check the step structurally** — `grep '^Status:'` on the Step file in that worktree reads `done`, and `git log -1` on `<slug>-<NN>` shows a new commit. That is the whole check; open the Step file only when it fails. Step 4's review covers the rest.
 
-**Rebase onto the run branch.** From the Step worktree, `git rebase` onto the run branch. From the run worktree, `git merge --ff-only <slug>-<NN>`, then `git worktree remove` the Step worktree, then `git branch -d <slug>-<NN>`. A conflict during rebase or merge is `/resolving-merge-conflicts`, with the stated goal: this run's commits, linear, this Step's intent preserved where it does not contradict a Step already on the run branch — once the run is linear, the remove and the delete still run from the run worktree. Cleanup is done when that Step's worktree and that Step's branch are both gone. Completions that arrive together rebase one at a time, lowest NN first.
+**Rebase onto the run branch.** From the Step worktree, `git rebase` onto the run branch. From the run worktree, `git merge --ff-only <slug>-<NN>`, then `git worktree remove` the Step worktree, then `git branch -d <slug>-<NN>`. Once the run is linear, the remove and the delete still run from the run worktree. A conflict during rebase or merge is `/resolving-merge-conflicts`, with the stated goal: this run's commits, linear, this Step's intent preserved where it does not contradict a Step already on the run branch. Cleanup is done when that Step's worktree and that Step's branch are both gone. Completions that arrive together rebase one at a time, lowest NN first.
 
 Report one line to the user after that cleanup — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations verbatim into every later dispatch.
 
@@ -85,7 +85,7 @@ Dispatch any Step that just became Ready.
 
 A `blocked` report, a failed structural check, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry of **that** Step. When the host can resume the same agent, resume it once with one line: the step is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd` in its worktree, then re-dispatch the same step, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The failure is the Step agent's to diagnose. A second failure **halts** new dispatch; in-flight siblings finish or fail on their own, then the session ends.
 
-Done when every file in `.agents/steps/<slug>/` reads `Status: done` and no Step worktree remains.
+Done when every file in `.agents/steps/<slug>/` reads `Status: done` and no Step worktree or Step branch remains.
 
 ### 4. Review and improve
 
