@@ -51,6 +51,7 @@ Dispatch every Ready pending Step together (`Blocked by: none`, or every listed 
    - the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
    - an instruction to read the `## Outcome` of every Step file whose `Status:` is `done` before starting
    - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
+   - the coding-standards sources found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
    - the spec's Testing Decisions section, which governs what it tests
    - the deviations reported so far, verbatim, when there are any
    - its Step number and the total, and the report format below

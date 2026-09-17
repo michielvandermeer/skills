@@ -40,6 +40,7 @@ Dispatch `skills:oneshot` with a prompt made of paths and section names — it r
 
 - the spec, or the argument text when that is all there is
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
+- the coding-standards sources found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
 - the spec's Testing Decisions section when a Spec exists, which governs what it tests
 - the deviations from a prior attempt, verbatim, when there are any
 - the report format below
