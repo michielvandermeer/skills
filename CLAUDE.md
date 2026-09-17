@@ -1,6 +1,6 @@
 # mvdmio Skills
 
-This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting reference file. The host invokes the **installed plugin**, not this checkout. After a commit that changes a skill, update the installed plugin so the host loads this checkout (fetch this repo into the install path when the commit is not on origin).
+This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting reference file. The host invokes the **installed plugin**, not this checkout.
 
 ## Editing agent documents
 
