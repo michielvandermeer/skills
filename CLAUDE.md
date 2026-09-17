@@ -12,7 +12,7 @@ When you edited skills, still owe:
 
 - `/domain-modeling`: `CONTEXT.md` entries for terms settled, ADRs in `docs/adr/` on the three-part test
 - A commit covering every file the change touched
-- Update the installed plugin after that commit
+- Update the installed plugin after that commit so the host loads this checkout (fetch this repo into the install path when the commit is not on origin)
 - Then run `/retro`
 
 ## Editing agent documents
