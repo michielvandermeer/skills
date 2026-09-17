@@ -110,6 +110,7 @@ Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Co
 │   ├── explorer.md
 │   ├── implementer.md
 │   ├── oneshot.md
+│   ├── planner.md
 │   └── researcher.md
 ├── docs/adr/              # architecture decision records
 ├── skills/                # one directory per skill, each with a SKILL.md
@@ -129,8 +130,8 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 
 These skills pin the model and effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
 
-- A **spec-bound dispatch** works to a document settled before it started, so it runs cheaper — `skills:implementer` and `skills:oneshot` at Sonnet, and all four shipped agents at `effort: medium`.
-- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s planner, both `/code-review` reviewers, the `/improve-data-structures` pass, and the `/codebase-design` design-it-twice fan-out.
+- A **spec-bound dispatch** works to a document settled before it started, so it runs cheaper — `skills:implementer` and `skills:oneshot` at Sonnet, and `skills:explorer`, `skills:implementer`, `skills:oneshot`, and `skills:researcher` at `effort: medium`.
+- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s Planner (`skills:planner`, `agents/planner.md`), both `/code-review` reviewers, the `/improve-data-structures` pass, and the `/codebase-design` design-it-twice fan-out.
 
 > **These skills assume a session on Opus or above.** The tiers are absolute, not relative to your session, so starting a Sonnet or Haiku session does **not** scale them down — a Haiku session gets Sonnet step agents and spends more than you chose. [ADR-0007](docs/adr/0007-pinned-subagent-model-tiers.md) records why it works that way and what it costs.
 
