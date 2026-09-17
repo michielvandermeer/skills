@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-17: Implement on this checkout
+Type `/implement-yolo` to build a spec in this checkout, on the branch you are already on. It does not open a second copy of the project and does not merge onto master. Review, the Changelog, and `/retro` still run.
+
 ## 2026-09-17: Failed land keeps the worktree
 When `/implement` cannot merge the run onto the default branch, it leaves the run's worktree and branch in place. The session rebases there and tries the merge again. `/implement-oneshot` does the same.
 

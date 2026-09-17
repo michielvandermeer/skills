@@ -116,6 +116,7 @@ Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Co
 │   ├── code-review/
 │   ├── implement/
 │   ├── implement-oneshot/
+│   ├── implement-yolo/
 │   └── ...
 ├── CONTEXT.md             # the vocabulary these skills share
 ├── LICENSE
@@ -142,7 +143,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
-| `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, and for manual backfill. |
+| `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, `/implement-yolo`, and for manual backfill. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
@@ -150,6 +151,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `implement` | Implement a spec by slicing it into steps and running ready steps in parallel sub-agents. |
 | `implement-oneshot` | Implement a spec in one sub-agent session, skipping the Planner. Still reviews and improves data structures after. |
+| `implement-yolo` | Implement a spec in one sub-agent session on this checkout and this branch. No worktree, no new branch, no merge onto master. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then write the Ideas and Specs you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `migrate-doc-layout` | Move spec, idea, reference, refinement, architecture-review, and codebase-audit documents into this repo's canonical `.agents/` layout. |

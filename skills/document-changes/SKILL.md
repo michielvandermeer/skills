@@ -1,6 +1,6 @@
 ---
 name: document-changes
-description: Write product-facing Changelog entries beside each CONTEXT.md. Use when /implement or /implement-oneshot finishes before Spec delete and land, when backfilling Changelog history from git, or the user runs /document-changes with an optional context name and date window.
+description: Write product-facing Changelog entries beside each CONTEXT.md. Use when /implement, /implement-oneshot, or /implement-yolo finishes before Spec delete, when backfilling Changelog history from git, or the user runs /document-changes with an optional context name and date window.
 argument-hint: "[context] [from yyyy-mm-dd] [until yyyy-mm-dd]"
 ---
 
@@ -31,7 +31,7 @@ You are the **driving session**, or a `general-purpose` sub-agent at the session
 
 An entry only for change a product user could notice — behaviour, screens, wording they see, workflows. Internal-only work (refactors, agent-doc cleanup, Spec/step chore drops, review-fix hardening of work already covered) produces no entry.
 
-Nothing product-visible → tell the user none was needed and stop. `/implement` and `/implement-oneshot` still land.
+Nothing product-visible → tell the user none was needed and stop. The caller continues.
 
 ## Dedup
 
@@ -41,7 +41,7 @@ Skip any candidate whose full heading line already exists — exact match on `##
 
 ### Implement mode
 
-`/implement` and `/implement-oneshot` call this after review/improve, while the Spec is still on disk, before delete and land. Branch diff vs the fixed point (usually `master`) is available.
+`/implement`, `/implement-oneshot`, and `/implement-yolo` call this after review/improve, while the Spec is still on disk, before delete (and land, when the caller lands). Branch diff vs the fixed point the caller names is available — usually `master`; `/implement-yolo` names the HEAD at the start of the run.
 
 1. Resolve affected contexts from branch-diff paths (and Spec/Footprints for library-only work).
 2. For each affected context, draft **one** entry for the whole run from that context's product point of view. Prefer Spec problem/solution and Outcomes when they exist; use the diff only to confirm what landed.
