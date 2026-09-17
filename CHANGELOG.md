@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-17: Finished steps drop leftover branches
+When you type `/implement`, each finished step's branch is deleted once that step is on the run. You will not see leftover step branches in the repository after that.
+
 ## 2026-09-17: Implement on this checkout
 Type `/implement-yolo` to build a spec in this checkout, on the branch you are already on. It does not open a second copy of the project and does not merge onto master. Review, the Changelog, and `/retro` still run.
 
