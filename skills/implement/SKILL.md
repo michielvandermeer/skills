@@ -77,9 +77,9 @@ A fact a successor needs goes in `## Outcome`; the successor reads it there.
 
 Then **check the step structurally** — `grep '^Status:'` on the Step file in that worktree reads `done`, and `git log -1` on `<slug>-<NN>` shows a new commit. That is the whole check; open the Step file only when it fails. Step 4's review covers the rest.
 
-**Rebase onto the run branch.** From the Step worktree, `git rebase` onto the run branch. From the run worktree, `git merge --ff-only <slug>-<NN>`. A conflict in either step is `/resolving-merge-conflicts`, with the stated goal: this run's commits, linear, this Step's intent preserved where it does not contradict a Step already on the run branch. Then `git worktree remove` the Step worktree and `git branch -d <slug>-<NN>`. Completions that arrive together rebase one at a time, lowest NN first.
+**Rebase onto the run branch.** From the Step worktree, `git rebase` onto the run branch. From the run worktree, `git merge --ff-only <slug>-<NN>`, then `git worktree remove` the Step worktree, then `git branch -d <slug>-<NN>`. A conflict during rebase or merge is `/resolving-merge-conflicts`, with the stated goal: this run's commits, linear, this Step's intent preserved where it does not contradict a Step already on the run branch — once the run is linear, the remove and the delete still run from the run worktree. Cleanup is done when that Step's worktree and that Step's branch are both gone. Completions that arrive together rebase one at a time, lowest NN first.
 
-Report one line to the user after each rebase — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations verbatim into every later dispatch.
+Report one line to the user after that cleanup — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations verbatim into every later dispatch.
 
 Dispatch any Step that just became Ready.
 
