@@ -101,7 +101,7 @@ Run `/retro`.
 
 ## Worktree waived
 
-There is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 5 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, rebase again on the branch and retry the merge. `/implement` in flight is `.agents/steps/<slug>/` in this checkout. This skill in flight is branch `<slug>` with no Step files.
+There is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 5 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, master moved: rebase again on the branch under step 1, check out master yourself, and retry the merge. `/implement` in flight is `.agents/steps/<slug>/` in this checkout. This skill in flight is branch `<slug>` with no Step files.
 
 ## Work in another repository
 

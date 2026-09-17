@@ -122,7 +122,7 @@ Run `/retro`.
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 3 runs Ready Steps **one at a time in this checkout** — skip the Step worktree and the rebase; a shared tree cannot hold two editors. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, rebase again on the branch and retry the merge.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 3 runs Ready Steps **one at a time in this checkout** — skip the Step worktree and the rebase; a shared tree cannot hold two editors. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, master moved: rebase again on the branch under step 1, check out master yourself, and retry the merge.
 
 ## Work in another repository
 
