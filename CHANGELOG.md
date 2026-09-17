@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-17: Failed land keeps the worktree
+When `/implement` cannot merge the run onto the default branch, it leaves the run's worktree and branch in place. The session rebases there and tries the merge again. `/implement-oneshot` does the same.
+
 ## 2026-09-17: Step agents read your standards
 When you type `/implement`, each Step agent reads the documents that say how this repo wants code written, before it writes tests or code. `/implement-oneshot` does the same. A repo with no such document is unchanged.
 
