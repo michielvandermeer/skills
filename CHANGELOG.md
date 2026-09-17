@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-17: Step agents read your standards
+When you type `/implement`, each Step agent reads the documents that say how this repo wants code written, before it writes tests or code. `/implement-oneshot` does the same. A repo with no such document is unchanged.
+
 ## 2026-09-16: No-change grilling writes no Spec
 When you confirm a `/grill-with-docs` Read-back (the settled design restated) that we will not do the work, the session writes no Spec. It deletes the Issue or Idea it started from, says it wrote no Spec because nothing will be built, and still runs `/retro`. A Read-back that still names a change still writes a Spec.
 
