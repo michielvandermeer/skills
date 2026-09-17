@@ -1,10 +1,10 @@
 # mvdmio Skills
 
-This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting reference file. The host invokes the **installed plugin**, not this checkout.
+This repo *is* the skills. Every change is prose in a `SKILL.md` or a supporting reference file. The host invokes the **installed plugin**, not this checkout. After a commit that changes a skill, update the installed plugin so the host loads this checkout (fetch this repo into the install path when the commit is not on origin).
 
 ## Grilling ends in skill edits
 
-`/grill-with-docs` normally chains into `/to-spec`. Here, when a grilling session's Frontier is empty and the confirmed Read-back is a change to implement, edit the skill files directly — skip `/to-spec`, `/implement`, `/implement-oneshot`, and `/implement-yolo`. The Driving session already holds the Design tree; the work is a handful of markdown edits. A Spec only briefs a later `/implement`, `/implement-oneshot`, or `/implement-yolo` session that lacks that context.
+`/grill-with-docs` and `/triage` normally chain into `/to-spec`. Here, when a grilling session's Frontier is empty and the confirmed Read-back is a change to implement, edit the skill files directly — skip `/to-spec`, `/implement`, `/implement-oneshot`, and `/implement-yolo`. The Driving session already holds the Design tree; the work is a handful of markdown edits. A Spec only briefs a later `/implement`, `/implement-oneshot`, or `/implement-yolo` session that lacks that context.
 
 When the confirmed Read-back is work we will not do, skip `/to-spec` and the in-place skill edits. Still run `/retro`.
 
@@ -12,7 +12,6 @@ When you edited skills, still owe:
 
 - `/domain-modeling`: `CONTEXT.md` entries for terms settled, ADRs in `docs/adr/` on the three-part test
 - A commit covering every file the change touched
-- Update the installed plugin after that commit so the host loads this checkout (fetch this repo into the install path when the commit is not on origin)
 - Then run `/retro`
 
 ## Editing agent documents
