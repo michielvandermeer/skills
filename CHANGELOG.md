@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-17: Planner writes Step files
+When you type `/implement`, the Planner is now an agent that can write the Step files, so the first pass leaves those files on disk and the run starts building. A host that has not loaded that agent still uses one that can write files. The run still stops if that pass writes no files or replies with a long note instead of the step list.
+
 ## 2026-09-17: Finished steps drop leftover branches
 When you type `/implement`, each finished step's branch is deleted once that step is on the run. You will not see leftover step branches in the repository after that.
 
