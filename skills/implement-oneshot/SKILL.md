@@ -93,8 +93,7 @@ Each remaining command runs where its branch is checked out, and that constraint
    - A `CHANGELOG.md` conflict is always keep both, this run's entry above.
    - When the rebase replayed the branch onto commits master gained during the run, green is not known any more: build and run the whole suite before going on. A red run gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward.
 2. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-3. From the original directory, on `master`: `git merge --ff-only <branch>`. (master lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward; if it errors, master moved during the session — re-enter the worktree, rebase again, and retry.
-4. `git worktree remove <path>` — never forced; a lock means another session still has it — and `git branch -d <branch>`.
+3. From the original directory, on `master`: `git merge --ff-only <branch>`. (master lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and `git branch -d <branch>` has run. When the merge errors, master moved: re-enter the worktree, rebase again under step 1, return under step 2, and retry this merge.
 
 ### 6. Retrospective
 
@@ -102,7 +101,7 @@ Run `/retro`.
 
 ## Worktree waived
 
-There is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 5 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch. `/implement` in flight is `.agents/steps/<slug>/` in this checkout. This skill in flight is branch `<slug>` with no Step files.
+There is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 5 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, rebase again on the branch and retry the merge. `/implement` in flight is `.agents/steps/<slug>/` in this checkout. This skill in flight is branch `<slug>` with no Step files.
 
 ## Work in another repository
 
