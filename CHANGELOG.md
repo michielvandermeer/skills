@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-19: Type wizard for setup
+Type `/wizard` when you need to provision a service, save credentials, walk a dashboard, or run a one-off migration. The agent can also start it when it hits a step only you can do. It writes a bash script that you run yourself; the script opens each page, captures what you paste, and writes it to `.env` or GitHub secrets.
+
 ## 2026-09-17: Planner writes Step files
 When you type `/implement`, the Planner is now an agent that can write the Step files, so the first pass leaves those files on disk and the run starts building. A host that has not loaded that agent still uses one that can write files. The run still stops if that pass writes no files or replies with a long note instead of the step list.
 

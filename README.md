@@ -167,6 +167,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `triage` | Sort incoming reports into Specs or parked Issues, one document per distinct problem. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
 | `wayfinder` | Plan a huge chunk of work as a shared map of decision tickets, resolved one at a time. |
+| `wizard` | Generate an interactive bash wizard that walks a person through steps only they can perform. |
 | `writing-for-agents` | Reference for writing any document an agent consumes — skills, AGENTS.md, CLAUDE.md. |
 
 ## Credits

@@ -29,6 +29,14 @@ _Avoid_: architecture review, tech-debt report, DSA audit
 Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A **Spec** points at `.agents/prototypes/<slug>/`.
 _Avoid_: spike, POC, demo, mockup
 
+**Wizard**:
+A bash script that walks a person, stage by stage, through a manual procedure only they can perform. The `/wizard` skill generates it; the person runs it.
+_Avoid_: setup script, HITL loop, installer, walkthrough
+
+**Stage**:
+One focused task in a Wizard, typically one screen.
+_Avoid_: Step, prompt
+
 **Spec**:
 The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
