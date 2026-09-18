@@ -45,6 +45,10 @@ _Avoid_: ticket, task, chunk, phase
 A file on a `/wayfinder` map at `.agents/issues/<effort>/<NN>-<slug>.md` whose resolution is a decision — not a slice of a build to execute. The unit of claim and resolution. Distinct from a Step, which delivers code and decides nothing.
 _Avoid_: investigation ticket, implementation ticket
 
+**Claimed**:
+A Decision ticket whose `Status:` line is `claimed`. Concurrent `/wayfinder` sessions skip it. A ticket with no `Status:` line is unclaimed.
+_Avoid_: in progress, locked, assigned, researching
+
 **Fork**:
 A place a `/wayfinder` effort could go two ways, and the one it takes changes what gets built. What the map charts.
 
