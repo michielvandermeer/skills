@@ -30,7 +30,7 @@ Throwaway code built to answer one design question — whether a state model hol
 _Avoid_: spike, POC, demo, mockup
 
 **Spec**:
-The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement` and `/implement-oneshot`.
+The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
 **Unstated claim**:
@@ -70,7 +70,7 @@ The product-facing history of a context, at `CHANGELOG.md` beside that context's
 _Avoid_: release notes, Keep a Changelog, commit log, NEWS
 
 **Changelog entry**:
-One shipped, product-visible change recorded in a Changelog: a dated title of at most six words and a body of at most three sentences, in **Plain language** with no development jargon. One entry per `/implement` or `/implement-oneshot` run per context that changed; backfill groups git history into the same shape by logical product feature, not by merge commit.
+One shipped, product-visible change recorded in a Changelog: a dated title of at most six words and a body of at most three sentences, in **Plain language** with no development jargon. One entry per `/implement`, `/implement-oneshot`, or `/implement-yolo` run per context that changed; backfill groups git history into the same shape by logical product feature, not by merge commit.
 _Avoid_: release bullet, commit message, patch note
 
 ### Communication
@@ -131,8 +131,12 @@ The altitude a `/grilling` session grills at, named on one line in its first Rou
 **Altitude**:
 How deep a Round grills, set by the Subject. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
 
+**Owned file**:
+A file this git repository contains in its working tree as its own file. Not a cached plugin copy, and not a file in the user config tree.
+_Avoid_: in-scope file, workspace file
+
 **Retrospective**:
-Suggestions for the agent's environment after a session. **High-priority** suggestions are applied without asking; the rest appear only in the summary. A **Named session skill** starts one when it finishes; you can also type `/retro`.
+Suggestions for the agent's environment after a session. **High-priority** suggestions for **Owned files** are applied without asking; everything else appears only in the summary, including suggestions for files this repository does not own. A **Named session skill** starts one when it finishes; you can also type `/retro`.
 _Avoid_: postmortem, wrap-up, retro as a meeting
 
 **Named session skill**:
@@ -146,7 +150,8 @@ _Avoid_: mechanical-only, severity
 ### Execution
 
 **Planner**:
-The sub-agent that reads a Spec, walks the code only until every Step's Footprint can be filled, and writes the Step files — each with that Footprint and the Steps it is blocked by. It closes leftover behaviour the Spec did not name, commits the files in one commit, and returns only a compact index to the Driving session — never the Step bodies.
+The sub-agent (`skills:planner`) that reads a Spec, walks the code only until every Step's Footprint can be filled, and writes the Step files — each with that Footprint and the Steps it is blocked by. It closes leftover behaviour the Spec did not name, commits the files in one commit, and returns only a compact index to the Driving session — never the Step bodies.
+_Avoid_: Plan, Plan agent, host Plan
 
 **Ready**:
 A pending Step whose `Blocked by` Steps are all done. What `/implement` dispatches now; several Ready Steps run together.
@@ -156,7 +161,7 @@ _Avoid_: frontier — that is grilling's word for questions whose prerequisites 
 The sub-agent that implements exactly one Step, in its own worktree. Reads the Outcomes of Steps already done, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
 
 **Oneshot agent**:
-The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot`.
+The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot` and `/implement-yolo`.
 _Avoid_: direct implementer, oneshot implementer, single-session agent, implement-direct
 
 **Footprint**:

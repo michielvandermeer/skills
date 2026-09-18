@@ -1,5 +1,5 @@
 ---
-status: superseded by ADR-0036
+status: superseded by ADR-0039
 ---
 
 # Refine keeps a dense session document and thin user-facing surfaces

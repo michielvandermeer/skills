@@ -1,5 +1,5 @@
 ---
-status: superseded by ADR-0022
+status: superseded by ADR-0024
 ---
 
 # A retrospective looks at global agent files as well as the repo

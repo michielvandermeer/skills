@@ -7,11 +7,11 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, the Oneshot agent implements. You hold one three-line report, any deviations, and the review findings for as long as step 3 takes to hand them on. Hand paths; the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
-The Oneshot agent is `skills:oneshot` (`agents/oneshot.md` at the plugin root), pinned to a cheaper tier because the Spec was decided before it started; a host without that tier uses its cheapest model that edits code. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0029](../../docs/adr/0029-implement-oneshot-is-a-second-command.md).
+The Oneshot agent is `skills:oneshot` (`agents/oneshot.md` at the plugin root), pinned to a cheaper tier because the Spec was decided before it started; a host without that tier uses its cheapest model that edits code. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0031](../../docs/adr/0031-implement-oneshot-is-a-second-command.md).
 
-Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0024](../../docs/adr/0024-implement-agents-close-leftover-gaps.md).
+Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. See [ADR-0026](../../docs/adr/0026-implement-never-leaves-the-repository.md).
+The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. See [ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md).
 
 ## Process
 
@@ -40,12 +40,13 @@ Dispatch `skills:oneshot` with a prompt made of paths and section names — it r
 
 - the spec, or the argument text when that is all there is
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
+- the coding-standards sources found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
 - the spec's Testing Decisions section when a Spec exists, which governs what it tests
 - the deviations from a prior attempt, verbatim, when there are any
 - the report format below
 - that leftover choices are its to close from the Spec, the code, and existing patterns
 - that it finds the projects to leave Green from the codebase, then greens those and the whole suite
-- that Green is measured against `master` ([ADR-0027](../../docs/adr/0027-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed
+- that Green is measured against `master` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed
 - that a verification the repo's own conventions demand for the surface touched — a browser pass, a smoke run — counts toward green, run from the worktree
 - that `CHANGELOG.md` stays untouched whatever the repo's docs rules say; step 4 writes it
 
@@ -84,7 +85,7 @@ Run `/document-changes` in **implement mode** while the Spec is still on disk �
 
 ### 5. Land the branch
 
-Delete the Spec and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. The Prototype folder the Spec points at stays ([ADR-0017](../../docs/adr/0017-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
+Delete the Spec and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
 
 Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
@@ -92,8 +93,7 @@ Each remaining command runs where its branch is checked out, and that constraint
    - A `CHANGELOG.md` conflict is always keep both, this run's entry above.
    - When the rebase replayed the branch onto commits master gained during the run, green is not known any more: build and run the whole suite before going on. A red run gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward.
 2. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-3. From the original directory, on `master`: `git merge --ff-only <branch>`. (master lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward; if it errors, master moved during the session — re-enter the worktree, rebase again, and retry.
-4. `git worktree remove <path>` — never forced; a lock means another session still has it — and `git branch -d <branch>`.
+3. From the original directory, on `master`: `git merge --ff-only <branch>`. (master lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and `git branch -d <branch>` has run. When the merge errors, master moved: re-enter the worktree, rebase again under step 1, return under step 2, and retry this merge.
 
 ### 6. Retrospective
 
@@ -101,7 +101,7 @@ Run `/retro`.
 
 ## Worktree waived
 
-There is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 5 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, fast-forward, then delete the branch. `/implement` in flight is `.agents/steps/<slug>/` in this checkout. This skill in flight is branch `<slug>` with no Step files.
+There is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 5 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, master moved: rebase again on the branch under step 1, check out master yourself, and retry the merge. `/implement` in flight is `.agents/steps/<slug>/` in this checkout. This skill in flight is branch `<slug>` with no Step files.
 
 ## Work in another repository
 

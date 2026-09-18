@@ -6,5 +6,5 @@ Grilling in-session was rejected so one pick does not consume the session. Writi
 
 ## Consequences
 
-- ADR-0016's "then grills" is superseded; the rest of 0016 stands.
+- ADR-0017's "then grills" is superseded; the rest of 0017 stands.
 - `CONTEXT.md`'s Architecture review no longer ends "grilled into a Spec with `/grill-with-docs`".

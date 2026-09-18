@@ -1,6 +1,6 @@
 ---
 name: oneshot
-description: Implements a whole Spec in one session during an /implement-oneshot run. Dispatched explicitly by /implement-oneshot — it works to a Spec decided before it starts, so it is not a general coding agent.
+description: Implements a whole Spec in one session during an /implement-oneshot or /implement-yolo run. Dispatched explicitly by those skills — it works to a Spec decided before it starts, so it is not a general coding agent.
 model: sonnet
 effort: medium
 ---

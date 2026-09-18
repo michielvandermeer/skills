@@ -110,12 +110,14 @@ Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Co
 │   ├── explorer.md
 │   ├── implementer.md
 │   ├── oneshot.md
+│   ├── planner.md
 │   └── researcher.md
 ├── docs/adr/              # architecture decision records
 ├── skills/                # one directory per skill, each with a SKILL.md
 │   ├── code-review/
 │   ├── implement/
 │   ├── implement-oneshot/
+│   ├── implement-yolo/
 │   └── ...
 ├── CONTEXT.md             # the vocabulary these skills share
 ├── LICENSE
@@ -128,8 +130,8 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 
 These skills pin the model and effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
 
-- A **spec-bound dispatch** works to a document settled before it started, so it runs cheaper — `skills:implementer` and `skills:oneshot` at Sonnet, and all four shipped agents at `effort: medium`.
-- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s planner, both `/code-review` reviewers, the `/improve-data-structures` pass, and the `/codebase-design` design-it-twice fan-out.
+- A **spec-bound dispatch** works to a document settled before it started, so it runs cheaper — `skills:implementer` and `skills:oneshot` at Sonnet. Those two plus `skills:explorer` and `skills:researcher` run at `effort: medium`.
+- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s Planner (`skills:planner`, `agents/planner.md`), both `/code-review` reviewers, the `/improve-data-structures` pass, and the `/codebase-design` design-it-twice fan-out.
 
 > **These skills assume a session on Opus or above.** The tiers are absolute, not relative to your session, so starting a Sonnet or Haiku session does **not** scale them down — a Haiku session gets Sonnet step agents and spends more than you chose. [ADR-0007](docs/adr/0007-pinned-subagent-model-tiers.md) records why it works that way and what it costs.
 
@@ -142,7 +144,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
-| `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, and for manual backfill. |
+| `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, `/implement-yolo`, and for manual backfill. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
@@ -150,6 +152,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `implement` | Implement a spec by slicing it into steps and running ready steps in parallel sub-agents. |
 | `implement-oneshot` | Implement a spec in one sub-agent session, skipping the Planner. Still reviews and improves data structures after. |
+| `implement-yolo` | Implement a spec in one sub-agent session on this checkout and this branch. No worktree, no new branch, no merge onto master. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then write the Ideas and Specs you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `migrate-doc-layout` | Move spec, idea, reference, refinement, architecture-review, and codebase-audit documents into this repo's canonical `.agents/` layout. |
@@ -158,7 +161,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `refine` | Take an Idea or Jira ticket through grilling, an optional Prototype, and a Spec, then write a plain-language summary back. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
-| `retro` | Look at a finished session, apply high-priority environment changes, and summarise the rest. Skills such as `/implement` start this when they finish. |
+| `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
 | `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
 | `triage` | Sort incoming reports into Specs or parked Issues, one document per distinct problem. |

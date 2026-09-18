@@ -11,7 +11,7 @@ My answers reshape the tree. Recompute the frontier before each round.
 
 ## Facts, decisions, declarations
 
-Finding *facts* is your job, never mine — and it is a sub-agent's job, never your own context's ([ADR-0025](../../docs/adr/0025-grilling-facts-come-from-explorers.md)):
+Finding *facts* is your job, never mine — and it is a sub-agent's job, never your own context's ([ADR-0027](../../docs/adr/0027-grilling-facts-come-from-explorers.md)):
 
 - Read `CONTEXT.md`, the ADRs, and the brief we start from yourself; every fact from the code arrives as an **explorer**'s report (a read-only sub-agent sent with named questions).
 - Dispatch the explorer with the questions it must answer, wait for it however long that takes, and carry its report rather than the files. A running exploration is an unsettled prerequisite, and a round posted before it lands is built on guesses.
@@ -113,6 +113,6 @@ A round is read at speed, often late in a long day of them. Run the `/plain-lang
 
 ## Done
 
-The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Prove it with a **read-back** (the settled design, restated): plain sentences walking every surface and case the change touches, so that each meets a decision that applies to it. A surface no decision fits is a frontier item — ask it as a round, not in the read-back. The read-back carries no questions and no new declarations, names the Ideas filed along the way, and ends by asking whether we have reached a shared understanding. Act on the plan — spec, ADR, code — only after that answer; a forecast in an earlier round is not it.
+The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Prove it with a **read-back** (the settled design, restated): plain sentences walking every surface and case the change touches, so that each meets a decision that applies to it. A surface no decision fits is a frontier item — ask it as a round, not in the read-back. The read-back carries no questions and no new declarations, names the Ideas filed along the way, and ends by asking whether we have reached a shared understanding. Only after that answer: a change to implement becomes a Spec; a settled design that nothing will be built writes no Spec. A forecast in an earlier round is not confirmation.
 
 A session I stop before the frontier is empty still leaves a record: write every settled decision and unanswered Question back to the document we started from, or to a new Idea when there was none, and commit it.

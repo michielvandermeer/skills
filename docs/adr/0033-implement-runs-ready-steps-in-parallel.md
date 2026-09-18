@@ -8,4 +8,4 @@ A merge commit per Step was rejected: land is still rebase onto `master` and fas
 
 - Resume enters the run worktree (branch `<slug>`), not a Step worktree (`<slug>-<NN>`).
 - A second failure on one Step stops new dispatch; in-flight siblings finish or fail, then the session ends.
-- [ADR-0014](0014-implement-worktree-host-agnostic.md) still governs the run worktree. Step worktrees are always `git worktree add`; a host enter-tool would move the Driving session.
+- [ADR-0015](0015-implement-worktree-host-agnostic.md) still governs the run worktree. Step worktrees are always `git worktree add`; a host enter-tool would move the Driving session.

@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-09-17: Planner writes Step files
+When you type `/implement`, the Planner is now an agent that can write the Step files, so the first pass leaves those files on disk and the run starts building. A host that has not loaded that agent still uses one that can write files. The run still stops if that pass writes no files or replies with a long note instead of the step list.
+
+## 2026-09-17: Finished steps drop leftover branches
+When you type `/implement`, each finished step's branch is deleted once that step is on the run. You will not see leftover step branches in the repository after that.
+
+## 2026-09-17: Implement on this checkout
+Type `/implement-yolo` to build a spec in this checkout, on the branch you are already on. It does not open a second copy of the project and does not merge onto master. Review, the Changelog, and `/retro` still run.
+
+## 2026-09-17: Failed land keeps the worktree
+When `/implement` cannot merge the run onto the default branch, it leaves the run's worktree and branch in place. The session rebases there and tries the merge again. `/implement-oneshot` does the same.
+
+## 2026-09-17: Step agents read your standards
+When you type `/implement`, each Step agent reads the documents that say how this repo wants code written, before it writes tests or code. `/implement-oneshot` does the same. A repo with no such document is unchanged.
+
+## 2026-09-16: No-change grilling writes no Spec
+When you confirm a `/grill-with-docs` Read-back (the settled design restated) that we will not do the work, the session writes no Spec. It deletes the Issue or Idea it started from, says it wrote no Spec because nothing will be built, and still runs `/retro`. A Read-back that still names a change still writes a Spec.
+
+## 2026-09-16: Specs carry only ready-for-agent
+`/validate-spec` now accepts only `Status: ready-for-agent` on a Spec. It rewrites a leftover `needs-triage`, `needs-info`, or `ready-for-human` line to that value. A `wontfix` Status is a question rather than work to build.
+
+## 2026-09-16: Retro writes this repo only
+`/retro` now changes only files in the repository you have open. A suggestion for a skill, a user-wide file, or anything else outside that tree stays in the list so you can do it yourself. The important ones are marked and listed first.
+
 ## 2026-09-16: Refine finishes with a Spec
 Type `/refine` with an Idea or a Jira ticket. The session asks you what the change should do, offers a prototype, writes a Spec, and puts a short summary back on that Idea or ticket. It finishes in one sitting, and the records that remain are the Spec and the updated Idea or ticket.
 

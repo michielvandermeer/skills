@@ -1,11 +1,11 @@
 ---
 name: retro
-description: Look at a finished session, apply high-priority environment changes, and summarise the rest.
+description: Look at a finished session, apply high-priority changes this repository owns, and summarise the rest.
 argument-hint: "[session]"
 disable-model-invocation: true
 ---
 
-A **Retrospective** applies **High-priority** environment changes without asking, then summarises. `/code-review` and `/improve-data-structures` own the product diff.
+A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, then summarises. `/code-review` and `/improve-data-structures` own the product diff.
 
 Apply and present only when the skill the user typed is this `/retro`, or that skill has reached its own done condition.
 
@@ -17,7 +17,7 @@ The argument names a session, or is empty for the current one.
 
 The host's session logs for the current or named session, plus the steering files that session used. Look up log paths for this host. If the named session cannot be found, stop and say so. If logs for the current session are not on disk, work from what this conversation holds.
 
-**Steering files** always include the repo's `AGENTS.md` / `CLAUDE.md` and the host's global always-loaded agent files, plus any file this session actually reached. Skills in this plugin are in scope when those skill files live in the current workspace.
+**Steering files** always include the repo's `AGENTS.md` / `CLAUDE.md` and the host's global always-loaded agent files, plus any file this session actually reached.
 
 ## Categories
 
@@ -35,17 +35,21 @@ Check every item. *Use when* is the evidence bar. Every suggestion is something 
 
 Rank by how often the pain will recur and how much it costs. An every-turn context-load problem outranks a one-off expensive call.
 
-**High-priority** is pain that will recur every turn or every session. It includes a judgement-call coding standard and a new check this session demonstrated. Apply those without asking, repo and global. Each edit is the smallest change that encodes what this session demonstrated. A new check that would fail on current master still applies.
+**High-priority** is pain that will recur every turn or every session. It includes a judgement-call coding standard and a new check this session demonstrated. Apply those without asking to **Owned files**. Each edit is the smallest change that encodes what this session demonstrated. A new check that would fail on current master still applies.
 
-Repo high-priority edits: one commit, no Changelog entry. Global: write in place, not in that commit.
+Owned-file high-priority edits: one commit, no Changelog entry.
 
-A write or commit that cannot complete: that item is not applied; continue the rest.
+A file that is not an **Owned file**, or a write or commit that cannot complete: that item is not applied; continue the rest.
 
 Do not start `/code-review` on these edits.
 
 ## Present
 
-Two lists in chat: applied, then not applied. Omit an empty list. Each item states `repo` or `global` and the path, concrete enough to undo.
+Two lists in chat: applied, then not applied. Omit an empty list.
+
+Applied items: the path in this tree, concrete enough to undo.
+
+Not-applied items: **High-priority** first, labelled, then the rest. Each names the file to edit, concrete enough to apply by hand. An **Owned file** is the path in this tree. A plugin skill is `skills/<name>/...` in this plugin. A user-global file is the host path, looked up.
 
 Nothing to apply and nothing to list → one line that the retrospective found nothing, so it is clear it ran.
 

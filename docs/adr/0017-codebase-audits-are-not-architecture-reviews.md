@@ -1,5 +1,5 @@
 ---
-status: "then grills" superseded by ADR-0033
+status: "then grills" superseded by ADR-0035
 ---
 
 # Codebase audits are not architecture reviews

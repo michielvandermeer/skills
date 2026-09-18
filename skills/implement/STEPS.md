@@ -10,7 +10,7 @@ Open a file only when it might belong on a Footprint, or to settle a slice or bl
 
 Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Step agent shares it — from the walk already done. Fill only silence — what the Spec already named stays as it is, and what the Spec's Out of Scope refuses stays out.
 
-When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0028](../../docs/adr/0028-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | blocked by: none|<NNs> | one-line deliverable`, the deliverable at most fifteen words naming what works.
+When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | blocked by: none|<NNs> | one-line deliverable`, the deliverable at most fifteen words naming what works.
 
 A Step may run as soon as every Step on its `Blocked by:` line is done; independent Steps run together. Number so every blocker has a lower NN than the Step that waits on it. The highest NN lists every other Step on `Blocked by:` — it is the one that leaves the whole suite green.
 
@@ -83,4 +83,4 @@ Three rules keep it honest:
 - **A map, nothing more.** Where the work lands, and there it stops. A footprint that starts explaining *how* has turned into a plan the step agent will follow off a cliff.
 - **A guess, not a contract.** Earlier steps move code, so a later step's footprint drifts. The step agent follows the code where the two disagree and records the drift in its `## Outcome`. Write your best guess and let it be corrected.
 - **Name every project.** A project you leave off the `Projects:` line is a project nobody checks until the last step. `Projects: none` is for a change no project compiles.
-- **Another repository is planned last.** A file there is named by absolute path and `Projects:` names that repository's projects ([ADR-0026](../../docs/adr/0026-implement-never-leaves-the-repository.md)).
+- **Another repository is planned last.** A file there is named by absolute path and `Projects:` names that repository's projects ([ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md)).
