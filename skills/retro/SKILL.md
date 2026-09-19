@@ -2,7 +2,6 @@
 name: retro
 description: Look at a finished session, apply high-priority changes this repository owns, and summarise the rest.
 argument-hint: "[session]"
-disable-model-invocation: true
 ---
 
 A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, then summarises. `/code-review` and `/improve-data-structures` own the product diff.
