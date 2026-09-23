@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, which Steps are in flight, one three-line report per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 3's structural check and nothing more. While Step agents run, waiting is the work.
 
-A **Ready** Step (every blocker done) runs as soon as it is Ready, together with the others that are. Each Ready Step gets its own worktree off the run branch — except under [One checkout at a time](#one-checkout-at-a-time) — and you rebase it onto that branch before anything that was waiting on it starts. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root) and runs at your own model and effort. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md), [ADR-0033](../../docs/adr/0033-implement-runs-ready-steps-in-parallel.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
+A **Ready** Step (every blocker done) runs as soon as it is Ready, together with the others that are. Each Ready Step gets its own worktree off the run branch; rebase it onto that branch before anything that was waiting on it starts. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root) and runs at your own model and effort. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md), [ADR-0033](../../docs/adr/0033-implement-runs-ready-steps-in-parallel.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
@@ -44,7 +44,7 @@ The plan succeeded when that reply is the index and `.agents/steps/<slug>/` hold
 
 ### 3. Run the Ready Steps
 
-Dispatch every Ready pending Step together (`Blocked by: none`, or every listed NN reading `Status: done`). Under [One checkout at a time](#one-checkout-at-a-time) — a waived worktree, or a confined host after its first refusal — that section wins wherever it differs from this step. For each one:
+Dispatch every Ready pending Step together (`Blocked by: none`, or every listed NN reading `Status: done`). For each one, unless [One checkout at a time](#one-checkout-at-a-time) already applies:
 
 1. Resolve the main checkout from `git worktree list` (the first worktree). Open a Step worktree there at `.agents/worktrees/<slug>-<NN>` on a new branch `<slug>-<NN>` starting at the run branch's current HEAD, with `git -c checkout.workers=0 worktree add`, so this session stays in the run worktree.
 2. Dispatch a fresh `skills:implementer` whose only working directory is that Step worktree, with a prompt made of paths and section names — it reads what is behind them:
@@ -55,6 +55,8 @@ Dispatch every Ready pending Step together (`Blocked by: none`, or every listed 
    - the spec's Testing Decisions section, which governs what it tests
    - the deviations reported so far, verbatim, when there are any
    - its Step number and the total, and the report format below
+
+A **refusal** — the host blocking 1, blocking another git command aimed at the main checkout, or a Step agent reporting in 2 that it cannot work in its Step worktree — is a permission or sandbox block, not an ordinary git error such as a branch that already exists (handle that as you would today). The first refusal makes this a **confined host** for the rest of the session: [One checkout at a time](#one-checkout-at-a-time) applies from here on, with the run worktree as that checkout, and its only working directory in 2 is the run worktree instead of a Step worktree. Say so to the user in one line, and why. See [ADR-0045](../../docs/adr/0045-implement-stays-sequential-on-a-confined-host.md).
 
 Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so its successors inherit the correction.
 
@@ -75,17 +77,21 @@ deviations: <what contradicts the Spec or changes a later Step, or "none">
 
 A fact a successor needs goes in `## Outcome`; the successor reads it there.
 
-Then **check the step structurally** — `grep '^Status:'` on the Step file in that worktree reads `done`, and `git log -1` on `<slug>-<NN>` shows a new commit. That is the whole check; open the Step file only when it fails. Step 4's review covers the rest.
+Then **check the step structurally** — `grep '^Status:'` on the Step file in that worktree reads `done`, and `git log -1` on `<slug>-<NN>` shows a new commit. Under [One checkout at a time](#one-checkout-at-a-time), check instead as that section says. That is the whole check; open the Step file only when it fails. Step 4's review covers the rest.
 
-**Rebase onto the run branch.** From the Step worktree, `git rebase` onto the run branch. From the run worktree, `git merge --ff-only <slug>-<NN>`, then `git worktree remove` the Step worktree, then `git branch -d <slug>-<NN>`. Once the run is linear, the remove and the delete still run from the run worktree. A conflict during rebase or merge is `/resolving-merge-conflicts`, with the stated goal: this run's commits, linear, this Step's intent preserved where it does not contradict a Step already on the run branch. Cleanup is done when that Step's worktree and that Step's branch are both gone. Completions that arrive together rebase one at a time, lowest NN first.
+**Rebase onto the run branch.** Skip this under [One checkout at a time](#one-checkout-at-a-time) — nothing to rebase there. Otherwise: from the Step worktree, `git rebase` onto the run branch. From the run worktree, `git merge --ff-only <slug>-<NN>`, then `git worktree remove` the Step worktree, then `git branch -d <slug>-<NN>`. Once the run is linear, the remove and the delete still run from the run worktree. A conflict during rebase or merge is `/resolving-merge-conflicts`, with the stated goal: this run's commits, linear, this Step's intent preserved where it does not contradict a Step already on the run branch. Cleanup is done when that Step's worktree and that Step's branch are both gone. Completions that arrive together rebase one at a time, lowest NN first.
 
-Report one line to the user once the Step is on the run branch — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations verbatim into every later dispatch.
+Report one line to the user after that cleanup — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations verbatim into every later dispatch.
 
 Dispatch any Step that just became Ready.
 
-A `blocked` report, a failed structural check, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry of **that** Step. When the host can resume the same agent, resume it once with one line: the step is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd` in its worktree, then re-dispatch the same step, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The failure is the Step agent's to diagnose. A second failure **halts** new dispatch; in-flight siblings finish or fail on their own, then the session ends.
+A `blocked` report, a failed structural check, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry of **that** Step. When the host can resume the same agent, resume it once with one line: the step is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd` in its worktree — the run worktree, under [One checkout at a time](#one-checkout-at-a-time) — then re-dispatch the same step, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The failure is the Step agent's to diagnose. A second failure **halts** new dispatch; in-flight siblings finish or fail on their own, then the session ends.
 
-Done when every file in `.agents/steps/<slug>/` reads `Status: done` and no Step worktree or Step branch remains.
+Done when every file in `.agents/steps/<slug>/` reads `Status: done` and no Step worktree or Step branch remains — on a confined host, none was ever made.
+
+### One checkout at a time
+
+When there is only one checkout to work in — a waived worktree, or a confined host from its first refusal onward — Ready Steps run one at a time in it: no Step worktree, no Step branch, no rebase. The Step agent's only working directory is that checkout, and it commits its Step's code and Step file straight to the run branch, the same commit it would otherwise make in a Step worktree. The structural check reads that Step file's `Status:` in that checkout, and looks for a new commit with `git log -1` on the run branch there — there is no Step branch to check. A retry resets that same checkout: `git reset --hard && git clean -fd` — safe because nothing else is in flight there to disturb.
 
 ### 4. Review and improve
 
@@ -123,23 +129,6 @@ Run `/retro`.
 ## Worktree waived
 
 Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 3 follows [One checkout at a time](#one-checkout-at-a-time) from the start, with this checkout as that checkout — a shared tree cannot hold two editors. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, master moved: rebase again on the branch under step 1, check out master yourself, and retry the merge.
-
-## One checkout at a time
-
-A waived worktree has one checkout to work in from the start. A **confined host** has one from its first **refusal**: the host blocking a git command aimed outside the run worktree — step 3's `worktree add` from the main checkout, a rebase or reset in a Step worktree — or a Step agent reporting that it cannot work in its Step worktree. A refusal is a permission or sandbox block, judged from what the host does. An ordinary git error, such as a branch that already exists, stays on the parallel path as a problem to fix there. On the first refusal, tell the user in one line that the run now goes one Step at a time, and why; that holds for the rest of the session. See [ADR-0045](../../docs/adr/0045-implement-stays-sequential-on-a-confined-host.md).
-
-With one checkout — the run worktree on a confined host, this checkout when waived — step 3 changes like this:
-
-- Dispatch one Ready Step at a time and skip opening a Step worktree. The Step agent's only working directory is that checkout; wherever step 3 says its worktree, read that checkout. Its one commit lands straight on the run branch.
-- The structural check reads `git log -1` on the run branch for the new commit.
-- There is no rebase and no cleanup.
-- A retry's reset runs in that checkout, which is safe because no other Step is in flight there.
-
-On a confined host, a Step can still have a Step worktree when the refusal arrives — a sibling in flight, the Step whose agent refused, or one found on resume:
-
-- Dispatch nothing new until every sibling in flight has finished. Check each one as step 3 says. Land a done one from the run worktree with `git cherry-pick <slug>-<NN>` in place of the rebase; a conflict is `/resolving-merge-conflicts` with step 3's stated goal. A sibling that fails takes its retry in the run worktree.
-- A Step whose agent reported the refusal goes back to pending and runs again in the run worktree. That dispatch is not its retry.
-- From the run worktree, `git worktree remove` each such Step worktree, then `git branch -D <slug>-<NN>`. When the host refuses the removal as well, leave both and name them in the final report; step 3's Done-when counts them as gone.
 
 ## Work in another repository
 
