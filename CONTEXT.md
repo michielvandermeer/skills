@@ -165,10 +165,6 @@ _Avoid_: Plan, Plan agent, host Plan
 A pending Step whose `Blocked by` Steps are all done. What `/implement` dispatches now; several Ready Steps run together.
 _Avoid_: frontier — that is grilling's word for questions whose prerequisites are settled
 
-**Confined host**:
-A host that refuses a git command a Driving session aims at the main checkout, or where a Step agent reports it cannot reach its own Step worktree. `/implement` finds this out from the refusal itself, not from the host's name, and from the first refusal on runs Ready Steps one at a time in the run worktree for the rest of the session.
-_Avoid_: sandboxed host, restricted host, jailed host
-
 **Step agent**:
 The sub-agent that implements exactly one Step, in its own worktree. Reads the Outcomes of Steps already done, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
 
