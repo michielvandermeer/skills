@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-23: Flaky tests no longer stop runs
+When `/implement` or `/implement-oneshot` finishes, it runs the tests again on the latest `master`. If a project fails there, the run now tests that project once more before it tries to fix anything. A test that passes the second time is named as flaky in the final report, and the run still finishes.
+
 ## 2026-09-23: Implement runs steps in order again
 When you type `/implement`, steps run one at a time, in order, in the run's single copy of the project. Steps no longer get their own copies, so you will not see extra step worktrees or step branches. A run may take a little longer when steps could have run side by side.
 
