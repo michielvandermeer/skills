@@ -180,7 +180,7 @@ _Avoid_: passing, all tests pass, mostly green
 The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong. The channel by which a Step agent informs its successors, bypassing the Driving session's context entirely.
 
 **Deviation**:
-Anything a Step agent or Oneshot agent did that contradicts the Spec or changes what a later Step must do, and any failure it left red because `master` already fails it. The one piece of a run's detail the Driving session does carry forward.
+Anything a Step agent or Oneshot agent did that contradicts the Spec or changes what a later Step must do, any failure it left red because `master` already fails it, and any post-rebase failure that passed on the Driving session's re-run. The one piece of a run's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
 A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
