@@ -1,8 +1,5 @@
 # Changelog
 
-## 2026-09-23: Implement on locked-down hosts
-When you type `/implement` on a host that keeps the session inside its own worktree, the run no longer gets stuck opening a separate worktree for each step. From the first blocked git command, it builds steps one at a time in the run's worktree and tells you in one line that it switched. Hosts that allow step worktrees still run steps in parallel.
-
 ## 2026-09-19: Type wizard for setup
 Type `/wizard` when you need to provision a service, save credentials, walk a dashboard, or run a one-off migration. The agent can also start it when it hits a step only you can do. It writes a bash script that you run yourself; the script opens each page, captures what you paste, and writes it to `.env` or GitHub secrets.
 
