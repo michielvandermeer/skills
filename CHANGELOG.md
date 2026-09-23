@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-23: Implement runs steps in order again
+When you type `/implement`, steps run one at a time, in order, in the run's single copy of the project. Steps no longer get their own copies, so you will not see extra step worktrees or step branches. A run may take a little longer when steps could have run side by side.
+
 ## 2026-09-19: Type wizard for setup
 Type `/wizard` when you need to provision a service, save credentials, walk a dashboard, or run a one-off migration. The agent can also start it when it hits a step only you can do. It writes a bash script that you run yourself; the script opens each page, captures what you paste, and writes it to `.env` or GitHub secrets.
 

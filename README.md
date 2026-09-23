@@ -150,7 +150,7 @@ These skills pin the model and effort of the sub-agents they dispatch, to keep s
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
-| `implement` | Implement a spec by slicing it into steps and running ready steps in parallel sub-agents. |
+| `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
 | `implement-oneshot` | Implement a spec in one sub-agent session, skipping the Planner. Still reviews and improves data structures after. |
 | `implement-yolo` | Implement a spec in one sub-agent session on this checkout and this branch. No worktree, no new branch, no merge onto master. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then write the Ideas and Specs you pick. |

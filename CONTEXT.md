@@ -158,15 +158,11 @@ _Avoid_: mechanical-only, severity
 ### Execution
 
 **Planner**:
-The sub-agent (`skills:planner`) that reads a Spec, walks the code only until every Step's Footprint can be filled, and writes the Step files — each with that Footprint and the Steps it is blocked by. It closes leftover behaviour the Spec did not name, commits the files in one commit, and returns only a compact index to the Driving session — never the Step bodies.
+The sub-agent (`skills:planner`) that reads a Spec, walks the code only until every Step's Footprint can be filled, and writes the Step files — each with that Footprint, numbered in dependency order. It closes leftover behaviour the Spec did not name, commits the files in one commit, and returns only a compact index to the Driving session — never the Step bodies.
 _Avoid_: Plan, Plan agent, host Plan
 
-**Ready**:
-A pending Step whose `Blocked by` Steps are all done. What `/implement` dispatches now; several Ready Steps run together.
-_Avoid_: frontier — that is grilling's word for questions whose prerequisites are settled
-
 **Step agent**:
-The sub-agent that implements exactly one Step, in its own worktree. Reads the Outcomes of Steps already done, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
+The sub-agent that implements exactly one Step, in the run worktree, after the Step before it is done. Reads the Outcomes of lower-numbered Steps, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
 
 **Oneshot agent**:
 The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot` and `/implement-yolo`.

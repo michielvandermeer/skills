@@ -1,13 +1,13 @@
 ---
 name: implement
-description: "Implement a spec by slicing it into steps and running ready steps in parallel sub-agents."
+description: "Implement a spec by slicing it into steps and running each one in its own sub-agent."
 argument-hint: "Which spec, issue, or idea to implement?"
 disable-model-invocation: true
 ---
 
-You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, which Steps are in flight, one three-line report per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 3's structural check and nothing more. While Step agents run, waiting is the work.
+You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, one three-line report per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 3's structural check and nothing more. While a sub-agent runs, waiting is the work.
 
-A **Ready** Step (every blocker done) runs as soon as it is Ready, together with the others that are. Each Ready Step gets its own worktree off the run branch; rebase it onto that branch before anything that was waiting on it starts. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root) and runs at your own model and effort. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md), [ADR-0033](../../docs/adr/0033-implement-runs-ready-steps-in-parallel.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
+Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), pinned to a cheaper tier because their scope was decided before they started; a host without that tier uses its cheapest model that edits code. The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root) and runs at your own model and effort. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
@@ -21,40 +21,37 @@ Derive `<slug>`: the spec's filename without its extension when the argument nam
 
 `master` here and below means the repository's default branch — `main` where that is what the repo uses. The main checkout's working tree is the user's and stays as you found it until step 6.
 
-Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). Branches named `<slug>-<NN>` are Step worktrees; they are not the session directory. A prior run is **in flight** when that run worktree exists, or when any linked worktree contains `.agents/steps/<slug>/`.
+Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). A prior run is **in flight** when that run worktree exists, or when any linked worktree contains `.agents/steps/<slug>/`.
 
 - **In flight** → a run worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
   - Put the session's working directory on the run worktree's path.
-  - `git reset --hard && git clean -fd` drops whatever a halted merge left in the run worktree. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
-  - For each Step worktree: a lock means that Step agent is still live — leave it. A Step file that already reads `Status: done` is waiting to rebase onto the run branch: do that in step 3 before dispatching anything new. A not-done Step with no lock is reset in its worktree the same way, then treated as pending.
-  - When `.agents/steps/<slug>/` holds Step files, the Steps are already planned: skip step 2 and resume at step 3, or at step 4 when every Step reads `done` and no Step worktree remains. A missing or empty steps directory is a fresh plan — continue at step 2.
+  - `git reset --hard && git clean -fd` drops whatever a halted Step left behind. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
+  - When `.agents/steps/<slug>/` holds Step files, the Steps are already planned: skip step 2 and resume at the lowest-numbered Step whose `Status:` is not `done`, or at step 4 when every Step reads `done`. A missing or empty steps directory is a fresh plan — continue at step 2.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git rebase master` so the run sits on the master you actually have:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
   - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
 
-The session must work *inside* the run worktree for the rest of the run — creating a worktree alone is not enough. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it, then begin every command with `cd <that path> &&` (or `git -C <that path>`), scope every search to it, and carry the run worktree path into every sub-agent prompt that works there. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
+The session must work *inside* the run worktree for the rest of the run — creating a worktree alone is not enough. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it, then begin every command with `cd <that path> &&` (or `git -C <that path>`), scope every search to it, and carry that path into every sub-agent prompt as the only directory the agent works in. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
 
 ### 2. Plan the steps
 
 Dispatch a `skills:planner`. Give it the spec path (or the argument text), `<slug>`, and the absolute path to [STEPS.md](STEPS.md) in this skill's directory — those three and nothing else. It reads the slicing rules itself, writes one file per Step to `.agents/steps/<slug>/`, and commits them in one commit before returning, so the resets in steps 1 and 3 cannot delete a Step not yet done ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)). When `git status` still shows that directory afterwards, commit it yourself as `plan: <slug>`. A host without that agent type dispatches `general-purpose` with the same prompt.
 
-It returns the index and nothing else: one line per step, `NN | title | blocked by: none|<NNs> | one-line deliverable`.
+It returns the index and nothing else: one line per step, `NN | title | one-line deliverable`.
 
 The plan succeeded when that reply is the index and `.agents/steps/<slug>/` holds Step files. Otherwise **halt** — the Planner failed, returned no steps, left the directory missing or empty, or replied with something other than the index. Do not dispatch another agent to write or commit the files; the dirty-directory commit above is the only Driving-session write for this step.
 
-### 3. Run the Ready Steps
+### 3. Run each step in `NN` order
 
-Dispatch every Ready pending Step together (`Blocked by: none`, or every listed NN reading `Status: done`). For each one:
+Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and section names — it reads what is behind them:
 
-1. Resolve the main checkout from `git worktree list` (the first worktree). Open a Step worktree there at `.agents/worktrees/<slug>-<NN>` on a new branch `<slug>-<NN>` starting at the run branch's current HEAD, with `git -c checkout.workers=0 worktree add`, so this session stays in the run worktree.
-2. Dispatch a fresh `skills:implementer` whose only working directory is that Step worktree, with a prompt made of paths and section names — it reads what is behind them:
-   - the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
-   - an instruction to read the `## Outcome` of every Step file whose `Status:` is `done` before starting
-   - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
-   - the coding-standards sources found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
-   - the spec's Testing Decisions section, which governs what it tests
-   - the deviations reported so far, verbatim, when there are any
-   - its Step number and the total, and the report format below
+- the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
+- an instruction to read the `## Outcome` of every lower-numbered step file before starting
+- `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
+- the coding-standards sources found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
+- the spec's Testing Decisions section, which governs what it tests
+- the deviations reported by earlier steps, verbatim, when there are any
+- its Step number and the total, and the report format below
 
 Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so its successors inherit the correction.
 
@@ -62,7 +59,7 @@ Require of it: **green before it finishes**, then its `## Outcome` appended to i
 
 - Green covers every project on its footprint's `Projects:` line, and the whole suite on the last Step.
 - Green is measured against `master` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
-- A verification the repo's own conventions demand for the surface the Step touches — a browser pass, a smoke run — counts toward green and is the Step agent's, run from its worktree.
+- A verification the repo's own conventions demand for the surface the Step touches — a browser pass, a smoke run — counts toward green and is the Step agent's, run from the run worktree.
 - `CHANGELOG.md` stays untouched whatever the repo's docs rules say; step 5 writes it.
 
 Its entire response is three lines:
@@ -75,17 +72,13 @@ deviations: <what contradicts the Spec or changes a later Step, or "none">
 
 A fact a successor needs goes in `## Outcome`; the successor reads it there.
 
-Then **check the step structurally** — `grep '^Status:'` on the Step file in that worktree reads `done`, and `git log -1` on `<slug>-<NN>` shows a new commit. That is the whole check; open the Step file only when it fails. Step 4's review covers the rest.
+Then **check the step structurally** — `grep '^Status:'` on the Step file reads `done`, and `git log -1` shows a new commit. That is the whole check; open the Step file only when it fails. Step 4's review covers the rest.
 
-**Rebase onto the run branch.** From the Step worktree, `git rebase` onto the run branch. From the run worktree, `git merge --ff-only <slug>-<NN>`, then `git worktree remove` the Step worktree, then `git branch -d <slug>-<NN>`. Once the run is linear, the remove and the delete still run from the run worktree. A conflict during rebase or merge is `/resolving-merge-conflicts`, with the stated goal: this run's commits, linear, this Step's intent preserved where it does not contradict a Step already on the run branch. Cleanup is done when that Step's worktree and that Step's branch are both gone. Completions that arrive together rebase one at a time, lowest NN first.
+Report one line to the user after each check — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations verbatim into the next dispatch.
 
-Report one line to the user after that cleanup — `Step <NN>/<total> — <title>: done` — plus the deviations line when it is not `none`, and carry those deviations verbatim into every later dispatch.
+A `blocked` report, a failed structural check, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry. When the host can resume the same agent, resume it once with one line: the step is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd`, then re-dispatch the same step, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The failure is the Step agent's to diagnose. A second failure **halts** the run.
 
-Dispatch any Step that just became Ready.
-
-A `blocked` report, a failed structural check, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry of **that** Step. When the host can resume the same agent, resume it once with one line: the step is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd` in its worktree, then re-dispatch the same step, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The failure is the Step agent's to diagnose. A second failure **halts** new dispatch; in-flight siblings finish or fail on their own, then the session ends.
-
-Done when every file in `.agents/steps/<slug>/` reads `Status: done` and no Step worktree or Step branch remains.
+Done when every file in `.agents/steps/<slug>/` reads `Status: done`.
 
 ### 4. Review and improve
 
@@ -122,7 +115,7 @@ Run `/retro`.
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 3 runs Ready Steps **one at a time in this checkout** — skip the Step worktree and the rebase; a shared tree cannot hold two editors. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, master moved: rebase again on the branch under step 1, check out master yourself, and retry the merge.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, master moved: rebase again on the branch under step 1, check out master yourself, and retry the merge.
 
 ## Work in another repository
 
@@ -130,6 +123,6 @@ The worktree, the review diff, and the land cover this repository only. Work a S
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, the run worktree, and any Step worktrees exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why, and what a re-invoke will do; for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
+A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, and the run worktree exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why, and what a re-invoke will do; for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
 
-Re-invoking `/implement` with the same argument picks the run back up — a missing or empty steps directory runs the Planner again; Step files already on disk resume at running Steps.
+Re-invoking `/implement` with the same argument picks the run back up — a missing or empty steps directory runs the Planner again; Step files already on disk resume at the lowest-numbered Step not yet `done`.

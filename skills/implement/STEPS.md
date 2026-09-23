@@ -6,15 +6,13 @@ You are the **planner** for an `/implement` run. Read the spec you were handed �
 
 The walk is done when every Step's Footprint can be filled. Stop there even when more searching would find more context. A Spec that spans many files still gets a walk long enough to name them.
 
-Open a file only when it might belong on a Footprint, or to settle a slice or blocker the Spec left to the code. Documents the host already placed in this context stay already-read. The slicing rules document is the template for Step files; Step files from other runs are not.
+Open a file only when it might belong on a Footprint, or to settle a slice or ordering the Spec left to the code. Documents the host already placed in this context stay already-read. The slicing rules document is the template for Step files; Step files from other runs are not.
 
 Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Step agent shares it — from the walk already done. Fill only silence — what the Spec already named stays as it is, and what the Spec's Out of Scope refuses stays out.
 
-When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | blocked by: none|<NNs> | one-line deliverable`, the deliverable at most fifteen words naming what works.
+When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | one-line deliverable`, the deliverable at most fifteen words naming what works.
 
-A Step may run as soon as every Step on its `Blocked by:` line is done; independent Steps run together. Number so every blocker has a lower NN than the Step that waits on it. The highest NN lists every other Step on `Blocked by:` — it is the one that leaves the whole suite green.
-
-`Blocked by: none` means Ready with the plan. Overlapping footprints are a blocking edge: the later NN lists the earlier. A chain still works: each Step lists the previous number, and the run is sequential.
+Steps run strictly in `NN` order, one sub-agent each, in one shared worktree. **The numbering is the dependency order**: a step may rely on every lower-numbered step and none of the higher-numbered ones.
 
 Use the project's domain glossary (`CONTEXT.md`) for titles and descriptions, and respect any ADR covering the area you're touching.
 
@@ -51,7 +49,6 @@ One file per step at `.agents/steps/<slug>/<NN>-<step-slug>.md`, numbered from `
 # <NN> — <Step title>
 
 Status: pending
-Blocked by: none
 
 ## What to build
 
