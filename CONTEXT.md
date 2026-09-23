@@ -166,11 +166,19 @@ A pending Step whose `Blocked by` Steps are all done. What `/implement` dispatch
 _Avoid_: frontier — that is grilling's word for questions whose prerequisites are settled
 
 **Confined host**:
-A host that refuses a git command a Driving session aims at the main checkout, or where a Step agent reports it cannot reach its own Step worktree. `/implement` finds this out from the refusal itself, not from the host's name, and from the first refusal on runs Ready Steps one at a time in the run worktree for the rest of the session.
+A host that confines a Driving session to its run worktree, shown by a **Refusal**.
 _Avoid_: sandboxed host, restricted host, jailed host
 
+**Refusal**:
+A host's permission or sandbox block on a git command a Driving session aims outside its run worktree, or a Step agent's report that it cannot work in its Step worktree. An ordinary git error, such as a branch that already exists, is a failed command instead.
+_Avoid_: git error, denial
+
+**One checkout at a time**:
+How `/implement` runs Ready Steps when it has a single checkout to work in — a waived worktree, or a **Confined host**: one Step at a time, each committing straight to the run branch, with no Step worktree or Step branch.
+_Avoid_: sequential mode, fallback mode
+
 **Step agent**:
-The sub-agent that implements exactly one Step, in its own worktree. Reads the Outcomes of Steps already done, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
+The sub-agent that implements exactly one Step, in its own Step worktree — or in the one checkout under **One checkout at a time**. Reads the Outcomes of Steps already done, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
 
 **Oneshot agent**:
 The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot` and `/implement-yolo`.
