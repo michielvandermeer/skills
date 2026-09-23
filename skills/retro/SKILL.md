@@ -48,7 +48,7 @@ Two lists in chat: applied, then not applied. Omit an empty list.
 
 Applied items: the path in this tree, concrete enough to undo.
 
-Not-applied items: **High-priority** first, labelled, then the rest. Each names the file to edit, concrete enough to apply by hand. An **Owned file** is the path in this tree. A plugin skill is `skills/<name>/...` in this plugin. A user-global file is the host path, looked up.
+Not-applied items: **High-priority** first, labelled, then the rest. Each names the file to edit, concrete enough to apply by hand, and what this session did that shows the need — the reader applies it in another session that did not see this one. An **Owned file** is the path in this tree. A plugin skill is `skills/<name>/...` in this plugin. A user-global file is the host path, looked up.
 
 Nothing to apply and nothing to list → one line that the retrospective found nothing, so it is clear it ran.
 
