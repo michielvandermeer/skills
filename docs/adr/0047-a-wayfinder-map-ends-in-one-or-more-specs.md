@@ -1,3 +1,7 @@
+---
+status: partially superseded by ADR-0048
+---
+
 # A wayfinder map ends in one or more Specs
 
 [ADR-0011](0011-every-wayfinder-map-ends-in-a-spec.md) fixed what a `/wayfinder` effort produces: a Spec, not a decision or a change made in place. It also fixed how many: exactly one. A goal big enough to need a map is often too big to ship as one change, so the count now follows the work. A Map ends in one or more Specs.

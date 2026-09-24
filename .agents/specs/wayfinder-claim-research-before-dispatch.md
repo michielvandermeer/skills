@@ -70,7 +70,7 @@ The research subagent still writes the answer and sets `Status: resolved`. It do
 
 - If the user named a Claimed research ticket, the session reports that it is in flight and does not start another subagent.
 
-- If every remaining unblocked ticket is Claimed research, the session tells the user that research is still running and ends. It does not wait for the subagents, and it does not start new ones.
+- If every remaining unblocked ticket is Claimed research, the session tells the user that research is still running and ends. It does not wait for the subagents, and it does not start new ones. Step 1 of "Work through the map" already ends a session whose frontier is empty while tickets remain, naming each remaining ticket and what it waits on. Narrow that wording to say "research still running" for Claimed research tickets; do not add a second ending.
 
 - The research subagent still writes `## Answer`, leaves a pointer to the findings, and sets `Status: resolved`. It does not write `Status: claimed`. `/research` and the researcher agent prompt do not mention claims.
 

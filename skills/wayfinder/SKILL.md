@@ -78,7 +78,7 @@ Each ticket carries a `Type:` line near the top — one of `research`, `prototyp
 
 A session **claims** a ticket by setting its `Status:` line to `claimed`, **first**, before any work, so concurrent sessions skip it. That `Status:` value _is_ the claim: a ticket with no `Status:` line is unclaimed.
 
-Blocking is recorded as a `Blocked by: NN, NN` line near the top of the ticket file. A ticket is **unblocked** when every ticket it lists is `resolved`; the **frontier** is the open (no `Status:` line), unblocked, unclaimed tickets — the edge of the known.
+Blocking is recorded as a `Blocked by: NN, NN` line near the top of the ticket file. A ticket is **unblocked** when every ticket it lists is `resolved`; the **frontier** is the open (no `Status:` line), unblocked, unclaimed tickets — the edge of the known. A ticket **remains** until it is `resolved` or `out-of-scope`; claimed and blocked tickets remain.
 
 The answer isn't part of the body — it's recorded on resolution (see [Work through the map](#work-through-the-map)). Assets created while resolving a ticket are linked from the ticket file, not pasted in.
 
@@ -149,19 +149,21 @@ User invokes with a loose idea.
 
 User invokes with a map (path or effort name). A ticket is **optional** — without one, you pick the next fork, not the user.
 
-1. Load the **map** — the low-res view, not every ticket body.
+1. Load the **map** — the low-res view, not every ticket body. When no tickets remain, [write the Specs](#write-the-specs) instead. When tickets remain but the frontier is empty, name each remaining ticket and what it waits on, tell the user to run `/wayfinder <effort>` again once they resolve, and end. A claim stands until the user clears its `Status:` line.
 2. Choose the ticket. If the user named one, use it. Otherwise take the first frontier ticket in order. **Claim it**: set `Status: claimed` before any work. Skip any research ticket still being burned down by a subagent from charting.
 3. Resolve it — **zoom as needed**: read the full body of any related or resolved ticket on demand; invoke the skills the `## Notes` block names. If in doubt, use `/grilling` and `/domain-modeling`. A grilling ticket resolves per [Grilling tickets](#grilling-tickets). For a research ticket that was not fired at charting (graduated later), fire `/research` the same way rather than reading it in the driving session.
 4. Record the resolution: append the answer under an `## Answer` heading in the ticket file, set `Status: resolved`, and **append a context pointer** to the map's Decisions-so-far in `map.md`.
 5. Add newly-surfaced tickets and graduate any fog the answer has made specifiable (**group** grilling per [Grilling tickets](#grilling-tickets), then create-then-wire), clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If any new ticket is `research`, fire its `/research` subagent immediately. If the answer reveals a ticket — this one or another — sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
 
-When tickets remain, run `/retro`. When no tickets remain, the way is clear and that session [writes the Specs](#write-the-specs), then runs `/retro`.
+Then run `/retro`. When no tickets remain, the way is clear: end on one last line, after the retro summary, telling the user to run `/wayfinder <effort>` in a fresh session to write the Specs. The Specs need every resolved ticket loaded, and this session holds one ([ADR-0048](../../docs/adr/0048-a-fresh-session-writes-a-wayfinder-maps-specs.md)).
 
 The user may run unblocked tickets in parallel, so expect other sessions to be editing the `.agents/issues/` files concurrently.
 
 ### Write the Specs
 
-1. **Zoom every resolved ticket.** `/to-spec` synthesises from the conversation, so the decisions have to be in it.
+A session reaches this only when it starts on a map with no tickets remaining.
+
+1. **Zoom every resolved ticket.** Read `map.md` and every resolved ticket's full body, with the prototypes and research findings they link. `/to-spec` synthesises from the conversation, so the decisions have to be in it.
 2. **Cut.** Each Spec is a change that lands green and is worth shipping on its own. Size is the reason to look for a cut; landing alone is where it goes. A change with no such cut stays one Spec. A Spec may wait on another landing first.
 3. **Propose the cut** to the user: one line per Spec — what it covers, and which Spec it waits on. Write nothing until they confirm; an objection redraws the cut.
 4. **One `/to-spec` per Spec**, scoped to that Spec's part alone, prerequisites first, naming each prerequisite's slug so `/to-spec` writes its `Blocked by:` line.

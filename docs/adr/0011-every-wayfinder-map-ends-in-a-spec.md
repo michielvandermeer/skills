@@ -1,5 +1,5 @@
 ---
-status: partially superseded by ADR-0047
+status: partially superseded by ADR-0047 and ADR-0048
 ---
 
 # Every wayfinder map ends in a Spec
