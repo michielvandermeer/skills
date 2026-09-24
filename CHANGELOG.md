@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-24: Wayfinder can end in several specs
+When a `/wayfinder` map has no tickets left, it can now split the work into several specs, each one a change worth shipping on its own. It shows you the split first and writes the specs only after you agree, then removes the finished map. A spec that needs another to land first says so, and `/implement` waits until that other spec has landed.
+
 ## 2026-09-23: Flaky tests no longer stop runs
 When `/implement` or `/implement-oneshot` finishes, it runs the tests again on the latest `master`. If a project fails there, the run now tests that project once more before it tries to fix anything. A test that passes the second time is named as flaky in the final report, and the run still finishes.
 

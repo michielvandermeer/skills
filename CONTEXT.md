@@ -38,7 +38,7 @@ One focused task in a Wizard, typically one screen.
 _Avoid_: Step, prompt
 
 **Spec**:
-The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`. Work we will not do is not a Spec.
+The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`, and a `Blocked by: <spec-slug>` line when another Spec must land first — a Spec still in `.agents/specs/` has not landed. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
 **Unstated claim**:
@@ -71,7 +71,7 @@ _Avoid_: leftovers ticket, bundle, grab-bag
 An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`, one file per distinct problem, carrying `Category:` and `Status:` lines. A Buildable issue ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document.
 
 **Map**:
-The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog. Every Map ends in a Spec, so its Destination names the change that Spec will cover rather than which artifact the effort produces.
+The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog. Every Map ends in one or more Specs, so its Destination names the whole change those Specs will cover rather than which artifact the effort produces. How many Specs, and where one ends and the next begins, is decided only once no tickets remain: each Spec is a change that can land green and is worth shipping on its own, and one Spec may name another that must land first. The Map is deleted in the commit that writes its Specs.
 
 **Changelog**:
 The product-facing history of a context, at `CHANGELOG.md` beside that context's `CONTEXT.md` (one file per context in a multi-context repo). Newest **Changelog entry** at the top. Written for people who use the product, not for people who build it.

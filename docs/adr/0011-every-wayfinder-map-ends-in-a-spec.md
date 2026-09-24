@@ -1,3 +1,7 @@
+---
+status: partially superseded by ADR-0047
+---
+
 # Every wayfinder map ends in a Spec
 
 `/wayfinder` used to ask each effort what it was finding its way to — a spec, a decision to lock, a change made in place — and called the map domain-agnostic, fit for course content as readily as for code. The destination is now fixed: a Spec at `.agents/specs/<slug>.md`, ready to hand to `/implement`. What an effort still names is the change that Spec covers.

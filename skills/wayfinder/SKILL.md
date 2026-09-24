@@ -1,16 +1,16 @@
 ---
 name: wayfinder
-description: Plan a change too big for one agent session as a shared map of decision tickets under .agents/issues/, resolved one at a time until the way is clear and the Spec can be written.
+description: Plan a change too big for one agent session as a shared map of decision tickets under .agents/issues/, resolved one at a time until the way is clear and its Specs can be written.
 disable-model-invocation: true
 ---
 
 A loose idea has arrived — too big for one agent session, and wrapped in fog: the way from here to the **destination** isn't visible yet. Wayfinding is about finding that way, not charging at the destination. This skill charts the way as a **shared map** of markdown files under `.agents/issues/`, then works its **decision tickets** — questions whose resolution is a decision, not slices of a build to execute — one at a time until the route is clear.
 
-The destination is always the same: a Spec at `.agents/specs/<slug>.md`, ready to hand to `/implement`. What varies is the change that Spec covers, and fixing that scope is the first act of charting — it shapes every ticket.
+The destination is always the same: one or more Specs at `.agents/specs/<slug>.md`, each ready to hand to `/implement`. What varies is the change those Specs cover, and fixing that scope is the first act of charting — it shapes every ticket. How many Specs, and where one ends, waits until no tickets remain ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
 ## Plan, don't do
 
-Wayfinder is **planning**: it produces decisions, not deliverables. The pull to just do the work is the signal you've reached the edge of the map, and the Spec is where you put it.
+Wayfinder is **planning**: it produces decisions, not deliverables. The pull to just do the work is the signal you've reached the edge of the map, and the Specs are where you put it.
 
 ## Forks in the road
 
@@ -41,7 +41,7 @@ The whole map at low resolution, loaded once per session. Open tickets are **not
 ```markdown
 ## Destination
 
-<the change the Spec will cover, and what it leaves alone. One or two lines; every session orients to it before choosing a ticket.>
+<the whole change this effort's Specs will cover, and what it leaves alone. One or two lines; every session orients to it before choosing a ticket.>
 
 ## Notes
 
@@ -89,7 +89,7 @@ A ticket that sits past the destination gets `Status: out-of-scope` rather than 
 Every ticket is either **HITL** — human in the loop, worked *with* a human who speaks for themselves — or **AFK**, driven by the agent alone. A HITL ticket only resolves through that live exchange; the agent never stands in for the human's side of it (a grilling agent that answers its own questions has broken this).
 
 - **Research** (AFK): Reading documentation, third-party APIs, or local resources like knowledge bases to surface a fact a decision waits on. Resolved by a `/research` **subagent** (see Chart the map). Use when knowledge outside the current working directory is required.
-- **Prototype** (HITL): Raise the fidelity of the discussion by making a cheap, rough, concrete artifact to react to — an outline, a rough take, a stub, or UI/logic code via the /prototype skill. A `/prototype` invoked here serves this effort: it hands its verdict back for the answer to record, saves the prototype so this map's own Spec can point at it, and leaves the worktree to the effort. Use when "how should it look" or "how should it behave" is the key question.
+- **Prototype** (HITL): Raise the fidelity of the discussion by making a cheap, rough, concrete artifact to react to — an outline, a rough take, a stub, or UI/logic code via the /prototype skill. A `/prototype` invoked here serves this effort: it hands its verdict back for the answer to record, saves the prototype so the Spec covering its part can point at it, and leaves the worktree to the effort. Use when "how should it look" or "how should it behave" is the key question.
 - **Grilling** (HITL): Conversation via the /grilling and /domain-modeling skills, round by round. The default case. Two shapes — see [Grilling tickets](#grilling-tickets).
 - **Task** (HITL or AFK): Manual work that must happen before a *decision* can be made — nothing to decide, prototype, or research, but the discussion is blocked until it's done. Signing up for a service so its API can be judged, provisioning access, moving data so its shape can be seen. This is the one type that *does* rather than decides — and it earns its place by unblocking a decision, not by delivering the destination. The agent drives it alone where it can (AFK); otherwise it hands the human a precise checklist (HITL). Resolved when the work is done; the answer records what was done and any resulting facts (credentials location, new URLs, row counts) later tickets depend on.
 
@@ -155,6 +155,14 @@ User invokes with a map (path or effort name). A ticket is **optional** — with
 4. Record the resolution: append the answer under an `## Answer` heading in the ticket file, set `Status: resolved`, and **append a context pointer** to the map's Decisions-so-far in `map.md`.
 5. Add newly-surfaced tickets and graduate any fog the answer has made specifiable (**group** grilling per [Grilling tickets](#grilling-tickets), then create-then-wire), clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If any new ticket is `research`, fire its `/research` subagent immediately. If the answer reveals a ticket — this one or another — sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
 
-When tickets remain, run `/retro`. When no tickets remain, the way is clear and that session writes the destination: zoom every resolved ticket, then run `/to-spec`. It synthesises from the conversation, so the decisions have to be in it. Then run `/retro`.
+When tickets remain, run `/retro`. When no tickets remain, the way is clear and that session [writes the Specs](#write-the-specs), then runs `/retro`.
 
 The user may run unblocked tickets in parallel, so expect other sessions to be editing the `.agents/issues/` files concurrently.
+
+### Write the Specs
+
+1. **Zoom every resolved ticket.** `/to-spec` synthesises from the conversation, so the decisions have to be in it.
+2. **Cut.** Each Spec is a change that lands green and is worth shipping on its own. Size is the reason to look for a cut; landing alone is where it goes. A change with no such cut stays one Spec. A Spec may wait on another landing first.
+3. **Propose the cut** to the user: one line per Spec — what it covers, and which Spec it waits on. Write nothing until they confirm; an objection redraws the cut.
+4. **One `/to-spec` per Spec**, scoped to that Spec's part alone, prerequisites first, naming each prerequisite's slug so `/to-spec` writes its `Blocked by:` line.
+5. **Commit** every Spec, and whatever those runs changed, together with the deletion of `.agents/issues/<effort>/`, staged by name, in one commit. The Specs are the record; a Map with every ticket resolved would read as a destination still to write.
