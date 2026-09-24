@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, the Oneshot agent implements. You hold one three-line report, any deviations, and the review findings for as long as step 3 takes to hand them on. Hand paths; the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
-The Oneshot agent is `skills:oneshot` (`agents/oneshot.md` at the plugin root), pinned to a cheaper tier because the Spec was decided before it started; a host without that tier uses its cheapest model that edits code. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0007](../../docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0031](../../docs/adr/0031-implement-oneshot-is-a-second-command.md).
+The Oneshot agent is `skills:oneshot` (`agents/oneshot.md` at the plugin root), which runs on your model at reduced effort because the Spec was decided before it started. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md) and [ADR-0031](../../docs/adr/0031-implement-oneshot-is-a-second-command.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 

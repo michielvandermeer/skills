@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-24: Coding agents use your model
+The agents that write code for `/implement`, `/implement-oneshot`, and `/implement-yolo` no longer switch to Sonnet. They now run on the same model as your session, at a lower effort level. This keeps the cost down while your chosen model writes the code.
+
 ## 2026-09-24: Wayfinder writes specs in a fresh session
 When you finish the last ticket on a `/wayfinder` map, that session no longer writes the specs. It tells you to run `/wayfinder` on the map once more in a fresh session, and that session reads every finished ticket and writes the specs. If you run `/wayfinder` when every open ticket is already being worked on or waiting on another, it tells you which ones and stops.
 

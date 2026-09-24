@@ -1,3 +1,7 @@
+---
+status: partially superseded by ADR-0049
+---
+
 # Pinned sub-agent model tiers
 
 The skills in this plugin dispatch sub-agents that all inherited the session's model and effort, so a `/implement` run spent Opus-tier tokens on work whose scope was already fully decided. We now pin the cost knobs on **absolute** tiers in `agents/` frontmatter — `skills:implementer` is fixed at Sonnet, and every spec-bound dispatch runs at `effort: medium` — rather than expressing them relative to the session's own model.
@@ -17,3 +21,5 @@ Replacing the built-in `Explore` with `skills:explorer` also gives up a property
 A host without a Sonnet tier dispatches step agents on its cheapest model that edits code; the pin names a tier, not a vendor.
 
 The saving is bounded and modest: Sonnet is 40% cheaper per token than Opus, and the pin covers implementation steps only. One retried Sonnet step costs more than the Opus run it replaced.
+
+The Sonnet pin is superseded by [ADR-0049](0049-spec-bound-agents-keep-the-session-model.md): spec-bound agents keep the session's model, and the `effort: medium` pin stands.
