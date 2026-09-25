@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-25: Doctor fixes ADRs the code outgrew
+`/doctor` now checks every ADR against your code. When a migration, a commit, or a newer spec or ADR shows the decision changed on purpose, it rewrites the ADR to say what the code does, or deletes it when nothing of the decision is left. When nothing shows the change was chosen, it leaves the ADR as it is and lists the mismatch in its report as a bug to take to `/triage`, with the evidence it found.
+
 ## 2026-09-25: Doctor ends with a retrospective
 After `/doctor` posts its report, it now runs `/retro`, as `/implement`, `/triage`, `/codebase-audit`, and the other skills you type already do. `/retro` applies its high-priority suggestions for your agent setup in a second commit after `/doctor`'s own, and lists the rest in its summary. It runs on every `/doctor` run, even when there was nothing to tidy.
 
