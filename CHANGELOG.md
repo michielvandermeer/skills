@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-25: Doctor also moves your documents
+`/migrate-doc-layout` is gone, and `/doctor` now does its job without asking first. Before it checks specs, ideas, and ADRs, it moves every document it can recognise into its place under `.agents/` or `docs/adr/`. It includes the moves in its one commit and fixes every link to the old paths. Old refinements become ideas, issues and maps move into `.agents/issues/`, and the report lists any document it left where it was and why.
+
 ## 2026-09-25: ADRs show today's decision
 When a decision changes, the skills now rewrite its ADR in place instead of adding a new one on top, and delete the ADR of a decision dropped with nothing in its place. `/cleanup-specs` is now `/doctor`: it still removes finished specs and ideas, and it also merges ADRs that record one decision into one, rewrites ADRs that tell history, and fixes every link to them. It makes all its changes in one commit and then tells you what it merged, rewrote, deleted, and found the code contradicting.
 
