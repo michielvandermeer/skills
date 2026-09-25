@@ -6,5 +6,18 @@
         "repo": "michielvandermeer/skills"
       }
     }
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-frontmatter.mjs\""
+          }
+        ]
+      }
+    ]
   }
 }
