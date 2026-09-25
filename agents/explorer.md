@@ -1,7 +1,6 @@
 ---
 name: explorer
-description: Walks a codebase read-only and reports what it finds, without changing anything. Dispatched by /grilling, /improve-codebase-architecture, /codebase-audit, and /doctor.
-effort: medium
+description: Walks a codebase read-only and reports what it finds, without changing anything.effort: medium
 disallowedTools: Write, Edit
 ---
 
