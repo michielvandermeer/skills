@@ -73,4 +73,6 @@ Only offer to create an ADR — in a round-based session, as a declaration the u
 
 If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
 
+When the decision on the table already has an ADR, rewrite that ADR in place rather than writing a new one on top of it — see [ADR-FORMAT.md](./ADR-FORMAT.md) for the rule.
+
 An ADR argues, and a glossary entry defines. Run the `/plain-language` skill for the argument. Where either document fixes the meaning of a term, spend whatever words precision needs — that is a definition site, and it is the one place plainness gives way.

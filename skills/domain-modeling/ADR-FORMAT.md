@@ -1,5 +1,7 @@
 # ADR Format
 
+An ADR states a decision in force and the reason it holds, as things stand today. It carries no history — git already keeps how the decision got here. Any ADR sitting in `docs/adr/` is in force; there is no status to check.
+
 ADRs live in `docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
 
 Create the `docs/adr/` directory lazily — only when the first ADR is needed.
@@ -18,9 +20,16 @@ That's it. An ADR can be a single paragraph. The value is in recording *that* a 
 
 Only include these when they add genuine value. Most ADRs won't need them.
 
-- **Status** frontmatter (`proposed | accepted | deprecated | superseded by ADR-NNNN`) — useful when decisions are revisited
-- **Considered Options** — only when the rejected alternatives are worth remembering
+- **Considered Options** — only when the rejected alternatives are worth remembering. An option once chosen and later dropped stays only as a rejected option with its reason, and only when someone might propose it again — drop it entirely when nobody is likely to.
 - **Consequences** — only when non-obvious downstream effects need to be called out
+
+## Rewriting an ADR in place
+
+When a session changes a decision an ADR records, it rewrites that ADR in place, at Spec time, instead of adding a new one on top: same file, same number, updated to state the new decision. Rename the file when the title changes, and update every link to it across the repo in the same change.
+
+When a decision is reversed with nothing put in its place, delete its ADR and remove every link to it.
+
+Numbers are never reused — a deleted or Folded ADR leaves a gap in the sequence.
 
 ## Numbering
 

@@ -139,11 +139,11 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 
 | Skill | Description |
 |-------|-------------|
-| `cleanup-specs` | Removes all Spec, Plan, and Idea documents that have been implemented. |
 | `code-review` | Review changes since a fixed point along two axes — Standards and Spec — in parallel sub-agents. |
 | `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
+| `doctor` | Removes implemented Spec and Idea documents, and brings every ADR to state the decision in force. |
 | `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, `/implement-yolo`, and for manual backfill. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
