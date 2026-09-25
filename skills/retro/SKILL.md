@@ -18,23 +18,26 @@ The host's session logs for the current or named session, plus the steering file
 
 **Steering files** always include the repo's `AGENTS.md` / `CLAUDE.md` and the host's global always-loaded agent files, plus any file this session actually reached.
 
-The session's code changes are the commits the session log records for the current or named session, plus any uncommitted changes still in the working tree. This does not depend on a branch or a recorded start commit — `/implement` deletes its branch before `/retro` runs, so read the session log for the commits instead.
+The session's code changes are the commits the session log records for the current or named session, plus any uncommitted changes still in the working tree. Take the commits from the session log: `/implement` deletes its run branch before `/retro` runs, so no branch or start commit survives to diff against.
 
-### Finding Corrections
+## Corrections
 
-A **Correction** is a change to old code where the session also shows the old code was wrong.
+A **Correction** is a change to old code where the session also shows the old code was wrong: the user said so, a bug was being fixed, a test failed, or a review flagged it. Who wrote the old code, a person or an agent, does not matter.
 
-Old code is a line the session's diff removed or changed that was committed before the session's first commit — `git blame` on the pre-change version names that commit. Who wrote it, a person or an agent, does not matter.
+Old code is a line the session's diff removed or changed that was committed before the session's first commit, or was already in `HEAD` when the session made no commits. `git blame` on the pre-change version names that commit. A change that follows a changed requirement is new work.
 
-The session must also show the old code was wrong: the user said so, a bug was being fixed, a test failed, or a review flagged it. Code written earlier in the same session and then fixed is not a Correction, however soon it was fixed — the reviewer-missed-a-mistake bar under **Coding standards** covers that instead. A change that follows a changed requirement is not a Correction either.
+Code the session itself wrote stays with the session's own review loop, however soon it was fixed. Only a mistake in it that the reviewer let through reaches a rule, through the reviewer-missed-a-mistake bar under **Coding standards**.
 
-A Correction becomes a Coding standards rule only when the fix points to a pattern future code could repeat. Write no rule when:
+A *lesson* is a Correction whose fix points to a pattern future code could repeat. Route each Correction to the first outcome that fits:
 
-- the Correction is a one-off fact, such as a wrong constant;
-- a check could have caught it — the **Automated checks** category applies instead;
-- the Coding standards already hold the rule — the reviewer-missed-a-mistake bar applies instead.
+- a mistake a check could catch → **Automated checks**;
+- the old code broke a rule the Coding standards already hold → the reviewer-missed-a-mistake bar;
+- a one-off fact, such as a wrong constant → record nothing;
+- any other lesson → a new Coding standards rule.
 
-When a Correction contradicts a rule already written, change or remove that rule rather than adding a second one that disagrees with it.
+A lesson that contradicts a rule already written changes or removes that rule, so the Coding standards keep one rule on the point.
+
+Write the rule into the repo's existing Coding standards: the file in `.agents/refs/` that holds them, else a root `CODING_STANDARDS.md` or `CONTRIBUTING.md`, else create `.agents/refs/coding-standards.md`. A Correction in a file this repo does not own still writes its rule here.
 
 ## Categories
 
@@ -42,7 +45,7 @@ Check every item. *Use when* is the evidence bar. Every suggestion is something 
 
 - **Navigation** — would a **context pointer** have shortened the hunt? *Use when* the session took a long time to find a piece of information.
 - **Automated checks** — lint, types, tests, filesystem linters that would have caught a mistake this session made. *Use when* the agent made a mistake a check could have caught.
-- **Coding standards** — a new, removed, or clarified rule for the reviewer (`/code-review`, `.agents/refs/`, or the repo's standards file). *Use when* the reviewer missed a mistake, or a **Correction** points to a pattern future code could repeat.
+- **Coding standards** — a new, removed, or clarified rule for the reviewer (`/code-review`, `.agents/refs/`, or the repo's standards file). *Use when* the reviewer missed a mistake, or a **Correction** is a *lesson*.
 - **AGENTS.md load** — steering in `AGENTS.md` / `CLAUDE.md` (repo or global) that belongs in coding standards or a check instead. *Use when* that file is carrying more than **context pointers**.
 - **Tool economy** — expensive calls that could be cheaper, or a custom tool that wastes tokens. *Use when* the session made an expensive call.
 - **No-ops** — instructions in steering files that do not change behaviour. *Use when* those files are large.
@@ -52,11 +55,9 @@ Check every item. *Use when* is the evidence bar. Every suggestion is something 
 
 Rank by how often the pain will recur and how much it costs. An every-turn context-load problem outranks a one-off expensive call.
 
-**High-priority** is pain that will recur every turn or every session. It includes a judgement-call coding standard, a new check this session demonstrated, and the rule a **Correction** points to. Apply those without asking to **Owned files**. Each edit is the smallest change that encodes what this session demonstrated. A new check that would fail on current master still applies.
+**High-priority** is pain that will recur every turn or every session. It includes a judgement-call coding standard, a new check this session demonstrated, and a *lesson*'s rule (see **Corrections**). Apply those without asking to **Owned files**. Each edit is the smallest change that encodes what this session demonstrated. A new check that would fail on current master still applies.
 
 Owned-file high-priority edits: one commit, no Changelog entry.
-
-The rule a Correction points to goes into the repo's existing Coding standards: `.agents/refs/` first — whichever file there already holds Coding standards — then a root `CODING_STANDARDS.md` or `CONTRIBUTING.md`. None exists → create `.agents/refs/coding-standards.md`. A Correction in a file this repo does not own still writes its rule here.
 
 A file that is not an **Owned file**, or a write or commit that cannot complete: that item is not applied; continue the rest.
 
