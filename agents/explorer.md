@@ -1,6 +1,7 @@
 ---
 name: explorer
-description: Walks a codebase read-only and reports what it finds, without changing anything.effort: medium
+description: Walks a codebase read-only and reports what it finds, without changing anything.
+effort: medium
 disallowedTools: Write, Edit
 ---
 
