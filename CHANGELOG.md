@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-25: Wayfinder no longer repeats research
+When `/wayfinder` starts research on a ticket, it now marks that ticket as claimed before the research begins. If you run `/wayfinder` on the same map while that research is still running, it skips those tickets and works another open one. When only research is left, it tells you research is still running and stops, instead of paying for the same research twice.
+
 ## 2026-09-25: Retro learns from fixed mistakes
 `/retro` now also reads the code your session changed, including work not yet committed. When the session fixed code that an earlier session got wrong, and the fix holds a lesson future code could repeat, `/retro` adds a rule for it to your repo's coding standards without asking. The agents that write and review code already read those standards, so later sessions avoid the same mistake.
 
