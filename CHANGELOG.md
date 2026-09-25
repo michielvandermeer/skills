@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-25: ADRs show today's decision
+When a decision changes, the skills now rewrite its ADR in place instead of adding a new one on top, and delete the ADR of a decision dropped with nothing in its place. `/cleanup-specs` is now `/doctor`: it still removes finished specs and ideas, and it also merges ADRs that record one decision into one, rewrites ADRs that tell history, and fixes every link to them. It makes all its changes in one commit and then tells you what it merged, rewrote, deleted, and found the code contradicting.
+
 ## 2026-09-25: Wayfinder no longer repeats research
 When `/wayfinder` starts research on a ticket, it now marks that ticket as claimed before the research begins. If you run `/wayfinder` on the same map while that research is still running, it skips those tickets and works another open one. When only research is left, it tells you research is still running and stops, instead of paying for the same research twice.
 
