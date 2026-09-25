@@ -117,24 +117,24 @@ Rewrite every ADR whose text narrates history — "used to", "ADR-NNNN had…", 
 
 ### Align with the code
 
-Check every ADR you keep against the code, and bring it in line where the decision moved on. A project with no ADRs skips this step.
+Check every ADR you keep against the code, and bring it in line where the decision moved on. With no ADRs, dispatch no explorer.
 
-First find each ADR's Spec. An ADR is written in the same commit as its Spec, so `git log --follow` on the ADR lists the commits that wrote it, and the newest one that also added a file under `.agents/specs/` names its Spec. An ADR whose Spec is gone from `.agents/specs/` has a **dropped Spec** unless the code built all of what it planned. When no such commit exists, the ADR has no Spec to check.
+First find each ADR's Spec. An ADR is written in the same commit as its Spec, so `git log --follow` on the ADR lists the commits that wrote it, and the newest one that also added a file under `.agents/specs/` names its Spec. When no such commit exists, the ADR has no Spec to check.
 
-Then dispatch read-only `skills:explorer` agents, each with a batch of ADRs. In a multi-context repo, a batch holds one context's ADRs and the explorer reads that context's code. Ask each explorer to return, for every claim an ADR makes that the code contradicts:
+Then dispatch read-only `skills:explorer` agents, each with a batch of about ten ADRs. In a multi-context repo, a batch holds one context's ADRs and the explorer reads that context's code. Ask each explorer to return, for every claim an ADR makes that the code contradicts:
 
 - the claim, and the code that contradicts it, with file and line
 - any **intent** behind the change: a migration, a commit whose message states the change, or a newer Spec or ADR that covers it
 - the reason the commit that changed the code gives, if any
 
-For an ADR whose Spec is gone, also ask which parts of what that Spec planned the code has. Wait for every report and carry the reports, not the files; the judgement is yours.
+For an ADR whose Spec is gone from `.agents/specs/`, also pass that commit's SHA and the Spec's path, and ask which parts of what the Spec planned the code has; the explorer reads the Spec with `git show <sha>:<path>`. Wait for every report and carry the reports, not the files; the judgement is yours.
 
 Judge each mismatch:
 
 - **Moved on** — the change has intent. Rewrite the ADR in place as [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) sets out, with the smallest edit that makes it state what the code does; the parts that still hold keep their wording. Give the reason from the commit that changed the code, or say the reason was not recorded when git gives none. Delete the ADR when the code keeps nothing of its decision.
 - **Bug** — the change has no intent. The ADR wins: leave it as written and list the mismatch in the report. Leftover code the decision already removed is a bug too.
 
-Judge an ADR with a dropped Spec against the code the same way: delete it when nothing was built, and rewrite it to describe the part that was built otherwise.
+A Spec that is gone while the code lacks part of what it planned was **dropped**. Judge an ADR with a dropped Spec against the code the same way: delete it when nothing was built, and rewrite it to describe the part that was built otherwise.
 
 Application code stays as it is, and a bug gets no Issue or Idea: the report carries it, pointing to `/triage`.
 
