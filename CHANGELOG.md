@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-25: Finished specs no longer leave stale waits
+When `/implement`, `/implement-oneshot`, `/implement-yolo`, or `/cleanup-specs` removes a finished spec, it now also removes the line in any other spec that said it was waiting on that one. Specs no longer point at a spec that is already gone.
+
 ## 2026-09-24: Coding agents use your model
 The agents that write code for `/implement`, `/implement-oneshot`, and `/implement-yolo` no longer switch to Sonnet. They now run on the same model as your session, at a lower effort level. This keeps the cost down while your chosen model writes the code.
 
