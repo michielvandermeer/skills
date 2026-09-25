@@ -41,6 +41,14 @@ _Avoid_: Step, prompt
 The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`, and a `Blocked by: <spec-slug>` line when another Spec must land first — a Spec still in `.agents/specs/` has not landed. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
+**ADR**:
+A decision in force and the reason it holds, at `docs/adr/<NNNN>-<slug>.md`, stated as things stand today. It carries no history: how the decision got here lives in git. An option once chosen and later dropped appears only as a rejected option with its reason, and only when someone might propose it again.
+_Avoid_: decision log, superseded ADR, partially superseded ADR
+
+**Fold**:
+Merging the ADRs that record one decision at different times into a single ADR that states the decision as it stands, keeping the number of the newest.
+_Avoid_: squash, consolidate, supersede
+
 **Unstated claim**:
 A claim a Spec treats as settled that it never states as a decision and that the code does not establish as fact.
 _Avoid_: assumption
@@ -156,8 +164,12 @@ A user-typed skill that starts a **Retrospective** when it finishes.
 _Avoid_: host skill, wrapping skill, parent skill
 
 **High-priority**:
-A **Retrospective** suggestion whose pain will recur every turn or every session. Includes a judgement-call coding standard and a new check when this session demonstrated them.
+A **Retrospective** suggestion whose pain will recur every turn or every session. Includes a judgement-call coding standard and a new check when this session demonstrated them, and the rule a **Correction** points to.
 _Avoid_: mechanical-only, severity
+
+**Correction**:
+A change a session made to code that existed before that session started, where the session also shows the old code was wrong — the user said so, a bug was being fixed, a test failed, or a review flagged it. Code written earlier in the same session is not a Correction, however soon it was fixed; neither is a change that follows a changed requirement. Who wrote the old code, a person or an agent, does not matter. A **Retrospective** turns a Correction into a Coding standards rule only when the fix points to a pattern future code could repeat.
+_Avoid_: fix, bugfix, regression
 
 ### Execution
 
