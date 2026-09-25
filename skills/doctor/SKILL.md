@@ -115,13 +115,30 @@ Remove the `status:` line from every ADR you keep: a Folded one, an older one ke
 
 Rewrite every ADR whose text narrates history — "used to", "ADR-NNNN had…", "Superseded:" — so it states the decision as it stands today, whether or not anything ever replaced it.
 
-### Flag contradictions
+### Align with the code
 
-When the code contradicts an ADR and no newer ADR explains why, list the mismatch and leave that ADR as written — the contradiction is a bug in the code, not license to rewrite the rule it breaks.
+Check every ADR you keep against the code, and bring it in line where the decision moved on. A project with no ADRs skips this step.
 
-Flag the same way an ADR whose Spec was dropped before it landed: a decision never built should not read as one still in force, but this run reports it rather than rewriting it. An ADR is written in the same commit as its Spec, so `git log --follow` on the ADR lists the commits that wrote it, and the newest one that also added a file under `.agents/specs/` names its Spec. That Spec was dropped when it is gone from `.agents/specs/` and the code never built what it planned. When no such commit exists, this check has nothing to go on for that ADR.
+First find each ADR's Spec. An ADR is written in the same commit as its Spec, so `git log --follow` on the ADR lists the commits that wrote it, and the newest one that also added a file under `.agents/specs/` names its Spec. An ADR whose Spec is gone from `.agents/specs/` has a **dropped Spec** unless the code built all of what it planned. When no such commit exists, the ADR has no Spec to check.
 
-Done when every ADR you keep has no `status:` line and states the decision in force, or is flagged in the report.
+Then dispatch read-only `skills:explorer` agents, each with a batch of ADRs. In a multi-context repo, a batch holds one context's ADRs and the explorer reads that context's code. Ask each explorer to return, for every claim an ADR makes that the code contradicts:
+
+- the claim, and the code that contradicts it, with file and line
+- any **intent** behind the change: a migration, a commit whose message states the change, or a newer Spec or ADR that covers it
+- the reason the commit that changed the code gives, if any
+
+For an ADR whose Spec is gone, also ask which parts of what that Spec planned the code has. Wait for every report and carry the reports, not the files; the judgement is yours.
+
+Judge each mismatch:
+
+- **Moved on** — the change has intent. Rewrite the ADR in place as [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) sets out, with the smallest edit that makes it state what the code does; the parts that still hold keep their wording. Give the reason from the commit that changed the code, or say the reason was not recorded when git gives none. Delete the ADR when the code keeps nothing of its decision.
+- **Bug** — the change has no intent. The ADR wins: leave it as written and list the mismatch in the report. Leftover code the decision already removed is a bug too.
+
+Judge an ADR with a dropped Spec against the code the same way: delete it when nothing was built, and rewrite it to describe the part that was built otherwise.
+
+Application code stays as it is, and a bug gets no Issue or Idea: the report carries it, pointing to `/triage`.
+
+Done when every ADR you keep has no `status:` line, states the decision in force, and agrees with the code — or disagrees only where the code has a bug the report names.
 
 ## Update every link
 
@@ -131,6 +148,6 @@ Done when every old path and bare filename greps clean across the repo.
 
 ## Report
 
-Close with what moved and where, what stayed and why (unclassified, collision, no effort folder), and what you Folded, rewrote, deleted, and flagged among the ADRs — the reader's way of knowing what to look at in the diff. Run the `/plain-language` skill for the report.
+Close with what moved and where, what stayed and why (unclassified, collision, no effort folder), and what you Folded, rewrote, and deleted among the ADRs, with the evidence for each ADR changed because of the code — the reader's way of knowing what to look at in the diff. List every bug the code check found, with its evidence and a suggestion to take it to `/triage`. Run the `/plain-language` skill for the report.
 
-Done when every move, every document left where it was, and every ADR you Folded, rewrote, deleted, or flagged appears in the report. Then run `/retro`.
+Done when every move, every document left where it was, every ADR you Folded, rewrote, or deleted, and every bug appears in the report. Then run `/retro`.

@@ -146,7 +146,7 @@ The closing round of a `/grilling` session once the Frontier is empty: the settl
 _Avoid_: recap, summary, closing round, confirmation round
 
 **Explorer**:
-The read-only sub-agent (`skills:explorer`) a Driving session dispatches with named fact questions about the code. The session carries its report, never the files it read.
+The read-only sub-agent (`skills:explorer`) a session dispatches with named fact questions about the code. The session carries its report, never the files it read.
 _Avoid_: scout, researcher, background reader
 
 **Subject**:
