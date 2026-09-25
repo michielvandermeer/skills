@@ -45,6 +45,10 @@ _Avoid_: PRD, plan, design doc
 A decision in force and the reason it holds, at `docs/adr/<NNNN>-<slug>.md`, stated as things stand today. It carries no history: how the decision got here lives in git. An option once chosen and later dropped appears only as a rejected option with its reason, and only when someone might propose it again.
 _Avoid_: decision log, superseded ADR, partially superseded ADR
 
+**Chain**:
+The set of ADRs that record one decision at different points in time — an older ADR marked superseded or partly superseded, or replaced in part by a newer ADR's body, together with the ADRs that replaced it. What a **Fold** merges.
+_Avoid_: ADR history, supersession chain, lineage
+
 **Fold**:
 Merging the ADRs that record one decision at different times into a single ADR that states the decision as it stands, keeping the number of the newest.
 _Avoid_: squash, consolidate, supersede
