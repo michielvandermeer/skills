@@ -131,4 +131,6 @@ Done when every old path and bare filename greps clean across the repo.
 
 ## Report
 
-Close with what moved and where, what stayed and why (unclassified, collision, no effort folder), and what you Folded, rewrote, deleted, and flagged among the ADRs — the reader's way of knowing what to look at in the diff. Run the `/plain-language` skill for the report. Then run `/retro`.
+Close with what moved and where, what stayed and why (unclassified, collision, no effort folder), and what you Folded, rewrote, deleted, and flagged among the ADRs — the reader's way of knowing what to look at in the diff. Run the `/plain-language` skill for the report.
+
+Done when every move, every document left where it was, and every ADR you Folded, rewrote, deleted, or flagged appears in the report. Then run `/retro`.
