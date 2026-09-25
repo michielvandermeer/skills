@@ -1,10 +1,10 @@
 ---
-status: partially superseded by ADR-0040; list extended by ADR-0042
+status: partially superseded by ADR-0040
 ---
 
 # Named session skills start a retrospective that applies high-priority changes
 
-A **Named session skill** starts a **Retrospective** when it finishes. The list is `/implement`, `/implement-oneshot`, `/grill-with-docs`, `/triage`, `/wayfinder`, `/refine`, `/codebase-audit`, and `/improve-codebase-architecture`. You can also type `/retro`; that path is the same apply-and-summarise work.
+A **Named session skill** starts a **Retrospective** when it finishes. The list is `/implement`, `/implement-oneshot`, `/implement-yolo`, `/grill-with-docs`, `/triage`, `/wayfinder`, `/refine`, `/codebase-audit`, `/improve-codebase-architecture`, and `/doctor`. You can also type `/retro`; that path is the same apply-and-summarise work.
 
 **High-priority** suggestions are applied without asking, in the repo and in global agent files. That includes a judgement-call coding standard and a new check when the pain will recur every turn or every session and this session demonstrated it. A new check that would fail on current master still applies. The rest stay in the chat summary. Repo edits are one commit after the skill's own work — after land for `/implement` and `/implement-oneshot`. Global edits are written in place.
 
