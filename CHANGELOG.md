@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-25: Retro learns from fixed mistakes
+`/retro` now also reads the code your session changed, including work not yet committed. When the session fixed code that an earlier session got wrong, and the fix holds a lesson future code could repeat, `/retro` adds a rule for it to your repo's coding standards without asking. The agents that write and review code already read those standards, so later sessions avoid the same mistake.
+
 ## 2026-09-25: Coding agents check your standards
 The agents that write code for `/implement`, `/implement-oneshot`, and `/implement-yolo` now treat your repo's coding standards as rules for every line they write, comments and tests included. Before handing back, each one runs `/code-review` on its own work and fixes what it finds. The agents that fix review findings afterwards also get your coding standards.
 
