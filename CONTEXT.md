@@ -81,6 +81,10 @@ _Avoid_: release notes, Keep a Changelog, commit log, NEWS
 One shipped, product-visible change recorded in a Changelog: a dated title of at most six words and a body of at most three sentences, in **Plain language** with no development jargon. One entry per `/implement`, `/implement-oneshot`, or `/implement-yolo` run per context that changed; backfill groups git history into the same shape by logical product feature, not by merge commit.
 _Avoid_: release bullet, commit message, patch note
 
+**Coding standards**:
+A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say. Distinct from `/code-review`'s smell baseline, which applies even when a repo documents nothing.
+_Avoid_: style guide, conventions, coding-standards.md
+
 ### Communication
 
 **Plain language**:

@@ -50,7 +50,7 @@ Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and 
 - the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
 - an instruction to read the `## Outcome` of every lower-numbered step file before starting
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
-- the coding-standards sources found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
+- the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
 - the spec's Testing Decisions section, which governs what it tests
 - the deviations reported by earlier steps, verbatim, when there are any
 - its Step number and the total, and the report format below
@@ -88,7 +88,7 @@ Done when every file in `.agents/steps/<slug>/` reads `Status: done`.
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
 
-Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule. Hand each the Spec path (or that there is none) and that leftover choices are theirs to close from the findings, the Spec, and the code:
+Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule. Hand each the Spec path (or that there is none), the Coding standards from step 3 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code:
 
 1. **Fixes every finding**, both axes, from the findings you paste into its prompt as the reviewers wrote them. Where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When neither axis reports a finding, skip this agent and say so. Retry-then-halt is the whole check on its work.
 2. Runs `/improve-data-structures` and applies what it finds, or skips it.

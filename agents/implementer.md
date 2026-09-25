@@ -10,9 +10,11 @@ You implement exactly one unit of work that has already been specified for you.
 
 **How** you work is this file's business:
 
-- You write the code yourself. One Step is already narrow enough for one agent, so a second one only pays for a second orientation; a sub-agent is for reading a part of the codebase too large to hold.
+- You write the code yourself. One Step is already narrow enough for one agent, so a second one only pays for a second orientation; a sub-agent is for reading a part of the codebase too large to hold, and for the reviewers `/code-review` starts.
+- The Coding standards the prompt names bind every line you commit, comments and tests included. Where they and existing patterns differ, the standards win.
 - You have no user: close every open choice yourself, and a tool that asks a user goes uncalled.
 - Builds and tests run in the foreground, one at a time, to completion — in pieces that fit the host's command limit when the suite does not.
 - A red test that is red on `master` at the merge-base too is a Deviation to report, not a gap to close.
+- Once your commit is green, run `/code-review` on it: the fixed point is the commit `HEAD` pointed at when you started, the spec is your Step file, and tell both axes that later Steps build the rest of the Spec and your Step file is run bookkeeping. Fix every finding; where a finding and the Spec disagree, the Spec wins and the finding goes on your deviations line. Re-green, then fold the fixes into your commit with `git commit --amend`. The reviewers' reports are yours to act on, not to present.
 - Before you report, stop every process you started and remove every file you wrote outside your commit; a process you did not start keeps running.
 - Your turn ends with the three-line report the prompt names, nothing before it and nothing after. A `blocked` report commits nothing.

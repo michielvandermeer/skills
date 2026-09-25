@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-25: Coding agents check your standards
+The agents that write code for `/implement`, `/implement-oneshot`, and `/implement-yolo` now treat your repo's coding standards as rules for every line they write, comments and tests included. Before handing back, each one runs `/code-review` on its own work and fixes what it finds. The agents that fix review findings afterwards also get your coding standards.
+
 ## 2026-09-25: Finished specs no longer leave stale waits
 When `/implement`, `/implement-oneshot`, `/implement-yolo`, or `/cleanup-specs` removes a finished spec, it now also removes the line in any other spec that said it was waiting on that one. Specs no longer point at a spec that is already gone.
 
