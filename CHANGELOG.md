@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-25: Doctor ends with a retrospective
+After `/doctor` posts its report, it now runs `/retro`, as `/implement`, `/triage`, `/codebase-audit`, and the other skills you type already do. `/retro` applies its high-priority suggestions for your agent setup in a second commit after `/doctor`'s own, and lists the rest in its summary. It runs on every `/doctor` run, even when there was nothing to tidy.
+
 ## 2026-09-25: Doctor also moves your documents
 `/migrate-doc-layout` is gone, and `/doctor` now does its job without asking first: before it checks specs, ideas, and ADRs, it moves every document it can recognise into its place under `.agents/` or `docs/adr/`. Old refinements become ideas, and issues and maps move into `.agents/issues/`. The moves go in `/doctor`'s one commit with every link to the old paths fixed, and the report lists any document it left where it was and why.
 
