@@ -143,7 +143,7 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 | `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
-| `doctor` | Removes implemented Spec and Idea documents, and brings every ADR to state the decision in force. |
+| `doctor` | Moves documents into this project's canonical `.agents/` layout, removes implemented Spec and Idea documents, and brings every ADR to state the decision in force. |
 | `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, `/implement-yolo`, and for manual backfill. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
@@ -155,7 +155,6 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 | `implement-yolo` | Implement a spec in one sub-agent session on this checkout and this branch. No worktree, no new branch, no merge onto master. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then write the Ideas and Specs you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
-| `migrate-doc-layout` | Move spec, idea, reference, refinement, architecture-review, and codebase-audit documents into this repo's canonical `.agents/` layout. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `refine` | Take an Idea or Jira ticket through grilling, an optional Prototype, and a Spec, then write a plain-language summary back. |

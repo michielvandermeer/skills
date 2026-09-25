@@ -13,7 +13,7 @@ Two Specs were probably written in parallel, and each one took the next free num
 "ADR-0050" now points at two documents, and the rule that ADR numbers are never reused
 (ADR-0050, "an ADR states the decision in force") has no way to hold while a number is shared.
 
-This came up during the grilling session that folded `/migrate-doc-layout` into `/doctor`, and
+This came up during the grilling session that gave `/doctor` a layout pass, and
 it was left out of that change.
 
 ## Goal

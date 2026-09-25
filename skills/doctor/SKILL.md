@@ -1,17 +1,88 @@
 ---
 name: doctor
-description: "Removes implemented Spec and Idea documents, and brings every ADR to state the decision in force."
+description: "Moves documents into this project's canonical .agents/ layout, removes implemented Spec and Idea documents, and brings every ADR to state the decision in force."
 disable-model-invocation: true
 ---
 
 # Doctor
 
-Keep a project's decision documents healthy: clear out Specs and Ideas that already shipped, and bring every ADR in `docs/adr/` to the shape where it states the decision in force, as things stand today — see [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) for that shape. Act on your own judgement from start to finish: make every change below, commit them all in one commit, then report.
+Keep a project's decision documents healthy: move every document into its canonical `.agents/` location, clear out Specs and Ideas that already shipped, and bring every ADR in `docs/adr/` to the shape where it states the decision in force, as things stand today — see [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) for that shape. Act on your own judgement from start to finish: make every change below, commit them all in one commit, then report. Run only when typed — nothing else invokes it.
+
+## Layout
+
+Run this pass first, so a Spec or Idea moved out of an old location is also visible to the Specs and Ideas pass below.
+
+Find every Markdown and near-Markdown (`.html`) document in the project, skipping `.git/`, `node_modules/`, `vendor/`, build output, `.agents/steps/`, `.agents/worktrees/`, and anything already sitting in its canonical location. Work only on the checkout you're running in — never touch another worktree or branch.
+
+### Canonical locations
+
+| Document type | Canonical location |
+|---|---|
+| Spec (also plan and PRD) | `.agents/specs/<slug>.md` |
+| Idea | `.agents/ideas/<slug>.md` |
+| ADR | `docs/adr/<NNNN>-<slug>.md`, or a context's own `docs/adr/` — see Multi-context repos |
+| Reference (coding standards, contribution guidelines, style guides) | `.agents/refs/<slug>.md` |
+| Issue, Decision ticket, and Map | `.agents/issues/<folder>/` |
+| Architecture review | `.agents/architecture-reviews/<timestamp>/` — `report.md` and `report.html` |
+| Codebase audit | `.agents/codebase-audits/<timestamp>/report.md` |
+| Prototype | `.agents/prototypes/<slug>/` |
+
+`.agents/refinements/` is not a canonical location any more. An old Refinement converts to an Idea — see below.
+
+### Mechanical moves
+
+Read [LEGACY-MOVES.md](LEGACY-MOVES.md) for the old layouts whose destination follows from the source path alone — a `.scratch/` tracker, flat session output that should be a folder, a flat Refinement. Relocate the whole tree; don't read these file by file.
+
+### Classify everything else by content shape
+
+Classify each remaining document by what it actually contains. Filename and current directory are hints at best — a document could be anywhere.
+
+- **Spec**: has (or is clearly meant to have) sections like Problem Statement, Solution, User Stories, Implementation Decisions, Testing Decisions, Out of Scope — the `/to-spec` template — or a `Status:` line with a triage role plus prose describing a feature to build.
+- **Idea**: has sections like Motivation, Goal, Decisions (locked), Out of scope, Open questions — the idea-doc shape `/validate-spec` checks against. Looser and earlier-stage than a Spec; no implementation detail.
+- **ADR**: the shape in [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) — a short title plus 1-3 sentences of context/decision/why, with or without a `status:` line, optionally Considered Options or Consequences. Usually sequentially numbered. The ADR pass below strips any status line once the ADR lands.
+- **Reference / skill-supporting doc**: documents how code should be written or how the repo/team works — coding standards, contribution guidelines, style guides. Common filenames: `CODING_STANDARDS.md`, `CONTRIBUTING.md`, `STYLEGUIDE.md`.
+- **Refinement**: the legacy `/refine` shape — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — or an older variant: Introduction, Use cases, Scope, Notes, and older still a Technical details section. `/refine` no longer writes this shape; it's a source only, and it converts to an Idea (see below) rather than staying a Refinement.
+- **Issue**: a `Category:` line and a `Status:` line near the top.
+- **Decision ticket**: a `Type:` line and a `## Question` section.
+- **Map**: a file named `map.md` with `## Destination` and `## Decisions so far` sections.
+- **Architecture review**: matches the report shape from `/improve-codebase-architecture` — cards with What this does/Files/Problem/Solution/Wins/Before-After diagram/Recommendation strength, a Top recommendation section. A review written before the current card contract says `Benefits` where this one says `Wins`, and carries no `What this does` at all. Usually a `.md`/`.html` pair sharing a timestamp.
+- **Codebase audit**: matches the report shape from `/codebase-audit` — a coverage-contract table of subsystems with ownership boundaries and queued/recommend/skip status, recommendations with evidence/scope/risk/validation, explicit skips, and a priority ranking. Usually a `report.md` in a timestamp folder.
+
+Prototypes get no content shape: a Prototype has no marker file and is plain app code or HTML, so a content match would risk moving real code. A Prototype only moves as a Refinement's demo (below), or is named by a Spec or Idea the pass below deletes.
+
+A document that matches no shape cleanly is **unclassified**. Leave it where it is and list it in the report.
+
+### Refinement becomes an Idea
+
+Apply this both to a Refinement folder and to a flat or loose Refinement-shaped document found anywhere. The slug is the folder's name, or the file's own name for a flat or loose document.
+
+- The Idea at `.agents/ideas/<slug>.md` is `complete.md` as it stands. When the folder has no `complete.md`, the Idea is `session.md` as it stands instead.
+- Delete `session.md` once `complete.md` exists to read from. Always delete `complete.html`.
+- Move a `prototype/` folder inside the Refinement to `.agents/prototypes/<slug>/`, and add one line to the Idea naming that path.
+- Remove the emptied Refinement folder, and `.agents/refinements/` itself once nothing is left in it.
+- An Idea or Prototype folder that already holds that slug is a collision (below).
+
+### Issues, tickets, and Maps
+
+An Issue, Decision ticket, or Map moves together with its whole parent folder, to `.agents/issues/<folder-name>/` — an effort's tickets stay together with its Map. One found with no folder of its own around it, such as a loose file at the repo root, is left in place and listed in the report: `/doctor` never invents an effort folder to hold it.
+
+### Multi-context repos
+
+When a root `CONTEXT-MAP.md` exists:
+
+- A context's folder is the folder holding the `CONTEXT.md` the map links to. An ADR found inside a context's folder moves to that context's own `docs/adr/`. Any other ADR moves to the root `docs/adr/`.
+- A moved ADR keeps its number when that number is free in the target folder. One with no number gets the next free number in the target folder, found by scanning it. One whose number is already taken in the target folder is a collision (below), not a move.
+- Every other document type — Spec, Idea, Issue, and the rest — moves to the one root `.agents/`, because every skill reads only that root.
+
+### Moving
+
+Move with `git mv`, creating destination folders as needed — this keeps each file's history. A move whose destination already exists is a **collision**: leave the document where it is and list it, and the file already occupying the destination, in the report. Nothing is overwritten on a guess.
 
 ## Specs and Ideas
 
 Go through the Idea (`.agents/ideas/`) and Spec (`.agents/specs/`) documents and remove every one that has been implemented. Judge that from the codebase; a status the document states is a hint at most.
 When you remove a Spec, also remove every `Blocked by: <spec-slug>` line in another Spec that names it.
+When you remove an Idea that names a folder under `.agents/prototypes/` as its Prototype, delete that folder too — no document points at it any more.
 
 ## ADRs
 
@@ -42,16 +113,16 @@ Remove the `status:` line from every ADR you keep: a Folded one, an older one ke
 
 Rewrite every ADR whose text narrates history — "used to", "ADR-NNNN had…", "Superseded:" — so it states the decision as it stands today, whether or not anything ever replaced it.
 
-### Update every link
-
-Grep the whole repo for every ADR you Folded, renamed, or deleted, and fix every link to it — in skills, READMEs, code comments, anywhere a path or an `ADR-NNNN` reference appears. A link to a deleted ADR with no Folded successor goes, along with any words that only make sense beside it.
-
 ### Flag contradictions
 
 When the code contradicts an ADR and no newer ADR explains why, list the mismatch and leave that ADR as written — the contradiction is a bug in the code, not license to rewrite the rule it breaks.
 
 Flag the same way an ADR whose Spec was dropped before it landed: a decision never built should not read as one still in force, but this run reports it rather than rewriting it. An ADR is written in the same commit as its Spec, so `git log --follow` on the ADR lists the commits that wrote it, and the newest one that also added a file under `.agents/specs/` names its Spec. That Spec was dropped when it is gone from `.agents/specs/` and the code never built what it planned. When no such commit exists, this check has nothing to go on for that ADR.
 
+## Update every link
+
+Grep the whole repo for every path the Layout pass moved and every ADR you Folded, renamed, or deleted — search both the old path and the bare filename, and include `CLAUDE.md` and `AGENTS.md`. Fix every link you find, in skills, READMEs, code comments, anywhere a path, a bare filename, or an `ADR-NNNN` reference appears. A link to a deleted ADR with no Folded successor goes, along with any words that only make sense beside it.
+
 ## Report
 
-Close with what you Folded, rewrote, deleted, and flagged — the reader's way of knowing what to look at in the diff. Run the `/plain-language` skill for the report.
+Close with what moved and where, what stayed and why (unclassified, collision, no effort folder), and what you Folded, rewrote, deleted, and flagged among the ADRs — the reader's way of knowing what to look at in the diff. Run the `/plain-language` skill for the report.
