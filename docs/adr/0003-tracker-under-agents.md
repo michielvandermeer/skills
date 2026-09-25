@@ -8,4 +8,4 @@ Only the *location* changes; the "fixed local-markdown tracker, no per-repo conf
 
 - `triage` and `wayfinder` scan `.agents/issues/*/*.md`, both skipping each effort's `map.md` — which now shares the directory with its tickets, so a name-based skip replaces the structural separation the old nested `issues/` folder gave for free.
 - Triage features and wayfinder efforts continue to share one root, exactly as they did under `.scratch/`.
-- A consuming repo with an existing `.scratch/<slug>/` tracker needs to move it to `.agents/issues/<slug>/` and flatten the nested `issues/` subfolder; `/migrate-doc-layout` now handles this. Nothing reads `.scratch/` anymore.
+- `/doctor` moves an existing `.scratch/<slug>/` tracker to `.agents/issues/<slug>/`, flattening the nested `issues/` subfolder, and turns each feature's `PRD.md` into a Spec. Nothing reads `.scratch/` anymore.

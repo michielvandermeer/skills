@@ -8,5 +8,5 @@ We already had two nearby moves: `/improve-codebase-architecture` hunts deepenin
 
 ## Consequences
 
-- `migrate-doc-layout` classifies the new shape.
+- `/doctor` classifies the Codebase audit shape when it moves documents into the layout.
 - Subsystem workers are `skills:explorer` (writes already disallowed). The driving session verifies every finding.

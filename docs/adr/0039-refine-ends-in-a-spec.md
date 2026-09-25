@@ -9,6 +9,6 @@ Keeping a terminal briefing was rejected: the session must finish, and the durab
 - [ADR-0019](0019-refine-determines-scope-via-prototype.md), [ADR-0025](0025-refine-prototype-lives-in-the-refinement-folder.md), and [ADR-0012](0012-refine-user-facing-surfaces.md) are superseded.
 - [ADR-0018](0018-prototypes-live-under-agents-prototypes.md) holds for every Prototype, including one `/refine` asked for. `/refine` names `.agents/prototypes/<slug>/`.
 - `/grill-with-docs` stays for a developer who wants to grill implementation. `/refine` does not chain to it.
-- `migrate-doc-layout` still recognises `.agents/refinements/` so existing repos can move. `/refine` does not write that shape.
+- `/refine` does not write `.agents/refinements/`. `/doctor` turns an existing Refinement into an Idea at `.agents/ideas/<slug>.md` and moves its demo to `.agents/prototypes/<slug>/`.
 - `/refine` updates the glossary as product terms settle. It writes ADRs at Spec time when the three-part test passes, and does not ask the person to judge an ADR.
 - The refine-specific consequences in [ADR-0009](0009-plain-language-for-output-not-source.md) (the room bar, `complete.md`, the Session document) no longer apply. Rounds and the write-back still run at `/plain-language`.

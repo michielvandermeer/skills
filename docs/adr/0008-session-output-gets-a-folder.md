@@ -8,5 +8,5 @@ This is mostly a convention the repo already followed. `/triage` issues, `/wayfi
 
 - ADR-0002's layout table is superseded for these two document types and stands for the rest.
 - Filenames inside a folder are the skill's own vocabulary, not a shared one: `/refine` writes `session.*` and `complete.*` because it has an incomplete state worth naming, and `/improve-codebase-architecture` writes `report.*` because it does not. Making the two match would imply `/improve-codebase-architecture` has a session document it does not have.
-- Repos holding the flat shape need `/migrate-doc-layout`, which handles both as mechanical directory moves.
+- `/doctor` moves flat architecture reviews into folders as a mechanical directory move. Refinements are no longer written ([ADR-0039](0039-refine-ends-in-a-spec.md)), so `/doctor` turns an old flat or foldered Refinement into an Idea instead.
 - A future skill that grows a second output file moves to a folder rather than adding a second flat sibling.
