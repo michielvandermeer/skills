@@ -1,6 +1,6 @@
 # 01 — Retro turns Corrections into Coding standards rules
 
-Status: pending
+Status: done
 
 ## What to build
 
@@ -43,3 +43,18 @@ Projects: none
 - [ ] The Correction rule is listed as **High-priority** in `## Apply`: applied without asking to Owned files, in the one retrospective commit, smallest change, and shown under applied items with its path.
 - [ ] Behaviour check: tracing a session that fixed old code after the user said it was wrong through the skill text leads to a Coding standards rule; tracing one that changed old code for a new requirement leads to nothing.
 - [ ] No file other than `skills/retro/SKILL.md` changes (unless `CONTEXT.md` needs a newly coined term), and `/writing-for-agents` has been run on the edited skill.
+
+## Outcome
+
+`skills/retro/SKILL.md` now reads the session's code changes and turns Corrections into Coding standards rules, per the checklist above. Changes:
+
+- Opening line narrowed: `/code-review` and `/improve-data-structures` still review the product diff; `/retro` reads it only to find Corrections.
+- `## Sources` gained the session's code changes (commits the session log records, plus uncommitted working-tree changes), with an explicit note that this does not depend on a branch or a recorded start commit.
+- A new `### Finding Corrections` subsection under `## Sources` defines old code (lines predating the session's first commit, per `git blame`), the proof bar for "the old code was wrong", the same-session and changed-requirement exclusions, authorship not mattering, the repeatable-pattern bar for writing a rule (excluding one-off facts, check-catchable mistakes, and already-held rules), and the change-or-remove rule for a contradicted existing rule.
+- `## Categories`' Coding standards bullet gained the Correction as a second *Use when* bar.
+- `## Apply`'s High-priority paragraph now names the Correction rule, and a new paragraph gives the location order (`.agents/refs/` holder first, then root `CODING_STANDARDS.md`/`CONTRIBUTING.md`, else create `.agents/refs/coding-standards.md`), including for a Correction in a non-owned file.
+- `## Present` already covered applied items generically (path in this tree, concrete enough to undo), so no change was needed there for the Correction rule.
+
+No new term was coined, so `CONTEXT.md` was not edited. No project has tests (`Projects: none`); verification was the read-through against each acceptance criterion above, plus a `/writing-for-agents` self-review pass that tightened two sentences for redundancy (git blame phrasing; the Coding standards location sentence).
+
+No deviations from the Spec or Step file.
