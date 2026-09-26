@@ -2,6 +2,7 @@
 
 Category: enhancement
 Status: needs-grilling
+Spec: .agents/specs/implement-agents-start-smaller.md
 
 ## Problem
 

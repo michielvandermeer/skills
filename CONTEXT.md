@@ -182,11 +182,15 @@ _Avoid_: fix, bugfix, regression
 ### Execution
 
 **Planner**:
-The sub-agent (`skills:planner`) that reads a Spec, walks the code only until every Step's Footprint can be filled, and writes the Step files — each with that Footprint, numbered in dependency order. It closes leftover behaviour the Spec did not name, commits the files in one commit, and returns only a compact index to the Driving session — never the Step bodies.
+The sub-agent (`skills:planner`) that reads a Spec, walks the code only until every Step's Footprint can be filled, and writes the Step files — each with that Footprint and the earlier Steps whose Outcomes it needs, numbered in dependency order. It closes leftover behaviour the Spec did not name, commits the files in one commit, and returns only a compact index to the Driving session — never the Step bodies.
 _Avoid_: Plan, Plan agent, host Plan
 
 **Step agent**:
-The sub-agent that implements exactly one Step, in the run worktree, after the Step before it is done. Reads the Outcomes of lower-numbered Steps, closes any gap in the Spec or Step from the code and existing patterns, leaves its Footprint's projects green, commits, and returns a fixed three-line report.
+The sub-agent that implements exactly one Step, in the run worktree, after the Step before it is done. Reads the Outcomes of the earlier Steps its Step depends on, closes any gap in the Spec or Step from the code and existing patterns, leaves the tests of its Footprint's projects passing, commits, and returns a fixed three-line report. The **Checker** finishes the Step from there.
+
+**Checker**:
+The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It runs any verification the repo's conventions demand for the surface touched, reviews the Step's commit on both axes, fixes every finding, returns the Step to **Green**, and folds its fixes into that commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
+_Avoid_: verifier, step reviewer, finisher
 
 **Oneshot agent**:
 The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot` and `/implement-yolo`.
@@ -201,7 +205,7 @@ Zero failures in the projects a Step's Footprint names, or in the projects an On
 _Avoid_: passing, all tests pass, mostly green
 
 **Outcome**:
-The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong. The channel by which a Step agent informs its successors, bypassing the Driving session's context entirely.
+The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong; the Checker adds to it when a fix changes something a later Step needs. The channel by which a Step informs the later Steps that depend on it, bypassing the Driving session's context entirely.
 
 **Deviation**:
 Anything a Step agent or Oneshot agent did that contradicts the Spec or changes what a later Step must do, any failure it left red because `master` already fails it, and any post-rebase failure that passed on the Driving session's re-run. The one piece of a run's detail the Driving session does carry forward.

@@ -10,3 +10,4 @@ Keeping parallel Steps with a sequential fallback for confined hosts was rejecte
 - Resume resets the run worktree and restarts at the lowest-numbered Step not yet `done`.
 - A waived worktree and the run worktree now run step 3 the same way.
 - [ADR-0015](0015-implement-worktree-host-agnostic.md) still governs the run worktree.
+- A Step file's `Depends on:` line names the earlier Steps whose Outcomes that Step reads. It never changes the order Steps run in, and it is not the `Blocked by:` edge this decision removed.
