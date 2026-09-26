@@ -131,7 +131,7 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 These skills pin the effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
 
 - A **spec-bound dispatch** works to a document settled before it started, so it runs at `effort: medium` on your session's model — `skills:implementer`, `skills:oneshot`, `skills:explorer`, and `skills:researcher`.
-- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s Planner (`skills:planner`, `agents/planner.md`), both `/code-review` reviewers, the `/improve-data-structures` pass, and the `/codebase-design` design-it-twice fan-out.
+- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s Planner (`skills:planner`, `agents/planner.md`), both `/code-review` reviewers, the `/improve-data-structures` pass, the `/codebase-design` design-it-twice fan-out, and the `/brainstorm` Direction fan-out.
 
 > **These skills assume a session at `high` effort or above.** The effort pin is absolute, not relative to your session, so a session at `low` effort gets `medium` sub-agents and spends more than you chose. [ADR-0007](docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0049](docs/adr/0049-spec-bound-agents-keep-the-session-model.md) record why it works that way and what it costs.
 
@@ -139,6 +139,7 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 
 | Skill | Description |
 |-------|-------------|
+| `brainstorm` | Explore a vague problem as very different Directions, side by side, and write the ones you keep as Ideas. |
 | `code-review` | Review changes since a fixed point along two axes — Standards and Spec — in parallel sub-agents. |
 | `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
