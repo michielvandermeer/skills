@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, the Oneshot agent implements. You hold one three-line report, any deviations, and the review findings for as long as step 3 takes to hand them on. Hand paths; the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
-The Oneshot agent is `skills:oneshot` (`agents/oneshot.md` at the plugin root), which runs on your model at reduced effort because the Spec was decided before it started. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md) and [ADR-0031](../../docs/adr/0031-implement-oneshot-is-a-second-command.md).
+The Oneshot agent is `skills:oneshot` (`agents/oneshot.md` at the plugin root), which runs on your model at reduced effort because the Spec was decided before it started. The Spec fixer, the Standards fixer, and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md) and [ADR-0031](../../docs/adr/0031-implement-oneshot-is-a-second-command.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
@@ -44,7 +44,6 @@ Dispatch `skills:oneshot` with a prompt made of paths and section names — it r
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
 - the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
 - the spec's Testing Decisions section when a Spec exists, which governs what it tests
-- `master` as the fixed point for its own `/code-review`
 - the deviations from a prior attempt, verbatim, when there are any
 - the report format below
 - that leftover choices are its to close from the Spec, the code, and existing patterns
@@ -75,12 +74,15 @@ A `blocked` report, a dirty tree, or any result that is not the three-line repor
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
 
-Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule. Hand each the Spec path (or that there is none), the Coding standards from step 2 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code:
+Three sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule, each on its own retry. Hand each the Spec path (or that there is none), the Coding standards from step 2 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code:
 
-1. **Fixes every finding**, both axes, from the findings you paste into its prompt as the reviewers wrote them. Where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When neither axis reports a finding, skip this agent and say so. Retry-then-halt is the whole check on its work.
-2. Runs `/improve-data-structures` and applies what it finds, or skips it.
+1. The Spec fixer fixes every finding of the Spec axis, which you paste into its prompt as the reviewers wrote them.
+2. The Standards fixer fixes every finding of the Standards axis, pasted the same way. Tell it to skip a finding whose code is gone and name that finding on its deviations line.
+3. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it.
 
-Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change either one makes goes to the user as a deviations line before you continue.
+The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt is the whole check on a fixer's work.
+
+Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change any of the three makes goes to the user as a deviations line before you continue.
 
 ### 4. Document the change
 

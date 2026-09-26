@@ -1,6 +1,6 @@
 # 03 — Final review sends two fixers and the Oneshot agent stops self-review
 
-Status: pending
+Status: done
 
 ## What to build
 
@@ -35,3 +35,11 @@ Projects: none
 - [ ] The post-rebase fixer at land is unchanged in `/implement` and `/implement-oneshot`
 - [ ] Every edited agent and skill file matches `skills/writing-for-agents/SKILL.md`, and `/writing-for-agents` has been run on them
 - [ ] `CHANGELOG.md` is untouched
+
+## Outcome
+
+- `skills/implement/SKILL.md` step 4, and step 3 of `skills/implement-oneshot/SKILL.md` and `skills/implement-yolo/SKILL.md`: the one fixer is now three sub-agents in order: the Spec fixer, the Standards fixer, then the data-structures pass. Each is on its own retry. A new paragraph under the list says why the Spec fixer goes first, keeps the Spec-wins rule for both fixers, and skips a fixer whose axis reported nothing, telling the user. The Standards fixer is told to skip a finding whose code is gone and name it on its deviations line. The schema, migration, or ADR rule now covers all three. Each command's opening paragraph names the two fixers.
+- `agents/oneshot.md`: the `/code-review` bullet is gone, and the sub-agent bullet no longer names the reviewers. Its browser pass or smoke run is still in its green, through the dispatch lists of both commands.
+- The step 2 dispatch lists in `/implement-oneshot` and `/implement-yolo` no longer give a fixed point for the agent's own review. `<start>` stays the fixed point of `/implement-yolo`'s own review.
+- The post-rebase fixer at land is unchanged. Footprint held. `CONTEXT.md` needed no edits, because "fixer" was never a glossary term.
+- Review fixes: the fixer names are plain text, not bold, so they coin no glossary term. List item 3 now names the data-structures pass. Kept on purpose: no new ADR, because the Spec's ADR list does not ask for one. The fixer text is also still repeated in all three commands, because the Spec puts the change in each of them and each already had its own copy of that step.

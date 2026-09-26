@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, the Step agent's and the Checker's three-line reports per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 3's structural check and nothing more. While a sub-agent runs, waiting is the work.
 
-Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), and the **Checker** that finishes each Step is `skills:checker` (`agents/checker.md` at the plugin root); both run on your model at reduced effort because their scope was decided before they started ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)). The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root) and runs at your own model and effort. The fixer and the data-structures pass are `general-purpose` and run at your own model and effort. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
+Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), and the **Checker** that finishes each Step is `skills:checker` (`agents/checker.md` at the plugin root); both run on your model at reduced effort because their scope was decided before they started ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)). The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root) and runs at your own model and effort. The Spec fixer, the Standards fixer, and the data-structures pass are `general-purpose` and run at your own model and effort. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
@@ -99,12 +99,15 @@ Done when every file in `.agents/steps/<slug>/` reads `Status: done`.
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
 
-Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule. Hand each the Spec path (or that there is none), the Coding standards from step 3 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code:
+Three sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule, each on its own retry. Hand each the Spec path (or that there is none), the Coding standards from step 3 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code:
 
-1. **Fixes every finding**, both axes, from the findings you paste into its prompt as the reviewers wrote them. Where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When neither axis reports a finding, skip this agent and say so. Retry-then-halt is the whole check on its work.
-2. Runs `/improve-data-structures` and applies what it finds, or skips it.
+1. The Spec fixer fixes every finding of the Spec axis, which you paste into its prompt as the reviewers wrote them.
+2. The Standards fixer fixes every finding of the Standards axis, pasted the same way. Tell it to skip a finding whose code is gone and name that finding on its deviations line.
+3. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it.
 
-Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change either one makes goes to the user as a deviations line before you continue.
+The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt is the whole check on a fixer's work.
+
+Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change any of the three makes goes to the user as a deviations line before you continue.
 
 ### 5. Document the change
 
