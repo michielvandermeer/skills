@@ -7,7 +7,7 @@ A collection of software-engineering skills for Claude Code, distributed as a pl
 ### Work documents
 
 **Idea**:
-A thought captured at `.agents/ideas/<slug>.md`. A `/brainstorm` run may overwrite it with a sharper kept Direction. Loose until a `/refine` session overwrites it with a plain-language summary of the Spec — the problem, the solution, and the user stories — and a `Spec:` line pointing at that file.
+A thought captured at `.agents/ideas/<slug>.md`. A `/brainstorm` run may overwrite it with a sharper kept Direction, or, when the user stops without keeping one, add every Direction shown to its Open questions. Loose until a `/refine` session overwrites it with a plain-language summary of the Spec — the problem, the solution, and the user stories — and a `Spec:` line pointing at that file.
 
 **Scope**:
 What a `/refine` session determines: what is part of this project and what is not.
@@ -150,7 +150,7 @@ The read-only sub-agent (`skills:explorer`) a Driving session dispatches with na
 _Avoid_: scout, researcher, background reader
 
 **Direction**:
-One of the very different ways to tackle a vague problem that a `/brainstorm` run lays out side by side — a pitch, how it works, what it costs, what it is best at, and its biggest risk. Each comes from its own angle, so the set spreads rather than clusters. A Direction the user keeps becomes an Idea; the rest are dropped with their reason. Distinct from an option, which is one lettered answer inside a Question.
+One of the very different ways to tackle a vague problem that a `/brainstorm` run lays out side by side — a pitch, how it works, what it costs, what it is best at, and its biggest risk. Each comes from its own angle, so the set spreads rather than clusters. A Direction the user keeps becomes an Idea; the rest are dropped with their reason. When the user stops without keeping one, none is dropped: every Direction shown goes to the Open questions of one Idea. Distinct from an option, which is one lettered answer inside a Question.
 _Avoid_: option, approach, alternative, candidate
 
 **Subject**:
