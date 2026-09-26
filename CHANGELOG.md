@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-26: Implement runs use fewer tokens
+The agents that build your code for `/implement`, `/implement-oneshot`, and `/implement-yolo` now read it in fewer, larger pieces. They search for the place first, read a short file whole, and read several files at the same time when they can. They see the same code as before, so what they build does not change, but a run uses less of your usage limits.
+
 ## 2026-09-26: Brainstorm explores very different options
 New `/brainstorm` takes a vague problem in plain words, or an Idea that is still too loose to grill, and explores it from four very different angles. One angle always searches the web for how other people already solve it, so it names real, current tools. You get a short card per option and its own pick, can go deeper or combine options until you choose, and each option you keep is saved as its own Idea, ready for `/grill-with-docs` or `/refine`.
 
