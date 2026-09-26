@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-26: Implement checks each step afresh
+`/implement` now sends a fresh agent to check each Step once it is built: it runs the browser pass, reviews the Step's commit, and fixes what it finds, so the agent that built the Step no longer does this at the end of a long session. The final review of `/implement`, `/implement-oneshot`, and `/implement-yolo` now sends one fixer for the Spec findings and then one for the Standards findings, each starting fresh, and the `/implement-oneshot` and `/implement-yolo` agent no longer reviews its own work first. Each Step also reads only the results of the Steps it depends on, so runs build the same thing as before but use less of your usage limits.
+
 ## 2026-09-26: Implement runs use fewer tokens
 The agents that build your code for `/implement`, `/implement-oneshot`, and `/implement-yolo` now read it in fewer, larger pieces. They search for the place first, read a short file whole, and read several files at the same time when they can. They see the same code as before, so what they build does not change, but a run uses less of your usage limits.
 
