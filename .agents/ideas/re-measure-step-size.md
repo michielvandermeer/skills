@@ -18,7 +18,7 @@ Once both Specs have landed, re-run the transcript measurement from commit `5d4d
 
 ## Out of scope
 
-- The Checker, the split final fixers, and the `Depends on:` line. The Spec `implement-agents-start-smaller` covers them.
+- The Checker, the split final fixers, and the `Depends on:` line. They landed on 2026-09-26 with the Spec `implement-agents-start-smaller`.
 
 ## Open questions
 
