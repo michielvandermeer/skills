@@ -12,7 +12,7 @@ Where the Spec is silent on behaviour a Step must have, write one reading into t
 
 When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | one-line deliverable`, the deliverable at most fifteen words naming what works.
 
-Steps run strictly in `NN` order, one sub-agent each, in one shared worktree. **The numbering is the run order**: a step runs after every lower-numbered step and may rely on none of the higher-numbered ones. Its `Depends on:` line picks which of those lower-numbered Outcomes its step agent reads; it never changes run order, and it is not the `Blocked by:` edge [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md) removed.
+Steps run strictly in `NN` order, one sub-agent each, in one shared worktree. **The numbering is the dependency order**: a step may rely on every lower-numbered step and none of the higher-numbered ones. Its `Depends on:` line picks which of those lower-numbered Outcomes its step agent reads; it never changes run order, and it is not the `Blocked by:` edge [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md) removed.
 
 Use the project's domain glossary (`CONTEXT.md`) for titles and descriptions, and respect any ADR covering the area you're touching.
 

@@ -5,7 +5,7 @@ argument-hint: "Which spec, issue, or idea to implement?"
 disable-model-invocation: true
 ---
 
-You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, the Step agent's and the Checker's three-line reports per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 3's structural check and nothing more. While a sub-agent runs, waiting is the work.
+You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, the Step agent's and the Checker's three-line reports per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 3's two structural checks and the `git rev-parse` that finds the Checker's fixed point, and nothing more. While a sub-agent runs, waiting is the work.
 
 Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), and the **Checker** that finishes each Step is `skills:checker` (`agents/checker.md` at the plugin root); both run on your model at reduced effort because their scope was decided before they started ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)). The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root) and runs at your own model and effort. The Spec fixer, the Standards fixer, and the data-structures pass are `general-purpose` and run at your own model and effort. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
 
@@ -83,7 +83,7 @@ Once that check passes, resolve the parent of the Step's commit with `git rev-pa
 - the deviations reported by earlier steps and by this step's agent, verbatim, when there are any
 - its Step number and the total, and the same three-line report format
 
-It reads no earlier Outcomes. The browser pass or smoke run is the Checker's, with the rest of its work as `agents/checker.md` lays it out. A step is **Green** only once both agents have passed.
+The browser pass or smoke run is the Checker's, with the rest of its work as `agents/checker.md` lays it out. A step is **Green** only once both agents have passed.
 
 Then **check the Checker structurally** — `grep '^Status:'` on the Step file reads `done`. Step 4's review covers the rest.
 
@@ -141,4 +141,4 @@ The worktree, the review diff, and the land cover this repository only. Work a S
 
 A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, and the run worktree exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why, and what a re-invoke will do; for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
 
-Re-invoking `/implement` with the same argument picks the run back up — a missing or empty steps directory runs the Planner again; Step files already on disk resume at the lowest-numbered Step not yet `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending`.
+Re-invoking `/implement` with the same argument picks the run back up — a missing or empty steps directory runs the Planner again; Step files already on disk resume where step 1 says.

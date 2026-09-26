@@ -196,6 +196,9 @@ _Avoid_: verifier, step reviewer, finisher
 The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot` and `/implement-yolo`.
 _Avoid_: direct implementer, oneshot implementer, single-session agent, implement-direct
 
+**Fixer**:
+A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too.
+
 **Footprint**:
 The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite that Step runs.
 _Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
