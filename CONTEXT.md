@@ -149,6 +149,10 @@ _Avoid_: recap, summary, closing round, confirmation round
 The read-only sub-agent (`skills:explorer`) a Driving session dispatches with named fact questions about the code. The session carries its report, never the files it read.
 _Avoid_: scout, researcher, background reader
 
+**Direction**:
+One of the very different ways to tackle a vague problem that a `/brainstorm` run lays out side by side — a pitch, how it works, what it costs, what it is best at, and its biggest risk. Each comes from its own angle, so the set spreads rather than clusters. A Direction the user keeps becomes an Idea; the rest are dropped with their reason. Distinct from an option, which is one lettered answer inside a Question.
+_Avoid_: option, approach, alternative, candidate
+
 **Subject**:
 The altitude a `/grilling` session grills at, named on one line in its first Round and classified `functional` or `technical` by where the user's judgement is needed rather than by which half is bigger.
 
