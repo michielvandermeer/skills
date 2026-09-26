@@ -58,7 +58,7 @@ A claim a Spec treats as settled that it never states as a decision and that the
 _Avoid_: assumption
 
 **Step**:
-One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md`. A tracer bullet: a narrow but complete path through every layer, sized to one fresh agent context, verifiable on its own. Steps exist only for the duration of an `/implement` run and are deleted with the Spec they came from.
+One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md`. A tracer bullet: a narrow but complete path through every layer, sized to one fresh agent context, verifiable on its own. Its `Status:` reads `pending` until its Step agent sets `built`, then `done` once its Checker finishes it. Steps exist only for the duration of an `/implement` run and are deleted with the Spec they came from.
 _Avoid_: ticket, task, chunk, phase
 
 **Decision ticket** (everyday: **ticket**):
@@ -208,7 +208,7 @@ _Avoid_: passing, all tests pass, mostly green
 The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong; the Checker adds to it when a fix changes something a later Step needs. The channel by which a Step informs the later Steps that depend on it, bypassing the Driving session's context entirely.
 
 **Deviation**:
-Anything a Step agent or Oneshot agent did that contradicts the Spec or changes what a later Step must do, any failure it left red because `master` already fails it, and any post-rebase failure that passed on the Driving session's re-run. The one piece of a run's detail the Driving session does carry forward.
+Anything a Step agent, Checker, or Oneshot agent did that contradicts the Spec or changes what a later Step must do, any failure it left red because `master` already fails it, and any post-rebase failure that passed on the Driving session's re-run. The one piece of a run's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
 A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.

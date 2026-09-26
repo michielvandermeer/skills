@@ -1,6 +1,6 @@
 # 02 — A fresh Checker finishes each Step
 
-Status: pending
+Status: done
 
 ## What to build
 
@@ -45,3 +45,14 @@ Projects: none
 - [ ] `/implement`'s opening paragraph and `README.md` name `skills:checker` among the effort-pinned agents; README's layout lists `agents/checker.md`
 - [ ] Every edited or new agent and skill file matches `skills/writing-for-agents/SKILL.md`, and `/writing-for-agents` has been run on them
 - [ ] `CHANGELOG.md` is untouched
+
+## Outcome
+
+- New `agents/checker.md` (`skills:checker`, `effort: medium`): the five-part order (verify, review, fix, re-green, then set `Status: done` and `git commit --amend`) and the implementer's working habits. It starts sub-agents only for the `/code-review` reviewers.
+- `agents/implementer.md`: the `/code-review` bullet and the reviewer sub-agent clause are gone.
+- `skills/implement/SKILL.md`: the opening paragraph names the Checker and links ADR-0051, and the context paragraph now counts both reports per step. Step 3 requires `Status: built` and passing Footprint tests from the Step agent, and the browser-pass bullet is gone from its requirements. After the `built` check, the Driving session resolves `git rev-parse HEAD~1`, dispatches the Checker, then checks for `done`. The user line comes after the Checker, and retry-then-halt covers both agents. Step 1's in-flight bullet and Halting resume a `built` Step at its Checker and a `pending` one at its Step agent.
+- `skills/implement/STEPS.md`: the Outcome/`Status:` sentence now says the step agent sets `built` and the Checker sets `done`.
+- `README.md`: the layout lists `checker.md`, and the spec-bound list gains `skills:checker`.
+- For Step 03: step 4 of `skills/implement/SKILL.md` is untouched and still describes one fixer; `agents/oneshot.md` still has its `/code-review` bullet.
+- Footprint drift: `CONTEXT.md` changed after all. **Deviation** now names the Checker, and **Step** names the `pending` → `built` → `done` lifecycle. ADR-0051 needed no edits.
+- Review fixes kept on purpose: `checker.md` repeats the implementer's working habits, because the Step file asks for that shape. Step 1 and Halting in `SKILL.md` both state the `built`/`pending` resume rule, because the Step file asks for both.

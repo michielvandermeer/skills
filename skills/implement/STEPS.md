@@ -70,7 +70,7 @@ Projects: <the projects that must be green when this step finishes>
 
 Fill `Depends on:` on every step from the walk that fills its Footprint: a step that touches what an earlier step creates or changes depends on it. Name only lower-numbered steps. A step that needs no earlier Outcome reads `Depends on: none`, and step `01` always does.
 
-`## Outcome` and the flip of `Status:` to `done` belong to the step agent — you write the file as shown above and it takes over from there.
+You write the file as shown above; the Step agent writes `## Outcome` and sets `Status:` to `built`, and the Checker sets it to `done`.
 
 Write behaviour, not code. The one exception is a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape): inline the decision-rich part in `## What to build` and say where it came from. Everything else goes stale between planning and execution.
 
