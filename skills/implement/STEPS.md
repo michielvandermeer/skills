@@ -12,7 +12,7 @@ Where the Spec is silent on behaviour a Step must have, write one reading into t
 
 When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | one-line deliverable`, the deliverable at most fifteen words naming what works.
 
-Steps run strictly in `NN` order, one sub-agent each, in one shared worktree. **The numbering is the dependency order**: a step may rely on every lower-numbered step and none of the higher-numbered ones.
+Steps run strictly in `NN` order, one sub-agent each, in one shared worktree. **The numbering is the run order**: a step runs after every lower-numbered step and may rely on none of the higher-numbered ones. Its `Depends on:` line picks which of those lower-numbered Outcomes its step agent reads; it never changes run order, and it is not the `Blocked by:` edge [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md) removed.
 
 Use the project's domain glossary (`CONTEXT.md`) for titles and descriptions, and respect any ADR covering the area you're touching.
 
@@ -49,6 +49,7 @@ One file per step at `.agents/steps/<slug>/<NN>-<step-slug>.md`, numbered from `
 # <NN> — <Step title>
 
 Status: pending
+Depends on: <comma-separated earlier step numbers, such as 02, 05 — or none>
 
 ## What to build
 
@@ -67,6 +68,8 @@ Projects: <the projects that must be green when this step finishes>
 - [ ] Criterion 2
 ```
 
+Fill `Depends on:` on every step from the walk that fills its Footprint: a step that touches what an earlier step creates or changes depends on it. Name only lower-numbered steps. A step that needs no earlier Outcome reads `Depends on: none`, and step `01` always does.
+
 `## Outcome` and the flip of `Status:` to `done` belong to the step agent — you write the file as shown above and it takes over from there.
 
 Write behaviour, not code. The one exception is a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape): inline the decision-rich part in `## What to build` and say where it came from. Everything else goes stale between planning and execution.
@@ -78,6 +81,6 @@ The **footprint** is where that walk lands: the files each step is expected to t
 Three rules keep it honest:
 
 - **A map, nothing more.** Where the work lands, and there it stops. A footprint that starts explaining *how* has turned into a plan the step agent will follow off a cliff.
-- **A guess, not a contract.** Earlier steps move code, so a later step's footprint drifts. The step agent follows the code where the two disagree and records the drift in its `## Outcome`. Write your best guess and let it be corrected.
+- **A guess, not a contract.** Earlier steps move code, so a later step's footprint drifts. The step agent follows the code where the two disagree and records the drift in its `## Outcome`, which reaches only the steps whose `Depends on:` names it. Write your best guess and let it be corrected.
 - **Name every project.** A project you leave off the `Projects:` line is a project nobody checks until the last step. `Projects: none` is for a change no project compiles.
 - **Another repository is planned last.** A file there is named by absolute path and `Projects:` names that repository's projects ([ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md)).

@@ -1,6 +1,6 @@
 # 01 — Step agents read only the Outcomes they depend on
 
-Status: pending
+Status: done
 
 ## What to build
 
@@ -31,3 +31,10 @@ Projects: none
 - [ ] `/implement` step 3 tells each Step agent to read the Outcomes of the Steps on its `Depends on:` line, none for `none`, and every lower-numbered Step's when the line is missing
 - [ ] Every edited skill file matches `skills/writing-for-agents/SKILL.md`, and `/writing-for-agents` has been run on them
 - [ ] `CHANGELOG.md` is untouched
+
+## Outcome
+
+- `skills/implement/STEPS.md`: the `NN`-order paragraph now says a step runs after every lower-numbered step, and that `Depends on:` picks which Outcomes it reads, never run order, and is not ADR-0045's `Blocked by:` edge. The template has `Depends on:` directly under `Status:`. A new paragraph above the "`## Outcome` and the flip of `Status:`" paragraph tells the Planner how to fill it. Step 02 rewrites that `Status:` paragraph for `built`.
+- `skills/implement/SKILL.md` step 3: the Outcome-reading dispatch bullet now follows `Depends on:`, with `none` meaning no Outcomes and a missing line meaning every lower-numbered step.
+- Review fixes: STEPS.md now calls the numbering "the run order", and both drift sentences (STEPS.md's Footprint rules, SKILL.md step 3's trust line) say drift in an Outcome reaches only the steps that depend on it. A Footprint drift that touches a step whose `Depends on:` omits the drifting step is not read by it; the Spec leaves this open.
+- Footprint held. `CONTEXT.md` and ADR-0045 needed no edits.

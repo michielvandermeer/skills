@@ -48,14 +48,14 @@ The plan succeeded when that reply is the index and `.agents/steps/<slug>/` hold
 Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and section names — it reads what is behind them:
 
 - the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
-- an instruction to read the `## Outcome` of every lower-numbered step file before starting
+- an instruction to read, before starting, the `## Outcome` of each step on its step file's `Depends on:` line — none for `Depends on: none`, and every lower-numbered step's when the line is missing
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
 - the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
 - the spec's Testing Decisions section, which governs what it tests
 - the deviations reported by earlier steps, verbatim, when there are any
 - its Step number and the total, and the report format below
 
-Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so its successors inherit the correction.
+Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so the steps that depend on it inherit the correction.
 
 Require of it: **green before it finishes**, then its `## Outcome` appended to its Step file, that file's `Status:` set to `done`, and its code and Step file committed together in one commit.
 
