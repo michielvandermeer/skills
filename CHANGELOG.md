@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-26: Brainstorm explores very different options
+New `/brainstorm` takes a vague problem in plain words, or an Idea that is still too loose to grill, and explores it from four very different angles. One angle always searches the web for how other people already solve it, so it names real, current tools. You get a short card per option and its own pick, can go deeper or combine options until you choose, and each option you keep is saved as its own Idea, ready for `/grill-with-docs` or `/refine`.
+
 ## 2026-09-25: Doctor fixes ADRs the code outgrew
 `/doctor` now checks every ADR against your code. When a migration, a commit, or a newer spec or ADR shows the decision changed on purpose, it rewrites the ADR to say what the code does, or deletes it when nothing of the decision is left. When nothing shows the change was chosen, it leaves the ADR as it is and lists the mismatch in its report as a bug to take to `/triage`, with the evidence it found.
 
