@@ -7,7 +7,7 @@ A collection of software-engineering skills for Claude Code, distributed as a pl
 ### Work documents
 
 **Idea**:
-A thought captured at `.agents/ideas/<slug>.md`. Loose until a `/refine` session overwrites it with a plain-language summary of the Spec — the problem, the solution, and the user stories — and a `Spec:` line pointing at that file.
+A thought captured at `.agents/ideas/<slug>.md`. A `/brainstorm` run may overwrite it with a sharper kept Direction. Loose until a `/refine` session overwrites it with a plain-language summary of the Spec — the problem, the solution, and the user stories — and a `Spec:` line pointing at that file.
 
 **Scope**:
 What a `/refine` session determines: what is part of this project and what is not.
