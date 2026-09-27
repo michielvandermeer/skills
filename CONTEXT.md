@@ -192,6 +192,10 @@ The sub-agent that implements exactly one Step, in the run worktree, after the S
 The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It runs any verification the repo's conventions demand for the surface touched, reviews the Step's commit on both axes, fixes every finding, returns the Step to **Green**, and folds its fixes into that commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
 _Avoid_: verifier, step reviewer, finisher
 
+**Validator**:
+The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just written. It works from that Spec's path, corrects facts in the file, and returns the report of corrections and open questions.
+_Avoid_: spec checker, spec reviewer, linter
+
 **Oneshot agent**:
 The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot` and `/implement-yolo`.
 _Avoid_: direct implementer, oneshot implementer, single-session agent, implement-direct

@@ -53,7 +53,7 @@ The grilling read-back. After it is confirmed, run `/to-spec` as serving `/refin
 
 Write ADRs that passed the three-part test in the same turn as the Spec.
 
-Done when `.agents/specs/<slug>.md` exists and `/validate-spec` has run.
+Done when `.agents/specs/<slug>.md` exists and `/to-spec` has returned from a finished Validator report. That report is the check this step waits on.
 
 ## 5. Write the summary back
 

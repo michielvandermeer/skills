@@ -13,9 +13,15 @@ This skill takes the current conversation context and codebase understanding and
 
 3. Write the spec using the template below to `.agents/specs/<feature-slug>.md` (a kebab-case slug derived from the feature, creating the directory if needed), with `Status: ready-for-agent` as a line under the H1 — no need for additional triage — and, when the caller names a Spec that must land first, `Blocked by: <spec-slug>` under it. Run the `/plain-language` skill first: a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar.
 
-4. Run `/validate-spec` on the spec document you just created.
+4. Dispatch a fresh **Validator** (`skills:validator`, `agents/validator.md` at the plugin root) with the path of the Spec you just wrote. That path is the whole prompt. The Validator runs on your model at medium effort ([ADR-0052](../../docs/adr/0052-a-fresh-validator-checks-a-new-spec.md)). A host without that agent type dispatches `general-purpose` with the same prompt.
 
-5. Commit the files this session created or changed — the Spec, glossary and ADR edits, Ideas, the prototype folder — staged by name, on the branch you are on, without asking. Leave every other working-tree change alone; another session may own it. When the session started from an Idea or Issue, leave that document in place with a `Spec:` line pointing at the new Spec; `/implement` deletes it at land. When `/refine` is the caller, skip this step: use the slug the caller named, and leave commit and the `Spec:` line to `/refine`. When `/wayfinder` is the caller, add the `Spec:` line and leave the commit to `/wayfinder`, which commits every Spec it cut in one.
+Wait for it.
+
+The report is finished when it is the Validator's checklist report: corrections, open questions, or a report that names neither. Show that report to the user. It is what you carry forward from the check. A finished report continues at step 5. Open questions leave step 5 free to run.
+
+Any other result ends the session before step 5. Tell the user the check did not finish. The Spec file stays as the Validator left it. Step 5 stays unstarted, and so does anything the caller does after `/to-spec`.
+
+5. Commit the files this session created or changed — the Spec, glossary and ADR edits, Ideas, the prototype folder — staged by name, on the branch you are on, without asking. The Spec you stage is the file the Validator left on disk. Leave every other working-tree change alone; another session may own it. When the session started from an Idea or Issue, leave that document in place with a `Spec:` line pointing at the new Spec; `/implement` deletes it at land. When `/refine` is the caller, skip this step: use the slug the caller named, and leave commit and the `Spec:` line to `/refine`. When `/wayfinder` is the caller, add the `Spec:` line and leave the commit to `/wayfinder`, which commits every Spec it cut in one.
 
 <spec-template>
 
