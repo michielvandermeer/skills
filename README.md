@@ -110,7 +110,6 @@ Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Co
 │   ├── checker.md
 │   ├── explorer.md
 │   ├── implementer.md
-│   ├── oneshot.md
 │   ├── planner.md
 │   ├── researcher.md
 │   └── validator.md
@@ -132,7 +131,7 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 
 These skills pin the effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
 
-- A **spec-bound dispatch** works to a document settled before it started, so it runs at `effort: medium` on your session's model — `skills:implementer`, `skills:checker`, `skills:oneshot`, `skills:explorer`, `skills:researcher`, and `skills:validator`.
+- A **spec-bound dispatch** works to a document settled before it started, so it runs at `effort: medium` on your session's model — `skills:implementer`, `skills:checker`, `skills:explorer`, `skills:researcher`, and `skills:validator`.
 - Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s Planner (`skills:planner`, `agents/planner.md`), both `/code-review` reviewers, the `/improve-data-structures` pass, the `/codebase-design` design-it-twice fan-out, and the `/brainstorm` Direction fan-out.
 
 > **These skills assume a session at `high` effort or above.** The effort pin is absolute, not relative to your session, so a session at `low` effort gets `medium` sub-agents and spends more than you chose. [ADR-0007](docs/adr/0007-pinned-subagent-model-tiers.md) and [ADR-0049](docs/adr/0049-spec-bound-agents-keep-the-session-model.md) record why it works that way and what it costs.
@@ -154,8 +153,8 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
-| `implement-oneshot` | Implement a spec in one sub-agent session, skipping the Planner. Still reviews and improves data structures after. |
-| `implement-yolo` | Implement a spec in one sub-agent session on this checkout and this branch. No worktree, no new branch, no merge onto master. |
+| `implement-oneshot` | Implement a spec as a single step, skipping the Planner. Still checks, reviews, and improves data structures after. |
+| `implement-yolo` | Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge onto master. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then write the Ideas and Specs you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |

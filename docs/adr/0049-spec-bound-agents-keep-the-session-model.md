@@ -1,6 +1,6 @@
 # Spec-bound agents keep the session model
 
-[ADR-0007](0007-pinned-subagent-model-tiers.md) pinned `skills:implementer` and `skills:oneshot` to Sonnet and to `effort: medium`. We drop the Sonnet pin. Both agents now run on the session's model, and only their effort is lowered. Lowering effort cuts spend while the code is still written by the model you chose for the session.
+[ADR-0007](0007-pinned-subagent-model-tiers.md) pinned `skills:implementer` to Sonnet and to `effort: medium`. We drop the Sonnet pin. Spec-bound agents now run on the session's model, and only their effort is lowered. Lowering effort cuts spend while the code is still written by the model you chose for the session.
 
 ## Considered Options
 

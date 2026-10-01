@@ -1,13 +1,13 @@
 ---
 name: implement-yolo
-description: "Implement a spec in one sub-agent session on this checkout and this branch. No worktree, no new branch, no merge onto master."
+description: "Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge onto master."
 argument-hint: "Which spec, issue, or idea to implement?"
 disable-model-invocation: true
 ---
 
-You are the **driving session**: you orchestrate, the Oneshot agent implements. You hold one three-line report, any deviations, and the review findings for as long as step 3 takes to hand them on. Hand paths; the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
+You are the **driving session**: you orchestrate, sub-agents implement. You hold the Step agent's and the Checker's three-line reports, any deviations, and the review findings for as long as step 4 takes to hand them on. Hand paths; the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
-The Oneshot agent is `skills:oneshot` (`agents/oneshot.md` at the plugin root), which runs on your model at reduced effort because the Spec was decided before it started. The Spec fixer, the Standards fixer, and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md) and [ADR-0042](../../docs/adr/0042-implement-yolo-is-a-third-command.md).
+This is `/implement` with one Step, no Planner, and no worktree ([ADR-0054](../../docs/adr/0054-the-implement-commands-differ-only-in-planning-and-worktree.md)): you write that Step's file yourself, and the same `skills:implementer` and `skills:checker` run it in this checkout. Both run on your model at reduced effort because the Spec was decided before they started. The Spec fixer, the Standards fixer, and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md) and [ADR-0042](../../docs/adr/0042-implement-yolo-is-a-third-command.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
@@ -31,51 +31,44 @@ Record `<start>`: `git rev-parse HEAD`. Commits this run adds are `git log <star
 
 Find linked worktrees with `git worktree list` (or the host's equivalent):
 
-- **`/implement` in flight** → `.agents/steps/<slug>/` exists in this checkout or in any linked worktree: stop and say `/implement` is already in flight.
-- **`/implement-oneshot` in flight** → no Step files, and `git worktree list` shows a worktree on branch `<slug>`, or branch `<slug>` exists: stop and say `/implement-oneshot` is already in flight.
+- **In a linked worktree** → a linked worktree contains `.agents/steps/<slug>/`, or `git worktree list` shows a worktree on branch `<slug>`, or branch `<slug>` exists: stop and say that run is in flight there.
+- **In this checkout** → `.agents/steps/<slug>/` holds Step files: resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. Step files a Planner wrote resume the same way. `<start>` is then the parent of the commit that added those Step files.
+- **Fresh** → neither: continue at step 2.
 
-A dirty tree is the working copy. Re-invoking with the same argument resumes at step 2; the tree as it is is the resume.
+A dirty tree is the working copy, and the tree as it is is the resume.
 
-### 2. Run the Oneshot agent
+### 2. Write the Step file
 
-Dispatch `skills:oneshot` with a prompt made of paths and section names — it reads what is behind them:
+Write `.agents/steps/<slug>/01-<slug>.md` and commit it as `plan: <slug>`:
 
-- the spec, or the argument text when that is all there is
-- `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
-- the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
-- the spec's Testing Decisions section when a Spec exists, which governs what it tests
-- the deviations from a prior attempt, verbatim, when there are any
-- the report format below
-- that leftover choices are its to close from the Spec, the code, and existing patterns
-- that it finds the projects to leave Green from the codebase, then greens those and the whole suite
-- that Green is measured against `master` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block finishing; when the current branch is `master`, that merge-base is `<start>`; every other failure is red until fixed
-- that a verification the repo's own conventions demand for the surface touched — a browser pass, a smoke run — counts toward green, run from this checkout
-- that `CHANGELOG.md` stays untouched whatever the repo's docs rules say; step 4 writes it
-- that `git status` is clean before it reports; files that were already uncommitted may be in its commits
+```markdown
+# 01 — <slug>
 
-Require of it: **green before it finishes**, and its code committed before it returns.
+Status: pending
+Depends on: none
 
-Its entire response is three lines:
+## What to build
 
-```
-status: done | blocked
-built: <one sentence on what now works>
-deviations: <what contradicts the Spec, or "none">
+All of <the spec path, or the argument text when that is all there is>. This Step has no Footprint: its projects are the whole suite.
 ```
 
-Then **check structurally** — the report reads `status: done` and `git status` is clean. That is the whole check. Step 3's review covers the rest.
+### 3. Run the Step
 
-Report one line to the user after the check — `Oneshot — done` — plus the deviations line when it is not `none`.
+Follow `/implement`'s [step 3](../implement/SKILL.md#3-run-each-step-in-nn-order) for the Step files in `.agents/steps/<slug>/` — the one you wrote, or a Planner's that step 1 resumed — with its [PROOF.md](../implement/PROOF.md): the Step agent, its structural check, the Checker, its structural check, and the retry-then-halt rule. Read only that step of that file. When there is no Spec, the argument text stands in for it and there is no Testing Decisions section. Three things differ here:
 
-A `blocked` report, a dirty tree, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry. When the host can resume the same agent, resume it once with one line: the work is still yours to finish; return the report. Otherwise re-dispatch, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The tree as it is is the resume. The failure is the Oneshot agent's to diagnose. A second failure **halts** the run.
+- Green is measured against `master` at the merge-base, and when the current branch is `master`, that merge-base is `<start>`. Tell both agents so.
+- Tell both agents that `git status` is clean before they report, and that files already uncommitted may be in their commits.
+- A retry never resets or cleans the tree: re-dispatch over the tree as it is.
 
-### 3. Review and improve
+Done when every Step file reads `Status: done`.
 
-**Run `/code-review` yourself**, with `<start>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that the Changelog is written in step 4. Hold what its two axes report, weighed on the reports alone.
+### 4. Review and improve
+
+**Run `/code-review` yourself**, with `<start>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that the Changelog is written in step 5 and that `.agents/steps/<slug>/` is run bookkeeping — its Outcome is evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run finishes unattended.
 
-Three sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule, each on its own retry. Hand each the Spec path (or that there is none), the Coding standards from step 2 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code:
+Three sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule, each on its own retry. Hand each the Spec path (or that there is none), the Coding standards from step 3 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code:
 
 1. The Spec fixer fixes every finding of the Spec axis, which you paste into its prompt as the reviewers wrote them.
 2. The Standards fixer fixes every finding of the Standards axis, pasted the same way. Tell it to skip a finding whose code is gone and name that finding on its deviations line.
@@ -85,24 +78,26 @@ The Spec fixer goes first because a Spec fix can remove code that a Standards fi
 
 Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change any of the three makes goes to the user as a deviations line before you continue.
 
-### 4. Document the change
+### 5. Document the change
 
-Run `/document-changes` in **implement mode** while the Spec is still on disk — after review/improve, before delete. Name `<start>` as the fixed point. It prepends product-facing **Changelog** entries beside each affected context's `CONTEXT.md` and commits when it wrote; when nothing is product-visible it reports that and leaves the tree clean.
+Run `/document-changes` in **implement mode** while the Spec and the Step's Outcome are still on disk — after review/improve, before delete. Name `<start>` as the fixed point. It prepends product-facing **Changelog** entries beside each affected context's `CONTEXT.md` and commits when it wrote; when nothing is product-visible it reports that and leaves the tree clean.
 
-### 5. Clean up
+### 6. Clean up
 
-Delete the Spec and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted. This step is done when `git status` is clean.
+Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, then delete the Spec, the whole `.agents/steps/<slug>/` directory, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted. This step is done when `git status` is clean.
 
-### 6. Retrospective
+The final report carries the `Safety fact:` line and names the Proof folder, where the Proof's excerpts and screenshots stay.
+
+### 7. Retrospective
 
 Run `/retro`.
 
 ## Work in another repository
 
-The review diff and the cleanup cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Oneshot agent and never pushed; the final report names the repository, the branch, and what sits on it.
+The review diff and the cleanup cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Step agent and never pushed; the final report names the repository, the branch, and what sits on it.
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the Spec and this checkout exactly as they are — committed work is the resume. Report why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
+A halt is non-destructive and it is the end of the session. Leave the Spec, the Step file, and this checkout exactly as they are — committed work is the resume. Report why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
 
 Re-invoking `/implement-yolo` with the same argument picks the run back up.

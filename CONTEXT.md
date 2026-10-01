@@ -58,7 +58,7 @@ A claim a Spec treats as settled that it never states as a decision and that the
 _Avoid_: assumption
 
 **Step**:
-One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md`. A tracer bullet: a narrow but complete path through every layer, sized to one fresh agent context, verifiable on its own. Its `Status:` reads `pending` until its Step agent sets `built`, then `done` once its Checker finishes it. Steps exist only for the duration of an `/implement` run and are deleted with the Spec they came from.
+One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md`. A tracer bullet: a narrow but complete path through every layer, sized to one fresh agent context, verifiable on its own. Its `Status:` reads `pending` until its Step agent sets `built`, then `done` once its Checker finishes it. A run with no Planner — `/implement-oneshot` or `/implement-yolo` — has exactly one Step, the whole Spec, with no Footprint. Steps exist only for the duration of a run and are deleted with the Spec they came from.
 _Avoid_: ticket, task, chunk, phase
 
 **Decision ticket** (everyday: **ticket**):
@@ -176,7 +176,7 @@ A **Retrospective** suggestion whose pain will recur every turn or every session
 _Avoid_: mechanical-only, severity
 
 **Correction**:
-A change a session made to code that existed before that session started, where the session also shows the old code was wrong — the user said so, a bug was being fixed, a test failed, or a review flagged it. Code written earlier in the same session is not a Correction, however soon it was fixed; neither is a change that follows a changed requirement. Who wrote the old code, a person or an agent, does not matter. A **Retrospective** turns a Correction into a Coding standards rule only when the fix points to a pattern future code could repeat.
+A change a session made to code, or to a **Run recipe**, that existed before that session started, where the session also shows the old code was wrong — the user said so, a bug was being fixed, a test failed, or a review flagged it. Code written earlier in the same session is not a Correction, however soon it was fixed; neither is a change that follows a changed requirement. Who wrote the old code, a person or an agent, does not matter. A **Retrospective** turns a Correction into a Coding standards rule only when the fix points to a pattern future code could repeat.
 _Avoid_: fix, bugfix, regression
 
 ### Execution
@@ -186,19 +186,16 @@ The sub-agent (`skills:planner`) that reads a Spec, walks the code only until ev
 _Avoid_: Plan, Plan agent, host Plan
 
 **Step agent**:
-The sub-agent that implements exactly one Step, in the run worktree, after the Step before it is done. Reads the Outcomes of the earlier Steps its Step depends on, closes any gap in the Spec or Step from the code and existing patterns, leaves the tests of its Footprint's projects passing, commits, and returns a fixed three-line report. The **Checker** finishes the Step from there.
+The sub-agent (`skills:implementer`) that implements exactly one Step, in the run's working tree, after the Step before it is done — under all three implement commands. Reads the Outcomes of the earlier Steps its Step depends on, closes any gap in the Spec or Step from the code and existing patterns, leaves the tests of its Footprint's projects passing, records its **Safety fact** and **Proof** in its Outcome, commits, and returns a fixed three-line report. The **Checker** finishes the Step from there.
+_Avoid_: Oneshot agent, implementer
 
 **Checker**:
-The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It runs any verification the repo's conventions demand for the surface touched, reviews the Step's commit on both axes, fixes every finding, returns the Step to **Green**, and folds its fixes into that commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
+The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It re-runs the Step's **Proof**, raising it to the rung **Green** requires when it falls short, reviews the Step's commit on both axes, fixes every finding, returns the Step to **Green**, and folds its fixes into that commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
 _Avoid_: verifier, step reviewer, finisher
 
 **Validator**:
 The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just written. It works from that Spec's path, corrects facts in the file, and returns the report of corrections and open questions.
 _Avoid_: spec checker, spec reviewer, linter
-
-**Oneshot agent**:
-The Spec-bound sub-agent that implements a whole Spec in one session — no Planner, no Step files. Dispatched by `/implement-oneshot` and `/implement-yolo`.
-_Avoid_: direct implementer, oneshot implementer, single-session agent, implement-direct
 
 **Fixer**:
 A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too.
@@ -208,14 +205,14 @@ The section of a Step file naming where that Step's work lands — the files it 
 _Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
 
 **Green**:
-Zero failures in the projects a Step's Footprint names, or in the projects an Oneshot agent found in the codebase, plus any verification the repo's conventions demand for the surface touched, measured against `master`: a failure that also fails on `master` at the merge-base is a Deviation to report, not the run's to fix, and does not block landing.
+Zero failures in the projects a Step's Footprint names, or in the whole suite for the last Step or a Step with no Footprint, plus a **Proof** of its **Safety fact** that the Checker re-ran — at rung 3 of the **Proof ladder**, or rung 4 when the change alters a running surface; a change to no code that runs needs none — measured against `master`: a failure that also fails on `master` at the merge-base is a Deviation to report, not the run's to fix, and does not block landing.
 _Avoid_: passing, all tests pass, mostly green
 
 **Outcome**:
 The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong; the Checker adds to it when a fix changes something a later Step needs. The channel by which a Step informs the later Steps that depend on it, bypassing the Driving session's context entirely.
 
 **Deviation**:
-Anything a Step agent, Checker, or Oneshot agent did that contradicts the Spec or changes what a later Step must do, any failure it left red because `master` already fails it, and any post-rebase failure that passed on the Driving session's re-run. The one piece of a run's detail the Driving session does carry forward.
+Anything a Step agent or Checker did that contradicts the Spec or changes what a later Step must do, any failure it left red because `master` already fails it, and any post-rebase failure that passed on the Driving session's re-run. The one piece of a run's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
 A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
@@ -226,3 +223,19 @@ A vertical slice that cuts a narrow but complete path through every layer (schem
 
 **Wide refactor**:
 One mechanical change whose blast radius fans across the codebase, so a single edit breaks call sites everywhere and no tracer bullet can land green. Sequenced as expand–contract instead of sliced vertically.
+
+**Safety fact**:
+The one fact a change is safe because of, stated so that it names what breaks if the fact is false. "It compiles" names nothing that breaks, so it is not a Safety fact. Recorded in an Outcome together with its rung on the **Proof ladder** and its **Proof**.
+_Avoid_: safety claim, invariant, assumption
+
+**Proof**:
+The evidence for a **Safety fact** that a fresh agent re-ran and saw for itself: the command run, its exit code and an excerpt of its output, or a screenshot or transcript saved for the run. Output an agent quotes without that fresh re-run is not Proof.
+_Avoid_: evidence, verification, test result
+
+**Proof ladder**:
+The scale that ranks how strongly a **Proof** shows its **Safety fact** holds, in four rungs: (1) stated, or read in the code, which is not Proof at all; (2) the existing tests pass; (3) a test or throwaway script calls the real code on the risky path and would fail if the fact were false; (4) reproduced in the running app through the **Run recipe**.
+_Avoid_: evidence rung, confidence level, verification level
+
+**Run recipe**:
+The record, kept in the consuming repo, of how to launch its app, tell that it is ready, drive it, keep evidence from it, and clean up afterwards — runnable from a plain shell command on any host. It lives at `.agents/refs/run-recipe.md`; in a repo with a `CONTEXT-MAP.md`, each context with a running surface keeps its own under that context's folder. Written by the first agent that has to drive the app, and edited only when it steers an agent wrong.
+_Avoid_: verify recipe, run skill, smoke script, test plan

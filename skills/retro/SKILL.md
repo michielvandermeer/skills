@@ -22,7 +22,7 @@ The session's code changes are the commits the session log records for the curre
 
 ## Corrections
 
-A **Correction** is a change to old code where the session also shows the old code was wrong: the user said so, a bug was being fixed, a test failed, or a review flagged it. Who wrote the old code, a person or an agent, does not matter.
+A **Correction** is a change to old code where the session also shows the old code was wrong: the user said so, a bug was being fixed, a test failed, or a review flagged it. An edit to an existing **Run recipe** is a Correction too: an agent edits one only when it steered the agent wrong. Who wrote the old code, a person or an agent, does not matter.
 
 Old code is a line the session's diff removed or changed that was committed before the session's first commit, or was already in `HEAD` when the session made no commits. `git blame` on the pre-change version names that commit. A change that follows a changed requirement is new work.
 
@@ -30,6 +30,7 @@ Code the session itself wrote stays with the session's own review loop, however 
 
 A *lesson* is a Correction whose fix points to a pattern future code could repeat. Route each Correction to the first outcome that fits:
 
+- a Run recipe edit → a command in that recipe's `## Check` section when a command could have caught what steered the agent wrong, else record nothing — the edit already holds the lesson;
 - a mistake a check could catch → **Automated checks**;
 - the old code broke a rule the Coding standards already hold → the reviewer-missed-a-mistake bar;
 - a one-off fact, such as a wrong constant → record nothing;
@@ -44,7 +45,7 @@ Write the rule into the repo's existing Coding standards: the file in `.agents/r
 Check every item. *Use when* is the evidence bar. Every suggestion is something this session demonstrated.
 
 - **Navigation** — would a **context pointer** have shortened the hunt? *Use when* the session took a long time to find a piece of information.
-- **Automated checks** — lint, types, tests, filesystem linters that would have caught a mistake this session made. *Use when* the agent made a mistake a check could have caught.
+- **Automated checks** — the strongest mechanism the repo can carry that would have caught a mistake this session made: a type that cannot hold the bad state, then a lint, test, or CI rule, then a shared helper, then a runtime check. *Use when* the agent made a mistake a check could have caught.
 - **Coding standards** — a new, removed, or clarified rule for the reviewer (`/code-review`, `.agents/refs/`, or the repo's standards file). *Use when* the reviewer missed a mistake, or a **Correction** is a *lesson*.
 - **AGENTS.md load** — steering in `AGENTS.md` / `CLAUDE.md` (repo or global) that belongs in coding standards or a check instead. *Use when* that file is carrying more than **context pointers**.
 - **Tool economy** — expensive calls that could be cheaper, or a custom tool that wastes tokens. *Use when* the session made an expensive call.

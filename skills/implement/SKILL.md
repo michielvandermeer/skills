@@ -45,6 +45,8 @@ The plan succeeded when that reply is the index and `.agents/steps/<slug>/` hold
 
 ### 3. Run each step in `NN` order
 
+`<proof>` is the run's Proof folder: `$(git rev-parse --path-format=absolute --git-common-dir)/proof/<slug>`.
+
 Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and section names — it reads what is behind them:
 
 - the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
@@ -52,12 +54,13 @@ Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and 
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
 - the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
 - the spec's Testing Decisions section, which governs what it tests
+- the Proof rules, [PROOF.md](PROOF.md) in this skill's directory by absolute path, and `<proof>`
 - the deviations reported by earlier steps, verbatim, when there are any
 - its Step number and the total, and the report format below
 
 Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so the steps that depend on it inherit the correction.
 
-Require of it: **its tests passing before it finishes**, then its `## Outcome` appended to its Step file, that file's `Status:` set to `built`, and its code and Step file committed together in one commit.
+Require of it: **its tests passing before it finishes**, then its `## Outcome` — Safety fact and Proof included — appended to its Step file, that file's `Status:` set to `built`, and its code and Step file committed together in one commit.
 
 - Its tests are those of every project on its footprint's `Projects:` line, and the whole suite on the last Step.
 - They are measured against `master` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
@@ -79,11 +82,11 @@ Once that check passes, resolve the parent of the Step's commit with `git rev-pa
 
 - the spec, and the step file
 - that SHA, as the fixed point of its review
-- `CONTEXT.md` and any ADR covering the area, the Coding standards, and the spec's Testing Decisions section, found as above
+- `CONTEXT.md` and any ADR covering the area, the Coding standards, the spec's Testing Decisions section, PROOF.md, and `<proof>`, found as above
 - the deviations reported by earlier steps and by this step's agent, verbatim, when there are any
 - its Step number and the total, and the same three-line report format
 
-The browser pass or smoke run is the Checker's, with the rest of its work as `agents/checker.md` lays it out. A step is **Green** only once both agents have passed.
+Re-running the Proof, and driving the app through the Run recipe when the Step needs rung 4, are the Checker's, with the rest of its work as `agents/checker.md` lays it out. A step is **Green** only once both agents have passed ([ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)).
 
 Then **check the Checker structurally** — `grep '^Status:'` on the Step file reads `done`. Step 4's review covers the rest.
 
@@ -115,7 +118,7 @@ Run `/document-changes` in **implement mode** while the Spec and step Outcomes a
 
 ### 6. Land the branch
 
-Delete the Spec, the whole `.agents/steps/<slug>/` directory, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
+Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, then delete the Spec, the whole `.agents/steps/<slug>/` directory, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
 
 Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
@@ -124,6 +127,8 @@ Each remaining command runs where its branch is checked out, and that constraint
    - When the rebase replayed the branch onto commits master gained during the run, green is not known any more: build and run the projects on every Step's `Projects:` line — the whole suite when the last Step ran it — before going on. Before any fixer dispatch, re-run each failing project once, yourself. A failure that passes on the re-run is a flaky test and does not block landing: its test name goes on the deviations line and into the final report, the same way a failure `master` already has does under [ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md). A failure that fails again is red and gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)).
 2. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 3. From the original directory, on `master`: `git merge --ff-only <branch>`. (master lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and `git branch -d <branch>` has run. When the merge errors, master moved: re-enter the worktree, rebase again under step 1, return under step 2, and retry this merge.
+
+The final report lists each Step's `Safety fact:` line and names `<proof>`, where the Proofs' excerpts and screenshots stay. When the rebase replayed the branch onto new commits, it says the Proofs predate the rebase; they are not re-run.
 
 ### 7. Retrospective
 
