@@ -204,15 +204,19 @@ A `general-purpose` sub-agent the Driving session sends, at its own model and ef
 The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite that Step runs.
 _Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
 
+**Base branch**:
+The branch the session was on when an implement command started, read again on a resume. The run branches from it, is reviewed and measured Green against it, and lands back on it. It is the repository's default branch only when the session started there.
+_Avoid_: master, main, default branch, trunk
+
 **Green**:
-Zero failures in the projects a Step's Footprint names, or in the whole suite for the last Step or a Step with no Footprint, plus a **Proof** of its **Safety fact** that the Checker re-ran — at rung 3 of the **Proof ladder**, or rung 4 when the change alters a running surface; a change to no code that runs needs none — measured against `master`: a failure that also fails on `master` at the merge-base is a Deviation to report, not the run's to fix, and does not block landing.
+Zero failures in the projects a Step's Footprint names, or in the whole suite for the last Step or a Step with no Footprint, plus a **Proof** of its **Safety fact** that the Checker re-ran — at rung 3 of the **Proof ladder**, or rung 4 when the change alters a running surface; a change to no code that runs needs none — measured against the **Base branch**: a failure that also fails on the Base branch at the merge-base is a Deviation to report, not the run's to fix, and does not block landing.
 _Avoid_: passing, all tests pass, mostly green
 
 **Outcome**:
 The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong; the Checker adds to it when a fix changes something a later Step needs. The channel by which a Step informs the later Steps that depend on it, bypassing the Driving session's context entirely.
 
 **Deviation**:
-Anything a Step agent or Checker did that contradicts the Spec or changes what a later Step must do, any failure it left red because `master` already fails it, and any post-rebase failure that passed on the Driving session's re-run. The one piece of a run's detail the Driving session does carry forward.
+Anything a Step agent or Checker did that contradicts the Spec or changes what a later Step must do, any failure it left red because the Base branch already fails it, and any post-rebase failure that passed on the Driving session's re-run. The one piece of a run's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
 A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.

@@ -56,7 +56,7 @@ Check every item. *Use when* is the evidence bar. Every suggestion is something 
 
 Rank by how often the pain will recur and how much it costs. An every-turn context-load problem outranks a one-off expensive call.
 
-**High-priority** is pain that will recur every turn or every session. It includes a judgement-call coding standard, a new check this session demonstrated, and a *lesson*'s rule (see **Corrections**). Apply those without asking to **Owned files**. Each edit is the smallest change that encodes what this session demonstrated. A new check that would fail on current master still applies.
+**High-priority** is pain that will recur every turn or every session. It includes a judgement-call coding standard, a new check this session demonstrated, and a *lesson*'s rule (see **Corrections**). Apply those without asking to **Owned files**. Each edit is the smallest change that encodes what this session demonstrated. A new check that would fail on the current branch still applies.
 
 Owned-file high-priority edits: one commit, no Changelog entry.
 

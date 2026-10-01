@@ -154,7 +154,7 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
 | `implement-oneshot` | Implement a spec as a single step, skipping the Planner. Still checks, reviews, and improves data structures after. |
-| `implement-yolo` | Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge onto master. |
+| `implement-yolo` | Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then write the Ideas and Specs you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |

@@ -21,7 +21,7 @@ Derive `<slug>`: the spec's filename without its extension when the argument nam
 
 A Spec carrying `Blocked by: <spec-slug>` waits on that Spec: while `.agents/specs/<spec-slug>.md` exists in this checkout, stop before anything else and say that Spec lands first ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
-`master` here and below means the repository's default branch — `main` where that is what the repo uses. The main checkout's working tree is the user's and stays as you found it until step 6.
+`<base>` is the **base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is reviewed and measured green against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). If it is empty, **halt** — HEAD is detached. The main checkout's working tree is the user's and stays as you found it until step 6.
 
 Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). A prior run is **in flight** when that run worktree exists, or when any linked worktree contains `.agents/steps/<slug>/`.
 
@@ -29,7 +29,7 @@ Find worktrees with `git worktree list` (or the host's equivalent). The **run wo
   - Put the session's working directory on the run worktree's path.
   - `git reset --hard && git clean -fd` drops whatever a halted Step left behind. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
   - When `.agents/steps/<slug>/` holds Step files, the Steps are already planned: skip step 2 and resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. A missing or empty steps directory is a fresh plan — continue at step 2.
-- **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git rebase master` so the run sits on the master you actually have:
+- **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git reset --hard <base>` so the run starts from the `<base>` you actually have — the new branch has no commits of its own yet:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
   - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
 
@@ -55,6 +55,7 @@ Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and 
 - the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
 - the spec's Testing Decisions section, which governs what it tests
 - the Proof rules, [PROOF.md](PROOF.md) in this skill's directory by absolute path, and `<proof>`
+- `<base>`, the branch its tests are measured against
 - the deviations reported by earlier steps, verbatim, when there are any
 - its Step number and the total, and the report format below
 
@@ -63,7 +64,7 @@ Tell it how far to trust its map: its footprint is a guess — where the code di
 Require of it: **its tests passing before it finishes**, then its `## Outcome` — Safety fact and Proof included — appended to its Step file, that file's `Status:` set to `built`, and its code and Step file committed together in one commit.
 
 - Its tests are those of every project on its footprint's `Projects:` line, and the whole suite on the last Step.
-- They are measured against `master` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md)): a failure that also fails on `master` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
+- They are measured against `<base>` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md)): a failure that also fails on `<base>` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
 - `CHANGELOG.md` stays untouched whatever the repo's docs rules say; step 5 writes it.
 
 Its entire response is three lines:
@@ -82,7 +83,7 @@ Once that check passes, resolve the parent of the Step's commit with `git rev-pa
 
 - the spec, and the step file
 - that SHA, as the fixed point of its review
-- `CONTEXT.md` and any ADR covering the area, the Coding standards, the spec's Testing Decisions section, PROOF.md, and `<proof>`, found as above
+- `CONTEXT.md` and any ADR covering the area, the Coding standards, the spec's Testing Decisions section, PROOF.md, `<proof>`, and `<base>`, found as above
 - the deviations reported by earlier steps and by this step's agent, verbatim, when there are any
 - its Step number and the total, and the same three-line report format
 
@@ -98,7 +99,7 @@ Done when every file in `.agents/steps/<slug>/` reads `Status: done`.
 
 ### 4. Review and improve
 
-**Run `/code-review` yourself**, with `master` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that the Changelog is written in step 5 and that `.agents/steps/<slug>/` is run bookkeeping — its Outcomes are evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
+**Run `/code-review` yourself**, with `<base>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that the Changelog is written in step 5 and that `.agents/steps/<slug>/` is run bookkeeping — its Outcomes are evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
 
@@ -122,11 +123,11 @@ Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, t
 
 Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
-1. From the worktree, still on the branch: `git rebase master`. A conflict is `/resolving-merge-conflicts` (the branch lives here, so only the worktree can rebase it).
+1. From the worktree, still on the branch: `git rebase <base>`. A conflict is `/resolving-merge-conflicts` (the branch lives here, so only the worktree can rebase it).
    - A `CHANGELOG.md` conflict is always keep both, this run's entry above.
-   - When the rebase replayed the branch onto commits master gained during the run, green is not known any more: build and run the projects on every Step's `Projects:` line — the whole suite when the last Step ran it — before going on. Before any fixer dispatch, re-run each failing project once, yourself. A failure that passes on the re-run is a flaky test and does not block landing: its test name goes on the deviations line and into the final report, the same way a failure `master` already has does under [ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md). A failure that fails again is red and gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)).
+   - When the rebase replayed the branch onto commits `<base>` gained during the run, green is not known any more: build and run the projects on every Step's `Projects:` line — the whole suite when the last Step ran it — before going on. Before any fixer dispatch, re-run each failing project once, yourself. A failure that passes on the re-run is a flaky test and does not block landing: its test name goes on the deviations line and into the final report, the same way a failure `<base>` already has does under [ADR-0029](../../docs/adr/0029-green-is-measured-against-master.md). A failure that fails again is red and gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)).
 2. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-3. From the original directory, on `master`: `git merge --ff-only <branch>`. (master lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and `git branch -d <branch>` has run. When the merge errors, master moved: re-enter the worktree, rebase again under step 1, return under step 2, and retry this merge.
+3. From the original directory, on `<base>`: `git merge --ff-only <branch>`. (`<base>` lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and `git branch -d <branch>` has run. When the merge errors, `<base>` moved: re-enter the worktree, rebase again under step 1, return under step 2, and retry this merge.
 
 The final report lists each Step's `Safety fact:` line and names `<proof>`, where the Proofs' excerpts and screenshots stay. When the rebase replayed the branch onto new commits, it says the Proofs predate the rebase; they are not re-run.
 
@@ -136,7 +137,7 @@ Run `/retro`.
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out master yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, master moved: rebase again on the branch under step 1, check out master yourself, and retry the merge.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out `<base>` yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, `<base>` moved: rebase again on the branch under step 1, check out `<base>` yourself, and retry the merge.
 
 ## Work in another repository
 

@@ -41,7 +41,7 @@ Skip any candidate whose full heading line already exists — exact match on `##
 
 ### Implement mode
 
-`/implement`, `/implement-oneshot`, and `/implement-yolo` call this after review/improve, while the Spec is still on disk, before delete (and land, when the caller lands). Branch diff vs the fixed point the caller names is available — usually `master`; `/implement-yolo` names the HEAD at the start of the run.
+`/implement`, `/implement-oneshot`, and `/implement-yolo` call this after review/improve, while the Spec is still on disk, before delete (and land, when the caller lands). Branch diff vs the fixed point the caller names is available — usually the run's base branch; `/implement-yolo` names the HEAD at the start of the run.
 
 1. Resolve affected contexts from branch-diff paths (and Spec/Footprints for library-only work).
 2. For each affected context, draft **one** entry for the whole run from that context's product point of view. Prefer Spec problem/solution and Outcomes when they exist; use the diff only to confirm what landed.

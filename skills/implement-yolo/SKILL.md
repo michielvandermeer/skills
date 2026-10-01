@@ -1,6 +1,6 @@
 ---
 name: implement-yolo
-description: "Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge onto master."
+description: "Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge."
 argument-hint: "Which spec, issue, or idea to implement?"
 disable-model-invocation: true
 ---
@@ -21,13 +21,11 @@ Derive `<slug>`: the spec's filename without its extension when the argument nam
 
 A Spec carrying `Blocked by: <spec-slug>` waits on that Spec: while `.agents/specs/<spec-slug>.md` exists in this checkout, stop before anything else and say that Spec lands first ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
-`master` here and below means the repository's default branch — `main` where that is what the repo uses.
-
 If `git branch --show-current` is empty, **halt** — HEAD is detached.
 
 The session directory is this checkout, on that branch. Work at the git root (`git rev-parse --show-toplevel`). On a host whose shell starts every command in the original directory, resolve that root once, then begin every command with `cd <that path> &&` (or `git -C <that path>`), scope every search to it, and carry it into every sub-agent prompt as the only directory the agent works in. A host tool that creates a worktree is not this step.
 
-Record `<start>`: `git rev-parse HEAD`. Commits this run adds are `git log <start>..HEAD`. `/code-review` uses `<start>` as the fixed point. Green is measured against `master` at the merge-base; when the current branch *is* `master`, that merge-base is `<start>`.
+Record `<start>`: `git rev-parse HEAD`. Commits this run adds are `git log <start>..HEAD`. `/code-review` uses `<start>` as the fixed point. Green is measured against `<start>`: this branch is the run's base branch, so its merge-base is `<start>` ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)).
 
 Find linked worktrees with `git worktree list` (or the host's equivalent):
 
@@ -56,7 +54,7 @@ All of <the spec path, or the argument text when that is all there is>. This Ste
 
 Follow `/implement`'s [step 3](../implement/SKILL.md#3-run-each-step-in-nn-order) for the Step files in `.agents/steps/<slug>/` — the one you wrote, or a Planner's that step 1 resumed — with its [PROOF.md](../implement/PROOF.md): the Step agent, its structural check, the Checker, its structural check, and the retry-then-halt rule. Read only that step of that file. When there is no Spec, the argument text stands in for it and there is no Testing Decisions section. Three things differ here:
 
-- Green is measured against `master` at the merge-base, and when the current branch is `master`, that merge-base is `<start>`. Tell both agents so.
+- Green is measured against `<start>`. Tell both agents so.
 - Tell both agents that `git status` is clean before they report, and that files already uncommitted may be in their commits.
 - A retry never resets or cleans the tree: re-dispatch over the tree as it is.
 
