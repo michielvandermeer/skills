@@ -119,7 +119,7 @@ Run `/document-changes` in **implement mode** while the Spec and step Outcomes a
 
 ### 6. Land the branch
 
-Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, then delete the Spec, the whole `.agents/steps/<slug>/` directory, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
+Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, then delete the Spec, the whole `.agents/steps/<slug>/` directory, `<proof>`, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
 
 Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
@@ -129,7 +129,7 @@ Each remaining command runs where its branch is checked out, and that constraint
 2. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 3. From the original directory, on `<base>`: `git merge --ff-only <branch>`. (`<base>` lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and `git branch -d <branch>` has run. When the merge errors, `<base>` moved: re-enter the worktree, rebase again under step 1, return under step 2, and retry this merge.
 
-The final report lists each Step's `Safety fact:` line and names `<proof>`, where the Proofs' excerpts and screenshots stay. When the rebase replayed the branch onto new commits, it says the Proofs predate the rebase; they are not re-run.
+The final report lists each Step's `Safety fact:` line. When the rebase replayed the branch onto new commits, it says the Proofs predate the rebase; they are not re-run.
 
 ### 7. Retrospective
 
@@ -145,6 +145,6 @@ The worktree, the review diff, and the land cover this repository only. Work a S
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, and the run worktree exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why, and what a re-invoke will do; for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
+A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, `<proof>`, the branch, and the run worktree exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why, and what a re-invoke will do; for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
 
 Re-invoking `/implement` with the same argument picks the run back up — a missing or empty steps directory runs the Planner again; Step files already on disk resume where step 1 says.

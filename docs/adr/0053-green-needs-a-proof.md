@@ -4,7 +4,7 @@ A Step counted as **Green** once its tests passed, plus whatever verification th
 
 The **Proof ladder** has four rungs: stated or read in the code, which is not Proof; the existing tests pass; a test or throwaway script calls the real code on the risky path; reproduced in the running app. Every Step that changes code that runs needs rung 3. A Step that changes a web page, a command-line tool or an HTTP service needs rung 4. A library tops out at rung 3. When the app cannot start locally without a live system, rung 3 stands and the run reports a Deviation. A docs-only Step needs no Safety fact.
 
-Rung 4 runs through a **Run recipe**, kept in the consuming repo at `.agents/refs/run-recipe.md`. A repo with a `CONTEXT-MAP.md` keeps one recipe per context with a running surface. The first agent that has to drive the app writes the recipe. Later agents follow it, and edit it only where it steered them wrong. Every section is a plain shell command, so the recipe works on every host. Proof files live in `<git common dir>/proof/<slug>/`, outside every working tree, so no commit can sweep them in. The rules are in `skills/implement/PROOF.md`.
+Rung 4 runs through a **Run recipe**, kept in the consuming repo at `.agents/refs/run-recipe.md`. A repo with a `CONTEXT-MAP.md` keeps one recipe per context with a running surface. The first agent that has to drive the app writes the recipe. Later agents follow it, and edit it only where it steered them wrong. Every section is a plain shell command, so the recipe works on every host. Proof files live in `<git common dir>/proof/<slug>/`, outside every working tree, so no commit can sweep them in. They are agent artifacts that no person reads, so the run deletes the folder when it finishes and keeps it only through a halt, for the resume. The rules are in `skills/implement/PROOF.md`.
 
 ## Considered Options
 
@@ -15,10 +15,12 @@ Rung 4 runs through a **Run recipe**, kept in the consuming repo at `.agents/ref
 - **The recipe as a host project skill under `.claude/skills/`, or whatever a host's own run or verify command writes.** Rejected: the rule has to work on every host the plugin supports, and those files are tied to one host and have no fixed format.
 - **Proofs written before the code and kept as a regression suite.** Rejected: it adds a second test suite to maintain beside the repo's real one, and that suite risks becoming slow and flaky.
 - **A Safety-fact check in `/code-review`.** Rejected: its reviewers see only the diff, and the Checker already refuses a fact that names nothing that could break.
+- **Keeping the Proof folder after the run so the user can look through it.** Rejected: nobody reads Proofs once the Checker has re-run them, and kept folders pile up in `.git`.
+- **Proof files in a system temp directory, or in an ignored folder inside the run worktree.** Rejected: a run resumed from a new session cannot find a temp directory, and a run with the worktree waived would need its own cleanup rule for an in-tree folder.
 - **Re-running every Proof after the rebase at land.** Rejected: a run with many web Steps would drive the app again for each one, and the tests still run after the rebase. The final report says the Proofs predate the rebase instead.
 
 ## Consequences
 
-- The final report lists each Step's Safety fact and its rung, and names the Proof folder. The folder is kept after the run.
+- The final report lists each Step's Safety fact and its rung. The Proof folder is deleted with the Step files; a halted run keeps it.
 - A Proof that fails on the Checker's re-run gets one more try. If it passes, the flake is a Deviation. A flake the recipe caused is fixed in the recipe.
 - `/retro` counts an edit to an existing Run recipe as a Correction. When a command could have caught the problem, `/retro` adds that command to the recipe's Check section.

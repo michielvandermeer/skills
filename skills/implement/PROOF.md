@@ -22,7 +22,7 @@ A Step needs rung 3, and rung 4 when it changes what a person or client sees thr
 - Web page: a saved screenshot and the steps driven.
 - Library: the throwaway script's output.
 
-Every script, screenshot, and transcript goes in the Proof folder the prompt names, `<git common dir>/proof/<slug>/` — outside every working tree, so no commit sweeps it in. The folder is kept after the run.
+Every script, screenshot, and transcript goes in the Proof folder the prompt names, `<git common dir>/proof/<slug>/` — outside every working tree, so no commit sweeps it in. The folder is run scratch: the run's final cleanup deletes it, and a halt leaves it for the resume.
 
 ## The Outcome entry
 

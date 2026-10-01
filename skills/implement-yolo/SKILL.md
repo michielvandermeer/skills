@@ -82,9 +82,9 @@ Run `/document-changes` in **implement mode** while the Spec and the Step's Outc
 
 ### 6. Clean up
 
-Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, then delete the Spec, the whole `.agents/steps/<slug>/` directory, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted. This step is done when `git status` is clean.
+Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, then delete the Spec, the whole `.agents/steps/<slug>/` directory, the Proof folder, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted. This step is done when `git status` is clean.
 
-The final report carries the `Safety fact:` line and names the Proof folder, where the Proof's excerpts and screenshots stay.
+The final report carries the `Safety fact:` line.
 
 ### 7. Retrospective
 
@@ -96,6 +96,6 @@ The review diff and the cleanup cover this repository only. Work a Spec puts in 
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the Spec, the Step file, and this checkout exactly as they are — committed work is the resume. Report why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
+A halt is non-destructive and it is the end of the session. Leave the Spec, the Step file, the Proof folder, and this checkout exactly as they are — committed work is the resume. Report why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
 
 Re-invoking `/implement-yolo` with the same argument picks the run back up.
