@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-02: Documents sorted by app
+In a repo with a `CONTEXT-MAP.md`, the skills now keep Specs, Ideas, Issues, Prototypes and reports in a folder per app, such as `.agents/specs/billing/`. Work that spans apps, or touches no app, goes in `common/`. `/doctor` moves existing documents into these folders instead of pulling them back to one shared folder, and repos without a map are unchanged.
+
 ## 2026-10-01: Proof files are deleted after a run
 `/implement`, `/implement-oneshot`, and `/implement-yolo` now delete the folder of proof files when a run finishes. Before, every run left its scripts and screenshots in your repo's `.git` folder, where they piled up. If a run stops partway, the folder stays so the run can carry on later. The final report still lists what each step proved.
 
