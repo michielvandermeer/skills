@@ -42,7 +42,7 @@ Each agent returns one **card**:
 
 - **Pitch** — the Direction in one or two sentences.
 - **How it works**
-- **What it costs**
+- **What it costs** — what changes: data, migrations, decision records superseded, tools renamed, risk of breakage. Never a time estimate in days or weeks.
 - **Best at**
 - **Biggest risk**
 - **Sources** — links, when the agent used any.
