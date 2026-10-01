@@ -48,6 +48,8 @@ Trust an explicit override in the seed (`spec this`, or the old "move … to rea
 
 Issues live at `.agents/issues/<feature-slug>/<NN>-<slug>.md`, numbered from `01` among `NN-*.md` in that directory (`map.md` is not numbered). Same feature → that directory, next number. Different feature → new directory. An existing Issue being split keeps its path; extras are new files whose body is only the extracted problem.
 
+In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+
 **Spec** — buildable and the solution is clear. Run `/to-spec` scoped to this problem alone. Delete the issue file if one exists for this problem. Agent-ready work is a Spec with `Status: ready-for-agent`.
 
 **needs-info** — not enough information. Park. Write or update the Issue. Append:

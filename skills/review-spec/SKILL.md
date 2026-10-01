@@ -15,6 +15,8 @@ Run `/plain-language` before every message the user reads.
 
 A path or slug in the argument; otherwise the Spec already under discussion; otherwise the newest file under `.agents/specs/`. Stop if that is not a Spec file on disk. One Spec per run.
 
+In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+
 **Done** when a Spec file path is in hand, or the run has stopped.
 
 ## 2. Read

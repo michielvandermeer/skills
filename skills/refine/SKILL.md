@@ -17,6 +17,8 @@ Pull the checkout, with submodules.
 
 The invocation is a Jira ticket key or URL, or an Idea at `.agents/ideas/<slug>.md`. Retrieve a ticket through whatever MCP tools this session has. Anything else — a typed sentence, another markdown file, an empty invocation — stop and ask for an Idea path or a Jira key. A ticket that cannot be read is the same stop.
 
+In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+
 Name the slug once: the Idea filename stem, or a kebab-case slug of the change, not the ticket key. `/prototype` and `/to-spec` use that slug. A second `/refine` on the same Idea or ticket replaces the Spec and replaces the summary.
 
 Done when you have the Idea file or the ticket body in hand and the slug is named.

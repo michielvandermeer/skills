@@ -32,6 +32,8 @@ Everything the human reads also runs at the bar the `/plain-language` skill sets
 
 The map is `.agents/issues/<effort>/map.md` — the canonical artifact. Its tickets are sibling files alongside it in `.agents/issues/<effort>/`.
 
+In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+
 The map is an **index**, not a store. It lists the decisions made and points at the tickets that hold their detail; a decision lives in exactly one place — its ticket — so the map never restates it, only gists it and links.
 
 ### The map body

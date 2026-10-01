@@ -14,7 +14,7 @@ Run this pass first, so a Spec or Idea moved out of an old location is also visi
 
 Find every Markdown and near-Markdown (`.html`) document in the project, skipping `.git/`, `node_modules/`, `vendor/`, build output, `.agents/steps/`, `.agents/worktrees/`, and anything already sitting in its canonical location. Work only on the checkout you're running in — never touch another worktree or branch.
 
-When a root `CONTEXT-MAP.md` exists, read [MULTI-CONTEXT.md](MULTI-CONTEXT.md) before moving anything: it decides which `docs/adr/` an ADR goes to.
+When a root `CONTEXT-MAP.md` exists, read [MULTI-CONTEXT.md](MULTI-CONTEXT.md) before moving anything: it decides which `docs/adr/` an ADR goes to, and which context subfolder every other document goes to.
 
 ### Canonical locations
 
@@ -29,11 +29,11 @@ When a root `CONTEXT-MAP.md` exists, read [MULTI-CONTEXT.md](MULTI-CONTEXT.md) b
 | Codebase audit | `.agents/codebase-audits/<timestamp>/report.md` |
 | Prototype | `.agents/prototypes/<slug>/` |
 
-`.agents/refinements/` is not a canonical location any more. An old refinement converts to an Idea — see below.
+In a multi-context repo, every location above except ADR and Coding standards gains a context subfolder after its kind folder, as [MULTI-CONTEXT.md](MULTI-CONTEXT.md) sets out. `.agents/refinements/` is not a canonical location any more. An old refinement converts to an Idea — see below.
 
 ### Mechanical moves
 
-Read [LEGACY-MOVES.md](LEGACY-MOVES.md) for the old layouts whose destination follows from the source path alone — a `.scratch/` tracker, flat session output that should be a folder, a flat refinement. Relocate the whole tree; don't read these file by file.
+Read [LEGACY-MOVES.md](LEGACY-MOVES.md) for the old layouts whose destination follows from the source path alone — a `.scratch/` tracker, flat session output that should be a folder, a flat refinement, an app-first layout. Relocate the whole tree; don't read these file by file.
 
 ### Classify everything else by content shape
 
@@ -66,7 +66,7 @@ Apply this to every folder under `.agents/refinements/`, and to a flat or loose 
 
 ### Issues, tickets, and Maps
 
-An Issue, Decision ticket, or Map moves together with its whole parent folder to `.agents/issues/<effort>/`, where `<effort>` is that folder's name — an effort's tickets stay together with its Map. One found with no folder of its own around it, such as a loose file at the repo root, is left in place and listed in the report: `/doctor` never invents an effort folder to hold it.
+An Issue, Decision ticket, or Map moves together with its whole parent folder to `.agents/issues/<effort>/`, where `<effort>` is that folder's name — an effort's tickets stay together with its Map. One found with no folder of its own around it, such as a loose file at the repo root, is left in place and listed in the report: `/doctor` never invents an effort folder to hold it, except where [LEGACY-MOVES.md](LEGACY-MOVES.md) names one.
 
 ### ADR numbers
 

@@ -59,6 +59,8 @@ Done when every shortlisted candidate has a description, or an explicit statemen
 
 Determine a timestamp, and write two files into `.agents/architecture-reviews/<timestamp>/`: `report.md`, written so a `/grill-with-docs` session can pick it up, and a self-contained `report.html` beside it. Both carry the same candidates with the same parts — neither summarises the other. Open the HTML for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
 
+In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+
 Run the `/plain-language` skill before writing either file. That skill is the bar for every human-facing sentence in both files: Title, What this does, What triggers it, Problem, Solution, Wins, Top recommendation, ADR callouts, and diagram labels that carry a claim. Files stay paths. The sole exception: `/codebase-design` terms may appear bare — module, interface, implementation, depth, deep, shallow, seam, adapter, leverage, locality — when they are the natural claim. Leave a clear plain sentence in plain words; denser glossary form is not a consistency goal. Spell each code mechanism in words a cold reader already holds ("read the set, change it, write it back"), not a report-only nickname, acronym, or private type/method name.
 
 A review is read with a team who work on different parts of the system, so a card lands with people who have never opened the code it describes. Use as many sentences as the claim needs; one is fine when one is enough.

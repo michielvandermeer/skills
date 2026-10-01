@@ -13,6 +13,8 @@ Validate a plan, spec, idea doc, or conversation against the checklist below. A 
 
 A path or slug the user names; otherwise the plan/idea already under discussion; otherwise the most recently touched file under `.agents/specs/` or `.agents/ideas/`. Ask if none of these resolve.
 
+In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+
 Note the doc's type — an **idea** (`.agents/ideas/`) or a **plan/spec** (`.agents/specs/`) — the Shape check below differs by type. If the target exists only in the conversation so far (not yet published), validate it there and restate the corrected version in chat instead of writing a file.
 
 ### 2. Read the whole target once

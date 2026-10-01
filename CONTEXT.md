@@ -7,7 +7,7 @@ A collection of software-engineering skills for Claude Code, distributed as a pl
 ### Work documents
 
 **Idea**:
-A thought captured at `.agents/ideas/<slug>.md`. A `/brainstorm` run may overwrite it with a sharper kept Direction, or, when the user stops without keeping one, add every Direction shown to its Open questions. Loose until a `/refine` session overwrites it with a plain-language summary of the Spec — the problem, the solution, and the user stories — and a `Spec:` line pointing at that file.
+A thought captured at `.agents/ideas/<slug>.md`, or `.agents/ideas/<context>/<slug>.md` in a multi-context repo. A `/brainstorm` run may overwrite it with a sharper kept Direction, or, when the user stops without keeping one, add every Direction shown to its Open questions. Loose until a `/refine` session overwrites it with a plain-language summary of the Spec — the problem, the solution, and the user stories — and a `Spec:` line pointing at that file.
 
 **Scope**:
 What a `/refine` session determines: what is part of this project and what is not.
@@ -18,15 +18,15 @@ A proposed change whose Solution is clear enough that `/implement` can start wit
 _Avoid_: ready, agent-ready, clear solution
 
 **Architecture review**:
-The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/`, holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system; after the report, the session says which candidates are Buildable, then picked candidates become Ideas, or Specs when Buildable.
+The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/` (`.agents/architecture-reviews/<context>/<timestamp>/` in a multi-context repo), holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system; after the report, the session says which candidates are Buildable, then picked candidates become Ideas, or Specs when Buildable.
 _Avoid_: codebase audit, audit, tech-debt report, architecture report
 
 **Codebase audit**:
-The output of a `/codebase-audit` run at `.agents/codebase-audits/<timestamp>/`, holding `report.md` — a coverage-complete, read-only inventory of every identifiable subsystem, each with organizing-model recommendations or an explicit skip.
+The output of a `/codebase-audit` run at `.agents/codebase-audits/<timestamp>/` (`.agents/codebase-audits/<context>/<timestamp>/` in a multi-context repo), holding `report.md` — a coverage-complete, read-only inventory of every identifiable subsystem, each with organizing-model recommendations or an explicit skip.
 _Avoid_: architecture review, tech-debt report, DSA audit
 
 **Prototype**:
-Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A **Spec** points at `.agents/prototypes/<slug>/`.
+Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A **Spec** points at `.agents/prototypes/<slug>/`, or `.agents/prototypes/<context>/<slug>/` in a multi-context repo.
 _Avoid_: spike, POC, demo, mockup
 
 **Wizard**:
@@ -38,7 +38,7 @@ One focused task in a Wizard, typically one screen.
 _Avoid_: Step, prompt
 
 **Spec**:
-The approved description of a feature at `.agents/specs/<slug>.md` — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`, and a `Blocked by: <spec-slug>` line when another Spec must land first — a Spec still in `.agents/specs/` has not landed. Work we will not do is not a Spec.
+The approved description of a feature at `.agents/specs/<slug>.md`, or `.agents/specs/<context>/<slug>.md` in a multi-context repo — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`, and a `Blocked by: <spec-slug>` line when another Spec must land first — a Spec still in `.agents/specs/` has not landed. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
 **ADR**:
@@ -62,7 +62,7 @@ One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md
 _Avoid_: ticket, task, chunk, phase
 
 **Decision ticket** (everyday: **ticket**):
-A file on a `/wayfinder` map at `.agents/issues/<effort>/<NN>-<slug>.md` whose resolution is a decision — not a slice of a build to execute. The unit of claim and resolution. Distinct from a Step, which delivers code and decides nothing.
+A file on a `/wayfinder` map at `.agents/issues/<effort>/<NN>-<slug>.md` (`.agents/issues/<context>/<effort>/<NN>-<slug>.md` in a multi-context repo) whose resolution is a decision — not a slice of a build to execute. The unit of claim and resolution. Distinct from a Step, which delivers code and decides nothing.
 _Avoid_: investigation ticket, implementation ticket
 
 **Claimed**:
@@ -80,10 +80,14 @@ A grilling **Decision ticket** that holds leftover unblocked one-question **Fork
 _Avoid_: leftovers ticket, bundle, grab-bag
 
 **Issue**:
-An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md`, one file per distinct problem, carrying `Category:` and `Status:` lines. A Buildable issue ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document.
+An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md` (`.agents/issues/<context>/<slug>/<NN>-<slug>.md` in a multi-context repo), one file per distinct problem, carrying `Category:` and `Status:` lines. A Buildable issue ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document.
 
 **Map**:
-The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` — Destination, Notes, Decisions so far, fog. Every Map ends in one or more Specs, so its Destination names the whole change those Specs will cover rather than which artifact the effort produces. How many Specs, and where one ends and the next begins, is decided only once no tickets remain — a ticket remains until it is resolved or ruled out of scope — and by a fresh `/wayfinder` session, not the one that resolved the last ticket: each Spec is a change that can land green and is worth shipping on its own, and one Spec may name another that must land first. The Map is deleted in the commit that writes its Specs.
+The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` (`.agents/issues/<context>/<effort>/map.md` in a multi-context repo) — Destination, Notes, Decisions so far, fog. Every Map ends in one or more Specs, so its Destination names the whole change those Specs will cover rather than which artifact the effort produces. How many Specs, and where one ends and the next begins, is decided only once no tickets remain — a ticket remains until it is resolved or ruled out of scope — and by a fresh `/wayfinder` session, not the one that resolved the last ticket: each Spec is a change that can land green and is worth shipping on its own, and one Spec may name another that must land first. The Map is deleted in the commit that writes its Specs.
+
+**Common**:
+The folder that stands where a context's name would in a work document's path, in a multi-context repo, when the work belongs to no single context: it spans two or more contexts, or it touches code no context owns. `.agents/specs/common/<slug>.md`.
+_Avoid_: shared, global, cross-app
 
 **Changelog**:
 The product-facing history of a context, at `CHANGELOG.md` beside that context's `CONTEXT.md` (one file per context in a multi-context repo). Newest **Changelog entry** at the top. Written for people who use the product, not for people who build it.

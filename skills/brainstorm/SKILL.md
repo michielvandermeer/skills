@@ -71,6 +71,8 @@ Done when the user has kept Directions or stopped.
 
 Each kept Direction becomes its own Idea at `.agents/ideas/<slug>.md`, the slug kebab-case from its title. Starting from an Idea, the kept Direction with the lowest card number overwrites that Idea's content under the same slug; every other kept Direction is a new Idea.
 
+In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+
 Fill the Idea sections `/validate-spec` checks, under an H1 title. Write prose about behaviour and reasons; file paths, names from the code, and code blocks stay on the explorer report, since `/validate-spec` flags them on an Idea. Under a section name that is not plain words, such as Decisions (locked), add one line saying what the section holds.
 
 - **Motivation** — the problem, why this Direction, links to the outside sources it relies on, and the title of each other Idea kept in this run.

@@ -25,3 +25,12 @@ Architecture reviews were flat before [ADR-0008](../../docs/adr/0008-session-out
 
 - `.agents/architecture-reviews/<timestamp>.md` → `.agents/architecture-reviews/<timestamp>/report.md`
 - `.agents/architecture-reviews/<timestamp>.html` → `.agents/architecture-reviews/<timestamp>/report.html`
+
+## An app-first layout
+
+A multi-context repo may have built its own layout before [ADR-0056](../../docs/adr/0056-a-multi-context-repo-files-work-documents-per-context.md) put the context subfolder after the kind folder: `.agents/<app>/specs/`, `.agents/<app>/ideas/`, `.agents/<app>/issues/`, `.agents/<app>/prototypes/`. Swap the two levels, mapping each `<app>` to the context subfolder in [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md) that names the same context:
+
+- `.agents/<app>/<kind>/<rest>` → `.agents/<kind>/<context>/<rest>`
+- `.agents/<app>/issues/<slug>.md`, an Issue with no folder of its own → `.agents/issues/<context>/<slug>/01-<slug>.md`
+
+An `<app>` folder that names no context in the map, such as a `shared/` folder, is not mechanical: classify each document in it by [MULTI-CONTEXT.md](MULTI-CONTEXT.md) into the context that owns its code, or `common`. Remove each emptied `<app>` folder once the moves land.

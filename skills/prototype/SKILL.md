@@ -9,6 +9,8 @@ A prototype is **throwaway code that answers a question**. The question decides 
 
 It is built in a worktree and played with. The lasting record is a folder the parent names — `.agents/prototypes/<slug>/` when a Spec will point at it ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). The worktree and its branch go.
 
+In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+
 ## Process
 
 ### 1. Pick a branch
