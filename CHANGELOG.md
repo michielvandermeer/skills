@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-01: Proof files are deleted after a run
+`/implement`, `/implement-oneshot`, and `/implement-yolo` now delete the folder of proof files when a run finishes. Before, every run left its scripts and screenshots in your repo's `.git` folder, where they piled up. If a run stops partway, the folder stays so the run can carry on later. The final report still lists what each step proved.
+
 ## 2026-10-01: Implement lands on your current branch
 `/implement` and `/implement-oneshot` now start from the branch you have checked out, compare test results against it, and merge the finished work back onto it. Before, they always used `master`, so a run you started on a feature branch ended up on `master`. If no branch is checked out, the run stops and says so. `/implement-yolo` already stayed on your branch and still does.
 
