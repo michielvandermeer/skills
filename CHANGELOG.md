@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-01: Implement lands on your current branch
+`/implement` and `/implement-oneshot` now start from the branch you have checked out, compare test results against it, and merge the finished work back onto it. Before, they always used `master`, so a run you started on a feature branch ended up on `master`. If no branch is checked out, the run stops and says so. `/implement-yolo` already stayed on your branch and still does.
+
 ## 2026-10-01: Each step proves it works
 `/implement`, `/implement-oneshot`, and `/implement-yolo` now finish a step only when a fresh agent has re-run evidence that the risky part of the change works. That evidence must go beyond passing tests, and for a web page, command-line tool, or HTTP service it comes from running your app, using a run recipe the first run saves in your repo. `/implement-oneshot` and `/implement-yolo` now check their work the same way `/implement` does, and the final report lists what each step proved and where the evidence is kept.
 
