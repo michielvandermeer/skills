@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-01: Each step proves it works
+`/implement`, `/implement-oneshot`, and `/implement-yolo` now finish a step only when a fresh agent has re-run evidence that the risky part of the change works. That evidence must go beyond passing tests, and for a web page, command-line tool, or HTTP service it comes from running your app, using a run recipe the first run saves in your repo. `/implement-oneshot` and `/implement-yolo` now check their work the same way `/implement` does, and the final report lists what each step proved and where the evidence is kept.
+
 ## 2026-09-26: Implement checks each step afresh
 `/implement` now sends a fresh agent to check each Step once it is built: it runs the browser pass, reviews the Step's commit, and fixes what it finds, so the agent that built the Step no longer does this at the end of a long session. The final review of `/implement`, `/implement-oneshot`, and `/implement-yolo` now sends one fixer for the Spec findings and then one for the Standards findings, each starting fresh, and the `/implement-oneshot` and `/implement-yolo` agent no longer reviews its own work first. Each Step also reads only the results of the Steps it depends on, so runs build the same thing as before but use less of your usage limits.
 
