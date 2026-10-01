@@ -85,6 +85,10 @@ An incoming request moving through the `/triage` state machine, at `.agents/issu
 **Map**:
 The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` (`.agents/issues/<context>/<effort>/map.md` in a multi-context repo) — Destination, Notes, Decisions so far, fog. Every Map ends in one or more Specs, so its Destination names the whole change those Specs will cover rather than which artifact the effort produces. How many Specs, and where one ends and the next begins, is decided only once no tickets remain — a ticket remains until it is resolved or ruled out of scope — and by a fresh `/wayfinder` session, not the one that resolved the last ticket: each Spec is a change that can land green and is worth shipping on its own, and one Spec may name another that must land first. The Map is deleted in the commit that writes its Specs.
 
+**Context subfolder**:
+The folder level, named for one context or `common`, that sits right after the kind folder in a work document's path in a multi-context repo — the `billing` in `.agents/specs/billing/<slug>.md`. Distinct from a context's own folder, the one holding its `CONTEXT.md`.
+_Avoid_: context folder, app folder
+
 **Common**:
 The folder that stands where a context's name would in a work document's path, in a multi-context repo, when the work belongs to no single context: it spans two or more contexts, or it touches code no context owns. `.agents/specs/common/<slug>.md`.
 _Avoid_: shared, global, cross-app
