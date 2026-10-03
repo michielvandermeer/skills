@@ -13,4 +13,4 @@ Treating a pre-existing failure as the Step's to fix was rejected: it is scope c
 - After a rebase onto a moved `master`, green is unknown again and is re-established before the fast-forward.
 - The final report repeats every pre-existing failure the run carried.
 
-`master` is superseded by the run's base branch in [ADR-0055](0055-a-run-lands-on-the-branch-it-started-from.md). The comparison at the merge-base stands.
+`master` is superseded by the run's base branch in [ADR-0055](0055-a-run-lands-on-the-branch-it-started-from-or-opens-a-pull-request.md). The comparison at the merge-base stands.

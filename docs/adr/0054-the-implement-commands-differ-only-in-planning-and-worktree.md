@@ -12,5 +12,5 @@
 ## Consequences
 
 - Every command resumes at the lowest Step that is not `done`, including Step files another command wrote, because only the planning differs.
-- `/implement-yolo` commits the Step file on your branch and removes it in its cleanup commit. A retry there never resets the tree.
+- `/implement-yolo` commits the Step file on its own branch and removes it in its cleanup commit. A retry there never resets the tree.
 - `/document-changes` reads the Step's Outcome in every command.

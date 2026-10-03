@@ -11,7 +11,7 @@ This is `/implement` with one Step and no Planner ([ADR-0054](../../docs/adr/005
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. See [ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md).
+The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. A Spec on a GitHub issue is the one exception: the run pushes its branch and opens its pull request ([PULL-REQUEST.md](../implement/PULL-REQUEST.md)). See [ADR-0028](../../docs/adr/0028-an-implement-run-leaves-the-repository-only-for-its-pull-request.md).
 
 ## Process
 
@@ -19,11 +19,13 @@ The run never leaves a local checkout: nothing pushes, publishes, or changes a l
 
 Derive `<slug>`: the spec's filename without its extension when the argument names one, otherwise a kebab-case slug from the argument.
 
+An argument that is a **GitHub issue** — a link, or a bare number for this checkout's own repository — holds its Spec in the issue body: read [PULL-REQUEST.md](../implement/PULL-REQUEST.md) now. Its Start runs first and settles `<slug>`, the Spec path, `<base>`, and the run's branch for the rest of this step, and its land replaces step 6's delete and land.
+
 A Spec carrying `Blocked by: <spec-slug>` waits on that Spec: while `.agents/specs/<spec-slug>.md` exists in this checkout, stop before anything else and say that Spec lands first ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
 In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
 
-`<base>` is the **base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is reviewed and measured green against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). If it is empty, **halt** — HEAD is detached. The main checkout's working tree is the user's and stays as you found it until step 6.
+`<base>` is the **base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is reviewed and measured green against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from-or-opens-a-pull-request.md)). If it is empty, **halt** — HEAD is detached. The main checkout's working tree is the user's and stays as you found it until step 6.
 
 Find linked worktrees with `git worktree list` (or the host's equivalent). Check first, because it decides which worktree you enter:
 
@@ -79,6 +81,8 @@ Each leaves the projects it touched green and commits its own work. A schema, mi
 Run `/document-changes` in **implement mode** while the Spec and the Step's Outcome are still on disk — after review/improve, before delete and land. It prepends product-facing **Changelog** entries beside each affected context's `CONTEXT.md` and commits when it wrote; when nothing is product-visible it reports that and leaves the tree clean.
 
 ### 6. Land the branch
+
+For a Spec on a GitHub issue, this step is [In place of the land](../implement/PULL-REQUEST.md#in-place-of-the-land).
 
 Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, then delete the Spec, the whole `.agents/steps/<slug>/` directory, the Proof folder, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
 

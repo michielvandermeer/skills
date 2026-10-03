@@ -6,7 +6,7 @@ status: partially superseded by ADR-0008
 
 These skills previously had no single fixed location for the documents they read and write: `validate-spec` looked for specs under `.agents/plans/`, `improve-codebase-architecture` wrote reviews to a singular `.agents/architecture-review/`, and `code-review`'s coding-standards discovery had no preferred spot at all. We fixed a canonical layout — specs at `.agents/specs/<slug>.md`, ideas at `.agents/ideas/<slug>.md`, ADRs at `docs/adr/` (unchanged), skill-supporting reference docs at `.agents/refs/`, architecture reviews at `.agents/architecture-reviews/` — and updated every skill that reads or writes these to agree on it.
 
-As part of this, `to-spec` was decoupled from the `.scratch/` issue tracker (see [ADR-0001](0001-fixed-local-issue-tracker.md)): a spec is no longer published as a tracker ticket, just written to `.agents/specs/` carrying its own `Status:` line for the triage role. `/doctor` moves documents in consuming repos that predate this layout — e.g. an existing `.agents/plans/` directory — into it, classifying each by content shape rather than assuming a fixed prior location.
+As part of this, `to-spec` was decoupled from the `.scratch/` issue tracker (see [ADR-0001](0001-a-fixed-local-issue-tracker-except-on-a-github-issue.md)): a spec is no longer published as a tracker ticket, just written to `.agents/specs/` carrying its own `Status:` line for the triage role. `/doctor` moves documents in consuming repos that predate this layout — e.g. an existing `.agents/plans/` directory — into it, classifying each by content shape rather than assuming a fixed prior location.
 
 ## Consequences
 

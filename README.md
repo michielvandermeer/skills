@@ -154,7 +154,7 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
 | `implement-oneshot` | Implement a spec as a single step, skipping the Planner. Still checks, reviews, and improves data structures after. |
-| `implement-yolo` | Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge. |
+| `implement-yolo` | Implement a spec as a single step in this checkout, on a branch of its own that takes your uncommitted files along. No worktree. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then write the Ideas and Specs you pick. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |
@@ -164,8 +164,8 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
 | `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
-| `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
-| `triage` | Sort incoming reports into Specs or parked Issues, one document per distinct problem. |
+| `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`, or to the GitHub issue the work started from. |
+| `triage` | Sort incoming reports into Specs or parked Issues, one document per distinct problem, kept on the GitHub issue when the report is one. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
 | `wayfinder` | Plan a huge chunk of work as a shared map of decision tickets, resolved one at a time. |
 | `wizard` | Generate an interactive bash wizard that walks a person through steps only they can perform. |

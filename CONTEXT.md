@@ -38,7 +38,7 @@ One focused task in a Wizard, typically one screen.
 _Avoid_: Step, prompt
 
 **Spec**:
-The approved description of a feature at `.agents/specs/<slug>.md`, or `.agents/specs/<context>/<slug>.md` in a multi-context repo — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`, and a `Blocked by: <spec-slug>` line when another Spec must land first — a Spec still in `.agents/specs/` has not landed. Work we will not do is not a Spec.
+The approved description of a feature at `.agents/specs/<slug>.md`, or `.agents/specs/<context>/<slug>.md` in a multi-context repo — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`, and a `Blocked by: <spec-slug>` line when another Spec must land first — a Spec still in `.agents/specs/` has not landed. Work we will not do is not a Spec. For work that starts from a **GitHub issue**, the Spec is that issue's body instead, labelled `ready-for-agent`, and never enters the repo.
 _Avoid_: PRD, plan, design doc
 
 **ADR**:
@@ -80,7 +80,15 @@ A grilling **Decision ticket** that holds leftover unblocked one-question **Fork
 _Avoid_: leftovers ticket, bundle, grab-bag
 
 **Issue**:
-An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md` (`.agents/issues/<context>/<slug>/<NN>-<slug>.md` in a multi-context repo), one file per distinct problem, carrying `Category:` and `Status:` lines. A Buildable issue ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document.
+An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md` (`.agents/issues/<context>/<slug>/<NN>-<slug>.md` in a multi-context repo), one file per distinct problem, carrying `Category:` and `Status:` lines. A Buildable issue ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document. Work that starts from a **GitHub issue** is never filed as an Issue: the GitHub issue carries its state.
+
+**GitHub issue**:
+An issue on GitHub that a session starts from, named by its link or by a bare number on the checkout's own repository; pasted issue text is a paste. Its work stays on it rather than in the repo: waiting results as comments, a status label — an **Issue**'s states, or `ready-for-agent` once its body is the **Spec** — and a category label. Distinct from an **Issue**, the local file.
+_Avoid_: ticket, remote issue, tracker issue
+
+**Grilling draft**:
+The draft pull request a `/grill-with-docs` session that started from a **GitHub issue** opens for the files it changed in the repo — glossary, ADRs, a Prototype — against the default branch, carrying `Closes #N` when the session ends in a Spec. An implement run on that Spec continues it and marks it ready for review.
+_Avoid_: grill PR, docs PR, glossary PR
 
 **Map**:
 The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` (`.agents/issues/<context>/<effort>/map.md` in a multi-context repo) — Destination, Notes, Decisions so far, fog. Every Map ends in one or more Specs, so its Destination names the whole change those Specs will cover rather than which artifact the effort produces. How many Specs, and where one ends and the next begins, is decided only once no tickets remain — a ticket remains until it is resolved or ruled out of scope — and by a fresh `/wayfinder` session, not the one that resolved the last ticket: each Spec is a change that can land green and is worth shipping on its own, and one Spec may name another that must land first. The Map is deleted in the commit that writes its Specs.
@@ -213,7 +221,7 @@ The section of a Step file naming where that Step's work lands — the files it 
 _Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
 
 **Base branch**:
-The branch the session was on when an implement command started, read again on a resume. The run branches from it, is reviewed and measured Green against it, and lands back on it. It is the repository's default branch only when the session started there.
+The branch the session was on when an implement command started, read again on a resume. The run branches from it, is reviewed and measured Green against it, and lands back on it. It is the repository's default branch only when the session started there, or when the Spec is on a **GitHub issue** — that run ends in a pull request against it instead of a land.
 _Avoid_: master, main, default branch, trunk
 
 **Green**:

@@ -1,6 +1,6 @@
 # Relocate the issue tracker from `.scratch/` to `.agents/issues/`
 
-[ADR-0001](0001-fixed-local-issue-tracker.md) placed the local-markdown issue tracker at `.scratch/<feature-slug>/`, a separate top-level root from the durable document layout ([ADR-0002](0002-agents-doc-layout.md)) that lives under `.agents/`. We consolidated the two: the tracker now lives at `.agents/issues/<slug>/`, so a repo has a single `.agents/` tree for everything agents read and write and no `.scratch/` root at all. Because the root is now literally `issues/`, the redundant nested `issues/` subdirectory was dropped — tickets sit directly in the per-slug directory as `<NN>-<slug>.md`, and each `wayfinder` effort keeps its `map.md` alongside its tickets.
+[ADR-0001](0001-a-fixed-local-issue-tracker-except-on-a-github-issue.md) placed the local-markdown issue tracker at `.scratch/<feature-slug>/`, a separate top-level root from the durable document layout ([ADR-0002](0002-agents-doc-layout.md)) that lives under `.agents/`. We consolidated the two: the tracker now lives at `.agents/issues/<slug>/`, so a repo has a single `.agents/` tree for everything agents read and write and no `.scratch/` root at all. Because the root is now literally `issues/`, the redundant nested `issues/` subdirectory was dropped — tickets sit directly in the per-slug directory as `<NN>-<slug>.md`, and each `wayfinder` effort keeps its `map.md` alongside its tickets.
 
 Only the *location* changes; the "fixed local-markdown tracker, no per-repo configuration" decision from ADR-0001 stands.
 

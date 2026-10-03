@@ -1,6 +1,6 @@
 # A multi-context repo files work documents per context
 
-In a repo with a `CONTEXT-MAP.md`, every work document gets a context subfolder right after its kind folder: `.agents/specs/<context>/<slug>.md`, `.agents/issues/<context>/<effort>/`, and the same for Ideas, Prototypes, Architecture reviews, and Codebase audits. Work that belongs to no single context goes in `common`. A repo with several contexts sorts its work by them, as mvdmio-suite does, and ADRs, Changelogs, and Run recipes already sit per context. The layout is built in and keyed off the map, so a repo still writes no setup for it, and [ADR-0001](0001-fixed-local-issue-tracker.md) holds.
+In a repo with a `CONTEXT-MAP.md`, every work document gets a context subfolder right after its kind folder: `.agents/specs/<context>/<slug>.md`, `.agents/issues/<context>/<effort>/`, and the same for Ideas, Prototypes, Architecture reviews, and Codebase audits. Work that belongs to no single context goes in `common`. A repo with several contexts sorts its work by them, as mvdmio-suite does, and ADRs, Changelogs, and Run recipes already sit per context. The layout is built in and keyed off the map, so a repo still writes no setup for it, and [ADR-0001](0001-a-fixed-local-issue-tracker-except-on-a-github-issue.md) holds.
 
 The kind folder comes first so that every skill keeps the root path it already names and adds one level under it. `/doctor` keeps one table of canonical locations, with one rule for a multi-context repo.
 

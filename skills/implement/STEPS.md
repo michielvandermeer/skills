@@ -83,4 +83,4 @@ Three rules keep it honest:
 - **A map, nothing more.** Where the work lands, and there it stops. A footprint that starts explaining *how* has turned into a plan the step agent will follow off a cliff.
 - **A guess, not a contract.** Earlier steps move code, so a later step's footprint drifts. The step agent follows the code where the two disagree and records the drift in its `## Outcome`, which reaches only the steps whose `Depends on:` names it. Write your best guess and let it be corrected.
 - **Name every project.** A project you leave off the `Projects:` line is a project nobody checks until the last step. `Projects: none` is for a change no project compiles.
-- **Another repository is planned last.** A file there is named by absolute path and `Projects:` names that repository's projects ([ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md)).
+- **Another repository is planned last.** A file there is named by absolute path and `Projects:` names that repository's projects ([ADR-0028](../../docs/adr/0028-an-implement-run-leaves-the-repository-only-for-its-pull-request.md)).

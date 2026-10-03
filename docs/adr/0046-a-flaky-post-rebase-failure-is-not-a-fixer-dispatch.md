@@ -11,4 +11,4 @@ Checking the failure against `master` at the merge-base first, the way ADR-0029 
 - The re-run is the Driving session's own command, not a sub-agent, and covers only the projects that failed, not the whole suite.
 - **Deviation** now also covers a post-rebase failure that passed on the re-run.
 - The fixer's one retry is spent only on a failure the re-run reproduced, so a flaky test cannot use it up and halt a run that was green.
-- `/implement-yolo` has no rebase at land, so it is unaffected.
+- `/implement-yolo`'s land, and a GitHub-issue run's rebase or merge before its push, re-run a failing project the same way.
