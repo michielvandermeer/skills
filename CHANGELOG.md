@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-03: Work on GitHub issues stays there
+When you hand `/triage` or `/grill-with-docs` a GitHub issue link or number, the result now goes on that issue instead of into files in your repo: a comment and a label while the work waits, and the Spec as the issue's text once it is ready. `/implement`, `/implement-oneshot`, and `/implement-yolo` build such a Spec on a branch, push it, and open a pull request that closes the issue when you merge it. `/implement-yolo` now always works on a branch of its own, and merges it back onto your branch when the work did not come from a GitHub issue.
+
 ## 2026-10-02: Documents sorted by app
 In a repo with a `CONTEXT-MAP.md`, the skills now keep Specs, Ideas, Issues, Prototypes and reports in a folder per app, such as `.agents/specs/billing/`. Work that spans apps, or touches no app, goes in `common/`. `/doctor` moves existing documents into these folders instead of pulling them back to one shared folder, and repos without a map are unchanged.
 
