@@ -11,3 +11,7 @@ A file only agents read during a run — a Proof script, a screenshot, a transcr
 ## Coined terms
 
 Before a skill edit coins a term, grep `skills/` and `CONTEXT.md` for it. A skill may already use the words in another sense that never reached the glossary: "context folder" meant the folder holding a `CONTEXT.md` in `skills/implement/PROOF.md` when a new path level nearly took the same name. A coined term gets its `CONTEXT.md` entry in the same commit.
+
+## Renamed files
+
+A change that renames a file, such as an ADR whose title changed, fixes every link to it in the same commit. Find the links with a search that includes dot-folders, `rg --hidden`: plain `rg` skips `.agents/`, and renaming ADR-0055 left this file's link to it stale until a second search caught it.
