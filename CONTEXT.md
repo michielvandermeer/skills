@@ -79,8 +79,12 @@ A grilling **Decision ticket** whose **Fork** is a tree: more than one question 
 A grilling **Decision ticket** that holds leftover unblocked one-question **Forks**, even when the subjects differ. The heading is Small questions.
 _Avoid_: leftovers ticket, bundle, grab-bag
 
+**GitHub-issue seed**:
+A `/triage` seed that is a GitHub issue URL or `owner/repo#number`. That issue is where the run publishes: a parked state is a comment plus one label, and a further distinct problem is a new GitHub issue. Every other seed publishes as a local **Issue** file.
+_Avoid_: GitHub tracker, forge issue
+
 **Issue**:
-An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md` (`.agents/issues/<context>/<slug>/<NN>-<slug>.md` in a multi-context repo), one file per distinct problem, carrying `Category:` and `Status:` lines. A Buildable issue ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document.
+An incoming request moving through the `/triage` state machine, one record per distinct problem. On a **GitHub-issue seed** the record is that GitHub issue. On every other seed it is a file at `.agents/issues/<slug>/<NN>-<slug>.md` (`.agents/issues/<context>/<slug>/<NN>-<slug>.md` in a multi-context repo), carrying `Category:` and `Status:` lines. A Buildable issue ends as a **Spec** and the local file is deleted; the GitHub issue is closed so it is not a second open record beside the Spec. Surviving states are `needs-info`, `needs-human`, and `needs-grilling`. Rejected or already-implemented work is not kept as a local document; on a GitHub issue that ending is a comment that says why, with no parked label, and the issue is closed.
 
 **Map**:
 The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` (`.agents/issues/<context>/<effort>/map.md` in a multi-context repo) — Destination, Notes, Decisions so far, fog. Every Map ends in one or more Specs, so its Destination names the whole change those Specs will cover rather than which artifact the effort produces. How many Specs, and where one ends and the next begins, is decided only once no tickets remain — a ticket remains until it is resolved or ruled out of scope — and by a fresh `/wayfinder` session, not the one that resolved the last ticket: each Spec is a change that can land green and is worth shipping on its own, and one Spec may name another that must land first. The Map is deleted in the commit that writes its Specs.

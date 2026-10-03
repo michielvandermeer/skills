@@ -10,4 +10,4 @@ Steps are also *ephemeral* in a way tracker files are not. They are created insi
 
 - A repo mid-`/implement` has two numbered-markdown trees under `.agents/`. They are distinguished by directory, not by content shape, so anything new that scans `.agents/` must pick its root deliberately.
 - `.agents/steps/` is not scanned by any skill. A halted run leaves Steps behind on its branch, visible only to a resumed `/implement` — nothing surfaces them to the user unprompted.
-- The "one fixed tracker" decision from ADR-0001 still holds for Issues and Tickets. This is a carve-out for in-flight execution state, not a second tracker.
+- Steps are in-flight execution state, not a tracker. Local Issue files remain the tracker for Tickets and for every `/triage` seed that is not a GitHub issue. A GitHub-issue seed publishes on that issue ([ADR-0001](0001-fixed-local-issue-tracker.md)).

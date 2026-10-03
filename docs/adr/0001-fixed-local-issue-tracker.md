@@ -6,7 +6,9 @@ These skills are derived from Matt Pocock's skills, which support GitHub, GitLab
 
 (The tracker's location later moved from `.scratch/<feature-slug>/` to `.agents/issues/<feature-slug>/`, with the redundant nested `issues/` subfolder dropped — see [ADR-0003](0003-tracker-under-agents.md). The fixed-local, no-per-repo-config decision recorded here is unaffected; only the path changed.)
 
+(A GitHub-issue seed is a later carve-out for `/triage` only. That run publishes on the GitHub issue, and every other seed still uses the local Issue files. See Consequences.)
+
 ## Consequences
 
-- These skills can no longer be pointed at a GitHub or GitLab tracker. Restoring that would mean reintroducing the tracker-abstraction layer this decision removed.
+- These skills are not pointed at a GitLab tracker, and they still have no per-repo tracker configuration and no label remapping. `/triage` alone publishes on a GitHub issue when the seed is that issue (a GitHub issue URL or `owner/repo#number`): a parked ending is a comment plus `needs-info`, `needs-human`, or `needs-grilling`, a not-filed ending is a comment that says why and no parked label, and a further distinct problem is a new GitHub issue. That run writes no `.agents/issues/` file, and a parked or not-filed ending opens no pull request. A Spec is still a repo document from `/to-spec`; a pull request that lands it says so in the description. Every other seed still uses the local Issue files this ADR fixes. Wayfinder is unchanged. Restoring a configurable GitHub or GitLab tracker would mean reintroducing the tracker-abstraction layer this decision removed.
 - Any `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, or `docs/agents/domain.md` left over from a prior `setup-matt-pocock-skills` run in a consuming repo is now inert and safe to delete — nothing reads it anymore.

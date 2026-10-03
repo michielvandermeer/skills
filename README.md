@@ -165,7 +165,7 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
 | `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
 | `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
-| `triage` | Sort incoming reports into Specs or parked Issues, one document per distinct problem. |
+| `triage` | Sort incoming reports into Specs or parked records: a comment and label on a GitHub issue, or a local Issue file for every other seed. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
 | `wayfinder` | Plan a huge chunk of work as a shared map of decision tickets, resolved one at a time. |
 | `wizard` | Generate an interactive bash wizard that walks a person through steps only they can perform. |
