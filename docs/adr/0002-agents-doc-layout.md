@@ -11,5 +11,6 @@ As part of this, `to-spec` was decoupled from the `.scratch/` issue tracker (see
 ## Consequences
 
 - Consuming repos with docs in the old locations (`.agents/plans/`, ad hoc reference docs, a singular `.agents/architecture-review/`) are brought into line by `/doctor`, which moves them without asking in its single commit.
+- On a GitHub-issue seed, `/triage` also puts that Spec on the GitHub issue: the issue body is the copy people read, labeled `ready-for-agent`, and the issue stays open. `/to-spec` may still write the repo file. [ADR-0001](0001-fixed-local-issue-tracker.md).
 - Architecture reviews since moved to a folder per review, and Refinements were added on the same rule — see [ADR-0008](0008-session-output-gets-a-folder.md). The flat-file-per-document layout still holds for Specs, Ideas, and references.
 - `code-review`'s standards-source discovery checks `.agents/refs/` first but still falls back to root-level `CODING_STANDARDS.md`/`CONTRIBUTING.md` if that's what a repo already has — `.agents/refs/` is the canonical spot for new docs, not an exclusive one.

@@ -49,7 +49,7 @@ Done: a verify outcome is recorded.
 
 Trust an explicit override in the seed (`spec this`, or the old "move … to ready-for-agent" → Spec; `needs-info`, `needs-human`, `needs-grilling` → that park). Pick exactly one ending and publish it on the place the seed selected.
 
-Parked labels and local `Status:` lines use the same three names: `needs-info`, `needs-human`, and `needs-grilling`. On a GitHub issue, create a missing label of that name before setting it. A repo file such as `issue-tracker.md` or `triage-labels.md` does not rename them. A parked ending sets its own label and clears the other two. Spec and not-filed clear all three.
+Parked labels and local `Status:` lines use the same three names: `needs-info`, `needs-human`, and `needs-grilling`. A GitHub Spec uses the label `ready-for-agent`. On a GitHub issue, create a missing label of that name before setting it. A repo file such as `issue-tracker.md` or `triage-labels.md` does not rename them. A parked ending sets its own label and clears the other two parked labels. A Spec clears the three parked labels and sets `ready-for-agent`. Not-filed clears the three parked labels and `ready-for-agent`.
 
 Every comment starts with:
 
@@ -78,7 +78,7 @@ The seed issue is the first problem's record. Each extra problem is the new issu
 **Spec** — buildable and the solution is clear. Run `/to-spec` scoped to this problem alone. Agent-ready work is a Spec with `Status: ready-for-agent`.
 
 - Local Issue: delete the issue file if one exists for this problem.
-- GitHub issue: comment with the Spec path, clear the parked labels, and close the issue so it is not a second open record beside the Spec. A pull request opened to land that Spec says in its description that the pull request lands the Spec, and that the triage result is the comment on the issue. The pull request carries the Spec only.
+- GitHub issue: replace the issue body with the Spec, clear the parked labels, and set `ready-for-agent`. The issue stays open. The body is the copy people read. When `/to-spec` also writes a repo file, a pull request opened for that file says in its description that the issue body is the copy people read.
 
 **needs-info** — not enough information. Park.
 
@@ -112,12 +112,12 @@ Questions are specific and actionable.
 **Not filed** — rejected or already implemented.
 
 - Local Issue: delete the issue file if one exists for this problem. Mention only in the summary.
-- GitHub issue: comment that says why, clear the parked labels, and close the issue. It carries no parked label.
+- GitHub issue: comment that says why, clear the parked labels so it carries no parked label, then close the issue.
 
-Done: every named problem has exactly one ending on the place the seed selected. Extras found during investigate have been named and run through this section. A parked or not-filed GitHub ending has a comment on its issue, no Issue file written or updated, no commit, and no pull request.
+Done: every named problem has exactly one ending on the place the seed selected. Extras found during investigate have been named and run through this section. A parked or not-filed GitHub ending has a comment on its issue, no Issue file written or updated, no commit, and no pull request. A GitHub Spec has replaced the issue body, set `ready-for-agent`, and left the issue open.
 
 ## Summary
 
-End with a summary the people in the session can follow up from. For every problem: what it was, the Spec path when there is one, and either the local Issue path plus `Status:` or the GitHub issue URL plus its label — or that the issue was closed as not filed, and why. The summary is the review.
+End with a summary the people in the session can follow up from. For every problem: what it was, and where it ended. A local Spec or Issue names its path and `Status:`. A GitHub Spec names the issue URL and `ready-for-agent`. A parked GitHub issue names the URL and its label. A not-filed GitHub issue names the URL and that it was closed, and why. The summary is the review.
 
 Done: the summary lists every problem this run handled. Then run `/retro`.
