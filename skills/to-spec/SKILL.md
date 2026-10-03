@@ -7,6 +7,8 @@ This skill takes the current conversation context and codebase understanding and
 
 ## Process
 
+When `/triage` is the caller and the seed is a GitHub-issue seed, stop. Write no file, commit nothing, and open no pull request. `/triage` writes the Spec onto the GitHub issue.
+
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
 
 2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
@@ -21,7 +23,7 @@ The report is finished when it is the Validator's checklist report: corrections,
 
 Any other result ends the session before step 5. Tell the user the check did not finish. The Spec file stays as the Validator left it. Step 5 stays unstarted, and so does anything the caller does after `/to-spec`.
 
-5. Commit the files this session created or changed — the Spec, glossary and ADR edits, Ideas, the prototype folder — staged by name, on the branch you are on, without asking. The Spec you stage is the file the Validator left on disk. Leave every other working-tree change alone; another session may own it. When the session started from an Idea or Issue, leave that document in place with a `Spec:` line pointing at the new Spec; `/implement` deletes it at land. A GitHub-issue seed has no local Issue file; do not create one. `/triage` replaces that GitHub issue's body with this Spec and sets `ready-for-agent`. The issue stays open. The body is the copy people read. When `/refine` is the caller, skip this step: use the slug the caller named, and leave commit and the `Spec:` line to `/refine`. When `/wayfinder` is the caller, add the `Spec:` line and leave the commit to `/wayfinder`, which commits every Spec it cut in one.
+5. Commit the files this session created or changed — the Spec, glossary and ADR edits, Ideas, the prototype folder — staged by name, on the branch you are on, without asking. The Spec you stage is the file the Validator left on disk. Leave every other working-tree change alone; another session may own it. When the session started from an Idea or Issue, leave that document in place with a `Spec:` line pointing at the new Spec; `/implement` deletes it at land. When `/refine` is the caller, skip this step: use the slug the caller named, and leave commit and the `Spec:` line to `/refine`. When `/wayfinder` is the caller, add the `Spec:` line and leave the commit to `/wayfinder`, which commits every Spec it cut in one.
 
 <spec-template>
 

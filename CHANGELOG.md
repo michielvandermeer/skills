@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2026-10-03: Triage replies on GitHub issues
-When the report you hand `/triage` is a GitHub issue, a parked result is a comment and one label (needs-info, needs-human, or needs-grilling), and work you can build replaces the issue text with the spec and adds ready-for-agent. The issue stays open for those, and a parked result does not open a pull request. Work that will not be filed gets a comment that says why and is then closed, a further problem becomes its own GitHub issue, and any other report is still saved as a local issue file.
+When the report you hand `/triage` is a GitHub issue, a parked result is a comment and one label (needs-info, needs-human, or needs-grilling), and work you can build replaces the issue text with the spec and adds ready-for-agent. That run saves no file and opens no pull request, and the issue stays open for those two results. Work that will not be filed gets a comment that says why and is then closed, a further problem becomes its own GitHub issue, and any other report is still saved as a local file, including a spec.
 
 ## 2026-10-02: Documents sorted by app
 In a repo with a `CONTEXT-MAP.md`, the skills now keep Specs, Ideas, Issues, Prototypes and reports in a folder per app, such as `.agents/specs/billing/`. Work that spans apps, or touches no app, goes in `common/`. `/doctor` moves existing documents into these folders instead of pulling them back to one shared folder, and repos without a map are unchanged.

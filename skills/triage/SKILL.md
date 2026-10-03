@@ -59,7 +59,7 @@ Every comment starts with:
 
 On a GitHub issue, `@reporter` is the issue author. Run `/plain-language` before any comment a reporter will read.
 
-A GitHub-issue seed writes no Issue file, under `.agents/issues/` or any other path. A parked or not-filed ending on that seed adds no commit and opens no pull request. The comment, and the label when the ending parks, are the whole record.
+A GitHub-issue seed writes no file and opens no pull request. No Issue file, no Spec file, no commit. A parked ending's comment and label are that ending's whole record.
 
 #### Local Issue
 
@@ -75,10 +75,10 @@ The seed issue is the first problem's record. Each extra problem is the new issu
 
 #### Endings
 
-**Spec** — buildable and the solution is clear. Run `/to-spec` scoped to this problem alone. Agent-ready work is a Spec with `Status: ready-for-agent`.
+**Spec** — buildable and the solution is clear. Agent-ready work carries `Status: ready-for-agent`.
 
-- Local Issue: delete the issue file if one exists for this problem.
-- GitHub issue: replace the issue body with the Spec, clear the parked labels, and set `ready-for-agent`. The issue stays open. The body is the copy people read. When `/to-spec` also writes a repo file, a pull request opened for that file says in its description that the issue body is the copy people read.
+- Local Issue: run `/to-spec` scoped to this problem alone. Delete the issue file if one exists for this problem.
+- GitHub issue: do not run `/to-spec`. Write the Spec, in the template at [to-spec](../to-spec/SKILL.md), into the issue body. Run `/plain-language` on that body first. Clear the parked labels and set `ready-for-agent`. The issue stays open. The issue body is the Spec. Write no file. Open no pull request.
 
 **needs-info** — not enough information. Park.
 
@@ -114,7 +114,7 @@ Questions are specific and actionable.
 - Local Issue: delete the issue file if one exists for this problem. Mention only in the summary.
 - GitHub issue: comment that says why, clear the parked labels so it carries no parked label, then close the issue.
 
-Done: every named problem has exactly one ending on the place the seed selected. Extras found during investigate have been named and run through this section. A parked or not-filed GitHub ending has a comment on its issue, no Issue file written or updated, no commit, and no pull request. A GitHub Spec has replaced the issue body, set `ready-for-agent`, and left the issue open.
+Done: every named problem has exactly one ending on the place the seed selected. Extras found during investigate have been named and run through this section. A GitHub-issue seed has written no file and opened no pull request. A parked or not-filed ending has its comment on the issue. A GitHub Spec has replaced the issue body, set `ready-for-agent`, and left the issue open.
 
 ## Summary
 
