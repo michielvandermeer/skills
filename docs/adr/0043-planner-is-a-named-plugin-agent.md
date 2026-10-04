@@ -6,6 +6,6 @@ Pinning `general-purpose` alone was rejected: the host type is still the attract
 
 ## Consequences
 
-- The Planner is not spec-bound in the [ADR-0007](0007-pinned-subagent-model-tiers.md) cost sense: no `model:` or `effort:` pin. README's "every shipped agent is medium effort" no longer covers it.
+- The Planner is not spec-bound ([ADR-0049](0049-spec-bound-agents-keep-the-session-model.md)): no `model:` or `effort:` pin. It runs at the session's own model and effort.
 - A host without the plugin agent falls back to `general-purpose`, never to `plan` / `Plan`.
 - The host planning type still exists for other uses. `/implement` never uses it.

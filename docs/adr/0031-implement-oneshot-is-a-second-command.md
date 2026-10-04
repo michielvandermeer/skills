@@ -8,4 +8,4 @@ A flag on `/implement` was rejected: only the human can tell whether this Spec f
 
 - Other skills do not start `/implement-oneshot`.
 - Both commands share the worktree and branch named `<slug>` and the Step files in `.agents/steps/<slug>/`, so either command resumes a run the other started.
-- The Step agent and Checker run on the session's model at reduced effort ([ADR-0049](0049-spec-bound-agents-keep-the-session-model.md)). Leftover gaps, local-only runs, and green-against-master apply as they do to `/implement` ([ADR-0026](0026-implement-agents-close-leftover-gaps.md), [ADR-0028](0028-implement-never-leaves-the-repository.md), [ADR-0029](0029-green-is-measured-against-master.md)).
+- The Step agent and Checker run on the session's model at reduced effort ([ADR-0049](0049-spec-bound-agents-keep-the-session-model.md)). Leftover gaps, local-only runs, and green against the base branch apply as they do to `/implement` ([ADR-0026](0026-implement-agents-close-leftover-gaps.md), [ADR-0028](0028-implement-never-leaves-the-repository.md), [ADR-0029](0029-green-is-measured-against-the-base-branch.md)).

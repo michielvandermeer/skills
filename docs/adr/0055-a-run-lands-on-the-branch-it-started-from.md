@@ -1,6 +1,6 @@
 # A run lands on the branch it started from
 
-`/implement` and `/implement-oneshot` rebased onto `master` and fast-forwarded `master`, and Green was measured against `master` ([ADR-0029](0029-green-is-measured-against-master.md)). A run started on a feature branch therefore left that branch: the run's commits, and every commit the feature branch had over `master`, landed on `master`. Every implement command now works against the **base branch**: the branch the original directory is on when the command starts, read again on a resume. The run branches from it, is reviewed and measured Green against it, and lands back on it. A detached HEAD has no base branch, so the run halts, as `/implement-yolo` already did.
+Every implement command works against the **base branch**: the branch the original directory is on when the command starts, read again on a resume. The run branches from it, is reviewed and measured Green against it ([ADR-0029](0029-green-is-measured-against-the-base-branch.md)), and lands back on it. A run that left that branch would land the run's commits, and every commit the feature branch had over the default branch, on the default branch. A detached HEAD has no base branch, so the run halts.
 
 ## Considered Options
 

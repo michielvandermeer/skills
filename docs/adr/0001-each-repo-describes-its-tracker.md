@@ -17,6 +17,6 @@ Ideas, triaged Issues, and Specs are now one kind, the Issue. Only its status te
 - An implement run reads its Issue and never writes to the Tracker ([ADR-0028](0028-implement-never-leaves-the-repository.md)). Its landing commit carries the ref's closing reference, such as `Closes #42`. On a Tracker with none, the run's final report names the Issue for the user to close.
 - The run copies the Spec into its Step folder when it starts, so an edit in the Tracker during the run cannot change it.
 - A Map is an Issue in `wayfinding`, and its Decision tickets are its children. The Map's own Issue becomes the first Spec it ends in.
-- `/to-spec` drafts a Spec in a temporary file for the Validator and then writes it to the Issue in one update, so watchers get one notification.
+- `/to-spec` drafts a Spec in a temporary file for the Validator, or in the Issue's own file on the local Tracker, and then writes it to the Issue in one update ([ADR-0052](0052-a-fresh-validator-checks-a-new-spec.md)). On a Tracker outside the repo, the separate draft keeps watchers to one notification.
 - An old `issue-tracker.md` or `triage-labels.md` is inert. `/setup` reads it for its suggestion and offers to delete it.
 - `/doctor` converts old local Ideas, Specs, and Issues into the local template's shape only in a repo with no Tracker ref. In a repo with a ref, it leaves tracker documents alone.

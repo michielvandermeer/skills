@@ -1,6 +1,6 @@
 # The local Tracker lives under `.agents/issues/`
 
-A repo on the local Markdown Tracker keeps its Issues under `.agents/issues/` ([ADR-0001](0001-each-repo-describes-its-tracker.md)), in the same `.agents/` tree as every other document agents read and write ([ADR-0002](0002-agents-doc-layout.md)). A repo has one tree for agent documents. The local Tracker template, [setup/LOCAL.md](../../skills/setup/LOCAL.md), sets out the files inside it.
+A repo on the local Markdown Tracker keeps its Issues under `.agents/issues/` ([ADR-0001](0001-each-repo-describes-its-tracker.md)), in the same `.agents/` tree as every other document agents read and write ([ADR-0002](0002-references-and-adrs-layout.md)). A repo has one tree for agent documents. The local Tracker template, [setup/LOCAL.md](../../skills/setup/LOCAL.md), sets out the files inside it.
 
 ## Considered Options
 

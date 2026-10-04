@@ -1,6 +1,6 @@
 # Idea — Two ADRs share number 0050
 
-Status: idea
+Status: needs-grilling
 
 ## Motivation
 

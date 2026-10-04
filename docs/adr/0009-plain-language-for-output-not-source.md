@@ -13,7 +13,6 @@ The cost buys two things a file cannot. The rule reaches the agent even from a s
 ## Consequences
 
 - A durable document spends plain words rather than a gloss, because it travels. An Issue is read in the Tracker by people who were never in the session, and a Spec is read weeks later by someone who was never in the room. Where a template fixes a section name, the name stays and carries its gloss underneath.
-- `/refine` holds a stricter bar than the rest on its user-facing surfaces (rounds, `complete.md`, write-back to the Jira ticket or source markdown file): readable aloud once, in a room, to someone who does not write code. The Session document is resume infrastructure and may stay dense.
+- An architecture review may use `/codebase-design` terms bare — module, interface, seam, and the rest of that vocabulary — when they are the natural claim. The report otherwise stays at this bar, so the review can name the structure it is judging.
 - Text written for a sub-agent is unchanged — a Step, a handoff.
 - Nothing checks output against the bar. A checking pass would run on every round and every document, and it would degrade into a rubber stamp. If the bar starts getting ignored, that is when a check earns its cost.
-- The ADRs written before this one, and `README.md`, were left as they are.

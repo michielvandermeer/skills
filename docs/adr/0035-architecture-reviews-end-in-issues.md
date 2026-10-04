@@ -6,5 +6,5 @@ Grilling one picked candidate in the same session was rejected so one pick does 
 
 ## Consequences
 
-- ADR-0017's "then grills" is superseded; the rest of 0017 stands.
+- A Codebase audit stays a separate document ([ADR-0017](0017-codebase-audits-are-not-architecture-reviews.md)).
 - `CONTEXT.md`'s Architecture review ends with the picked candidates becoming Issues, not with a grilling session.

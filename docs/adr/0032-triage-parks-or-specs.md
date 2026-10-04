@@ -6,6 +6,6 @@ Grilling in-session was rejected so `/triage` can sort a pile of reports without
 
 ## Consequences
 
-- ADR-0014 is superseded. A Spec is the only agent-ready document, and becoming one rewrites the same Issue, so no second live card sits next to it ([ADR-0001](0001-each-repo-describes-its-tracker.md)).
+- A Spec is the only agent-ready document, and becoming one rewrites the same Issue, so no second live card sits next to it ([ADR-0001](0001-each-repo-describes-its-tracker.md)).
 - `needs-triage` marks an Issue nobody has triaged yet. `needs-human` waits on a secret or a manual test, while `ready-for-human` carries a Spec a person builds. There is no `wontfix` status.
 - A leftover `.out-of-scope/` directory in a consuming repo is inert.
