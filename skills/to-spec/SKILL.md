@@ -1,6 +1,6 @@
 ---
 name: to-spec
-description: Turn the current conversation into a spec and publish it to .agents/specs/ — no interview, just synthesis of what you've already discussed.
+description: Turn the current conversation into a Spec and write it onto its Issue in the repo's Tracker — no interview, just synthesis of what you've already discussed.
 ---
 
 This skill takes the current conversation context and codebase understanding and produces a spec (you may know this document as a PRD). Do NOT interview the user — just synthesize what you already know. A decision the conversation did not settle is not yours to close: ask it as one `/grilling` round, then continue.
@@ -11,17 +11,23 @@ This skill takes the current conversation context and codebase understanding and
 
 2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
 
-3. Write the spec using the template below to `.agents/specs/<feature-slug>.md` (a kebab-case slug derived from the feature, creating the directory if needed), with `Status: ready-for-agent` as a line under the H1 — no need for additional triage — and, when the caller names a Spec that must land first, `Blocked by: <spec-slug>` under it. Run the `/plain-language` skill first: a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar. In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+3. Pick the Spec's **Issue**: the one the caller names; otherwise the Issue this session started from; otherwise, or when the caller asks for a new one, a new Issue that step 5 files.
 
-4. Dispatch a fresh **Validator** (`skills:validator`, `agents/validator.md` at the plugin root) with the path of the Spec you just wrote. That path is the whole prompt. The Validator runs on your model at medium effort ([ADR-0052](../../docs/adr/0052-a-fresh-validator-checks-a-new-spec.md)). A host without that agent type dispatches `general-purpose` with the same prompt.
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
+
+Draft the Spec using the template below in a new temporary file in the OS temp directory. On a local Markdown Tracker the Issue file itself is the draft: file it at this step when the Issue is new, and write the whole of step 5's update into it. Run the `/plain-language` skill first: a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar. In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+
+4. Dispatch a fresh **Validator** (`skills:validator`, `agents/validator.md` at the plugin root) with the draft's path. That path is the whole prompt. The Validator runs on your model at medium effort ([ADR-0052](../../docs/adr/0052-a-fresh-validator-checks-a-new-spec.md)). A host without that agent type dispatches `general-purpose` with the same prompt.
 
 Wait for it.
 
 The report is finished when it is the Validator's checklist report: corrections, open questions, or a report that names neither. Show that report to the user. It is what you carry forward from the check. A finished report continues at step 5. Open questions leave step 5 free to run.
 
-Any other result ends the session before step 5. Tell the user the check did not finish. The Spec file stays as the Validator left it. Step 5 stays unstarted, and so does anything the caller does after `/to-spec`.
+Any other result ends the session before step 5. Tell the user the check did not finish, and give the draft's path. The draft stays as the Validator left it. Step 5 stays unstarted, and so does anything the caller does after `/to-spec`.
 
-5. Commit the files this session created or changed — the Spec, glossary and ADR edits, Ideas, the prototype folder — staged by name, on the branch you are on, without asking. The Spec you stage is the file the Validator left on disk. Leave every other working-tree change alone; another session may own it. When the session started from an Idea or Issue, leave that document in place with a `Spec:` line pointing at the new Spec; `/implement` deletes it at land. When `/refine` is the caller, skip this step: use the slug the caller named, and leave commit and the `Spec:` line to `/refine`. When `/wayfinder` is the caller, add the `Spec:` line and leave the commit to `/wayfinder`, which commits every Spec it cut in one.
+5. Write the draft the Validator left to the Spec's Issue in one update: rewrite its body with the draft, set its status to `ready-for-agent` — `ready-for-human` when a person builds it — and, when the caller names an Issue that must land first, link it as blocked by that Issue. A new Issue is filed with a title naming the change and that body, status, and link. On a local Markdown Tracker the draft already holds this update.
+
+Then commit the files this session created or changed — glossary and ADR edits, the prototype folder, and on a local Markdown Tracker the Issue files — staged by name, on the branch you are on, without asking. A commit that writes an ADR names the Issue's reference in its message. Leave every other working-tree change alone; another session may own it. When `/refine` is the caller, leave the commit to `/refine`. When `/wayfinder` is the caller, leave the commit to `/wayfinder`, which makes one commit for every Spec it cut.
 
 <spec-template>
 

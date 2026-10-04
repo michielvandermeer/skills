@@ -20,4 +20,4 @@ This restores auto-start, which [ADR-0034](0034-retro-is-a-typed-command.md) and
 - If a named session skill calls another, only the skill you typed starts a retrospective.
 - A halt skips the retrospective. Resume first.
 - A new skill stays off the list until a later decision.
-- `/brainstorm` is on the list because, like `/improve-codebase-architecture`, it is a typed session that ends by writing and committing Ideas.
+- `/brainstorm` is on the list because, like `/improve-codebase-architecture`, it is a typed session that ends by filing Issues in `needs-grilling`.

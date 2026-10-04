@@ -1,7 +1,7 @@
 ---
 name: implement-yolo
 description: "Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge."
-argument-hint: "Which spec, issue, or idea to implement?"
+argument-hint: "Which Issue to implement, or what to build?"
 disable-model-invocation: true
 ---
 
@@ -11,19 +11,19 @@ This is `/implement` with one Step, no Planner, and no worktree ([ADR-0054](../.
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. See [ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md).
+The run never leaves a local checkout: nothing pushes, publishes, writes to the Tracker, or changes a live system, and work that needs that **halts**. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
 
 ## Process
 
 ### 1. Stay on this checkout
 
-Derive `<slug>`: the spec's filename without its extension when the argument names one, otherwise a kebab-case slug from the argument.
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-A Spec carrying `Blocked by: <spec-slug>` waits on that Spec: while `.agents/specs/<spec-slug>.md` exists in this checkout, stop before anything else and say that Spec lands first ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
-
-In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+The argument is an Issue reference — normally an Issue in `ready-for-agent` — or a description of the change, which touches no Tracker; an issue outside this repo's Tracker is read as a description. Read the Issue. Derive `<slug>`: the Issue's run slug as the Tracker ref gives it, otherwise a kebab-case slug from the description.
 
 If `git branch --show-current` is empty, **halt** — HEAD is detached.
+
+An Issue blocked by another Issue waits on it: while the blocker is open, stop before anything else and say it lands first — unless this branch already holds the blocker's closing reference, found as the Tracker ref says ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
 The session directory is this checkout, on that branch. Work at the git root (`git rev-parse --show-toplevel`). On a host whose shell starts every command in the original directory, resolve that root once, then begin every command with `cd <that path> &&` (or `git -C <that path>`), scope every search to it, and carry it into every sub-agent prompt as the only directory the agent works in. A host tool that creates a worktree is not this step.
 
@@ -32,14 +32,16 @@ Record `<start>`: `git rev-parse HEAD`. Commits this run adds are `git log <star
 Find linked worktrees with `git worktree list` (or the host's equivalent):
 
 - **In a linked worktree** → a linked worktree contains `.agents/steps/<slug>/`, or `git worktree list` shows a worktree on branch `<slug>`, or branch `<slug>` exists: stop and say that run is in flight there.
-- **In this checkout** → `.agents/steps/<slug>/` holds Step files: resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. Step files a Planner wrote resume the same way. `<start>` is then the parent of the commit that added those Step files.
+- **In this checkout** → `.agents/steps/<slug>/` holds Step files (`[0-9][0-9]-*.md`): resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. Step files a Planner wrote resume the same way. `<start>` is then the parent of the commit that added those Step files.
 - **Fresh** → neither: continue at step 2.
 
 A dirty tree is the working copy, and the tree as it is is the resume.
 
+Before leaving this step, when the argument is an Issue and `.agents/steps/<slug>/spec.md` is missing, write the Issue's title, as an H1, and its body to that file — nothing else. From here on **the Spec** is that copy: every sub-agent and `/document-changes` reads it, a resume reads it rather than the Issue, and step 2 commits it with the Step file.
+
 ### 2. Write the Step file
 
-Write `.agents/steps/<slug>/01-<slug>.md` and commit it as `plan: <slug>`:
+Write `.agents/steps/<slug>/01-<slug>.md` and commit it with the Spec as `plan: <slug>`:
 
 ```markdown
 # 01 — <slug>
@@ -49,7 +51,7 @@ Depends on: none
 
 ## What to build
 
-All of <the spec path, or the argument text when that is all there is>. This Step has no Footprint: its projects are the whole suite.
+All of <the Spec's path, or the argument text when that is all there is>. This Step has no Footprint: its projects are the whole suite.
 ```
 
 ### 3. Run the Step
@@ -84,7 +86,7 @@ Run `/document-changes` in **implement mode** while the Spec and the Step's Outc
 
 ### 6. Clean up
 
-Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, then delete the Spec, the whole `.agents/steps/<slug>/` directory, the Proof folder, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted. This step is done when `git status` is clean.
+Hold `grep -h '^Safety fact:' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and the Proof folder. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit the deletion with anything still uncommitted. When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close. This step is done when `git status` is clean.
 
 The final report carries the `Safety fact:` line.
 

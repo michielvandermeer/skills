@@ -1,6 +1,6 @@
 # A prototype is kept under `.agents/prototypes/`
 
-[ADR-0016](0016-a-prototype-is-deleted-and-its-spec-is-the-record.md) deleted the prototype with its worktree so the Spec was the only record. A Spec that names the question and the verdict still cannot show the thing that was clicked. `/prototype` now writes the artifact to `.agents/prototypes/<slug>/` on the checkout that will hold the Spec, and the Spec names that path. The worktree and `prototype/<slug>` branch still go: keeping those branches was already rejected, and a folder under `.agents/` is the same shape as a Refinement or an architecture review.
+[ADR-0016](0016-a-prototype-is-deleted-and-its-spec-is-the-record.md) deleted the prototype with its worktree so the Spec was the only record. A Spec that names the question and the verdict still cannot show the thing that was clicked. `/prototype` writes the artifact to `.agents/prototypes/<slug>/` on the original checkout, outside the worktree, and the Spec names that path. The worktree and `prototype/<slug>` branch still go: keeping those branches was already rejected, and a folder under `.agents/` is the same shape as a Refinement or an architecture review.
 
 Keeping the playable files on the `prototype/<slug>` branch was rejected again: the housekeeping is the same as in ADR-0016. Inlining the demo into the Spec was rejected because a Spec is not a place to click. Building the UI prototype only under `.agents/prototypes/` was rejected because a UI prototype has to sit on a real route to be judged.
 

@@ -1,6 +1,6 @@
 # Slicing a spec into steps
 
-You are the **planner** for an `/implement` run. Read the spec you were handed — or the issue, idea, or bare description, when that is all there is — walk the code until every Step's Footprint can be filled, then write one file per **step** to `.agents/steps/<slug>/`. A thinner source yields coarser steps; slice what you were given.
+You are the **planner** for an `/implement` run. Read the Spec you were handed — or the Issue body or bare description, when that is all there is — walk the code until every Step's Footprint can be filled, then write one file per **step** to `.agents/steps/<slug>/`. A thinner source yields coarser steps; slice what you were given.
 
 ## The walk
 
@@ -10,7 +10,7 @@ Open a file only when it might belong on a Footprint, or to settle a slice or or
 
 Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Step agent shares it — from the walk already done. Fill only silence — what the Spec already named stays as it is, and what the Spec's Out of Scope refuses stays out.
 
-When the files are written, commit them in one commit — `plan: <slug>` ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | one-line deliverable`, the deliverable at most fifteen words naming what works.
+When the files are written, commit them and the Spec beside them, when it is there, in one commit — `plan: <slug>` ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)) — and return the index and nothing else: one line per step, `NN | title | one-line deliverable`, the deliverable at most fifteen words naming what works.
 
 Steps run strictly in `NN` order, one sub-agent each, in one shared worktree. **The numbering is the dependency order**: a step may rely on every lower-numbered step and none of the higher-numbered ones. Its `Depends on:` line picks which of those lower-numbered Outcomes its step agent reads; it never changes run order, and it is not the `Blocked by:` edge [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md) removed.
 

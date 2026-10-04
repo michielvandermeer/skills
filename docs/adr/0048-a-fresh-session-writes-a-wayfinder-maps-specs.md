@@ -1,6 +1,6 @@
 # A fresh session writes a wayfinder map's Specs
 
-[ADR-0047](0047-a-wayfinder-map-ends-in-one-or-more-specs.md) had the session that resolved the last ticket go on to split the work and write the Specs. That session holds its own ticket and the map's one-line gists. The cut and every `/to-spec` need the full body of every resolved ticket, so it had to read all of them on top of a conversation already spent on one ticket. The session that leaves no tickets remaining now ends with a line telling the user to run `/wayfinder <effort>` in a fresh session. That session finds no tickets remaining, reads the map and every resolved ticket in full, and writes the Specs.
+[ADR-0047](0047-a-wayfinder-map-ends-in-one-or-more-specs.md) had the session that resolved the last ticket go on to split the work and write the Specs. That session holds its own ticket and the map's one-line gists. The cut and every `/to-spec` need the full body of every resolved ticket, so it had to read all of them on top of a conversation already spent on one ticket. The session that leaves no tickets remaining ends with a line telling the user to run `/wayfinder <map>` in a fresh session. That session finds no tickets remaining, reads the map and every resolved ticket in full, and writes the Specs.
 
 ## Considered Options
 

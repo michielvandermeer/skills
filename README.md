@@ -99,6 +99,28 @@ Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Co
 
 > To switch to deliberate, versioned releases instead, add a `version` field to `.claude-plugin/plugin.json`; consumers would then update only when you bump it.
 
+## Where your work lives
+
+Each piece of work is one **Issue**, kept in your repo's **Tracker**. Out of the box, the Tracker is a folder of Markdown files in the repo itself, `.agents/issues/`. To use GitHub Issues or Jira instead, or another system you describe, run `/setup`. It writes `.agents/refs/tracker.md`, which tells the skills how to work with your Tracker. That file belongs to your repo, so you can edit it.
+
+An Issue has exactly one status at a time:
+
+| Status | What it means |
+|--------|---------------|
+| `needs-triage` | Nobody has looked at it yet. |
+| `needs-info` | It waits on the person who reported it. |
+| `needs-grilling` | A person must decide how to solve it. |
+| `needs-human` | It waits on a secret or a manual test. |
+| `wayfinding` | It is the map of a `/wayfinder` effort. |
+| `ready-for-agent` | It carries a Spec for an agent to build. |
+| `ready-for-human` | It carries a Spec for a person to build. |
+
+A first rough thought and the Spec it grows into are the same Issue. When the Spec is written, it replaces the Issue's text. The earlier text stays in the Tracker's history (git, for the local Tracker), and comments stay as they are. Finished work is closed as done; work you decide against is closed as not planned.
+
+The implement commands read an Issue but never write to the Tracker. The commit that lands the work closes the Issue when your Tracker can do that from a commit, such as `Closes #42` on GitHub. Otherwise the final report names the Issue for you to close.
+
+Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, architecture reviews, codebase audits, Changelogs, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
+
 ## Repository layout
 
 ```
@@ -140,34 +162,35 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 
 | Skill | Description |
 |-------|-------------|
-| `brainstorm` | Explore a vague problem as very different Directions, side by side, and write the ones you keep as Ideas. |
+| `brainstorm` | Explore a vague problem as very different Directions, side by side, and file the ones you keep as Issues. |
 | `code-review` | Review changes since a fixed point along two axes — Standards and Spec — in parallel sub-agents. |
 | `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
-| `doctor` | Moves documents into the current project's canonical `.agents/` layout, removes implemented Spec and Idea documents, and brings every ADR to state the decision in force. |
+| `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, and brings every ADR to state the decision in force. Once `/setup` has run, it leaves Issues alone. |
 | `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, `/implement-yolo`, and for manual backfill. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
-| `implement` | Implement a spec by slicing it into steps and running each one in its own sub-agent. |
-| `implement-oneshot` | Implement a spec as a single step, skipping the Planner. Still checks, reviews, and improves data structures after. |
-| `implement-yolo` | Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge. |
-| `improve-codebase-architecture` | Scan for deepening opportunities, report them, then write the Ideas and Specs you pick. |
+| `implement` | Implement an Issue's Spec, or a description, by slicing it into steps and running each one in its own sub-agent. |
+| `implement-oneshot` | Implement an Issue's Spec, or a description, as a single step, skipping the Planner. Still checks, reviews, and improves data structures after. |
+| `implement-yolo` | Implement an Issue's Spec, or a description, as a single step on this checkout and this branch. No worktree, no new branch, no merge. |
+| `improve-codebase-architecture` | Scan for deepening opportunities, report them, then file the ones you pick as Issues — as Specs when they are clear enough to build. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
-| `refine` | Take an Idea or Jira ticket through grilling, an optional Prototype, and a Spec, then write a plain-language summary back. |
+| `refine` | Take any Issue through grilling, an optional Prototype, and a Spec. The Spec becomes the Issue's text, and its opening sections are the plain-language summary. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
 | `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
-| `to-spec` | Turn the current conversation into a spec and publish it to `.agents/specs/`. |
-| `triage` | Sort incoming reports into Specs or parked Issues, one document per distinct problem. |
+| `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. |
+| `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. |
+| `triage` | Sort incoming reports, or the Issues nobody has triaged yet, into Specs and parked Issues, one Issue per distinct problem, and close what won't be done. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
-| `wayfinder` | Plan a huge chunk of work as a shared map of decision tickets, resolved one at a time. |
+| `wayfinder` | Plan a huge chunk of work as a map — an Issue whose child tickets are decisions — and resolve them one at a time until its Specs can be written. |
 | `wizard` | Generate an interactive bash wizard that walks a person through steps only they can perform. |
 | `writing-for-agents` | Reference for writing any document an agent consumes — skills, AGENTS.md, CLAUDE.md. |
 

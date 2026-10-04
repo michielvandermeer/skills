@@ -24,7 +24,9 @@ The two branches produce very different artifacts — getting this wrong wastes 
 
 ### 2. Enter the worktree
 
-Derive `<slug>`: a kebab-case slug of the question being prototyped. Check the cases in order, because they decide where you build:
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
+
+Derive `<slug>`: the Issue's run slug as the Tracker ref gives it, when the session works from an Issue; otherwise a kebab-case slug of the question being prototyped. Check the cases in order, because they decide where you build:
 
 - **This session is already in a worktree** → build there. The session serves a larger effort, and [Serving a larger effort](#serving-a-larger-effort) governs its ending.
 - **A `prototype/<slug>` branch exists** → an earlier run handed the prototype over and stopped before its verdict. Find its worktree with `git worktree list` (or the host's equivalent), put the session's working directory there, and resume at step 4. Leave that tree exactly as it stands: a reset or a clean destroys the prototype you came back for.

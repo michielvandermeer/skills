@@ -1,19 +1,21 @@
 ---
 name: brainstorm
-description: Explore a vague problem as very different Directions, side by side, and write the ones you keep as Ideas.
+description: Explore a vague problem as very different Directions, side by side, and file the ones you keep as Issues.
 disable-model-invocation: true
-argument-hint: "<problem or idea path>"
+argument-hint: "<problem or issue reference>"
 ---
 
 # Brainstorm
 
-Turn a vague problem into Ideas by **diverging** first: lay out very different **Directions** side by side, each from its own angle, so the set spreads rather than clusters around the first thought.
+Turn a vague problem into Issues by **diverging** first: lay out very different **Directions** side by side, each from its own angle, so the set spreads rather than clusters around the first thought.
 
-The input is the problem in plain words, or the path to an Idea still too loose to grill. Read `CONTEXT.md` and the ADRs covering the area yourself.
+The input is the problem in plain words, or a reference to an Issue still too loose to grill. Read `CONTEXT.md` and the ADRs covering the area yourself.
 
-The run writes Ideas and nothing else. The next session stays one document per typed run, as [ADR-0035](../../docs/adr/0035-architecture-reviews-end-in-ideas-and-specs.md) sets for architecture reviews: step 7 names the command that continues each Idea, and the user types it.
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-Run the `/plain-language` skill before the first message and hold its bar for the opening, every card, and the closing pick. Every Idea holds its durable-document bar. The briefs you send helper agents are for agents and sit outside that bar.
+The run writes Issues and nothing else. The next session stays one document per typed run, as [ADR-0035](../../docs/adr/0035-architecture-reviews-end-in-issues.md) sets for architecture reviews: step 7 names the command that continues each Issue, and the user types it.
+
+Run the `/plain-language` skill before the first message and hold its bar for the opening, every card, and the closing pick. Every Issue holds its durable-document bar. The briefs you send helper agents are for agents and sit outside that bar.
 
 ## Process
 
@@ -67,28 +69,26 @@ The user's reply picks the move:
 
 Done when the user has kept Directions or stopped.
 
-### 6. Write the Ideas
+### 6. Write the Issues
 
-Each kept Direction becomes its own Idea at `.agents/ideas/<slug>.md`, the slug kebab-case from its title. Starting from an Idea, the kept Direction with the lowest card number overwrites that Idea's content under the same slug; every other kept Direction is a new Idea.
+Each kept Direction becomes its own Issue in `needs-grilling`, titled for the Direction. Starting from an Issue, the kept Direction with the lowest card number rewrites that Issue's body and sets its status; file every other kept Direction as a new Issue.
 
-In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+Fill the sections `/validate-spec` checks on a `needs-grilling` Issue. Write prose about behaviour and reasons; file paths, names from the code, and code blocks stay on the explorer report, since `/validate-spec` flags them on a `needs-grilling` Issue. Under a section name that is not plain words, such as Decisions (locked), add one line saying what the section holds.
 
-Fill the Idea sections `/validate-spec` checks, under an H1 title. Write prose about behaviour and reasons; file paths, names from the code, and code blocks stay on the explorer report, since `/validate-spec` flags them on an Idea. Under a section name that is not plain words, such as Decisions (locked), add one line saying what the section holds.
-
-- **Motivation** — the problem, why this Direction, links to the outside sources it relies on, and the title of each other Idea kept in this run.
+- **Motivation** — the problem, why this Direction, links to the outside sources it relies on, and the title of each other Issue kept in this run.
 - **Goal**
 - **Decisions (locked)** — what the run settled about this Direction.
 - **Out of scope** — every Direction shown that the user did not keep, each with the reason it was dropped.
 - **Open questions** — the Direction's open points, where the next grilling session starts.
 
-**Stopping without a pick** writes one Idea holding the problem: Motivation and Goal state the problem, Decisions (locked) holds the constraints you took as fixed, Out of scope says nothing is ruled out yet, and every Direction shown goes under Open questions. Starting from an Idea, add those Directions to its Open questions, add the constraints you took as fixed to its Decisions (locked) where it lacks them, and keep the rest of its content.
+**Stopping without a pick** files one Issue in `needs-grilling` holding the problem: Motivation and Goal state the problem, Decisions (locked) holds the constraints you took as fixed, Out of scope says nothing is ruled out yet, and every Direction shown goes under Open questions. Starting from an Issue, rewrite its body instead: add those Directions to its Open questions, add the constraints you took as fixed to its Decisions (locked) where it lacks them, and keep the rest of its content.
 
-Done when every kept Direction, or the stopped run, has its Idea on disk.
+Done when every kept Direction, or the stopped run, has its Issue in the Tracker.
 
 ### 7. Close
 
-Commit every Idea from the run in one commit, staged by name, on the branch you are on. Leave every other working-tree change alone.
+When the Tracker keeps Issues in the repo, commit every Issue from the run in one commit, staged by name, on the branch you are on. Leave every other working-tree change alone.
 
-List each Idea with the command that continues it: `/refine` when its Open questions are about what the product should do, `/grill-with-docs` when they are about how to build it. Then run `/retro`.
+List each Issue, by its reference, with the command that continues it: `/refine` when its Open questions are about what the product should do, `/grill-with-docs` when they are about how to build it. Then run `/retro`.
 
-Done when the commit exists, each Idea is listed with its next command, and `/retro` has finished.
+Done when every Issue from the run is in the Tracker and committed where the Tracker keeps it in the repo, each is listed with its next command, and `/retro` has finished.

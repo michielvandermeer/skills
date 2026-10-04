@@ -21,13 +21,15 @@ Finding *facts* is your job, never mine — and it is a sub-agent's job, never y
 
 A question with one defensible answer is a fact too. Reason it out and state it as a **declaration**. Reserve **questions** for genuine *decisions*, on two tests: would a different answer visibly change what gets built, and would a reasonable owner of this codebase pick the other option? An option you cannot write a cost for, or one the codebase already settles by precedent, is not an option, and the question is a declaration. When both answers land in the same place, pick one and move on without mentioning it.
 
-When every option you can offer fails the goal we opened with, the question is not a decision. Name the prerequisite that blocks it as a declaration and ask one thing: widen scope to cover it, file it as an Idea and stop, or accept the shortfall.
+When every option you can offer fails the goal we opened with, the question is not a decision. Name the prerequisite that blocks it as a declaration and ask one thing: widen scope to cover it, file it as an Issue in `needs-grilling` and stop, or accept the shortfall.
 
 Silence is consent — a declaration I say nothing about stands. An objection reshapes the tree exactly like an answer to a question.
 
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
+
 ## Altitude
 
-Open round 1 with an **orientation** — one to three plain sentences that name what we are grilling, written for someone who opened this tab cold among several sessions. Then name the **subject** on one line — `Subject: functional (correct me if not)` — in round 1 only, like the orientation; print it again only in the round where it changes, with one line saying why. When a subject is genuinely mixed, classify by where *my* judgement is needed rather than by which half is bigger. An Idea with no user-visible change — a refactor, a flag removal — is `technical` from round 1.
+Open round 1 with an **orientation** — one to three plain sentences that name what we are grilling, written for someone who opened this tab cold among several sessions. Then name the **subject** on one line — `Subject: functional (correct me if not)` — in round 1 only, like the orientation; print it again only in the round where it changes, with one line saying why. When a subject is genuinely mixed, classify by where *my* judgement is needed rather than by which half is bigger. An Issue with no user-visible change — a refactor, a flag removal — is `technical` from round 1.
 
 The subject sets the **altitude** you grill at:
 
@@ -38,9 +40,9 @@ The size of the change sets where you start, and most sessions are one change to
 
 - When my request already draws the scope, restate it as a declaration and offer nothing smaller.
 - When the request is open-ended, the scope question is round 1 on its own, because every other question hangs off its answer.
-- When the session starts from a written brief — an Idea, a Jira ticket, an Architecture review — D1 is your reading of it in your own words, including what you took from it as settled. Where the brief reads two ways that change what gets built, that is Q1, and the rest of the round waits.
+- When the session starts from a written brief — an Issue, an Architecture review — D1 is your reading of it in your own words, including what you took from it as settled. Where the brief reads two ways that change what gets built, that is Q1, and the rest of the round waits.
 
-Once scope is settled, ride what already exists and aim for the smallest change that does the work — an edge case the existing code already handles is a declaration, and so is an obvious refactor on the way. The smallest change is the default recommendation, not a position: when I choose a wider option than you recommended, or say the architecture is the point, recommend at that width for the rest of the session. A branch we cut as out of scope but still want is filed as an Idea where the repo keeps them, with the sections `/validate-spec` checks on an Idea, and named in a declaration.
+Once scope is settled, ride what already exists and aim for the smallest change that does the work — an edge case the existing code already handles is a declaration, and so is an obvious refactor on the way. The smallest change is the default recommendation, not a position: when I choose a wider option than you recommended, or say the architecture is the point, recommend at that width for the rest of the session. A branch we cut as out of scope but still want is filed as an Issue in `needs-grilling`, with the sections `/validate-spec` checks on a `needs-grilling` Issue, and named in a declaration.
 
 A question about what a screen should look like is a `/prototype` question. Settle scope and behaviour, then run `/prototype` on it and carry its verdict back as declarations; copy, placement, and format wait for the prototype when one is coming.
 
@@ -113,6 +115,6 @@ A round is read at speed, often late in a long day of them. Run the `/plain-lang
 
 ## Done
 
-The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Prove it with a **read-back** (the settled design, restated): plain sentences walking every surface and case the change touches, so that each meets a decision that applies to it. A surface no decision fits is a frontier item — ask it as a round, not in the read-back. The read-back carries no questions and no new declarations, names the Ideas filed along the way, and ends by asking whether we have reached a shared understanding. Only after that answer: a change to implement becomes a Spec; a settled design that nothing will be built writes no Spec. A forecast in an earlier round is not confirmation.
+The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Prove it with a **read-back** (the settled design, restated): plain sentences walking every surface and case the change touches, so that each meets a decision that applies to it. A surface no decision fits is a frontier item — ask it as a round, not in the read-back. The read-back carries no questions and no new declarations, names the Issues filed along the way, and ends by asking whether we have reached a shared understanding. Only after that answer: a change to implement becomes a Spec; a settled design that nothing will be built writes no Spec. A forecast in an earlier round is not confirmation.
 
-A session I stop before the frontier is empty still leaves a record: write every settled decision and unanswered Question back to the document we started from, or to a new Idea when there was none, and commit it.
+A session I stop before the frontier is empty still leaves a record: rewrite the body of the Issue we started from to add every settled decision and unanswered Question, or file them as a new Issue in `needs-grilling` when there was none, and commit.

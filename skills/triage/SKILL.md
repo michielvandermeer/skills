@@ -1,20 +1,22 @@
 ---
 name: triage
-description: Sort incoming reports into Specs and parked Issues — one document per distinct problem.
+description: Sort incoming reports into Specs and parked Issues — one Issue per distinct problem.
 disable-model-invocation: true
 ---
 
 # Triage
 
-Sort a **seed** of reports into Specs and parked Issues. One distinct problem → one document. Apply each result in this run; the closing **summary** is the review.
+Sort a **seed** of reports into Specs and parked Issues. One distinct problem → one Issue. Apply each result in this run; the closing **summary** is the review.
 
 ## Seed
 
-The seed is what the maintainer handed this session: a pasted email, a markdown file, a description, ticket text, or a path to an existing local Issue.
+The seed is what the maintainer handed this session: a pasted email, a markdown file, a description, ticket text, a reference to an Issue, or a query such as "every `needs-triage` Issue".
+
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
 1. If the invocation has no seed, ask for one. Stop until it arrives.
-2. If they named a path under `.agents/issues/<slug>/<NN>-<slug>.md`, that Issue is the file this problem updates. Any other file is seed text — new work.
-3. A paste is new work. Leave leftover files from old runs as they are.
+2. A reference to an Issue in this Tracker is the Issue this problem updates. A query lists the Tracker by status; each Issue it returns is the Issue its problem updates.
+3. Anything else — a paste, a file, an issue from another system — is seed text: new work. What this run files goes to this repo's Tracker. Leave every Issue the seed does not name as it is.
 
 Done: the seed text is in context.
 
@@ -26,11 +28,11 @@ Done: every distinct problem is named. More may join during investigate; each jo
 
 ## Per problem
 
-For each distinct problem, gather → verify → apply. When the seed is an existing Issue being split, write extras first, then rewrite or delete the original as the first problem's ending.
+For each distinct problem, gather → verify → apply. When the seed is an existing Issue being split, file each extra first as a new Issue whose body is only the extracted problem; the original Issue keeps the first problem and takes its ending.
 
 ### Gather
 
-Read the seed text for this problem. If this updates an existing Issue, read the body and `## Comments` and ask only what is still open. Explore the codebase using the project's domain glossary, respecting ADRs in the area.
+Read the seed text for this problem. If this updates an existing Issue, read it with its comments and ask only what is still open. Explore the codebase using the project's domain glossary, respecting ADRs in the area.
 
 Search for an existing implementation of the requested behaviour by domain concept (not just the request's wording). Record where you looked. Found → skip verify, apply **not filed**.
 
@@ -44,19 +46,15 @@ Done: a verify outcome is recorded.
 
 ### Apply
 
-Trust an explicit override in the seed (`spec this`, or the old "move … to ready-for-agent" → Spec; `needs-info`, `needs-human`, `needs-grilling` → that park). Pick exactly one ending and write it. Category on any Issue is `bug` or `enhancement`, as `Category:` near the top with `Status:`.
+Trust an explicit override in the seed (`spec this`, `ready-for-agent`, or `ready-for-human` → Spec; `needs-info`, `needs-human`, `needs-grilling` → that park). Pick exactly one ending and apply it. Every Issue this run leaves open carries a category, `bug` or `enhancement`.
 
-Issues live at `.agents/issues/<feature-slug>/<NN>-<slug>.md`, numbered from `01` among `NN-*.md` in that directory (`map.md` is not numbered). Same feature → that directory, next number. Different feature → new directory. An existing Issue being split keeps its path; extras are new files whose body is only the extracted problem.
+**Spec** — Buildable. Run `/to-spec` scoped to this problem alone, naming this problem's Issue when it has one: `/to-spec` rewrites that Issue into the Spec, or files one. Work the maintainer or another person will build is `ready-for-human`; tell `/to-spec` so. All other Specs are `ready-for-agent`.
 
-In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+A **park** files this problem's Issue, or updates the one it has: set its status to the park's name and add the park's comment.
 
-**Spec** — buildable and the solution is clear. Run `/to-spec` scoped to this problem alone. Delete the issue file if one exists for this problem. Agent-ready work is a Spec with `Status: ready-for-agent`.
-
-**needs-info** — not enough information. Park. Write or update the Issue. Append:
+**needs-info** — not enough information. Park. The comment:
 
 ```markdown
-## Triage Notes
-
 **What we've established so far:**
 
 - point 1
@@ -68,11 +66,11 @@ In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill ga
 
 Questions are specific and actionable.
 
-**needs-human** — a person is needed for secrets, manual testing, or work the maintainer will do. Park. Write or update the Issue. Short comment: why this status, what is known, what is blocked.
+**needs-human** — waiting on a secret or a manual test only a person can supply. Park. Short comment: why this status, what is known, what is blocked.
 
-**needs-grilling** — a human must decide the solution in a later `/grill-with-docs` session. Park. Write or update the Issue. Short comment: why this status, what is known, what is blocked.
+**needs-grilling** — a human must decide the solution in a later `/grill-with-docs` session. Park. Short comment: why this status, what is known, what is blocked.
 
-**Not filed** — rejected or already implemented. Delete the issue file if one exists for this problem. Mention only in the summary.
+**Not filed** — rejected or already implemented. When this problem has an Issue, close it as not planned, with a comment saying why. Otherwise mention it only in the summary.
 
 Every comment starts with:
 
@@ -82,10 +80,10 @@ Every comment starts with:
 
 Run `/plain-language` before any comment a reporter will read.
 
-Done: every named problem has exactly one ending on disk, or is not filed, and extras found during investigate have been named and run through this section.
+Done: every named problem has exactly one ending applied in the Tracker, or is not filed, and extras found during investigate have been named and run through this section.
 
 ## Summary
 
-End with a summary the people in the session can follow up from. For every problem: what it was, and either the path plus `Status:` of the Spec or Issue, or that it was not filed and why. The summary is the review.
+End with a summary the people in the session can follow up from. For every problem: what it was, and either its Issue's reference and status, or that it was not filed, why, and the reference of any Issue it closed. The summary is the review.
 
 Done: the summary lists every problem this run handled. Then run `/retro`.

@@ -2,14 +2,12 @@
 status: partially superseded by ADR-0008
 ---
 
-# Canonical `.agents/` layout for specs, ideas, references, and architecture reviews
+# Canonical `.agents/` layout for references and architecture reviews
 
-These skills previously had no single fixed location for the documents they read and write: `validate-spec` looked for specs under `.agents/plans/`, `improve-codebase-architecture` wrote reviews to a singular `.agents/architecture-review/`, and `code-review`'s coding-standards discovery had no preferred spot at all. We fixed a canonical layout — specs at `.agents/specs/<slug>.md`, ideas at `.agents/ideas/<slug>.md`, ADRs at `docs/adr/` (unchanged), skill-supporting reference docs at `.agents/refs/`, architecture reviews at `.agents/architecture-reviews/` — and updated every skill that reads or writes these to agree on it.
-
-As part of this, `to-spec` was decoupled from the `.scratch/` issue tracker (see [ADR-0001](0001-fixed-local-issue-tracker.md)): a spec is no longer published as a tracker ticket, just written to `.agents/specs/` carrying its own `Status:` line for the triage role. `/doctor` moves documents in consuming repos that predate this layout — e.g. an existing `.agents/plans/` directory — into it, classifying each by content shape rather than assuming a fixed prior location.
+Each document the skills keep in the repo has one fixed location, and every skill that reads or writes it agrees on that location. This layout fixes three: ADRs at `docs/adr/`, skill-supporting reference docs at `.agents/refs/`, and architecture reviews at `.agents/architecture-reviews/`. Issues, and the Specs they carry, follow the repo's Tracker ([ADR-0001](0001-each-repo-describes-its-tracker.md)). `/doctor` moves documents in consuming repos that predate this layout into it, classifying each by content shape rather than assuming a fixed prior location.
 
 ## Consequences
 
-- Consuming repos with docs in the old locations (`.agents/plans/`, ad hoc reference docs, a singular `.agents/architecture-review/`) are brought into line by `/doctor`, which moves them without asking in its single commit.
-- Architecture reviews since moved to a folder per review, and Refinements were added on the same rule — see [ADR-0008](0008-session-output-gets-a-folder.md). The flat-file-per-document layout still holds for Specs, Ideas, and references.
+- Consuming repos with docs in the old locations (ad hoc reference docs, a singular `.agents/architecture-review/`) are brought into line by `/doctor`, which moves them without asking in its single commit.
+- Architecture reviews since moved to a folder per review, and Refinements were added on the same rule — see [ADR-0008](0008-session-output-gets-a-folder.md). The flat-file-per-document layout still holds for references.
 - `code-review`'s standards-source discovery checks `.agents/refs/` first but still falls back to root-level `CODING_STANDARDS.md`/`CONTRIBUTING.md` if that's what a repo already has — `.agents/refs/` is the canonical spot for new docs, not an exclusive one.

@@ -1,7 +1,7 @@
 ---
 name: implement-oneshot
 description: "Implement a spec as a single step, skipping the Planner. Still checks, reviews, and improves data structures after."
-argument-hint: "Which spec, issue, or idea to implement?"
+argument-hint: "Which Issue to implement, or what to build?"
 disable-model-invocation: true
 ---
 
@@ -11,35 +11,37 @@ This is `/implement` with one Step and no Planner ([ADR-0054](../../docs/adr/005
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. See [ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md).
+The run never leaves a local checkout: nothing pushes, publishes, writes to the Tracker, or changes a live system, and work that needs that **halts**. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-never-leaves-the-repository.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
 
 ## Process
 
 ### 1. Enter the worktree
 
-Derive `<slug>`: the spec's filename without its extension when the argument names one, otherwise a kebab-case slug from the argument.
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-A Spec carrying `Blocked by: <spec-slug>` waits on that Spec: while `.agents/specs/<spec-slug>.md` exists in this checkout, stop before anything else and say that Spec lands first ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
-
-In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+The argument is an Issue reference — normally an Issue in `ready-for-agent` — or a description of the change, which touches no Tracker; an issue outside this repo's Tracker is read as a description. Read the Issue. Derive `<slug>`: the Issue's run slug as the Tracker ref gives it, otherwise a kebab-case slug from the description.
 
 `<base>` is the **base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is reviewed and measured green against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). If it is empty, **halt** — HEAD is detached. The main checkout's working tree is the user's and stays as you found it until step 6.
+
+An Issue blocked by another Issue waits on it: while the blocker is open, stop before anything else and say it lands first — unless `<base>` already holds the blocker's closing reference, found as the Tracker ref says ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
 Find linked worktrees with `git worktree list` (or the host's equivalent). Check first, because it decides which worktree you enter:
 
 - **In flight** → `git worktree list` shows a worktree on branch `<slug>`, branch `<slug>` exists, or any linked worktree contains `.agents/steps/<slug>/`. A worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
   - Put the session's working directory on that worktree's path. When the branch exists without a worktree, `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>` first (ensure `.agents/worktrees/` is ignored; prefer a local ignore when the repo uses one).
   - `git reset --hard && git clean -fd` drops whatever the halted agent left uncommitted. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
-  - When `.agents/steps/<slug>/` holds Step files, resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. Step files a Planner wrote resume the same way. Otherwise continue at step 2.
+  - When `.agents/steps/<slug>/` holds Step files (`[0-9][0-9]-*.md`), resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. Step files a Planner wrote resume the same way. Otherwise continue at step 2.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git reset --hard <base>` so the run starts from the `<base>` you actually have — the new branch has no commits of its own yet:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
   - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
 
 The session must work *inside* the worktree for the rest of the run — creating a worktree alone is not enough. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it, then begin every command with `cd <that path> &&` (or `git -C <that path>`), scope every search to it, and carry it into every sub-agent prompt as the only directory the agent works in. An `/implement-oneshot` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
 
+Before leaving this step, when the argument is an Issue and `.agents/steps/<slug>/spec.md` is missing, write the Issue's title, as an H1, and its body to that file — nothing else. From here on **the Spec** is that copy: every sub-agent and `/document-changes` reads it, a resume reads it rather than the Issue, and step 2 commits it with the Step file.
+
 ### 2. Write the Step file
 
-Write `.agents/steps/<slug>/01-<slug>.md` and commit it as `plan: <slug>`:
+Write `.agents/steps/<slug>/01-<slug>.md` and commit it with the Spec as `plan: <slug>`:
 
 ```markdown
 # 01 — <slug>
@@ -49,7 +51,7 @@ Depends on: none
 
 ## What to build
 
-All of <the spec path, or the argument text when that is all there is>. This Step has no Footprint: its projects are the whole suite.
+All of <the Spec's path, or the argument text when that is all there is>. This Step has no Footprint: its projects are the whole suite.
 ```
 
 ### 3. Run the Step
@@ -80,7 +82,7 @@ Run `/document-changes` in **implement mode** while the Spec and the Step's Outc
 
 ### 6. Land the branch
 
-Hold `grep -h '^Safety fact:' .agents/steps/<slug>/*.md` for the final report, then delete the Spec, the whole `.agents/steps/<slug>/` directory, the Proof folder, and the Idea or Issue document the Spec came from — unless the Spec says that document outlives it, in which case leave it and say so in the final report. Repoint or remove links to the deleted files from other `.agents/` documents. Remove every `Blocked by: <spec-slug>` line in another Spec that names the deleted Spec — it has landed. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean.
+Hold `grep -h '^Safety fact:' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and the Proof folder. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit the deletion with anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean. When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close.
 
 Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 

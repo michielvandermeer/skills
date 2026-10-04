@@ -1,7 +1,7 @@
 ---
 name: review-spec
 description: Re-evaluate a Spec's Solution on this session's model and write the edits you approve.
-argument-hint: "[path-or-slug]"
+argument-hint: "[issue reference]"
 disable-model-invocation: true
 ---
 
@@ -13,11 +13,11 @@ Run `/plain-language` before every message the user reads.
 
 ## 1. Pin the Spec
 
-A path or slug in the argument; otherwise the Spec already under discussion; otherwise the newest file under `.agents/specs/`. Stop if that is not a Spec file on disk. One Spec per run.
+An Issue reference in the argument; otherwise the Issue already under discussion; otherwise the Issue the run slug in the current branch's name points to, as the Tracker ref says; otherwise ask. Stop if that Issue's status is not `ready-for-agent` or `ready-for-human`: it carries no Spec. One Spec per run.
 
-In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-**Done** when a Spec file path is in hand, or the run has stopped.
+**Done** when the Issue carrying the Spec is in hand, or the run has stopped.
 
 ## 2. Read
 
@@ -54,10 +54,10 @@ Parse:
 - numbers and ranges (`1,3,5`, `1-3`) → those items
 - otherwise ask once more; a second unparseable reply is an empty set
 
-Write the approved items in list order into the Spec file. The list text is what lands. Leave the write uncommitted.
+Apply the approved items in list order to the Spec, then write it to its Issue in one update: rewrite the body. The list text is what lands. Leave the write uncommitted.
 
 Empty set → stop.
 
-Any write → run `/validate-spec` on that Spec. Its report ends the run.
+Any write → run `/validate-spec` on that Issue. Its report ends the run.
 
-**Done** when the Spec on disk matches the approved set, and either `/validate-spec` has reported or nothing was written.
+**Done** when the Issue's Spec matches the approved set, and either `/validate-spec` has reported or nothing was written.

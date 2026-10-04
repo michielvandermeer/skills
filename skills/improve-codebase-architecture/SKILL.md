@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Scan a codebase for deepening opportunities, present them as a visual HTML report, then write the Ideas and Specs you pick.
+description: Scan a codebase for deepening opportunities, present them as a visual HTML report, then file the ones you pick as Issues or Specs.
 disable-model-invocation: true
 ---
 
@@ -95,19 +95,21 @@ Done when both files are written, every candidate has a card carrying all parts 
 
 Run `/plain-language` before any sentence in this step a person will read.
 
-For each candidate, decide whether it is **Buildable**: `/implement` could start from the card without another design session. The test is the card, not the strength badge. A dispute that it is Buildable is itself evidence it needs grilling: list it as Idea-only.
+For each candidate, decide whether it is **Buildable**: `/implement` could start from the card without another design session. The test is the card, not the strength badge. A dispute that it is Buildable is itself evidence it needs grilling: list it as not Buildable.
 
-List every candidate in the chat as "can become a Spec" or "can only become an Idea", with one line saying why. Then ask which files to write. Where a Spec is allowed, they choose Spec or Idea. They may pick several of either, or none. An unnamed candidate stays only on the Architecture review.
+List every candidate in the chat as "can become a Spec" or "can only become an Issue in `needs-grilling`", with one line saying why. Then ask which to file. Where a Spec is allowed, they choose a Spec or an Issue in `needs-grilling`. They may pick several of either, or none. An unnamed candidate stays only on the Architecture review.
 
 Wait for the picks.
 
-Each pick becomes its own file:
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-- **Idea** — `.agents/ideas/<slug>.md` (kebab-case from the title). Sections: Motivation, Goal, Decisions (locked), Out of scope, Open questions, filled from the card. Name the Architecture review path. File paths and diagrams stay only on that review.
-- **Spec** — only when the card is Buildable. Run `/to-spec` scoped to that card alone. The card is the brief; a decision it did not settle stays unset in the Spec. Name the Architecture review path. A named Spec on a card that is not Buildable is written as an Idea, with the reason.
+Each pick becomes its own Issue:
 
-Write Ideas first. Then one `/to-spec` per Spec pick. `/to-spec` commits the Spec. If Ideas exist and no Spec ran to commit them, commit those Idea files staged by name, on the branch you are on, without asking. Leave every other working-tree change alone.
+- **Issue in `needs-grilling`** — titled for the card. Sections: Motivation, Goal, Decisions (locked), Out of scope, Open questions, filled from the card. Name the Architecture review path. File paths and diagrams stay only on that review.
+- **Spec** — only when the card is Buildable. Run `/to-spec` scoped to that card alone. The card is the brief; a decision it did not settle stays unset in the Spec. Name the Architecture review path. A named Spec on a card that is not Buildable is filed as an Issue in `needs-grilling`, with the reason.
 
-Then list each new file and the command that continues it: `/grill-with-docs` on an Idea, `/implement` on a Spec. Then run `/retro`.
+File the `needs-grilling` Issues first. Then one `/to-spec` per Spec pick; `/to-spec` commits. When the Tracker keeps Issues in the repo, commit every Issue file no `/to-spec` committed, staged by name, on the branch you are on, without asking. Leave every other working-tree change alone.
 
-Done when every pick has a file on disk, or none were picked; any new file is listed with its next command; and `/retro` has finished.
+Then list each new Issue, by its reference, with the command that continues it: `/grill-with-docs` on a `needs-grilling` Issue, `/implement` on a Spec. Then run `/retro`.
+
+Done when every pick is an Issue in the Tracker, or none were picked; each new Issue is listed with its next command; and `/retro` has finished.

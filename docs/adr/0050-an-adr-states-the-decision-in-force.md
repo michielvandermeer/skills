@@ -17,4 +17,4 @@ An ADR records a decision that holds today and the reason it holds. It carries n
 - `ADR-FORMAT.md` has no Status section. Any ADR in `docs/adr/` is in force.
 - Numbers are never reused. A deleted or folded ADR leaves a gap.
 - An option once chosen and later dropped stays only as a rejected option with its reason, and only when someone might propose it again.
-- `/doctor` never edits application code. A mismatch it judges to be a bug appears only in its report; it files no Issue or Idea for it.
+- `/doctor` never edits application code. A mismatch it judges to be a bug appears only in its report; it files no Issue for it.

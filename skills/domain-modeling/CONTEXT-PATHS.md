@@ -4,14 +4,11 @@ A repo with a root `CONTEXT-MAP.md` files every work document one folder deeper:
 
 | Document | Without a map | With a map |
 |---|---|---|
-| Spec | `.agents/specs/<slug>.md` | `.agents/specs/<context>/<slug>.md` |
-| Idea | `.agents/ideas/<slug>.md` | `.agents/ideas/<context>/<slug>.md` |
-| Issue, Decision ticket, Map | `.agents/issues/<effort>/` | `.agents/issues/<context>/<effort>/` |
 | Prototype | `.agents/prototypes/<slug>/` | `.agents/prototypes/<context>/<slug>/` |
 | Architecture review | `.agents/architecture-reviews/<timestamp>/` | `.agents/architecture-reviews/<context>/<timestamp>/` |
 | Codebase audit | `.agents/codebase-audits/<timestamp>/` | `.agents/codebase-audits/<context>/<timestamp>/` |
 
-Steps (`.agents/steps/<spec-slug>/`), worktrees (`.agents/worktrees/`), and refs (`.agents/refs/`) take no context subfolder.
+Issues follow the repo's Tracker ref, or [setup/LOCAL.md](../setup/LOCAL.md) when it has none; the local Tracker picks its context subfolder by the rules below. Steps (`.agents/steps/<run-slug>/`), worktrees (`.agents/worktrees/`), and refs (`.agents/refs/`) take no context subfolder.
 
 ## The context subfolder
 
@@ -25,4 +22,4 @@ A document goes to the context that owns the code its work would change. Infer t
 
 ## Finding a document
 
-A lookup by slug and a scan of a kind folder ("the newest file under `.agents/specs/`") cover every context subfolder of that kind, such as `.agents/specs/*/<slug>.md`. Before writing a new slug, check that no other context subfolder of that kind holds it, so a lookup by slug finds one file. Steps key on the Spec slug alone for this reason.
+A lookup by slug and a scan of a kind folder cover every context subfolder of that kind, such as `.agents/prototypes/*/<slug>/`. Before writing a new slug, check that no other context subfolder of that kind holds it, so a lookup by slug finds one document. A run's Step folder keys on its slug alone for this reason.

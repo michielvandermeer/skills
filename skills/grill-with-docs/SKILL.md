@@ -10,8 +10,10 @@ Run a `/grilling` session, using the `/domain-modeling` skill. The glossary entr
 
 When the request asks for a `/prototype`, or a question turns out to need one, run it after the Frontier is empty and before the ending below; its verdict is the last set of declarations, and only a Spec that is written names its folder.
 
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
+
 Once the Read-back is confirmed, take exactly one ending. The confirmed Read-back is the only test — a forecast in an earlier Round is not confirmation.
 
-**Change to implement** — the settled design still names a change. Run `/to-spec`, then `/retro`. Leave an originating Issue or Idea in place so `/to-spec` can point it at the Spec. A mixed Read-back ("do not build X, do build Y") takes this ending for Y; X is Out of Scope on that Spec.
+**Change to implement** — the settled design still names a change. Run `/to-spec`, then `/retro`. `/to-spec` rewrites the Issue this session started from into the Spec. A mixed Read-back ("do not build X, do build Y") takes this ending for Y; X is Out of Scope on that Spec.
 
-**Work we will not do** — the whole settled design names no change. Skip `/to-spec`. Delete an Issue or Idea this session started from when one exists; Ideas filed during the session for branches still wanted stay. Glossary entries already written stay; write no ADR that was waiting for Spec time. Say that you wrote no Spec because nothing will be built. Then run `/retro`.
+**Work we will not do** — the whole settled design names no change. Skip `/to-spec`. Close the Issue this session started from as not planned, when there is one; Issues filed during the session for branches still wanted stay open. Glossary entries already written stay; write no ADR that was waiting for Spec time. Say that you wrote no Spec because nothing will be built. Then run `/retro`.

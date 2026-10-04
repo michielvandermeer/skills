@@ -6,8 +6,21 @@ A collection of software-engineering skills for Claude Code, distributed as a pl
 
 ### Work documents
 
-**Idea**:
-A thought captured at `.agents/ideas/<slug>.md`, or `.agents/ideas/<context>/<slug>.md` in a multi-context repo. A `/brainstorm` run may overwrite it with a sharper kept Direction, or, when the user stops without keeping one, add every Direction shown to its Open questions. Loose until a `/refine` session overwrites it with a plain-language summary of the Spec — the problem, the solution, and the user stories — and a `Spec:` line pointing at that file.
+**Tracker**:
+Where a repo keeps its Issues: local Markdown files in the repo, GitHub Issues, Jira, or any other system its **Tracker ref** describes. One per repo. A repo with no Tracker ref uses the local Markdown **Tracker template** as shipped.
+_Avoid_: issue tracker, ticketing system, backlog
+
+**Tracker ref**:
+The repo's own description of its **Tracker**, at `.agents/refs/tracker.md`: which system it is, how each operation the skills name is carried out there, and which label or field holds each status. The repo owns it and may edit it freely; the skills follow it as written.
+_Avoid_: issue-tracker.md, tracker config, tracker settings
+
+**Tracker template**:
+A starting **Tracker ref** the plugin ships for one system — local Markdown, GitHub Issues, or Jira — that `/setup` copies into a repo. Once copied it is the repo's own; later changes to the template do not reach it.
+_Avoid_: baseline, preset, issue-tracker template
+
+**Issue**:
+One piece of work in the repo's **Tracker**, from a first rough thought to a finished **Spec**, carrying exactly one status: `needs-triage` (nobody has triaged it), `needs-info` (waiting on the reporter), `needs-grilling` (a person must decide the solution), `needs-human` (waiting on a secret or a manual test), `wayfinding` (it is a **Map**), or `ready-for-agent` / `ready-for-human` (it carries a Spec, for an agent or a person to build). A `needs-` status means it waits on something; a `ready-for-` status means it carries a Spec. Moving from one stage to the next updates the same Issue; finished or rejected work is closed. `/triage` may also give it a `bug` or `enhancement` category.
+_Avoid_: Idea, ticket, card, work item, PRD
 
 **Scope**:
 What a `/refine` session determines: what is part of this project and what is not.
@@ -18,7 +31,7 @@ A proposed change whose Solution is clear enough that `/implement` can start wit
 _Avoid_: ready, agent-ready, clear solution
 
 **Architecture review**:
-The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/` (`.agents/architecture-reviews/<context>/<timestamp>/` in a multi-context repo), holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system; after the report, the session says which candidates are Buildable, then picked candidates become Ideas, or Specs when Buildable.
+The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/` (`.agents/architecture-reviews/<context>/<timestamp>/` in a multi-context repo), holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system; after the report, the session says which candidates are Buildable, then picked candidates become Issues in `needs-grilling`, or Specs when Buildable.
 _Avoid_: codebase audit, audit, tech-debt report, architecture report
 
 **Codebase audit**:
@@ -38,7 +51,7 @@ One focused task in a Wizard, typically one screen.
 _Avoid_: Step, prompt
 
 **Spec**:
-The approved description of a feature at `.agents/specs/<slug>.md`, or `.agents/specs/<context>/<slug>.md` in a multi-context repo — problem, solution, user stories, implementation and testing decisions. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; it carries `Status: ready-for-agent`, and a `Blocked by: <spec-slug>` line when another Spec must land first — a Spec still in `.agents/specs/` has not landed. Work we will not do is not a Spec.
+The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, user stories, implementation and testing decisions — replacing whatever the Issue said before. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
 **ADR**:
@@ -58,15 +71,15 @@ A claim a Spec treats as settled that it never states as a decision and that the
 _Avoid_: assumption
 
 **Step**:
-One implementation slice of a Spec, at `.agents/steps/<spec-slug>/<NN>-<slug>.md`. A tracer bullet: a narrow but complete path through every layer, sized to one fresh agent context, verifiable on its own. Its `Status:` reads `pending` until its Step agent sets `built`, then `done` once its Checker finishes it. A run with no Planner — `/implement-oneshot` or `/implement-yolo` — has exactly one Step, the whole Spec, with no Footprint. Steps exist only for the duration of a run and are deleted with the Spec they came from.
+One implementation slice of a Spec, at `.agents/steps/<run-slug>/<NN>-<slug>.md`. A tracer bullet: a narrow but complete path through every layer, sized to one fresh agent context, verifiable on its own. Its `Status:` reads `pending` until its Step agent sets `built`, then `done` once its Checker finishes it. A run with no Planner — `/implement-oneshot` or `/implement-yolo` — has exactly one Step, the whole Spec, with no Footprint. Steps exist only for the duration of a run and are deleted when it lands.
 _Avoid_: ticket, task, chunk, phase
 
 **Decision ticket** (everyday: **ticket**):
-A file on a `/wayfinder` map at `.agents/issues/<effort>/<NN>-<slug>.md` (`.agents/issues/<context>/<effort>/<NN>-<slug>.md` in a multi-context repo) whose resolution is a decision — not a slice of a build to execute. The unit of claim and resolution. Distinct from a Step, which delivers code and decides nothing.
+A child of a **Map** in the **Tracker** whose resolution is a decision — not a slice of a build to execute. The unit of claim and resolution. Distinct from a Step, which delivers code and decides nothing.
 _Avoid_: investigation ticket, implementation ticket
 
 **Claimed**:
-A Decision ticket whose `Status:` line is `claimed`. Concurrent `/wayfinder` sessions skip it. A ticket with no `Status:` line is unclaimed.
+A Decision ticket a `/wayfinder` session holds through the **Tracker**'s claim. Concurrent `/wayfinder` sessions skip it. The claim stands until the ticket is resolved or the user clears it.
 _Avoid_: in progress, locked, assigned, researching
 
 **Fork**:
@@ -76,21 +89,18 @@ A place a `/wayfinder` effort could go two ways, and the one it takes changes wh
 A grilling **Decision ticket** whose **Fork** is a tree: more than one question already nameable, or one-question forks that block each other.
 
 **Small questions**:
-A grilling **Decision ticket** that holds leftover unblocked one-question **Forks**, even when the subjects differ. The heading is Small questions.
+A grilling **Decision ticket** that holds leftover unblocked one-question **Forks**, even when the subjects differ. Its title is Small questions.
 _Avoid_: leftovers ticket, bundle, grab-bag
 
-**Issue**:
-An incoming request moving through the `/triage` state machine, at `.agents/issues/<slug>/<NN>-<slug>.md` (`.agents/issues/<context>/<slug>/<NN>-<slug>.md` in a multi-context repo), one file per distinct problem, carrying `Category:` and `Status:` lines. A Buildable issue ends as a **Spec** and that issue file is deleted; surviving states are `needs-info`, `needs-human`, and `needs-grilling`; rejected or already-implemented work is not kept as a document.
-
 **Map**:
-The index of a `/wayfinder` effort at `.agents/issues/<effort>/map.md` (`.agents/issues/<context>/<effort>/map.md` in a multi-context repo) — Destination, Notes, Decisions so far, fog. Every Map ends in one or more Specs, so its Destination names the whole change those Specs will cover rather than which artifact the effort produces. How many Specs, and where one ends and the next begins, is decided only once no tickets remain — a ticket remains until it is resolved or ruled out of scope — and by a fresh `/wayfinder` session, not the one that resolved the last ticket: each Spec is a change that can land green and is worth shipping on its own, and one Spec may name another that must land first. The Map is deleted in the commit that writes its Specs.
+An **Issue** in status `wayfinding` whose body is the index of a `/wayfinder` effort — Destination, Notes, Decisions so far, fog — and whose children are its **Decision tickets**. Every Map ends in one or more Specs, so its Destination names the whole change those Specs will cover rather than which artifact the effort produces. How many Specs, and where one ends and the next begins, is decided only once no tickets remain — a ticket remains until it is resolved or ruled out of scope — and by a fresh `/wayfinder` session, not the one that resolved the last ticket: each Spec is a change that can land green and is worth shipping on its own, and one Spec may be blocked by another that must land first. The Map's own Issue becomes the first of those Specs; the rest are new Issues.
 
 **Context subfolder**:
-The folder level, named for one context or `common`, that sits right after the kind folder in a work document's path in a multi-context repo — the `billing` in `.agents/specs/billing/<slug>.md`. Distinct from a context's own folder, the one holding its `CONTEXT.md`.
+The folder level, named for one context or `common`, that sits right after the kind folder in a work document's path in a multi-context repo — the `billing` in `.agents/prototypes/billing/<slug>/`. Distinct from a context's own folder, the one holding its `CONTEXT.md`.
 _Avoid_: context folder, app folder
 
 **Common**:
-The folder that stands where a context's name would in a work document's path, in a multi-context repo, when the work belongs to no single context: it spans two or more contexts, or it touches code no context owns. `.agents/specs/common/<slug>.md`.
+The folder that stands where a context's name would in a work document's path, in a multi-context repo, when the work belongs to no single context: it spans two or more contexts, or it touches code no context owns. `.agents/prototypes/common/<slug>/`.
 _Avoid_: shared, global, cross-app
 
 **Changelog**:
@@ -158,7 +168,7 @@ The read-only sub-agent (`skills:explorer`) a Driving session dispatches with na
 _Avoid_: scout, researcher, background reader
 
 **Direction**:
-One of the very different ways to tackle a vague problem that a `/brainstorm` run lays out side by side — a pitch, how it works, what it costs, what it is best at, and its biggest risk. Each comes from its own angle, so the set spreads rather than clusters. A Direction the user keeps becomes an Idea; the rest are dropped with their reason. When the user stops without keeping one, none is dropped: every Direction shown goes to the Open questions of one Idea. Distinct from an option, which is one lettered answer inside a Question.
+One of the very different ways to tackle a vague problem that a `/brainstorm` run lays out side by side — a pitch, how it works, what it costs, what it is best at, and its biggest risk. Each comes from its own angle, so the set spreads rather than clusters. A Direction the user keeps becomes an Issue in `needs-grilling`; the rest are dropped with their reason. When the user stops without keeping one, none is dropped: every Direction shown goes to the Open questions of one Issue. Distinct from an option, which is one lettered answer inside a Question.
 _Avoid_: option, approach, alternative, candidate
 
 **Subject**:
@@ -202,7 +212,7 @@ The sub-agent (`skills:checker`) that finishes a Step once its Step agent has co
 _Avoid_: verifier, step reviewer, finisher
 
 **Validator**:
-The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just written. It works from that Spec's path, corrects facts in the file, and returns the report of corrections and open questions.
+The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just drafted. It works from the draft's path, corrects facts in that file, and returns the report of corrections and open questions; `/to-spec` then writes the corrected Spec to its Issue in one update.
 _Avoid_: spec checker, spec reviewer, linter
 
 **Fixer**:

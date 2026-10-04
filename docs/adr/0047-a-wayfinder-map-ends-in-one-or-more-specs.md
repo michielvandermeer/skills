@@ -18,5 +18,5 @@ The last session decides the split, once no tickets remain. It cuts where each S
 
 - ADR-0011 stands for what a Map ends in. Only the count changes.
 - The Destination names the whole change the effort's Specs will cover.
-- A Spec that must wait for another carries a `Blocked by: <spec-slug>` line. A Spec still in `.agents/specs/` has not landed. `/implement`, `/implement-oneshot`, and `/implement-yolo` stop before they start anything when a Spec is blocked by one that is still there.
-- The session that writes the Specs deletes the Map folder in the same commit. The Specs are the record. A Map whose tickets are all resolved would otherwise look like a destination still to write, and a later session would write the Specs again.
+- A Spec that must wait for another has its Issue linked as blocked by that Spec's Issue. `/implement`, `/implement-oneshot`, and `/implement-yolo` stop before they start anything while the blocker is open, unless the base branch already holds the blocker's closing reference.
+- The Map's own Issue becomes the first Spec, and each further Spec is a new Issue that names the Map's Issue. The Specs are the record. A Map whose tickets are all resolved would otherwise look like a destination still to write, and a later session would write the Specs again.

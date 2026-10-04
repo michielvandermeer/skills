@@ -10,7 +10,7 @@ You are the **driving session**. Inspect the whole codebase for **material** sim
 
 In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
 
-Distinct from `/improve-data-structures` (recent work, may implement) and `/improve-codebase-architecture` (module depth, then Ideas and Specs).
+Distinct from `/improve-data-structures` (recent work, may implement) and `/improve-codebase-architecture` (module depth, then Issues and Specs).
 
 Continue until every identifiable subsystem has been reviewed and the report passes step 3.
 
