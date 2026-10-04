@@ -170,6 +170,7 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 | `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, and brings every ADR to state the decision in force. Once `/setup` has run, it leaves Issues alone. |
 | `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, `/implement-yolo`, and for manual backfill. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
+| `explain` | Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |

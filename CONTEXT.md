@@ -129,6 +129,10 @@ _Avoid_: definition block, glossary entry
 The plain-words introduction a skill gives its own vocabulary the first time that vocabulary appears — "the frontier (the questions I can ask now)". What buys a skill the right to use a term it defined rather than spelling the idea out every time.
 _Avoid_: definition, footnote, explainer, aside
 
+**Explanation**:
+What an `/explain` run makes instead of prose: a diagram drawn with text characters in the chat, or a self-contained HTML page or narrated video in a temp folder outside any repo. Distinct from an **Explainer**, the opening sentences of a grilling **Question**.
+_Avoid_: explainer, explainer video, visual
+
 ### Sessions
 
 **Driving session**:
