@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-10-04: Implement picks up a leftover branch
+`/implement` now carries on from an earlier run's branch when that run stopped and its worktree was removed. Before, it started the run again and could throw away the work already on that branch. `/implement-oneshot` already worked this way.
+
+## 2026-10-04: Yolo works on a same-named branch
+`/implement-yolo` no longer stops when the branch you have checked out has the same name as the Issue. Before, it wrongly said another run was already in progress somewhere else. It still stops when another run really is in progress in another worktree or on another branch.
+
+## 2026-10-04: Wayfinder retro after writing Specs
+The `/wayfinder` session that writes a map's Specs now ends with a retrospective, like every other `/wayfinder` session. Before, only that session skipped it.
+
+## 2026-10-04: Map tickets sorted by app
+In a repo with a `CONTEXT-MAP.md` that keeps its Issues as local files, a map's decision tickets now sit in the same app folder as the map, such as `.agents/issues/billing/<map>/`. Before, the instructions put them in a folder outside every app.
+
 ## 2026-10-04: Work lives in your own tracker
 The skills can now keep your work in GitHub Issues, Jira, or another tracker, not only as files in your repo: run the new `/setup` to choose, and it can move your existing work across. Ideas, reports, and Specs are now one Issue whose status says where it stands, so writing a Spec updates that Issue rather than replacing one file with another. When an implement run finishes, its commit closes the Issue once you push, where your tracker supports that; otherwise the final report tells you which Issue to close.
 
