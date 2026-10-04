@@ -29,9 +29,9 @@ The session directory is this checkout, on that branch. Work at the git root (`g
 
 Record `<start>`: `git rev-parse HEAD`. Commits this run adds are `git log <start>..HEAD`. `/code-review` uses `<start>` as the fixed point. Green is measured against `<start>`: this branch is the run's base branch, so its merge-base is `<start>` ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)).
 
-Find linked worktrees with `git worktree list` (or the host's equivalent):
+Find worktrees with `git worktree list` (or the host's equivalent):
 
-- **In a linked worktree** → a linked worktree contains `.agents/steps/<slug>/`, or `git worktree list` shows a worktree on branch `<slug>`, or branch `<slug>` exists: stop and say that run is in flight there.
+- **In another worktree** → another worktree contains `.agents/steps/<slug>/` or is on branch `<slug>`, or branch `<slug>` exists and this checkout is on a different branch: stop and say that run is in flight there.
 - **In this checkout** → `.agents/steps/<slug>/` holds Step files (`[0-9][0-9]-*.md`): resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. Step files a Planner wrote resume the same way. `<start>` is then the parent of the commit that added those Step files.
 - **Fresh** → neither: continue at step 2.
 
