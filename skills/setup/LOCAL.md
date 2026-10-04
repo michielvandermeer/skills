@@ -29,7 +29,7 @@ The `Status:` line holds the status as written: `needs-triage`, `needs-info`, `n
 
 ## Maps and Decision tickets
 
-A Map is an Issue in `wayfinding`. Its Decision tickets are files in a folder beside it named for its slug, `.agents/issues/<map-slug>/<NN>-<slug>.md`, numbered from `01`. The file name is the ticket's identity.
+A Map is an Issue in `wayfinding`. Its Decision tickets are files in a folder beside it named for its slug, `.agents/issues/<map-slug>/<NN>-<slug>.md` — in a repo with a `CONTEXT-MAP.md`, inside the Map's context subfolder, `.agents/issues/<context>/<map-slug>/<NN>-<slug>.md` — numbered from `01`. The file name is the ticket's identity.
 
 - **File a ticket**: write the file with a `Type:` line under the H1: `research`, `prototype`, `grilling`, or `task`.
 - **Claim**: set `Status: claimed` and save it in the working copy the user invoked, before any other work. A ticket with no `Status:` line is unclaimed.
