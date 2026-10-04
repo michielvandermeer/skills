@@ -45,7 +45,7 @@ Write the rule into the repo's existing Coding standards: the file in `.agents/r
 Check every item. *Use when* is the evidence bar. Every suggestion is something this session demonstrated.
 
 - **Navigation** — would a **context pointer** have shortened the hunt? *Use when* the session took a long time to find a piece of information.
-- **Automated checks** — the strongest mechanism the repo can carry that would have caught a mistake this session made: a type that cannot hold the bad state, then a lint, test, or CI rule, then a shared helper, then a runtime check. *Use when* the agent made a mistake a check could have caught.
+- **Automated checks** — the strongest mechanism the repo can carry that would have caught a mistake this session made: a type that cannot hold the bad state, then a lint, test, or CI rule, then a shared helper, then a runtime check. Read the repo's own check commands first (its build tool's lint or check scripts, its CI workflow): a check that already exists but is not wired in, or is silently broken, is the finding, not a new check. *Use when* the agent made a mistake a check could have caught.
 - **Coding standards** — a new, removed, or clarified rule for the reviewer (`/code-review`, `.agents/refs/`, or the repo's standards file). *Use when* the reviewer missed a mistake, or a **Correction** is a *lesson*.
 - **AGENTS.md load** — steering in `AGENTS.md` / `CLAUDE.md` (repo or global) that belongs in coding standards or a check instead. *Use when* that file is carrying more than **context pointers**.
 - **Tool economy** — expensive calls that could be cheaper, or a custom tool that wastes tokens. *Use when* the session made an expensive call.
