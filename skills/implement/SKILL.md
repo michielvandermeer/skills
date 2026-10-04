@@ -25,10 +25,10 @@ The argument is an Issue reference — normally an Issue in `ready-for-agent` �
 
 An Issue blocked by another Issue waits on it: while the blocker is open, stop before anything else and say it lands first — unless `<base>` already holds the blocker's closing reference, found as the Tracker ref says ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
-Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). A prior run is **in flight** when that run worktree exists, or when any linked worktree contains `.agents/steps/<slug>/`.
+Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). A prior run is **in flight** when that run worktree exists, when branch `<slug>` exists, or when any linked worktree contains `.agents/steps/<slug>/`.
 
 - **In flight** → a run worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
-  - Put the session's working directory on the run worktree's path.
+  - Put the session's working directory on the run worktree's path. When the branch exists without a worktree, `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>` first (ensure `.agents/worktrees/` is ignored; prefer a local ignore when the repo uses one).
   - `git reset --hard && git clean -fd` drops whatever a halted Step left behind. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
   - When `.agents/steps/<slug>/` holds Step files (`[0-9][0-9]-*.md`), the Steps are already planned: skip step 2 and resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. A steps directory with no Step files is a fresh plan — continue at step 2.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git reset --hard <base>` so the run starts from the `<base>` you actually have — the new branch has no commits of its own yet:
@@ -141,7 +141,7 @@ Run `/retro`.
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out `<base>` yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, `<base>` moved: rebase again on the branch under step 1, check out `<base>` yourself, and retry the merge.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out `<base>` yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, `<base>` moved: rebase again on the branch under step 1, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
 
 ## Work in another repository
 
