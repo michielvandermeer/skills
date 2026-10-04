@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-04: Work lives in your own tracker
+The skills can now keep your work in GitHub Issues, Jira, or another tracker, not only as files in your repo: run the new `/setup` to choose, and it can move your existing work across. Ideas, reports, and Specs are now one Issue whose status says where it stands, so writing a Spec updates that Issue rather than replacing one file with another. When an implement run finishes, its commit closes the Issue once you push, where your tracker supports that; otherwise the final report tells you which Issue to close.
+
 ## 2026-10-02: Documents sorted by app
 In a repo with a `CONTEXT-MAP.md`, the skills now keep Specs, Ideas, Issues, Prototypes and reports in a folder per app, such as `.agents/specs/billing/`. Work that spans apps, or touches no app, goes in `common/`. `/doctor` moves existing documents into these folders instead of pulling them back to one shared folder, and repos without a map are unchanged.
 
