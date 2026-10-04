@@ -19,3 +19,11 @@ Before a skill edit coins a term, grep `skills/` and `CONTEXT.md` for it. A skil
 ## Moved passages
 
 An edit that moves, merges, or deletes a passage lists each duty the old passage carried — a `/retro` call, a path level, a commit — and gives each one a home in the new text. `3e6a1f2` moved writing a map's Specs into a fresh session and left its `/retro` behind. `f245997` deleted the CONTEXT-PATHS row for Decision tickets and lost their context subfolder. An ADR rewrite keeps every exception the old text stated: `ad43b88` cut ADR-0010 to "Snippets are banned" and lost the snippet that `## What to build` may hold.
+
+## Loading other skills
+
+A skill's step never starts a user-invoked skill (`disable-model-invocation: true` in its frontmatter): no skill can reach one. The step tells the user to run it instead. `/diagnosing-bugs` once handed off to `/improve-codebase-architecture` this way, and the hand-off could never fire.
+
+## Hosts
+
+Skill and agent prose names the agent to dispatch (`skills:explorer`, a sub-agent), never the host tool that dispatches it, such as Claude Code's Agent tool or a `subagent_type=` argument. The plugin also runs on Grok, where those names do not exist.
