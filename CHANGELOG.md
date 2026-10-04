@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-04: Bug diagnosis hides secrets
+`/diagnosing-bugs` now replaces API keys, tokens, passwords and other secrets with `<REDACTED>` in every command, output and log it shows you. It builds its test loops on environment variables, so a credential stays out of the files it writes. When it finds that the bug came from how the code is structured, it now tells you to run `/improve-codebase-architecture`. Before, it tried to start that command itself, which a skill cannot do.
+
+## 2026-10-04: Domain modeling loads when you edit the glossary
+The `domain-modeling` skill now loads when you talk about your project's terms, or when you write or edit a `CONTEXT.md` or an ADR directly. Before, it loaded mainly when you asked to pin down terms or record a decision.
+
+## 2026-10-04: Retro looks for checks you already have
+Before suggesting a new automated check, `/retro` now reads your repo's existing lint and check commands and its CI workflow. If a check that would have caught the mistake already exists but is not running, or is broken, it says so instead of suggesting a new one.
+
 ## 2026-10-04: Implement picks up a leftover branch
 `/implement` now carries on from an earlier run's branch when that run stopped and its worktree was removed. Before, it started the run again and could throw away the work already on that branch. `/implement-oneshot` already worked this way.
 
