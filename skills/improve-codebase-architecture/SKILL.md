@@ -30,7 +30,7 @@ A deepening opportunity in code nobody touches is a refactor you'll never cash i
 
 Read `CONTEXT.md` and any ADRs covering the area you're touching first.
 
-Then use the Agent tool with `subagent_type=skills:explorer` to walk the codebase, biased to that scope. Explore organically, following friction where you feel it rather than sweeping for a fixed checklist. These are the shapes friction usually takes:
+Then dispatch a `skills:explorer` agent to walk the codebase, biased to that scope. Explore organically, following friction where you feel it rather than sweeping for a fixed checklist. These are the shapes friction usually takes:
 
 - Understanding one concept requires bouncing between many small modules.
 - A module is **shallow** — its interface is nearly as complex as its implementation.
