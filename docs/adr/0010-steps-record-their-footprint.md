@@ -18,6 +18,6 @@ Widening a Step to the whole suite whenever its footprint named more than one pr
 
 - The Planner spends a second pass over what it already found, against the re-discovery that pass removes. The trade holds while the Planner stays one agent.
 - The walk ends when every Footprint can be filled. Reading neighbouring features, tests that will not appear on any Footprint, or documents the host already placed in context is not that pass.
-- Snippets are banned. A footprint that starts explaining *how* has become a plan.
+- Snippets are banned from the Footprint. A footprint that starts explaining *how* has become a plan. A Step's `## What to build` may inline one snippet that encodes a decision more precisely than prose can — a state machine, reducer, schema, or type shape — and names where it came from.
 - A Step runs the projects on its `Projects:` line and no more. Only the last Step runs the whole suite.
 - A project missing from a `Projects:` line is a project nobody checks until the last Step. The Planner names every project the Step touches.
