@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-04: Explain with pictures
+The new `/explain` command explains anything with a picture instead of a wall of text: a diagram in the chat, a web page, or a short narrated video. It picks the format that fits and checks with you first, unless you name the format yourself. Videos use xAI's voice when you have an xAI key, and otherwise a free voice that runs on your own machine.
+
 ## 2026-10-04: Bug diagnosis hides secrets
 `/diagnosing-bugs` now replaces API keys, tokens, passwords and other secrets with `<REDACTED>` in every command, output and log it shows you. It builds its test loops on environment variables, so a credential stays out of the files it writes. When it finds that the bug came from how the code is structured, it now tells you to run `/improve-codebase-architecture`. Before, it tried to start that command itself, which a skill cannot do.
 
