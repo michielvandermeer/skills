@@ -168,3 +168,4 @@ A session reaches this only when it starts on a map with no tickets remaining.
 3. **Propose the cut** to the user: one line per Spec — what it covers, and which Spec it waits on. Write nothing until they confirm; an objection redraws the cut.
 4. **One `/to-spec` per Spec**, scoped to that Spec's part alone, prerequisites first, naming each prerequisite's Issue so `/to-spec` links the Spec as blocked by it. The first Spec rewrites the map's own Issue; each later one is filed as a new Issue whose Further Notes name the map's Issue. The Specs are the record: a map left in `wayfinding` with every ticket resolved would read as a destination still to write.
 5. **Commit** every file those runs created or changed, with whatever else the Tracker ref puts in the commit that turns a map into its first Spec, staged by name, in one commit.
+6. Run `/retro`.
