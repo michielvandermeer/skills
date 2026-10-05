@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-05: Implement claims its Issue
+`/implement`, `/implement-oneshot`, and `/implement-yolo` now claim the Issue they build before they start, so two runs do not build the same Issue. On GitHub and Jira, claiming assigns the Issue to you. If the Issue is already assigned to someone else, the run stops and tells you who has it. The Issue stays assigned to you after the run stops or finishes, so you can pick it up again. Before, the implement commands never wrote to your tracker at all. If you set up your tracker before today, copy the new Claim line from the plugin's GitHub or Jira template into the Issues section of your `.agents/refs/tracker.md`. Without that line, runs do not claim anything.
+
 ## 2026-10-04: Explain with pictures
 The new `/explain` command explains anything with a picture instead of a wall of text: a diagram in the chat, a web page, or a short narrated video. It picks the format that fits and checks with you first, unless you name the format yourself. Videos use xAI's voice when you have an xAI key, and otherwise a free voice that runs on your own machine.
 
