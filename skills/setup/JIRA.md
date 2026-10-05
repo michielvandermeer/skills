@@ -17,6 +17,7 @@ Issues live as Jira issues in one Jira project. Use the Jira MCP tools this sess
 - **Reference**: the issue key, such as `<KEY>-123`, or its URL. A run's slug is the key plus the summary, in kebab case, such as `<key>-123-show-taken-opnemen`; the leading key finds the Issue a slug names.
 - **File**: create an issue of the Issues type in the project, with the summary, the description, and the status, category, and context labels.
 - **Read**: fetch the issue with its description, labels, workflow status, comments, issue links, and parent.
+- **Claim**: read the assignee and the current user. When another user is assigned, stop and name them. When the current user is, the Issue is claimed. With no assignee, assign the issue to the current user and read it again; when another user is now assigned, stop; otherwise the Issue is claimed. The claim stands until the issue's status category is Done or the user clears it.
 - **List by status**: search with JQL `project = <KEY> AND labels = <status> AND statusCategory != Done`. `needs-triage` is every open issue that carries no status label.
 - **Rewrite the body**: replace the description.
 - **Set status**: swap the status label. An issue carries one status label at a time; its workflow status stays where the team put it.

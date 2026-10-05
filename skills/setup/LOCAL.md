@@ -13,6 +13,7 @@ An Issue is one file, `.agents/issues/<slug>.md`, its slug kebab-case from its t
 - **Reference**: the path, or the slug alone. A run's slug is the Issue's slug.
 - **File**: write the file. The session commits it with its other files.
 - **Read**: read the file.
+- **Claim**: none — the run's branch already marks the Issue as in flight for every session working in this repo.
 - **List by status**: the Issue files whose `Status:` line holds that status. Files inside a Map's folder are Decision tickets, not Issues.
 - **Rewrite the body**: replace everything between the header lines and `## Comments`.
 - **Set status**: edit the `Status:` line.

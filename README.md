@@ -117,7 +117,7 @@ An Issue has exactly one status at a time:
 
 A first rough thought and the Spec it grows into are the same Issue. When the Spec is written, it replaces the Issue's text. The earlier text stays in the Tracker's history (git, for the local Tracker), and comments stay as they are. Finished work is closed as done; work you decide against is closed as not planned.
 
-The implement commands read an Issue but never write to the Tracker. The commit that lands the work closes the Issue when your Tracker can do that from a commit, such as `Closes #42` on GitHub. Otherwise the final report names the Issue for you to close.
+The implement commands read an Issue and claim it before they start, so other runs leave it alone. On GitHub and Jira, claiming assigns the Issue to you, and a run stops on an Issue that is assigned to someone else. The claim is the only thing they write to the Tracker. The commit that lands the work closes the Issue when your Tracker can do that from a commit, such as `Closes #42` on GitHub. Otherwise the final report names the Issue for you to close.
 
 Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, architecture reviews, codebase audits, Changelogs, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
 

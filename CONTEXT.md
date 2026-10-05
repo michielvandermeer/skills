@@ -79,7 +79,7 @@ A child of a **Map** in the **Tracker** whose resolution is a decision — not a
 _Avoid_: investigation ticket, implementation ticket
 
 **Claimed**:
-A Decision ticket a `/wayfinder` session holds through the **Tracker**'s claim. Concurrent `/wayfinder` sessions skip it. The claim stands until the ticket is resolved or the user clears it.
+An Issue a session holds through the **Tracker**'s claim: a Decision ticket a `/wayfinder` session holds, or the Issue an implement run builds. Concurrent sessions skip it, and an implement run on an Issue another user holds stops. The claim stands until the Issue is resolved or closed, or the user clears it.
 _Avoid_: in progress, locked, assigned, researching
 
 **Fork**:

@@ -1,6 +1,6 @@
 # Each repo describes its own Tracker, and every piece of work is one Issue
 
-A repo keeps its Issues in whatever Tracker it already uses: local Markdown, GitHub Issues, Jira, or another system. It describes that Tracker in a Tracker ref at `.agents/refs/tracker.md`. `/setup` writes the ref from one of the Tracker templates the plugin ships, and the repo may then edit it freely. The skills name operations — file, read, list by status, rewrite the body, set status, comment, link, close, and the closing reference a landing commit carries — and the ref says how each one works there. A repo with no ref uses the local template as shipped, so a repo that does nothing keeps working.
+A repo keeps its Issues in whatever Tracker it already uses: local Markdown, GitHub Issues, Jira, or another system. It describes that Tracker in a Tracker ref at `.agents/refs/tracker.md`. `/setup` writes the ref from one of the Tracker templates the plugin ships, and the repo may then edit it freely. The skills name operations — file, read, list by status, rewrite the body, set status, comment, link, claim, close, and the closing reference a landing commit carries — and the ref says how each one works there. A repo with no ref uses the local template as shipped, so a repo that does nothing keeps working.
 
 Most people using these skills work in Jira, some in GitHub Issues, and the owner has moved repos such as mvdmio-suite to GitHub Issues. A tracker fixed to local files split their work across two places.
 
@@ -14,7 +14,7 @@ Ideas, triaged Issues, and Specs are now one kind, the Issue. Only its status te
 
 ## Consequences
 
-- An implement run reads its Issue and never writes to the Tracker ([ADR-0028](0028-implement-never-leaves-the-repository.md)). Its landing commit carries the ref's closing reference, such as `Closes #42`. On a Tracker with none, the run's final report names the Issue for the user to close.
+- An implement run reads and claims its Issue, and writes nothing else to the Tracker ([ADR-0028](0028-implement-claims-its-issue-and-stays-local.md)). Its landing commit carries the ref's closing reference, such as `Closes #42`. On a Tracker with none, the run's final report names the Issue for the user to close.
 - The run copies the Spec into its Step folder when it starts, so an edit in the Tracker during the run cannot change it.
 - A Map is an Issue in `wayfinding`, and its Decision tickets are its children. The Map's own Issue becomes the first Spec it ends in.
 - `/to-spec` drafts a Spec in a temporary file for the Validator, or in the Issue's own file on the local Tracker, and then writes it to the Issue in one update ([ADR-0052](0052-a-fresh-validator-checks-a-new-spec.md)). On a Tracker outside the repo, the separate draft keeps watchers to one notification.

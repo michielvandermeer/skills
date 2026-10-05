@@ -11,6 +11,7 @@ Issues live as GitHub issues in this repo's GitHub repository. Use the `gh` CLI,
 - **Reference**: `#<number>` or the issue's URL. A run's slug is the number plus the title in kebab case, such as `42-teams-notifications`; the leading number finds the Issue a slug names.
 - **File**: `gh issue create --title "…" --body-file <file> --label <status>`, adding the category and context labels.
 - **Read**: `gh issue view <n> --json number,title,body,labels,state,assignees,comments`, plus its blockers.
+- **Claim**: read the assignees, and the current user from `gh api user --jq .login`. When another user is assigned, stop and name them. When the current user is the only assignee, the Issue is claimed. With no assignee, run `gh issue edit <n> --add-assignee @me` and read the assignees again; when another user is now assigned too, run `gh issue edit <n> --remove-assignee @me` and stop; otherwise the Issue is claimed. The claim stands until the issue closes or the user clears it.
 - **List by status**: `gh issue list --state open --label <status> --json number,title,labels`. `needs-triage` is every open issue that carries no status label.
 - **Rewrite the body**: `gh issue edit <n> --body-file <file>`.
 - **Set status**: `gh issue edit <n> --remove-label <old> --add-label <new>`. An issue carries one status label at a time.
