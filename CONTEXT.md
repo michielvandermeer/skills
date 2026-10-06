@@ -258,6 +258,10 @@ One mechanical change whose blast radius fans across the codebase, so a single e
 The one fact a change is safe because of, stated so that it names what breaks if the fact is false. "It compiles" names nothing that breaks, so it is not a Safety fact. Recorded in an Outcome together with its rung on the **Proof ladder** and its **Proof**.
 _Avoid_: safety claim, invariant, assumption
 
+**Merge risk**:
+How hard a change is to undo once it lands, and what it would affect if it went wrong. It says whether reverting the change's commits restores the old behaviour — and when it does not, what stays changed after the revert, such as data written, a migration run, or a release published — and names who or what would notice if the change went wrong. Recorded in an Outcome beside the **Safety fact**, and the closing section of every pull request description `/pr` shapes.
+_Avoid_: merge danger, one-way door, two-way door
+
 **Proof**:
 The evidence for a **Safety fact** that a fresh agent re-ran and saw for itself: the command run, its exit code and an excerpt of its output, or a screenshot or transcript saved for the run. Output an agent quotes without that fresh re-run is not Proof.
 _Avoid_: evidence, verification, test result

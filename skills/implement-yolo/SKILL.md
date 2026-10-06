@@ -90,9 +90,9 @@ Run `/document-changes` in **implement mode** while the Spec and the Step's Outc
 
 First run `/implement`'s [Prover's pass](../implement/SKILL.md#the-provers-pass), reading only that section of that file. `<start>` stands in for `<base>`, and a retry never resets or cleans the tree, as in step 3.
 
-Then hold `grep -h '^Safety fact:' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, and delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and the Proof folder. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit the deletion with anything still uncommitted. When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close. This step is done when `git status` is clean.
+Then hold `grep -hE '^(Safety fact|Proof|Merge risk):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, and delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and the Proof folder. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit the deletion with anything still uncommitted. When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close. This step is done when `git status` is clean.
 
-The final report carries the `Safety fact:` line as this step held it, and says the Prover re-ran the Proof on the code the run leaves. It names a Proof that passed only on its re-run, or that the Proof fixer restored, updated, or retired.
+The final report carries the `Safety fact:`, `Proof:`, and `Merge risk:` lines as this step held them, and says the Prover re-ran the Proof on the code the run leaves. It names a Proof that passed only on its re-run, or that the Proof fixer restored, updated, or retired.
 
 ### 7. Retrospective
 

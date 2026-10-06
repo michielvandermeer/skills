@@ -6,6 +6,10 @@ The Step agent, the Checker, the Prover, and the Proof fixer read this. A Step i
 
 One per Step: the one fact the change is safe because of, naming what breaks if it is false. "It compiles" names nothing that breaks. A Step that changes no code that runs — docs, comments — has none.
 
+## Merge risk
+
+One per Step, beside its Safety fact: how hard the change is to undo once it lands, and what it would affect if it went wrong. It is `easy` when reverting the Step's commit restores the old behaviour, and `hard` when something stays changed after the revert — data written, a migration run, a file format or API others already read, a release published. It informs the final report and a pull request description; it never stops the run.
+
 ## The ladder
 
 1. Stated, or read in the code. Not Proof.
@@ -26,14 +30,15 @@ Every script, screenshot, and transcript goes in the Proof folder the prompt nam
 
 ## The Outcome entry
 
-Two lines in the Step file's `## Outcome`, exactly:
+Three lines in the Step file's `## Outcome`, exactly:
 
 ```
 Safety fact: <the fact, naming what breaks if it is false> (rung <N>)
 Proof: `<command>` exit <code> — <excerpt of at most three lines, or the file in the Proof folder>
+Merge risk: <easy | hard — what stays changed after a revert>; affects <who or what would notice if it went wrong>
 ```
 
-A Step with no Safety fact writes `Safety fact: none — <why no code that runs changed>`. The Checker overwrites both lines with what its own re-run showed. The Prover re-runs the `Proof:` line at the end of the run, after its author has gone, so the line names a command or a file in the Proof folder that runs on its own.
+A Step with no Safety fact writes `Safety fact: none — <why no code that runs changed>`, and still writes its `Merge risk:` line. The Checker overwrites the first two lines with what its own re-run showed, and corrects the third where the commit shows something it missed, such as a migration. The Prover re-runs the `Proof:` line at the end of the run, after its author has gone, so the line names a command or a file in the Proof folder that runs on its own.
 
 The Proof fixer retires a fact that a later Step changed as the Spec asks, by rewriting its line as `Safety fact: retired — Step <NN> changed it as the Spec asks: <the old fact>`. The Prover skips a retired fact.
 
