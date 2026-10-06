@@ -13,7 +13,7 @@ My answers reshape the tree. Recompute the frontier before each round.
 
 Finding *facts* is your job, never mine — and it is a sub-agent's job, never your own context's ([ADR-0027](../../docs/adr/0027-grilling-facts-come-from-explorers.md)):
 
-- Read `CONTEXT.md`, the ADRs, and the brief we start from yourself; every fact from the code arrives as an **explorer**'s report (a read-only sub-agent sent with named questions).
+- Read `CONTEXT.md`, the ADRs, and the brief we start from yourself, an Issue's comments included; every fact from the code arrives as an **explorer**'s report (a read-only sub-agent sent with named questions).
 - Dispatch the explorer with the questions it must answer, wait for it however long that takes, and carry its report rather than the files. A running exploration is an unsettled prerequisite, and a round posted before it lands is built on guesses.
 - Scope needs no facts from the code, so round 1 may go out while explorers run when it asks only scope.
 - A report that lands after a round is posted waits silently for the next round.
