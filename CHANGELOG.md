@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-06: Implement runs push your branch
+`/implement`, `/implement-oneshot`, and `/implement-yolo` now push your branch once the run has finished, so an Issue the work closes, such as one named in `Closes #42`, closes without you pushing by hand. If someone else pushed to the branch first, the run tells you and leaves the work on your machine for you to pull and push. To keep runs from pushing, for example because a push to your main branch deploys, add a line to your repo's `AGENTS.md` or `CLAUDE.md` saying implement runs do not push.
+
 ## 2026-10-06: Implement tests each step once
 `/implement`, `/implement-oneshot`, and `/implement-yolo` now run each step's full set of tests once instead of twice. The agent that builds a step runs only the tests closest to its change, and the agent that checks the step runs the full set after its fixes, so a second agent still sees every test pass. Runs on Claude Code should finish roughly a tenth faster, and an agent now waits for a long test run to finish instead of starting it again.
 
