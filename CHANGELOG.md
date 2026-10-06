@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-07: Pull request descriptions show evidence
+When the agent writes a pull request description, it now follows one shape: a small picture of the change, before-and-after output showing it works, and how risky it is to merge. A screenshot of a visual change is uploaded with `gh` and never committed to your repo. `/implement`, `/implement-oneshot`, and `/implement-yolo` now also say for each step how hard it would be to undo, and the final report lists that next to each step's proof.
+
 ## 2026-10-07: Each ADR gets its own number
 Skills that write an ADR now pick its number from your git history across every fetched branch, and check it again just before committing, so two sessions working at once no longer give two ADRs the same number. A deleted ADR's number is no longer handed out again. `/doctor` now finds ADRs in one folder that share a number, gives the newer one the next number, and fixes every link to it.
 
