@@ -83,7 +83,7 @@ Apply this to every folder under `.agents/refinements/`, and to a flat or loose 
 
 ### ADR numbers
 
-A moved ADR keeps its number when that number is free in its target `docs/adr/`. One with no number gets the next free number there, found by scanning that folder. One whose number is already taken there is a collision (see Moving), not a move.
+A moved ADR keeps its number when that number is free in its target `docs/adr/`. One with no number gets the next number there, as [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md#numbering) picks it. One whose number is already taken there is a collision (see Moving), not a move.
 
 ### Moving
 
@@ -103,6 +103,10 @@ Done when every Issue left describes work the codebase does not have yet.
 Read every ADR in every `docs/adr/` folder the project has: the root one, plus every folder a `CONTEXT-MAP.md` lists.
 
 Every change in this section keeps the project's own section layout (Context / Decision / Consequences, or whatever it already uses) — reshape what an ADR says, not how it's laid out.
+
+### Renumber duplicates
+
+ADRs in one `docs/adr/` folder that share a number are a duplicate. Run this first, so every number the steps below read names one ADR. The ADR that reached the current branch first keeps the number: compare the committer date of the oldest commit `git log --diff-filter=A -- <path>` gives for each file. `git mv` each of the others to the next number, as [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md#numbering) picks it.
 
 ### Find chains
 
@@ -146,16 +150,16 @@ Wait for every report; the judgement is yours. Judge each mismatch:
 
 Application code stays as it is, and the report is the only record of a bug.
 
-Done when every ADR you keep has no `status:` line, states the decision in force, and agrees with the code — or disagrees only where the code has a bug the report names.
+Done when every ADR you keep has a number no other ADR in its folder holds, has no `status:` line, states the decision in force, and agrees with the code — or disagrees only where the code has a bug the report names.
 
 ## Update every link
 
-Grep the whole repo for every path the Layout pass moved or deleted and every ADR you Folded, renamed, or deleted — search both the old path and the bare filename, and include `CLAUDE.md` and `AGENTS.md`. Fix every link you find, in skills, READMEs, code comments, anywhere a path, a bare filename, or an `ADR-NNNN` reference appears. A link to a deleted ADR with no Folded successor goes, along with any words that only make sense beside it.
+Grep the whole repo for every path the Layout pass moved or deleted and every ADR you Folded, renumbered, renamed, or deleted — search both the old path and the bare filename, and include `CLAUDE.md` and `AGENTS.md`. Fix every link you find, in skills, READMEs, code comments, anywhere a path, a bare filename, or an `ADR-NNNN` reference appears. A link to a deleted ADR with no Folded successor goes, along with any words that only make sense beside it. A bare `ADR-NNNN` naming a duplicate's number, where the words around it don't settle which ADR it means, stays as written and goes in the report.
 
-Done when every old path and bare filename greps clean across the repo.
+Done when every old path and bare filename greps clean across the repo, and every bare `ADR-NNNN` naming a duplicate's number is fixed or in the report.
 
 ## Report
 
-Close with what moved and where, what stayed and why (unclassified, collision, no effort folder, a status the local Tracker lacks, the repo's Tracker ref), which Issues you closed as done, and what you Folded, rewrote, and deleted among the ADRs, with the evidence for each ADR changed because of the code — the reader's way of knowing what to look at in the diff. When the Tracker ref kept documents in place, suggest `/setup`, which offers to move local work into the Tracker. List every bug the code check found, with its evidence and a suggestion to take it to `/triage`. Run the `/plain-language` skill for the report.
+Close with what moved and where, what stayed and why (unclassified, collision, no effort folder, a status the local Tracker lacks, the repo's Tracker ref), which Issues you closed as done, and what you renumbered, Folded, rewrote, and deleted among the ADRs, with the evidence for each ADR changed because of the code — the reader's way of knowing what to look at in the diff. List each `ADR-NNNN` you could not attribute to one of a duplicate's ADRs, with where it appears. When the Tracker ref kept documents in place, suggest `/setup`, which offers to move local work into the Tracker. List every bug the code check found, with its evidence and a suggestion to take it to `/triage`. Run the `/plain-language` skill for the report.
 
-Done when every move, every document left where it was, every Issue you closed, every ADR you Folded, rewrote, or deleted, and every bug appears in the report. Then run `/retro`.
+Done when every move, every document left where it was, every Issue you closed, every ADR you renumbered, Folded, rewrote, or deleted, every `ADR-NNNN` you could not attribute, and every bug appears in the report. Then run `/retro`.

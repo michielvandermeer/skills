@@ -29,11 +29,16 @@ When a session changes a decision an ADR records, it rewrites that ADR in place,
 
 When a decision is reversed with nothing put in its place, delete its ADR and remove every link to it.
 
-Numbers are never reused — a deleted or Folded ADR leaves a gap in the sequence.
-
 ## Numbering
 
-Scan `docs/adr/` for the highest existing number and increment by one.
+Each `docs/adr/` folder keeps its own sequence, and every number in it belongs to one ADR for good: no two ADRs share a number, and a deleted or Folded ADR leaves a gap.
+
+A new ADR takes one above the highest number its folder has ever held. Run `git fetch` first, then take the highest of:
+
+- every ADR any branch has added or renamed into the folder: `git log --all --diff-filter=AR --name-only --format= -- <folder>`
+- every file in the folder now, untracked ones included
+
+Pick the number when you write the file, and pick it again just before the commit that adds the file — another session may have taken it in between. When it has, renumber the file and every link this session wrote to it. When the fetch fails, work from local history.
 
 ## When to offer an ADR
 
