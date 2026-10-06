@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-06: Implement re-proves the code that lands
+`/implement`, `/implement-oneshot`, and `/implement-yolo` now prove each step one more time at the end of a run, on the code that actually lands, after the final fixes and the rebase have changed it. If a proof fails there, a fixer repairs the code or the proof, or reports that a later step changed that behaviour on purpose, and a second failure stops the run. Runs take slightly longer, and the final report no longer warns that the proofs predate the rebase.
+
 ## 2026-10-05: Implement claims its Issue
 `/implement`, `/implement-oneshot`, and `/implement-yolo` now claim the Issue they build before they start, so two runs do not build the same Issue. On GitHub and Jira, claiming assigns the Issue to you. If the Issue is already assigned to someone else, the run stops and tells you who has it. The Issue stays assigned to you after the run stops or finishes, so you can pick it up again. Before, the implement commands never wrote to your tracker at all. If you set up your tracker before today, copy the new Claim line from the plugin's GitHub or Jira template into the Issues section of your `.agents/refs/tracker.md`. Without that line, runs do not claim anything.
 
