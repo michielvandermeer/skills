@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-07: Each ADR gets its own number
+Skills that write an ADR now pick its number from your git history across every fetched branch, and check it again just before committing, so two sessions working at once no longer give two ADRs the same number. A deleted ADR's number is no longer handed out again. `/doctor` now finds ADRs in one folder that share a number, gives the newer one the next number, and fixes every link to it.
+
 ## 2026-10-06: Implement runs push your branch
 `/implement`, `/implement-oneshot`, and `/implement-yolo` now push your branch once the run has finished, so an Issue the work closes, such as one named in `Closes #42`, closes without you pushing by hand. If someone else pushed to the branch first, the run tells you and leaves the work on your machine for you to pull and push. To keep runs from pushing, for example because a push to your main branch deploys, add a line to your repo's `AGENTS.md` or `CLAUDE.md` saying implement runs do not push.
 
