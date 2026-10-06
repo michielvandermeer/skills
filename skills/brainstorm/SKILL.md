@@ -38,7 +38,7 @@ Done when every angle is named and no reading that would change the Directions i
 
 ### 3. Fan out
 
-Dispatch one general-purpose sub-agent per angle, all in parallel, on your own model and effort. Each brief carries the problem, the constraints, the explorer report, its angle, and this instruction: produce one Direction that differs as much as possible from the obvious answer, unbound by what the code does today. Any agent may search the web when its Direction depends on an outside tool or technique, and names what it found as sources.
+Dispatch one general-purpose sub-agent per angle, all in parallel, on your own model and effort. Each brief carries the problem, the constraints, the explorer report, its angle, and this instruction: produce one Direction that differs as much as possible from the obvious answer, unbound by what the code does today. Keep each brief's examples inside its own angle: a tool or technique one brief names, no other brief names. Any agent may search the web when its Direction depends on an outside tool or technique, and names what it found as sources.
 
 Each agent returns one **card**:
 
@@ -49,7 +49,9 @@ Each agent returns one **card**:
 - **Biggest risk**
 - **Sources** — links, when the agent used any.
 
-Done when every agent has returned its card.
+When two cards land on one Direction, merge them into one card, and send a fresh agent on one of their angles with every Direction already on the table named for it to steer clear of.
+
+Done when every agent has returned its card and no two cards share a Direction.
 
 ### 4. Present the set
 
@@ -64,7 +66,7 @@ Done when every card is shown and the pick carries its reason.
 The user's reply picks the move:
 
 - **Deeper, combined, wider, or a correction** to the reading or constraints — write the tighter brief, or reframe, and go back to step 3 with fresh agents.
-- **Keep** — go to step 6 with the kept Directions.
+- **Keep**, including your pick as written when it combines cards — go to step 6 with the kept Directions.
 - **Stop** without a pick — go to step 6 with none kept.
 
 Done when the user has kept Directions or stopped.
