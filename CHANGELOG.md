@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-06: Implement tests each step once
+`/implement`, `/implement-oneshot`, and `/implement-yolo` now run each step's full set of tests once instead of twice. The agent that builds a step runs only the tests closest to its change, and the agent that checks the step runs the full set after its fixes, so a second agent still sees every test pass. Runs on Claude Code should finish roughly a tenth faster, and an agent now waits for a long test run to finish instead of starting it again.
+
 ## 2026-10-06: Implement re-proves the code that lands
 `/implement`, `/implement-oneshot`, and `/implement-yolo` now prove each step one more time at the end of a run, on the code that actually lands, after the final fixes and the rebase have changed it. If a proof fails there, a fixer repairs the code or the proof, or reports that a later step changed that behaviour on purpose, and a second failure stops the run. Runs take slightly longer, and the final report no longer warns that the proofs predate the rebase.
 
