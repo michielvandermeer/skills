@@ -1,6 +1,6 @@
 # The implement commands differ only in planning and worktree
 
-All three implement commands run the same flow: Step agent, Checker, review and fixers, document, then land or clean up. Green needs a Proof that a fresh agent re-runs ([ADR-0053](0053-green-needs-a-proof.md)), so `/implement-oneshot` and `/implement-yolo` use that flow too. `/implement-oneshot` skips only the Planner. Its Driving session writes one Step file for the whole Spec, with no Footprint, so the whole suite runs. `/implement-yolo` also skips the worktree. Both send `skills:implementer` and `skills:checker` to that Step. There is no `skills:oneshot` dispatch.
+All three implement commands run the same flow: Step agent, Checker, review and fixers, document, then land or clean up, with the Prover's pass before the code lands ([ADR-0058](0058-a-prover-re-proves-the-code-that-lands.md)). Green needs a Proof that a fresh agent re-runs ([ADR-0053](0053-green-needs-a-proof.md)), so `/implement-oneshot` and `/implement-yolo` use that flow too. `/implement-oneshot` skips only the Planner. Its Driving session writes one Step file for the whole Spec, with no Footprint, so the whole suite runs. `/implement-yolo` also skips the worktree. Both send `skills:implementer` and `skills:checker` to that Step, and `skills:prover` at the end. There is no `skills:oneshot` dispatch.
 
 ## Considered Options
 

@@ -17,10 +17,9 @@ Rung 4 runs through a **Run recipe**, kept in the consuming repo at `.agents/ref
 - **A Safety-fact check in `/code-review`.** Rejected: its reviewers see only the diff, and the Checker already refuses a fact that names nothing that could break.
 - **Keeping the Proof folder after the run so the user can look through it.** Rejected: nobody reads Proofs once the Checker has re-run them, and kept folders pile up in `.git`.
 - **Proof files in a system temp directory, or in an ignored folder inside the run worktree.** Rejected: a run resumed from a new session cannot find a temp directory, and a run with the worktree waived would need its own cleanup rule for an in-tree folder.
-- **Re-running every Proof after the rebase at land.** Rejected: a run with many web Steps would drive the app again for each one, and the tests still run after the rebase. The final report says the Proofs predate the rebase instead.
 
 ## Consequences
 
-- The final report lists each Step's Safety fact and its rung. The Proof folder is deleted with the Step files; a halted run keeps it.
+- The final report lists each Step's Safety fact and its rung. Before the run lands, a Prover re-runs every Proof on the code that lands ([ADR-0058](0058-a-prover-re-proves-the-code-that-lands.md)). The Proof folder is deleted once the run has landed; a halted run keeps it.
 - A Proof that fails on the Checker's re-run gets one more try. If it passes, the flake is a Deviation. A flake the recipe caused is fixed in the recipe.
 - `/retro` counts an edit to an existing Run recipe as a Correction. When a command could have caught the problem, `/retro` adds that command to the recipe's Check section; otherwise the edited recipe holds the lesson.

@@ -215,12 +215,16 @@ _Avoid_: Oneshot agent, implementer
 The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It re-runs the Step's **Proof**, raising it to the rung **Green** requires when it falls short, reviews the Step's commit on both axes, fixes every finding, returns the Step to **Green**, and folds its fixes into that commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
 _Avoid_: verifier, step reviewer, finisher
 
+**Prover**:
+The sub-agent (`skills:prover`) that re-runs every Step's **Proof** once more at the end of an implement run, on the code that lands: after the final review's fixers and, in a command that rebases, after the rebase. It wrote none of those Proofs and changes nothing. It works from each Step's `Safety fact:` and `Proof:` lines and the Proof folder, launches the app once for every rung-4 Proof, and reports which Proofs held. A Proof that fails it goes to a **Proof fixer**, and a fresh Prover then re-runs every Proof the fixer did not retire. It checks the run as a whole, so a Step's **Green** does not wait on it.
+_Avoid_: final checker, end-of-run checker, re-prover, verifier
+
 **Validator**:
 The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just drafted. It works from the draft's path, corrects facts in that file, and returns the report of corrections and open questions; `/to-spec` then writes the corrected Spec to its Issue in one update.
 _Avoid_: spec checker, spec reviewer, linter
 
 **Fixer**:
-A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too.
+A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too. So does a Proof that fails the **Prover**'s pass: that **Proof fixer** restores the Safety fact, updates a Proof that only went stale, or, when the Spec asked a later Step to change that behaviour, leaves the code alone and records a Deviation.
 
 **Footprint**:
 The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite that Step runs.
@@ -238,7 +242,7 @@ _Avoid_: passing, all tests pass, mostly green
 The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong; the Checker adds to it when a fix changes something a later Step needs. The channel by which a Step informs the later Steps that depend on it, bypassing the Driving session's context entirely.
 
 **Deviation**:
-Anything a Step agent or Checker did that contradicts the Spec or changes what a later Step must do, any failure it left red because the Base branch already fails it, and any post-rebase failure that passed on the Driving session's re-run. The one piece of a run's detail the Driving session does carry forward.
+Anything a Step agent or Checker did that contradicts the Spec or changes what a later Step must do, any failure it left red because the Base branch already fails it, any post-rebase failure that passed on the Driving session's re-run, and any Safety fact a later Step changed on purpose, as the Spec asked, so that its Proof no longer holds. The one piece of a run's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
 A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.

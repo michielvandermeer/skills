@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, sub-agents implement. You hold the Step agent's and the Checker's three-line reports, any deviations, and the review findings for as long as step 4 takes to hand them on. Hand paths; the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
-This is `/implement` with one Step, no Planner, and no worktree ([ADR-0054](../../docs/adr/0054-the-implement-commands-differ-only-in-planning-and-worktree.md)): you write that Step's file yourself, and the same `skills:implementer` and `skills:checker` run it in this checkout. Both run on your model at reduced effort because the Spec was decided before they started. The Spec fixer, the Standards fixer, and the data-structures pass are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md) and [ADR-0042](../../docs/adr/0042-implement-yolo-is-a-third-command.md).
+This is `/implement` with one Step, no Planner, and no worktree ([ADR-0054](../../docs/adr/0054-the-implement-commands-differ-only-in-planning-and-worktree.md)): you write that Step's file yourself, and the same `skills:implementer` and `skills:checker` run it in this checkout. Both run on your model at reduced effort because the Spec was decided before they started, and so does the `skills:prover` that re-runs the Proof before cleanup. The Spec fixer, the Standards fixer, the data-structures pass, and the Proof fixer are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md) and [ADR-0042](../../docs/adr/0042-implement-yolo-is-a-third-command.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
@@ -78,7 +78,7 @@ Three sub-agents follow, in this order, each reporting in the same three lines a
 2. The Standards fixer fixes every finding of the Standards axis, pasted the same way. Tell it to skip a finding whose code is gone and name that finding on its deviations line.
 3. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it.
 
-The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt is the whole check on a fixer's work.
+The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt, and the Prover's pass in step 6, are the whole check on a fixer's work.
 
 Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change any of the three makes goes to the user as a deviations line before you continue.
 
@@ -88,9 +88,11 @@ Run `/document-changes` in **implement mode** while the Spec and the Step's Outc
 
 ### 6. Clean up
 
-Hold `grep -h '^Safety fact:' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and the Proof folder. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit the deletion with anything still uncommitted. When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close. This step is done when `git status` is clean.
+First run `/implement`'s [Prover's pass](../implement/SKILL.md#the-provers-pass), reading only that section of that file. `<start>` stands in for `<base>`, and a retry never resets or cleans the tree, as in step 3.
 
-The final report carries the `Safety fact:` line.
+Then hold `grep -h '^Safety fact:' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, and delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and the Proof folder. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit the deletion with anything still uncommitted. When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close. This step is done when `git status` is clean.
+
+The final report carries the `Safety fact:` line as this step held it, and says the Prover re-ran the Proof on the code the run leaves. It names a Proof that passed only on its re-run, or that the Proof fixer restored, updated, or retired.
 
 ### 7. Retrospective
 

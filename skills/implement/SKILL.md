@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, the Step agent's and the Checker's three-line reports per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 1's read of the Issue, step 3's two structural checks, and the `git rev-parse` that finds the Checker's fixed point, and nothing more. While a sub-agent runs, waiting is the work.
 
-Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), and the **Checker** that finishes each Step is `skills:checker` (`agents/checker.md` at the plugin root); both run on your model at reduced effort because their scope was decided before they started ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)). The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root) and runs at your own model and effort. The Spec fixer, the Standards fixer, and the data-structures pass are `general-purpose` and run at your own model and effort. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
+Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), and the **Checker** that finishes each Step is `skills:checker` (`agents/checker.md` at the plugin root); both run on your model at reduced effort because their scope was decided before they started ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)). So does the **Prover** that re-runs every Proof before the run lands, `skills:prover` (`agents/prover.md` at the plugin root). The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root) and runs at your own model and effort. The Spec fixer, the Standards fixer, the data-structures pass, and the Proof fixer are `general-purpose` and run at your own model and effort. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
@@ -115,7 +115,7 @@ Three sub-agents follow, in this order, each reporting in the same three lines a
 2. The Standards fixer fixes every finding of the Standards axis, pasted the same way. Tell it to skip a finding whose code is gone and name that finding on its deviations line.
 3. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it.
 
-The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt is the whole check on a fixer's work.
+The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt, and the Prover's pass in step 6, are the whole check on a fixer's work.
 
 Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change any of the three makes goes to the user as a deviations line before you continue.
 
@@ -125,25 +125,45 @@ Run `/document-changes` in **implement mode** while the Spec and step Outcomes a
 
 ### 6. Land the branch
 
-Hold `grep -h '^Safety fact:' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and `<proof>`. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit the deletion with anything still uncommitted; `git rebase` refuses a dirty tree, so the branch cannot land until this is clean. When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close.
-
-Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
+Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
 1. From the worktree, still on the branch: `git rebase <base>`. A conflict is `/resolving-merge-conflicts` (the branch lives here, so only the worktree can rebase it).
    - A `CHANGELOG.md` conflict is always keep both, this run's entry above.
    - When the rebase replayed the branch onto commits `<base>` gained during the run, green is not known any more: build and run the projects on every Step's `Projects:` line — the whole suite when the last Step ran it — before going on. Before any fixer dispatch, re-run each failing project once, yourself. A failure that passes on the re-run is a flaky test and does not block landing: its test name goes on the deviations line and into the final report, the same way a failure `<base>` already has does under [ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md). A failure that fails again is red and gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)).
-2. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-3. From the original directory, on `<base>`: `git merge --ff-only <branch>`. (`<base>` lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and `git branch -d <branch>` has run. When the merge errors, `<base>` moved: re-enter the worktree, rebase again under step 1, return under step 2, and retry this merge.
+2. Still in the worktree: run [the Prover's pass](#the-provers-pass).
+3. Still in the worktree: hold `grep -h '^Safety fact:' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory and the Spec with it, and commit the deletion. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close.
+4. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
+5. From the original directory, on `<base>`: `git merge --ff-only <branch>`. (`<base>` lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — `git branch -d <branch>` has run, and `<proof>` is deleted. When the merge errors, `<base>` moved: re-enter the worktree, drop the landing commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Step files come back for the Prover — then go through 1 to 4 again and retry this merge.
 
-The final report lists each Step's `Safety fact:` line. When the rebase replayed the branch onto new commits, it says the Proofs predate the rebase; they are not re-run.
+The final report lists each Step's `Safety fact:` line as step 3 held it, and says the Prover re-ran every Proof on the code that lands. It names each Proof that passed only on its re-run, and each Proof the Proof fixer restored, updated, or retired.
 
 ### 7. Retrospective
 
 Run `/retro`.
 
+## The Prover's pass
+
+A fresh **Prover** re-runs every Step's Proof on the code that lands, after the final fixers and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`. Otherwise dispatch a `skills:prover` with a prompt of paths: the Step files, PROOF.md, `<proof>`, the working directory, and this report format:
+
+```
+status: held | failed | blocked
+failed: <each Step whose Proof failed twice, by number, with one line on what the re-run showed — or "none">
+deviations: <each Step whose Proof passed only on its re-run, by number — or "none">
+```
+
+- **`held`**: carry its deviations line into the final report and go on.
+- **`failed`**: dispatch one **Proof fixer**. Hand it the Spec path (or that there is none), the Step files, PROOF.md, `<proof>`, `<base>`, the Coding standards from step 3, and the `failed:` line verbatim. For each failed Proof it does exactly one of three things, and names which on its deviations line:
+  - restores the Safety fact in the code;
+  - updates a Proof that only went stale — its `Proof:` line, or its script in `<proof>` — when the fact still holds;
+  - leaves the code as it is when the Spec asked a later Step to change that behaviour, and retires the fact as PROOF.md lays out.
+
+  It leaves the projects it touched green, commits its work, and reports in the same three lines as the other fixers. Then dispatch a fresh Prover the same way. A second `failed` **halts** the run.
+
+The Prover and the Proof fixer each fall under step 3's retry-then-halt rule, each on its own retry.
+
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, check out `<base>` yourself, then fast-forward. That merge is done when it succeeds and `git branch -d` has run. When it errors, `<base>` moved: rebase again on the branch under step 1, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, run the Prover's pass and make the landing commit there, check out `<base>` yourself, then fast-forward. That merge is done when it succeeds, `git branch -d` has run, and `<proof>` is deleted. When it errors, `<base>` moved: check out the branch, drop the landing commit as step 6 says, go through items 1 to 3 of step 6 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
 
 ## Work in another repository
 

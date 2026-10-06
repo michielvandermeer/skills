@@ -133,6 +133,7 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 │   ├── explorer.md
 │   ├── implementer.md
 │   ├── planner.md
+│   ├── prover.md
 │   ├── researcher.md
 │   └── validator.md
 ├── docs/adr/              # architecture decision records
@@ -153,7 +154,7 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 
 These skills pin the effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
 
-- A **spec-bound dispatch** works to a document settled before it started, so it runs at `effort: medium` on your session's model — `skills:implementer`, `skills:checker`, `skills:explorer`, `skills:researcher`, and `skills:validator`.
+- A **spec-bound dispatch** works to a document settled before it started, so it runs at `effort: medium` on your session's model — `skills:implementer`, `skills:checker`, `skills:prover`, `skills:explorer`, `skills:researcher`, and `skills:validator`.
 - Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s Planner (`skills:planner`, `agents/planner.md`), both `/code-review` reviewers, the `/improve-data-structures` pass, the `/codebase-design` design-it-twice fan-out, and the `/brainstorm` Direction fan-out.
 
 > **These skills assume a session at `high` effort or above.** The effort pin is absolute, not relative to your session, so a session at `low` effort gets `medium` sub-agents and spends more than you chose. [ADR-0049](docs/adr/0049-spec-bound-agents-keep-the-session-model.md) records why it works that way and what it costs.
