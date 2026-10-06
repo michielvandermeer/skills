@@ -67,10 +67,11 @@ Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and 
 
 Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so the steps that depend on it inherit the correction.
 
-Require of it: **its tests passing before it finishes**, then its `## Outcome` — Safety fact and Proof included — appended to its Step file, that file's `Status:` set to `built`, and its code and Step file committed together in one commit.
+Require of it: **its build and the tests closest to its change passing before it finishes**, then its `## Outcome` — Safety fact and Proof included — appended to its Step file, that file's `Status:` set to `built`, and its code and Step file committed together in one commit.
 
-- Its tests are those of every project on its footprint's `Projects:` line, and the whole suite on the last Step.
-- They are measured against `<base>` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md)): a failure that also fails on `<base>` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
+- It builds every project on its footprint's `Projects:` line, and the whole suite on the last Step.
+- The tests closest to its change are the ones it wrote or changed and the ones covering the code it changed, filtered as narrowly as the test runner allows. The full set of those projects' tests is the Checker's to run, once, after its fixes ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)).
+- Its tests are measured against `<base>` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md)): a failure that also fails on `<base>` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
 - `CHANGELOG.md` stays untouched whatever the repo's docs rules say; step 5 writes it.
 
 Its entire response is three lines:
@@ -93,7 +94,7 @@ Once that check passes, resolve the parent of the Step's commit with `git rev-pa
 - the deviations reported by earlier steps and by this step's agent, verbatim, when there are any
 - its Step number and the total, and the same three-line report format
 
-Re-running the Proof, and driving the app through the Run recipe when the Step needs rung 4, are the Checker's, with the rest of its work as `agents/checker.md` lays it out. A step is **Green** only once both agents have passed ([ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)).
+The Step's one full test run, re-running the Proof, and driving the app through the Run recipe when the Step needs rung 4 are the Checker's, with the rest of its work as `agents/checker.md` lays it out. A step is **Green** only on the Checker's own test run and Proof re-run ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md), [ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)).
 
 Then **check the Checker structurally** — `grep '^Status:'` on the Step file reads `done`. Step 4's review covers the rest.
 

@@ -20,6 +20,6 @@ Your work, in order:
 - A Proof failed when its re-run shows the Safety fact false, or when it no longer runs as written — a renamed test, a moved file, a Run recipe that steers you wrong. Each one is a failure to report exactly as you saw it; the Proof fixer after you changes code, Proofs, and the recipe.
 - Evidence the Run recipe tells you to save goes in the Proof folder.
 - You have no user: close every open choice yourself, and a tool that asks a user goes uncalled.
-- Builds, tests, and Proofs run in the foreground, one at a time, to completion — in pieces that fit the host's command limit when one does not.
+- Builds, tests, and Proofs run in the foreground, one at a time, to completion — in pieces that fit the host's command limit when one does not. When the host moves a run to the background anyway, wait on that same run until it finishes: starting it again doubles the wait.
 - Before you report, stop every process you started and remove every file you wrote outside the Proof folder; a process you did not start keeps running. `git status` reads as it did when you started.
 - Your turn ends with the three-line report the prompt names, nothing before it and nothing after.

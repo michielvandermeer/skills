@@ -208,11 +208,11 @@ The sub-agent (`skills:planner`) that reads a Spec, walks the code only until ev
 _Avoid_: Plan, Plan agent, host Plan
 
 **Step agent**:
-The sub-agent (`skills:implementer`) that implements exactly one Step, in the run's working tree, after the Step before it is done — under all three implement commands. Reads the Outcomes of the earlier Steps its Step depends on, closes any gap in the Spec or Step from the code and existing patterns, leaves the tests of its Footprint's projects passing, records its **Safety fact** and **Proof** in its Outcome, commits, and returns a fixed three-line report. The **Checker** finishes the Step from there.
+The sub-agent (`skills:implementer`) that implements exactly one Step, in the run's working tree, after the Step before it is done — under all three implement commands. Reads the Outcomes of the earlier Steps its Step depends on, closes any gap in the Spec or Step from the code and existing patterns, builds its Footprint's projects and leaves the tests closest to its change passing — never the Footprint's full set of tests, which only the **Checker** runs — records its **Safety fact** and **Proof** in its Outcome, commits, and returns a fixed three-line report. The **Checker** finishes the Step from there.
 _Avoid_: Oneshot agent, implementer
 
 **Checker**:
-The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It re-runs the Step's **Proof**, raising it to the rung **Green** requires when it falls short, reviews the Step's commit on both axes, fixes every finding, returns the Step to **Green**, and folds its fixes into that commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
+The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It re-runs the Step's **Proof**, raising it to the rung **Green** requires when it falls short, reviews the Step's commit on both axes, fixes every finding, then runs the tests of the Footprint's projects — the only agent that runs them in full for that Step — until the Step is **Green**, and folds its fixes into that commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
 _Avoid_: verifier, step reviewer, finisher
 
 **Prover**:
@@ -227,7 +227,7 @@ _Avoid_: spec checker, spec reviewer, linter
 A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too. So does a Proof that fails the **Prover**'s pass: that **Proof fixer** restores the Safety fact, updates a Proof that only went stale, or, when the Spec asked a later Step to change that behaviour, leaves the code alone and records a Deviation.
 
 **Footprint**:
-The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite that Step runs.
+The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite the Checker runs for that Step.
 _Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
 
 **Base branch**:
@@ -235,7 +235,7 @@ The branch the session was on when an implement command started, read again on a
 _Avoid_: master, main, default branch, trunk
 
 **Green**:
-Zero failures in the projects a Step's Footprint names, or in the whole suite for the last Step or a Step with no Footprint, plus a **Proof** of its **Safety fact** that the Checker re-ran — at rung 3 of the **Proof ladder**, or rung 4 when the change alters a running surface; a change to no code that runs needs none — measured against the **Base branch**: a failure that also fails on the Base branch at the merge-base is a Deviation to report, not the run's to fix, and does not block landing.
+Zero failures, in the Checker's own run, in the projects a Step's Footprint names, or in the whole suite for the last Step or a Step with no Footprint, plus a **Proof** of its **Safety fact** that the Checker re-ran — at rung 3 of the **Proof ladder**, or rung 4 when the change alters a running surface; a change to no code that runs needs none — measured against the **Base branch**: a failure that also fails on the Base branch at the merge-base is a Deviation to report, not the run's to fix, and does not block landing.
 _Avoid_: passing, all tests pass, mostly green
 
 **Outcome**:
