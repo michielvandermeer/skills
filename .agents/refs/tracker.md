@@ -9,7 +9,7 @@ Issues live as GitHub issues in this repo's GitHub repository. Use the `gh` CLI,
 ## Issues
 
 - **Reference**: `#<number>` or the issue's URL. A run's slug is the number plus the title in kebab case, such as `42-teams-notifications`; the leading number finds the Issue a slug names.
-- **File**: `gh issue create --title "…" --body-file <file> --label <status>`, adding the category and context labels.
+- **File**: `gh issue create --title "…" --body-file <file> --label <status>`, adding the category and context labels. GitHub drops labels silently from an account without triage access: read them back, and name any that are missing in your report. The Issue then counts as `needs-triage`.
 - **Read**: `gh issue view <n> --json number,title,body,labels,state,assignees,comments`, plus its blockers.
 - **List by status**: `gh issue list --state open --label <status> --json number,title,labels`. `needs-triage` is every open issue that carries no status label.
 - **Rewrite the body**: `gh issue edit <n> --body-file <file>`.
