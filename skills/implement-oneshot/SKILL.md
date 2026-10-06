@@ -11,7 +11,7 @@ This is `/implement` with one Step and no Planner ([ADR-0054](../../docs/adr/005
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. Its one Tracker write is the **claim** on its Issue, so concurrent runs skip that Issue. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-stays-local.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
+No Step pushes, publishes, or changes a live system; work that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and the push of `<base>` in step 8 once it has landed. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
 
 ## Process
 
@@ -100,13 +100,17 @@ The final report carries the `Safety fact:` line as step 3 held it, and says the
 
 Run `/retro`.
 
+### 8. Push
+
+Run `/implement`'s [push](../implement/SKILL.md#the-push). Read only that section of that file.
+
 ## Worktree waived
 
 There is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, run the Prover's pass and make the landing commit there, check out `<base>` yourself, then fast-forward. That merge is done when it succeeds, `git branch -d` has run, and the Proof folder is deleted. When it errors, `<base>` moved: check out the branch, drop the landing commit as step 6 says, go through items 1 to 3 of step 6 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
 
 ## Work in another repository
 
-The worktree, the review diff, and the land cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Step agent and never pushed; the final report names the repository, the branch, and what sits on it.
+The worktree, the review diff, the land, and the push cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Step agent and never pushed; the final report names the repository, the branch, and what sits on it.
 
 ## Halting
 

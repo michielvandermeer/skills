@@ -11,7 +11,7 @@ Steps run one at a time, in `NN` order, in one checkout — the run worktree, or
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and a Step that needs that **halts**. Its one Tracker write is the **claim** on its Issue, so concurrent runs skip that Issue. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-stays-local.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
+No Step pushes, publishes, or changes a live system; a Step that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and [the push](#the-push) of `<base>` once it has landed. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
 
 ## Process
 
@@ -142,6 +142,21 @@ The final report lists each Step's `Safety fact:` line as step 3 held it, and sa
 
 Run `/retro`.
 
+### 8. Push
+
+Run [the push](#the-push).
+
+## The push
+
+Step 8 pushes `<base>` from the original directory, once the run has landed and `/retro` has committed whatever it applied ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip it when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
+
+- `<base>` tracks a remote branch: `git push <remote> <base>:<branch>`, with `<remote>` from `git config branch.<base>.remote` and `<branch>` from `git config branch.<base>.merge`.
+- `<base>` tracks nothing: `git push -u origin <base>`. A repo with no `origin` skips the push.
+
+The push sends `<base>` as it stands, commits the user had not pushed yet included. It is a plain push with hooks running — never `--force`, `--force-with-lease`, or `--no-verify`. A refused or failed push gets no retry and is not a halt: the run has landed, and nothing is left to resume.
+
+The run's last line says what it pushed and to which remote branch. When it pushed nothing, the line says why: the `AGENTS.md` or `CLAUDE.md` line, no remote, or no `origin`. When the push failed, it quotes the error and says the work is landed locally, for the user to pull and push.
+
 ## The Prover's pass
 
 A fresh **Prover** re-runs every Step's Proof on the code that lands, after the final fixers and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`. Otherwise dispatch a `skills:prover` with a prompt of paths: the Step files, PROOF.md, `<proof>`, the working directory, and this report format:
@@ -168,7 +183,7 @@ Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to e
 
 ## Work in another repository
 
-The worktree, the review diff, and the land cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Step that did it and never pushed; the final report names the repository, the branch, and what sits on it.
+The worktree, the review diff, the land, and the push cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Step that did it and never pushed; the final report names the repository, the branch, and what sits on it.
 
 ## Halting
 

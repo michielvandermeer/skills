@@ -62,7 +62,7 @@ It lives at `.agents/refs/run-recipe.md`. In a repo with a `CONTEXT-MAP.md`, eac
 ## Clean up
 ```
 
-Every section is plain shell commands that work on any host. A host's own browser tools may help write it; a browser drive goes in a script the recipe runs. Nothing in it touches a live system ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-stays-local.md)).
+Every section is plain shell commands that work on any host. A host's own browser tools may help write it; a browser drive goes in a script the recipe runs. Nothing in it touches a live system ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)).
 
 - **No recipe yet**, and the Step needs rung 4: the agent that first has to drive the app writes it, from what the repo already says — README, `AGENTS.md`, package scripts, a project skill that launches the app.
 - **A recipe exists**: follow it as written. Edit it only where it steered you wrong.

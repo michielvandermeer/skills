@@ -11,7 +11,7 @@ This is `/implement` with one Step, no Planner, and no worktree ([ADR-0054](../.
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-The run never leaves a local checkout: nothing pushes, publishes, or changes a live system, and work that needs that **halts**. Its one Tracker write is the **claim** on its Issue, so concurrent runs skip that Issue. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-stays-local.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
+No Step pushes, publishes, or changes a live system; work that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and the push of this branch in step 8 once the run has cleaned up. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
 
 ## Process
 
@@ -98,9 +98,13 @@ The final report carries the `Safety fact:` line as this step held it, and says 
 
 Run `/retro`.
 
+### 8. Push
+
+Run `/implement`'s [push](../implement/SKILL.md#the-push), reading only that section of that file. `<base>` is this branch, and this checkout is the original directory.
+
 ## Work in another repository
 
-The review diff and the cleanup cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Step agent and never pushed; the final report names the repository, the branch, and what sits on it.
+The review diff, the cleanup, and the push cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Step agent and never pushed; the final report names the repository, the branch, and what sits on it.
 
 ## Halting
 
