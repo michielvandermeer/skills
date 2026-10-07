@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-07: Checker finishes with a new commit
+The Checker that finishes each `/implement` Step now lands its fixes and the `done` status flip in a **new commit**. Before, it amended the Step agent's commit, and auto mode could refuse that amend — leaving the Step stuck at `built`.
+
 ## 2026-10-07: Pull request descriptions show evidence
 When the agent writes a pull request description, it now follows one shape: a small picture of the change, before-and-after output showing it works, and how risky it is to merge. A screenshot of a visual change is uploaded with `gh` and never committed to your repo. `/implement`, `/implement-oneshot`, and `/implement-yolo` now also say for each step how hard it would be to undo, and the final report lists that next to each step's proof.
 
