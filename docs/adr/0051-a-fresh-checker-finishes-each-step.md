@@ -1,6 +1,6 @@
 # A fresh Checker finishes each Step
 
-In all three implement commands, the Step agent does not review its own work. Once it has committed its Step with its build and the tests closest to its change passing, the Driving session sends a fresh **Checker** (`skills:checker`). The Checker re-runs the Step's Proof ([ADR-0053](0053-green-needs-a-proof.md)), reviews the Step's commit on both axes, fixes what it finds, runs the Step's full set of tests, and folds the fixes into that commit. In 48 hours of transcripts (2026-09-24 to 2026-09-26), review-and-fix inside the Step agent took 29% of Step agent spend, because by then its context had grown to 300–400k tokens and every turn re-reads the whole context. A Checker starts from the Step file and the Step's changes, at a small fraction of that.
+In all three implement commands, the Step agent does not review its own work. Once it has committed its Step with its build and the tests closest to its change passing, the Driving session sends a fresh **Checker** (`skills:checker`). The Checker re-runs the Step's Proof ([ADR-0053](0053-green-needs-a-proof.md)), reviews the Step's commit on both axes, fixes what it finds, runs the Step's full set of tests, and puts the fixes and the status flip in a new commit — never an amend, because auto mode can refuse amending. In 48 hours of transcripts (2026-09-24 to 2026-09-26), review-and-fix inside the Step agent took 29% of Step agent spend, because by then its context had grown to 300–400k tokens and every turn re-reads the whole context. A Checker starts from the Step file and the Step's changes, at a small fraction of that.
 
 The trade: the Checker does not know the code the way the Step agent does, and it re-reads what it needs to fix. Review findings name the place they are about, so that re-reading is narrow.
 
@@ -19,6 +19,8 @@ The Step agent keeping the full test run, with the Checker re-running only the p
 Adding a whole-suite run to the Prover's end-of-run pass, to catch such a false pass before landing, was rejected. Every run would gain a whole-suite run, which cancels the saving on single-Step runs, where the repeat cost most.
 
 The Checker skipping its test run when it changed nothing but the Step file was rejected. Too few Checkers change nothing for the rule to pay.
+
+Amending the Step agent's commit with the Checker's fixes and status flip was rejected. Auto mode can refuse an amend, which leaves the Step stuck at `built` with no way for the Checker to land the status flip.
 
 ## Consequences
 

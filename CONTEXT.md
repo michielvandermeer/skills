@@ -212,7 +212,7 @@ The sub-agent (`skills:implementer`) that implements exactly one Step, in the ru
 _Avoid_: Oneshot agent, implementer
 
 **Checker**:
-The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It re-runs the Step's **Proof**, raising it to the rung **Green** requires when it falls short, reviews the Step's commit on both axes, fixes every finding, then runs the tests of the Footprint's projects — the only agent that runs them in full for that Step — until the Step is **Green**, and folds its fixes into that commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
+The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It re-runs the Step's **Proof**, raising it to the rung **Green** requires when it falls short, reviews the Step's commit on both axes, fixes every finding, then runs the tests of the Footprint's projects — the only agent that runs them in full for that Step — until the Step is **Green**, and puts its fixes and the status flip in a new commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
 _Avoid_: verifier, step reviewer, finisher
 
 **Prover**:
