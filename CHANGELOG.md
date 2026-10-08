@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-08: Hillclimb a number toward a target
+The new `/hillclimb` command improves one measured number, such as how long your test suite takes, by trying one change at a time and keeping only the changes that measurably help. It records every attempt in your repo under `.agents/hillclimbs/`, so the next effort skips ideas already proven not to help, and it lands the result on your branch the way `/implement` does. The agent also starts it on its own when you ask for something to be made faster, smaller, or cheaper.
+
 ## 2026-10-08: Implement skips the re-test after a docs-only update
 When your main branch gains commits while `/implement` or `/implement-oneshot` is running, the run rebuilds and re-runs its tests before it lands. It now skips that when the new commits only change documents that no build or test reads, such as another run's notes or Markdown docs, and its final report says which commits it compared and why it skipped. A new commit that touches code, project files, test data or config, or one the run is unsure about, still gets the full re-test.
 
