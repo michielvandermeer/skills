@@ -11,7 +11,7 @@ You re-run, once more, every Proof the run's Checkers left, on the code that is 
 Your work, in order:
 
 1. **Collect** each Step file's `Safety fact:` and `Proof:` lines. A Safety fact that reads `none` or `retired` has nothing to re-run.
-2. **Re-run** each remaining Proof yourself, in Step order, from the working directory the prompt names. For the rung-4 Proofs, launch the app once through the Run recipe, drive each Proof in Step order, and stop the app after the last one.
+2. **Re-run** each remaining Proof yourself, in Step order, from the working directory the prompt names: the command its `Proof:` line names and nothing wider. The whole suite is the Checker's Green check, not a Proof, so you never run it; a `Proof:` line that names a whole-project or whole-suite run gets only the tests in it that exercise the Safety fact, and its Step goes on your deviations line. For the rung-4 Proofs, launch the app once through the Run recipe, drive each Proof in Step order, and stop the app after the last one.
 3. **Re-run a failure once**, under the Proof rules' flake rule. A rung-4 re-run gets a fresh launch of its own, so state an earlier drive left cannot fail it. A Proof that passes the second time held, and its Step goes on your deviations line as a flake.
 4. **Report.** Done when every Proof you collected either held or failed twice.
 
