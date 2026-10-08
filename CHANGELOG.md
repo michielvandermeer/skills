@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-08: Implement lands as one commit
+`/implement`, `/implement-oneshot`, and `/implement-yolo` now put one commit on your branch per run, named after the change and ending with the Issue's reference, in place of 7 to 18 commits named for the run's own bookkeeping. The run then pushes right away, so your CI run carries the change's name, and pushes again only if its retrospective changed a file. The step-by-step commits still exist while the run works, so a stopped run can pick up where it left off.
+
 ## 2026-10-08: Hillclimb a number toward a target
 The new `/hillclimb` command improves one measured number, such as how long your test suite takes, by trying one change at a time and keeping only the changes that measurably help. It records every attempt in your repo under `.agents/hillclimbs/`, so the next effort skips ideas already proven not to help, and it lands the result on your branch the way `/implement` does. The agent also starts it on its own when you ask for something to be made faster, smaller, or cheaper.
 
