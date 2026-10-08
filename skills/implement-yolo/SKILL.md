@@ -11,7 +11,7 @@ This is `/implement` with one Step, no Planner, and no worktree ([ADR-0054](../.
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-No Step pushes, publishes, or changes a live system; work that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and the push of this branch in step 8 once the run has cleaned up. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
+No Step pushes, publishes, or changes a live system; work that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and the push of this branch once the run has cleaned up. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
 
 ## Process
 
@@ -90,17 +90,17 @@ Run `/document-changes` in **implement mode** while the Spec and the Step's Outc
 
 First run `/implement`'s [Prover's pass](../implement/SKILL.md#the-provers-pass), reading only that section of that file. `<start>` stands in for `<base>`, and a retry never resets or cleans the tree, as in step 3.
 
-Then hold `grep -hE '^(Safety fact|Proof|Merge risk):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, and delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and the Proof folder. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Commit the deletion with anything still uncommitted. When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close. This step is done when `git status` is clean.
+Then write the landing commit's message as `/implement`'s [landing commit](../implement/SKILL.md#the-landing-commit) section says, reading only that section of that file. Hold `grep -hE '^(Safety fact|Proof|Merge risk):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, and delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and the Proof folder. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Fold the run into the landing commit: `git reset --soft <start>`, `git add -A`, then commit with that message. Anything still uncommitted goes in with it. This step is done when `git status` is clean and `git rev-list --count <start>..HEAD` prints `1`.
 
 The final report carries the `Safety fact:`, `Proof:`, and `Merge risk:` lines as this step held them, and says the Prover re-ran the Proof on the code the run leaves. It names a Proof that passed only on its re-run, or that the Proof fixer restored, updated, or retired.
 
-### 7. Retrospective
-
-Run `/retro`.
-
-### 8. Push
+### 7. Push
 
 Run `/implement`'s [push](../implement/SKILL.md#the-push), reading only that section of that file. `<base>` is this branch, and this checkout is the original directory.
+
+### 8. Retrospective
+
+Run `/retro`. When it committed and step 7's push went out, run that push again.
 
 ## Work in another repository
 

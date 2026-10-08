@@ -8,7 +8,7 @@ One per Step: the one fact the change is safe because of, naming what breaks if 
 
 ## Merge risk
 
-One per Step, beside its Safety fact: how hard the change is to undo once it lands, and what it would affect if it went wrong. It is `easy` when reverting the Step's commit restores the old behaviour, and `hard` when something stays changed after the revert — data written, a migration run, a file format or API others already read, a release published. It informs the final report and a pull request description; it never stops the run.
+One per Step, beside its Safety fact: how hard the change is to undo once it lands, and what it would affect if it went wrong. It is `easy` when reverting the Step's change restores the old behaviour, and `hard` when something stays changed after the revert — data written, a migration run, a file format or API others already read, a release published. It informs the final report and a pull request description; it never stops the run.
 
 ## The ladder
 

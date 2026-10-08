@@ -133,30 +133,37 @@ Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remai
    - When the rebase replayed the branch onto commits `<base>` gained during the run, green is not known any more: build and run the projects on every Step's `Projects:` line — the whole suite when the last Step ran it — before going on. Before any fixer dispatch, re-run each failing project once, yourself. A failure that passes on the re-run is a flaky test and does not block landing: its test name goes on the deviations line and into the final report, the same way a failure `<base>` already has does under [ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md). A failure that fails again is red and gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)).
    - Skip that build and test run when no build or test reads anything `<base>` gained: every path `git diff --name-only <fork> <base>` lists is Markdown or sits under `.agents/` — another run's ADR, its glossary edit, its retro edit to `.agents/refs/tracker.md` — and no project file, build script, or test names that file or pulls in Markdown by a wildcard. Green then still holds. Any other path — code, a project or build file, test data, config a test reads — or any doubt about one, and the build and test run goes ahead. A skip goes in the final report: the range `<fork>..<base>` you compared, and why none of its files is read by a build or test.
 2. Still in the worktree: run [the Prover's pass](#the-provers-pass).
-3. Still in the worktree: hold `grep -hE '^(Safety fact|Proof|Merge risk):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory and the Spec with it, and commit the deletion. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). When the run started from an Issue, that commit is its landing commit and carries the Issue's closing reference as the Tracker ref gives it; when it gives none, the final report names the Issue for the user to close.
+3. Still in the worktree: hold `grep -hE '^(Safety fact|Proof|Merge risk):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory and the Spec with it, and commit the deletion. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Then build [the landing commit](#the-landing-commit) from that tree, on top of `<base>`, leaving the branch where it is: `git commit-tree HEAD^{tree} -p <base> -F -`, with the message on stdin. Hold the hash it prints as `<landing>`.
 4. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-5. From the original directory, on `<base>`: `git merge --ff-only <branch>`. (`<base>` lives here, so only the original directory can fast-forward it.) The rebase above makes this a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — `git branch -d <branch>` has run, and `<proof>` is deleted. When the merge errors, `<base>` moved: re-enter the worktree, drop the landing commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Step files come back for the Prover — then go through 1 to 4 again and retry this merge.
+5. From the original directory, on `<base>`: `git merge --ff-only <landing>`. (`<base>` lives here, so only the original directory can fast-forward it.) `<landing>`'s parent is `<base>`, so this is a fast-forward. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — the branch is deleted, and `<proof>` is deleted. Delete the branch with `git branch -D <branch>` once `git diff --quiet <branch> <base>` succeeds: its commits never reach `<base>`, so `-d` refuses it, and the empty diff shows `<base>` holds all of its work. When the diff is not empty, keep the branch and name it in the final report. When the merge errors, `<base>` moved: re-enter the worktree, drop the deletion commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Step files come back for the Prover — then go through 1 to 4 again and retry this merge.
 
 The final report lists each Step's `Safety fact:`, `Proof:`, and `Merge risk:` lines as step 3 held them, and says the Prover re-ran every Proof on the code that lands. It names each Proof that passed only on its re-run, and each Proof the Proof fixer restored, updated, or retired.
 
-### 7. Retrospective
-
-Run `/retro`.
-
-### 8. Push
+### 7. Push
 
 Run [the push](#the-push).
 
+### 8. Retrospective
+
+Run `/retro`. When it committed and step 7's push went out, run [the push](#the-push) again.
+
+## The landing commit
+
+The landing commit is the one commit the run leaves on `<base>`: the run's whole change, without the Step files ([ADR-0062](../../docs/adr/0062-an-implement-run-lands-as-one-commit.md)). Write its message before the Spec is deleted:
+
+- **Subject**: what the change does, ending with the Issue's reference — `Roles are given from the Person (#104)`. Write it from the Spec, not from the Issue's title, which often names the problem. Follow the commit style the repo's `AGENTS.md`, `CLAUDE.md`, or Coding standards document, when they document one. A run from a description has no reference.
+- **Body**: each Step's title from the index, one per line, when the run had more than one Step. Then the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the final report names the Issue for the user to close.
+
 ## The push
 
-Step 8 pushes `<base>` from the original directory, once the run has landed and `/retro` has committed whatever it applied ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip it when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
+The push sends `<base>` from the original directory: in step 7, once the landing commit is on it, so the CI run it starts carries the landing commit's subject; and in step 8, when `/retro` committed ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip both when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
 
 - `<base>` tracks a remote branch: `git push <remote> <base>:<branch>`, with `<remote>` from `git config branch.<base>.remote` and `<branch>` from `git config branch.<base>.merge`.
 - `<base>` tracks nothing: `git push -u origin <base>`. A repo with no `origin` skips the push.
 
 The push sends `<base>` as it stands, commits the user had not pushed yet included. It is a plain push with hooks running — never `--force`, `--force-with-lease`, or `--no-verify`. A refused or failed push gets no retry and is not a halt: the run has landed, and nothing is left to resume.
 
-The run's last line says what it pushed and to which remote branch. When it pushed nothing, the line says why: the `AGENTS.md` or `CLAUDE.md` line, no remote, or no `origin`. When the push failed, it quotes the error and says the work is landed locally, for the user to pull and push.
+The run's last lines name the landing commit, then say what each push sent and to which remote branch. When it pushed nothing, they say why: the `AGENTS.md` or `CLAUDE.md` line, no remote, or no `origin`. When a push failed, they quote the error and name the commits that wait on this machine — the landing commit and `/retro`'s after a failed first push, `/retro`'s after a failed second — for the user to pull and push.
 
 ## The Prover's pass
 
@@ -180,7 +187,7 @@ The Prover and the Proof fixer each fall under step 3's retry-then-halt rule, ea
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, run the Prover's pass and make the landing commit there, check out `<base>` yourself, then fast-forward. That merge is done when it succeeds, `git branch -d` has run, and `<proof>` is deleted. When it errors, `<base>` moved: check out the branch, drop the landing commit as step 6 says, go through items 1 to 3 of step 6 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, run the Prover's pass and make the deletion commit and `<landing>` there, check out `<base>` yourself, then fast-forward to `<landing>`. That merge is done when it succeeds, the branch is deleted as step 6 says, and `<proof>` is deleted. When it errors, `<base>` moved: check out the branch, drop the deletion commit as step 6 says, go through items 1 to 3 of step 6 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
 
 ## Work in another repository
 

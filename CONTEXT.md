@@ -250,6 +250,10 @@ _Avoid_: entry map, landing, touch list, blast radius — the last is a property
 The branch the session was on when an implement command started, read again on a resume. The run branches from it, is reviewed and measured Green against it, and lands back on it. It is the repository's default branch only when the session started there.
 _Avoid_: master, main, default branch, trunk
 
+**Landing commit**:
+The one commit an implement run leaves on the **Base branch** when it lands: the whole run's change, named after what it does, carrying the Issue's closing reference. It replaces every commit the run made along the way — plan, Step, Checker, fixer, Changelog — so none of those stays on the Base branch, and it holds no Step files. A **Retrospective**'s commit, when there is one, follows it as a commit of its own.
+_Avoid_: squash commit, land commit, cleanup commit, merge commit
+
 **Green**:
 Zero failures, in the Checker's own run, in the projects a Step's Footprint names, or in the whole suite for the last Step or a Step with no Footprint, plus a **Proof** of its **Safety fact** that the Checker re-ran — at rung 3 of the **Proof ladder**, or rung 4 when the change alters a running surface; a change to no code that runs needs none — measured against the **Base branch**: a failure that also fails on the Base branch at the merge-base is a Deviation to report, not the run's to fix, and does not block landing.
 _Avoid_: passing, all tests pass, mostly green

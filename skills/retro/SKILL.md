@@ -18,7 +18,7 @@ The host's session logs for the current or named session, plus the steering file
 
 **Steering files** always include the repo's `AGENTS.md` / `CLAUDE.md` and the host's global always-loaded agent files, plus any file this session actually reached.
 
-The session's code changes are the commits the session log records for the current or named session, plus any uncommitted changes still in the working tree. Take the commits from the session log: `/implement` deletes its run branch before `/retro` runs, so no branch or start commit survives to diff against.
+The session's code changes are the commits the session log records for the current or named session, plus any uncommitted changes still in the working tree. Take the commits from the session log. An implement run's change is its landing commit: once the run lands, its other commits are on no branch.
 
 ## Corrections
 
