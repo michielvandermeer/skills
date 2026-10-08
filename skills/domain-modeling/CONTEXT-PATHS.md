@@ -7,6 +7,7 @@ A repo with a root `CONTEXT-MAP.md` files every work document one folder deeper:
 | Prototype | `.agents/prototypes/<slug>/` | `.agents/prototypes/<context>/<slug>/` |
 | Architecture review | `.agents/architecture-reviews/<timestamp>/` | `.agents/architecture-reviews/<context>/<timestamp>/` |
 | Codebase audit | `.agents/codebase-audits/<timestamp>/` | `.agents/codebase-audits/<context>/<timestamp>/` |
+| Hillclimb folder | `.agents/hillclimbs/<slug>/` | `.agents/hillclimbs/<context>/<slug>/` |
 
 Issues follow the repo's Tracker ref, or [setup/LOCAL.md](../setup/LOCAL.md) when it has none; the local Tracker picks its context subfolder by the rules below. Steps (`.agents/steps/<run-slug>/`), worktrees (`.agents/worktrees/`), and refs (`.agents/refs/`) take no context subfolder.
 
@@ -18,7 +19,7 @@ Issues follow the repo's Tracker ref, or [setup/LOCAL.md](../setup/LOCAL.md) whe
 
 ## Picking the context
 
-A document goes to the context that owns the code its work would change. Infer that from the document. When it is unclear, ask; a skill that runs without asking, such as `/doctor`, uses `common`. An Architecture review or Codebase audit goes to the one context it covered, and to `common` when it covered more.
+A document goes to the context that owns the code its work would change. Infer that from the document. When it is unclear, ask; a skill that runs without asking, such as `/doctor`, uses `common`. An Architecture review or Codebase audit goes to the one context it covered, and to `common` when it covered more. A Hillclimb folder goes to the context whose code produces the number.
 
 ## Finding a document
 

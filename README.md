@@ -121,7 +121,7 @@ The implement commands read an Issue and claim it before they start, so other ru
 
 To stop runs from pushing, add a line to your repo's `AGENTS.md` or `CLAUDE.md` saying implement runs do not push. Do this when a push to your branch deploys, or when you want to push yourself. If someone else pushed to your branch during the run, the run tells you, and the work waits on your machine for you to pull and push.
 
-Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, architecture reviews, codebase audits, Changelogs, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
+Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, Attempt logs, architecture reviews, codebase audits, Changelogs, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
 
 ## Repository layout
 
@@ -132,6 +132,7 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 │   └── marketplace.json   # marketplace catalog (this repo is its own marketplace)
 ├── agents/                # sub-agents the skills dispatch, one markdown file each
 │   ├── checker.md
+│   ├── climber.md
 │   ├── explorer.md
 │   ├── implementer.md
 │   ├── planner.md
@@ -156,7 +157,7 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 
 These skills pin the effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
 
-- A **spec-bound dispatch** works to a document settled before it started, so it runs at `effort: medium` on your session's model — `skills:implementer`, `skills:checker`, `skills:prover`, `skills:explorer`, `skills:researcher`, and `skills:validator`.
+- A **spec-bound dispatch** works to a document settled before it started, so it runs at `effort: medium` on your session's model — `skills:implementer`, `skills:checker`, `skills:prover`, `skills:climber`, `skills:explorer`, `skills:researcher`, and `skills:validator`.
 - Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s Planner (`skills:planner`, `agents/planner.md`), both `/code-review` reviewers, the `/improve-data-structures` pass, the `/codebase-design` design-it-twice fan-out, and the `/brainstorm` Direction fan-out.
 
 > **These skills assume a session at `high` effort or above.** The effort pin is absolute, not relative to your session, so a session at `low` effort gets `medium` sub-agents and spends more than you chose. [ADR-0049](docs/adr/0049-spec-bound-agents-keep-the-session-model.md) records why it works that way and what it costs.
@@ -178,6 +179,7 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 | `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
+| `hillclimb` | Push one measured number — test-suite time, build time, memory, bundle size — toward a target, trying one change at a time and keeping only what measurably helps. Loads on its own when you ask for something to be made faster, smaller, or cheaper. |
 | `implement` | Implement an Issue's Spec, or a description, by slicing it into steps and running each one in its own sub-agent. |
 | `implement-oneshot` | Implement an Issue's Spec, or a description, as a single step, skipping the Planner. Still checks, reviews, and improves data structures after. |
 | `implement-yolo` | Implement an Issue's Spec, or a description, as a single step on this checkout and this branch. No worktree, no new branch, no merge. |
@@ -204,6 +206,8 @@ These skills pin the effort of the sub-agents they dispatch, to keep spend off w
 These skills are derived from and inspired by [**Matt Pocock's skills**](https://github.com/mattpocock/skills). Many thanks to Matt for the original work.
 
 The pictures `pr` draws come from Dex Horthy's [`show-me`](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md) skill at HumanLayer, by way of Matt's `pr`.
+
+`hillclimb` and its measurement rules adapt the Hillclimb playbook and the `benchmark-checklist` skill from Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT).
 
 ## License
 

@@ -50,6 +50,18 @@ _Avoid_: setup script, HITL loop, installer, walkthrough
 One focused task in a Wizard, typically one screen.
 _Avoid_: Step, prompt
 
+**Hillclimb**:
+One effort to push one measured number in one direction by trying changes one at a time and keeping each only when the measurement shows it helped and the tests still pass. It starts once the number, its target, a minimum number of **Attempts**, and any time limit are agreed, works in its own worktree, and ends by landing on the **Base branch**. Hillclimbs on the same number share one folder at `.agents/hillclimbs/<slug>/` (`.agents/hillclimbs/<context>/<slug>/` in a multi-context repo).
+_Avoid_: optimization run, perf drive, benchmark loop
+
+**Attempt**:
+One change a **Hillclimb** tries: a single idea, written by the **Climber**, measured against the commit before it, then kept as its own commit or reverted in full.
+_Avoid_: iteration, experiment, trial
+
+**Attempt log**:
+The record of every **Attempt** on one measured number, in that number's **Hillclimb** folder beside its measurement script: one row per Attempt with its idea, its change, the number before and after, and whether it was kept or reverted. Committed and kept across Hillclimbs, so the reverted rows tell the next one which ideas are proven not to help.
+_Avoid_: decision log (that is an ADR), decision.tsv, experiment log
+
 **Spec**:
 The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, user stories, implementation and testing decisions — replacing whatever the Issue said before. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
@@ -190,7 +202,7 @@ Suggestions for the agent's environment after a session. **High-priority** sugge
 _Avoid_: postmortem, wrap-up, retro as a meeting
 
 **Named session skill**:
-A user-typed skill that starts a **Retrospective** when it finishes.
+A skill that starts a **Retrospective** when it finishes, unless another Named session skill started it. Most are typed by the user and cannot be loaded by the agent; `/hillclimb` also starts one when the agent loaded it.
 _Avoid_: host skill, wrapping skill, parent skill
 
 **High-priority**:
@@ -219,12 +231,16 @@ _Avoid_: verifier, step reviewer, finisher
 The sub-agent (`skills:prover`) that re-runs every Step's **Proof** once more at the end of an implement run, on the code that lands: after the final review's fixers and, in a command that rebases, after the rebase. It wrote none of those Proofs and changes nothing. It works from each Step's `Safety fact:` and `Proof:` lines and the Proof folder, launches the app once for every rung-4 Proof, and reports which Proofs held. A Proof that fails it goes to a **Proof fixer**, and a fresh Prover then re-runs every Proof the fixer did not retire. It checks the run as a whole, so a Step's **Green** does not wait on it.
 _Avoid_: final checker, end-of-run checker, re-prover, verifier
 
+**Climber**:
+The sub-agent (`skills:climber`) that writes one **Attempt** of a **Hillclimb**. It gets one idea, changes the code in the Hillclimb's worktree, builds, runs the tests nearest its change, and leaves the change uncommitted. The Driving session measures it and keeps or reverts it, so the Climber never judges its own change.
+_Avoid_: attempt agent, hillclimber, worker
+
 **Validator**:
 The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just drafted. It works from the draft's path, corrects facts in that file, and returns the report of corrections and open questions; `/to-spec` then writes the corrected Spec to its Issue in one update.
 _Avoid_: spec checker, spec reviewer, linter
 
 **Fixer**:
-A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too. So does a Proof that fails the **Prover**'s pass: that **Proof fixer** restores the Safety fact, updates a Proof that only went stale, or, when the Spec asked a later Step to change that behaviour, leaves the code alone and records a Deviation.
+A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands, and of a **Hillclimb**, sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too. So does a Proof that fails the **Prover**'s pass: that **Proof fixer** restores the Safety fact, updates a Proof that only went stale, or, when the Spec asked a later Step to change that behaviour, leaves the code alone and records a Deviation.
 
 **Footprint**:
 The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite the Checker runs for that Step.
@@ -245,7 +261,7 @@ The section a Step agent appends to its own Step file, recording what it built a
 Anything a Step agent or Checker did that contradicts the Spec or changes what a later Step must do, any failure it left red because the Base branch already fails it, any post-rebase failure that passed on the Driving session's re-run, and any Safety fact a later Step changed on purpose, as the Spec asked, so that its Proof no longer holds. The one piece of a run's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
-A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
+A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question, an **Attempt**'s idea. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
 _Avoid_: cheap agent, worker, low-tier agent
 
 **Tracer bullet**:

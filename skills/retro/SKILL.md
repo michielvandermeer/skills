@@ -6,7 +6,7 @@ argument-hint: "[session]"
 
 A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, then summarises. `/code-review` and `/improve-data-structures` still review the product diff; `/retro` reads it only to find **Corrections**.
 
-Apply and present only when the skill the user typed is this `/retro`, or that skill has reached its own done condition.
+Apply and present only when the skill the user typed — or, when they typed none, the outermost skill the agent loaded — is this `/retro` or has reached its own done condition.
 
 Run `/writing-for-agents` for where each kind of change belongs, and `/plain-language` before the summary.
 
