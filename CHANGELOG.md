@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-08: Implement skips the re-test after a docs-only update
+When your main branch gains commits while `/implement` or `/implement-oneshot` is running, the run rebuilds and re-runs its tests before it lands. It now skips that when the new commits only change documents that no build or test reads, such as another run's notes or Markdown docs, and its final report says which commits it compared and why it skipped. A new commit that touches code, project files, test data or config, or one the run is unsure about, still gets the full re-test.
+
 ## 2026-10-08: Proofs run only the tests they need
 In `/implement`, `/implement-oneshot`, and `/implement-yolo`, each step's proof now names the narrowest check that shows the step is safe, such as a single test, instead of the whole test suite. The final proof pass no longer re-runs the whole suite, which could add a quarter of an hour to a run. The full test run still happens once per step, as before.
 
