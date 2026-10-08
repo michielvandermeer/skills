@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-08: Proofs run only the tests they need
+In `/implement`, `/implement-oneshot`, and `/implement-yolo`, each step's proof now names the narrowest check that shows the step is safe, such as a single test, instead of the whole test suite. The final proof pass no longer re-runs the whole suite, which could add a quarter of an hour to a run. The full test run still happens once per step, as before.
+
 ## 2026-10-07: Checker finishes with a new commit
 The Checker that finishes each `/implement` Step now lands its fixes and the `done` status flip in a **new commit**. Before, it amended the Step agent's commit, and auto mode could refuse that amend — leaving the Step stuck at `built`.
 
