@@ -6,5 +6,5 @@ Treating a pre-existing failure as the Step's to fix was rejected: it is scope c
 
 ## Consequences
 
-- After a rebase onto a moved base branch, green is unknown again and is re-established before the fast-forward.
+- After a rebase onto a moved base branch, green is unknown again and is re-established before the fast-forward — unless every file the base branch gained is one no build or test reads, such as another run's Markdown or `.agents/` edits. Then green still holds, and the run names the commits it compared. Parallel runs land retro and doc commits all day, and re-running the whole suite over them found nothing while adding a full suite run to every land.
 - The final report repeats every pre-existing failure the run carried.
