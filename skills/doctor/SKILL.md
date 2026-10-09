@@ -27,11 +27,12 @@ When a root `CONTEXT-MAP.md` exists, read [MULTI-CONTEXT.md](MULTI-CONTEXT.md) b
 | Issue, Map, and Decision ticket | `.agents/issues/`, in [setup/LOCAL.md](../setup/LOCAL.md)'s shape — in a repo with no Tracker ref |
 | ADR | `docs/adr/<NNNN>-<slug>.md`, or a context's own `docs/adr/` in a multi-context repo |
 | Coding standards (also contribution guidelines) | `.agents/refs/<slug>.md` |
+| Grilling profile | `.agents/refs/profiles/<name>.md` |
 | Architecture review | `.agents/architecture-reviews/<timestamp>/` — `report.md` and `report.html` |
 | Codebase audit | `.agents/codebase-audits/<timestamp>/report.md` |
 | Prototype | `.agents/prototypes/<slug>/` |
 
-In a multi-context repo, every location above except ADR and Coding standards gains a context subfolder after its kind folder, as [MULTI-CONTEXT.md](MULTI-CONTEXT.md) sets out. Specs, Ideas, and refinements have no location of their own: each converts to an Issue — see below.
+In a multi-context repo, every location above except ADR, Coding standards, and Grilling profile gains a context subfolder after its kind folder, as [MULTI-CONTEXT.md](MULTI-CONTEXT.md) sets out. Specs, Ideas, and refinements have no location of their own: each converts to an Issue — see below.
 
 ### Mechanical moves
 

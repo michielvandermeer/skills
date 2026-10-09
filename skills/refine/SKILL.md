@@ -63,6 +63,6 @@ Done when the Issue carries the Spec and `/to-spec` has returned from a finished
 
 Commit every file this session changed — glossary and ADR edits, the Prototype folder, and the Issue's own file when the Tracker keeps Issues in the repo — staged by name, on this branch, without asking. A commit that writes an ADR names the Issue's reference in its message.
 
-Then run `/retro`.
+Then run `/learn-habits`, then `/retro`.
 
 Done when the commit is made and `/retro` has finished.

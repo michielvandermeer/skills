@@ -193,6 +193,14 @@ The altitude a `/grilling` session grills at, named on one line in its first Rou
 **Altitude**:
 How deep a Round grills, set by the Subject. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
 
+**Grilling profile**:
+One person's **Habits** in one repo, learned only from their grilling sessions in that repo and kept there at `.agents/refs/profiles/<name>.md`, so it travels with git to everyone who works there. The same person may have different Habits in different repos. A grilling session reads every profile in the repo to predict which option each person would pick.
+_Avoid_: user profile, preferences, persona, agent memory
+
+**Habit**:
+A pattern in how one person answers grilling **Questions**, stated as a rule that names the kind of question it applies to — such as widening a change to every related area when asked where it should stop — with how many sessions support it and when it was last seen. A corrected fact about the domain is not a Habit; it belongs in the glossary or an ADR.
+_Avoid_: preference, tendency, pattern, choice
+
 **Owned file**:
 A file this git repository contains in its working tree as its own file. Not a cached plugin copy, and not a file in the user config tree.
 _Avoid_: in-scope file, workspace file

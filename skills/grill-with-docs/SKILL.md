@@ -14,6 +14,6 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 Once the Read-back is confirmed, take exactly one ending. The confirmed Read-back is the only test — a forecast in an earlier Round is not confirmation.
 
-**Change to implement** — the settled design still names a change. Run `/to-spec`, then `/retro`. `/to-spec` rewrites the Issue this session started from into the Spec. A mixed Read-back ("do not build X, do build Y") takes this ending for Y; X is Out of Scope on that Spec.
+**Change to implement** — the settled design still names a change. Run `/to-spec`, then `/learn-habits`, then `/retro`. `/to-spec` rewrites the Issue this session started from into the Spec. A mixed Read-back ("do not build X, do build Y") takes this ending for Y; X is Out of Scope on that Spec.
 
-**Work we will not do** — the whole settled design names no change. Skip `/to-spec`. Close the Issue this session started from as not planned, when there is one; Issues filed during the session for branches still wanted stay open. Glossary entries already written stay; write no ADR that was waiting for Spec time. Say that you wrote no Spec because nothing will be built. Then run `/retro`.
+**Work we will not do** — the whole settled design names no change. Skip `/to-spec`. Close the Issue this session started from as not planned, when there is one; Issues filed during the session for branches still wanted stay open. Glossary entries already written stay; write no ADR that was waiting for Spec time. Say that you wrote no Spec because nothing will be built. Then run `/learn-habits`, then `/retro`.

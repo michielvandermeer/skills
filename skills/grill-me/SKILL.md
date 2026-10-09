@@ -4,4 +4,4 @@ description: A relentless round-by-round interview to sharpen a plan or design.
 disable-model-invocation: true
 ---
 
-Run a `/grilling` session.
+Run a `/grilling` session, then `/learn-habits`.
