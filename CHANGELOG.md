@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-09: Grilling learns how you choose
+Grilling sessions now learn your habits, such as widening a change or leaving out safeguards nobody needs yet, and recommend the option you would likely pick, with a line saying which habit moved it. Each person gets a profile per repo under `.agents/refs/profiles/`, so the round also names which option each teammate would likely pick. The profile updates when a grilling session ends, and the new `/learn-habits` command rebuilds yours from your last 100 grilling sessions in the repo.
+
 ## 2026-10-08: Implement lands as one commit
 `/implement`, `/implement-oneshot`, and `/implement-yolo` now put one commit on your branch per run, named after the change and ending with the Issue's reference, in place of 7 to 18 commits named for the run's own bookkeeping. The run then pushes right away, so your CI run carries the change's name, and pushes again only if its retrospective changed a file. The step-by-step commits still exist while the run works, so a stopped run can pick up where it left off.
 
