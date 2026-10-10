@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-10: Fewer blocked commands in hillclimb runs
+`/hillclimb` now keeps its measurement output in a `scratch/` folder beside its log, inside the run's own working folder, instead of in your repo's `.git` folder. It and its helper agents also run each command as a simple command from that folder. Claude Code blocks a session in a worktree from writing outside it, or from running a command it cannot tell stays inside, as `/implement` runs found on 9 and 10 October.
+
 ## 2026-10-10: One grilling profile across your git emails
 If you commit under a different git email on each machine, all of them now lead to the same grilling profile. The profile's `Email:` line lists every email you use. When it does not list the one on this machine yet, the profile named after your git name is taken as yours, and the email is added to it when your next grilling session ends. Before, grilling on another machine treated your own profile as a teammate's, so your habits never moved its recommendations.
 
