@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-10: Fewer blocked commands in implement runs
+`/implement`, `/implement-oneshot`, and `/implement-yolo` now run each command as a simple command from the run's working folder, and write files with the agent's file tools. Claude Code blocks a command in a worktree when it cannot tell that the command stays inside, for example one that starts with `cd` or uses a variable. On 9 and 10 October that blocked about 70 commands across nine runs, and each one cost the agent an extra try.
+
 ## 2026-10-10: Implement saves its proofs in its own working folder
 `/implement`, `/implement-oneshot`, and `/implement-yolo` now save each step's proof files in `.agents/proof/` inside the run's own working folder, not in your repo's `.git` folder. Claude Code blocks a session in a worktree from writing outside that worktree. Because of this, steps often could not save their proofs and wrote the results into the step file instead. The new proof folder carries its own git ignore rule. Your repo's ignore files stay as they are, and no proof file ends up in a commit.
 
