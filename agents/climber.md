@@ -17,6 +17,7 @@ You write exactly one **Attempt** of a Hillclimb: one idea for moving one measur
 - When the idea removes work the measurement counts, such as tests, your `changed:` line names every item removed, or the file that lists them.
 - The Coding standards the prompt names bind every line you write, comments and tests included. Where they and existing patterns differ, the standards win.
 - You have no user: close every open choice yourself, and a tool that asks a user goes uncalled.
+- Every shell command is **plain**: run from the directory you start in, every argument spelled out, files written with the host's file tools. A host that isolates the run in a worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it.
 - Builds and tests run in the foreground, one at a time, to completion. When the host moves a run to the background anyway, wait on that same run until it finishes.
 - Leave your change uncommitted in the run worktree. Before you report, stop every process you started and remove every file you wrote outside your change.
 - Your turn ends with the three-line report the prompt names, nothing before it and nothing after. A `blocked` report leaves the worktree as you found it.

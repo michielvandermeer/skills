@@ -16,10 +16,10 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 - `<slug>` names the number, such as `test-suite-time` — never the Issue, so the next Hillclimb on the same number finds the same folder.
 - `<folder>` is `.agents/hillclimbs/<slug>/`, holding `log.md` (the **Attempt log**) and `measure.<ext>` (the measurement script). In a repo with a `CONTEXT-MAP.md` it gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
-- `<branch>` is `hillclimb/<slug>`, or the name in `<scratch>/branch` when a host tool chose another in step 2.
+- `<branch>` is `hillclimb/<slug>`, or the name in the run worktree's `<scratch>/branch` when a host tool chose another in step 2.
 - `<base>` is the **Base branch**: `git branch --show-current` in the original directory when this skill starts, read again on a resume. The Hillclimb branches from it and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). Empty means HEAD is detached: **halt**.
 - `<before>` is a second, detached checkout at `.agents/worktrees/hillclimb/<slug>-before` in the original directory. It sits at the run worktree's HEAD until step 7 moves it to `<base>`, and it is the "before" side of every measurement.
-- `<scratch>` is `$(git rev-parse --path-format=absolute --git-common-dir)/hillclimb/<slug>`: raw run output and profiler output. Deleted when the Hillclimb lands; a halt keeps it.
+- `<scratch>` is `<folder>/scratch/` in the run worktree, by absolute path: raw run output and profiler output. It sits inside the run worktree because a host that isolates the session there refuses writes outside it, the git common directory included. A `.gitignore` inside it holds `*`, so no commit sweeps it in and `git clean -fd` leaves it. Removing the run worktree in step 7 deletes it; a halt keeps it.
 
 ## Process
 
@@ -27,7 +27,7 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 The argument is an Issue reference or a description of what to improve. Read the Issue. Pick `<slug>`: when a `log.md` under `.agents/hillclimbs/` (every context subfolder included) measures the same number, take its slug; otherwise name the number in kebab case.
 
-When branch `<branch>` exists, the Hillclimb is **in flight**: go to [Resuming](#resuming).
+Find worktrees with `git worktree list`. The **run worktree** is the linked worktree on `hillclimb/<slug>`, or the one whose `<scratch>/branch` names its branch. When the run worktree or branch `hillclimb/<slug>` exists, the Hillclimb is **in flight**: go to [Resuming](#resuming).
 
 Otherwise agree the start. Name, in plain language:
 
@@ -44,16 +44,18 @@ Then claim the Issue as the Tracker ref says. When the ref says another user hol
 
 Open a worktree on `<branch>` and put the session's working directory inside it, then `git reset --hard <base>`:
 
-- If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have. When the branch it chose is not `hillclimb/<slug>`, write that name to `<scratch>/branch`.
+- If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have. Record the branch name it chose when that name is not `hillclimb/<slug>`.
 - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/hillclimb/<slug>` on `<branch>`, and change the session's working directory there.
 
-The session works *inside* the run worktree until step 7 returns it. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it, then begin every command with `cd <that path> &&` (or `git -C <that path>`), and carry that path into every sub-agent prompt as the only directory the agent works in. A Hillclimb always runs in a worktree; a prompt cannot waive it.
+The session works *inside* the run worktree until step 7 returns it. Run every command from there as a **plain** command: every argument spelled out, and files written with the host's file tools. A host that isolates the session in its worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it. Name the run worktree in every sub-agent prompt as the only directory the agent works in, adding the plain-command rule for the Explorer and a `general-purpose` agent. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it and begin every command with `cd <that path> &&`. A Hillclimb always runs in a worktree; a prompt cannot waive it.
+
+Create `<scratch>` and its `.gitignore`, and write a recorded branch name to `<scratch>/branch`.
 
 Create `<before>` with `git worktree add --detach` at the run worktree's HEAD, after ensuring `.agents/worktrees/` is ignored as above.
 
 ### 3. Freeze the measurement
 
-When `<folder>` exists, read its `log.md` whole and reuse its script. Otherwise write both, the log in [the shape below](#the-attempt-log).
+When `<folder>/log.md` exists, read it whole and reuse the script beside it. Otherwise write both, the log in [the shape below](#the-attempt-log).
 
 Hold the script to MEASURE.md: its contract, then its sensitivity check, run now even on a reused script. A script that cannot tell a slow case from a fast one gets a revised workload or number; when no revision separates them, **halt**.
 
@@ -106,7 +108,7 @@ Commit anything still uncommitted. Then, in order:
 1. In the run worktree: `git rebase <base>`. A conflict is `/resolving-merge-conflicts`. When the rebase replayed the branch onto new commits, run the agreed tests again. Re-run a failing project once yourself: a failure that passes on the re-run is a flaky test for the report ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)); one that fails again gets one `general-purpose` fixer, and a second failure **halts**.
 2. Move `<before>` to `<base>` and measure the pair as MEASURE.md says. Write the result into this Hillclimb's section of the log. It goes in the report and blocks nothing. Commit the log. When the Hillclimb started from an Issue, this log commit carries the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the report names the Issue for the user to close.
 3. Return the session to the original directory, keeping the branch — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-4. On `<base>`: `git merge --ff-only <branch>`. This step is done when the merge has succeeded, `git worktree remove` has run on the run worktree — never forced; a lock means another session still has it — `git worktree remove --force` has run on `<before>`, `git branch -d <branch>` has run, and `<scratch>` is deleted. When the merge errors, `<base>` moved: re-enter the run worktree, drop the log commit with `git reset --hard HEAD~1`, go through 1 to 3 again, and retry the merge.
+4. On `<base>`: `git merge --ff-only <branch>`. This step is done when the merge has succeeded, `git worktree remove` has run on the run worktree, deleting `<scratch>` with it — never forced; a lock means another session still has it — `git worktree remove --force` has run on `<before>`, and `git branch -d <branch>` has run. When the merge errors, `<base>` moved: re-enter the run worktree, drop the log commit with `git reset --hard HEAD~1`, go through 1 to 3 again, and retry the merge.
 
 ### 8. Report
 
@@ -153,7 +155,7 @@ Result: <final median against <base>> (<change in %>) — written in step 7.
 
 ## Resuming
 
-A run worktree whose lock names a live process is another session's Hillclimb: stop and say so. Otherwise put the session's working directory on the run worktree, or `git -c checkout.workers=0 worktree add` one at `.agents/worktrees/hillclimb/<slug>` on `<branch>` when it has none. `git reset --hard && git clean -fd` throws away an Attempt that never reached its commit. Recreate `<before>` when it is missing.
+A run worktree whose lock names a live process is another session's Hillclimb: stop and say so. Otherwise put the session's working directory on the run worktree, or `git -c checkout.workers=0 worktree add` one at `.agents/worktrees/hillclimb/<slug>` on `<branch>` when it has none. `git reset --hard && git clean -fd` throws away an Attempt that never reached its commit. Recreate `<scratch>` as step 2 does, and `<before>`, when either is missing.
 
 Read the log. When this Hillclimb's section has no baseline, go to step 3. When the deadline has passed, go to step 6 — unless the user's request gives a new time limit, which goes in the section as the new deadline. Otherwise go to step 5, or to step 4 when **Ideas not yet tried** is empty.
 

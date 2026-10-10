@@ -7,7 +7,7 @@ A Hillclimb trusts one thing: the frozen measurement script. These rules keep it
 `<folder>/measure.<ext>`, written in whatever the repo already runs scripts with.
 
 - `measure <checkout> [runs]` measures one side; `measure <before> <after> [runs]` alternates the sides — before, after, before, after — so warm-up, caches, and drift hit both alike.
-- Each run executes the measured command in that checkout and writes its raw output to `<scratch>`. The timed region holds the measured work only; building and installing happen before it.
+- Each run executes the measured command in that checkout and writes its raw output to `<scratch>`, the `scratch/` folder beside the script. The timed region holds the measured work only; building and installing happen before it.
 - Every run records the number, the **work count** — what was actually done, such as the number of tests that ran — and the **error count**: failures, non-success responses, crashes. A change that skips work or fails fast looks faster; these two counts catch it.
 - It prints one line per side — median, min–max range, runs, work count, errors — and nothing else, because the driving session reads every summary for hours.
 
