@@ -15,7 +15,7 @@ The landing commit's subject says what the change does and ends with the Issue's
 
 ## Consequences
 
-- `/implement` and `/implement-oneshot` build the landing commit with `git commit-tree`, from the branch's final tree, on top of the base branch. Then they fast-forward the base branch to it. The branch keeps its commits until the fast-forward succeeds, so the retry after the base branch moves works as before. Then the run deletes the branch with `git branch -D`, once the branch and the base branch hold the same files.
+- `/implement` and `/implement-oneshot` build the landing commit with `git commit-tree`, from the branch's final tree. Its parent is the base-branch commit the run rebased onto, held as a hash, not the branch's name. Then they fast-forward the base branch to it. When another session lands on the base branch after the rebase, the fast-forward fails, and the run rebases, re-tests, and tries again. The branch keeps its commits until the fast-forward succeeds, so that retry has them. Naming the branch would make the newer commit the parent while the tree still lacked it, so the fast-forward would succeed and undo that commit. On 2026-10-10 a run in `mvdmio-suite` nearly undid another run's fix this way. Then the run deletes the branch with `git branch -D`, once the branch and the base branch hold the same files.
 - `/implement-yolo` folds every commit since its start into one landing commit on its own branch. A commit the user makes on that branch during the run is folded in too.
 - A Step's Merge risk is judged by reverting that Step's change, because on the base branch only the whole run can be reverted.
 - `/retro` reads an implement run's change from its landing commit.
