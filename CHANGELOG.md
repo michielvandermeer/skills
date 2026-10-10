@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-10: One grilling profile across your git emails
+If you commit under a different git email on each machine, all of them now lead to the same grilling profile. The profile's `Email:` line lists every email you use. When it does not list the one on this machine yet, the profile named after your git name is taken as yours, and the email is added to it when your next grilling session ends. Before, grilling on another machine treated your own profile as a teammate's, so your habits never moved its recommendations.
+
 ## 2026-10-10: Implement no longer undoes work that lands during its final checks
 `/implement` and `/implement-oneshot` now notice when another session lands work on your branch while the run is doing its final tests and proof checks. In that case the run updates its branch again, tests again, and then lands. Before, the run's single commit could quietly undo the other session's work. On 10 October one run almost removed another run's fix this way.
 
