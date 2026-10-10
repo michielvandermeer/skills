@@ -8,6 +8,8 @@ Skill and agent prose names a branch by its role in the run: the **Base branch**
 
 A file only agents read during a run — a Proof script, a screenshot, a transcript — is run scratch. The skill that writes it names where its run deletes it, and a halt keeps it for the resume. A file outlives the run only when a later session or skill reads it, and the prose names that reader. "So the user can look at it" names no reader: the Proof folder was kept on that reason and piled up ([ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)).
 
+Run scratch lives inside the run's working tree, in a folder whose own `.gitignore` holds `*`. A host that isolates a session in its worktree refuses writes outside it, the git common directory included. `b6cdf22` moved the Proof folder in from `<git common dir>/proof/`, where Claude Code refused Step agents' and Checkers' writes in five repos.
+
 ## Coined terms
 
 Before a skill edit coins a term, grep `skills/` and `CONTEXT.md` for it. A skill may already use the words in another sense that never reached the glossary: "context folder" meant the folder holding a `CONTEXT.md` in `skills/implement/PROOF.md` when a new path level nearly took the same name. A coined term gets its `CONTEXT.md` entry in the same commit.
