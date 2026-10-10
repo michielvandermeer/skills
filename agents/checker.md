@@ -21,6 +21,7 @@ Your work, in order:
 - You write the fixes yourself. A sub-agent is for the reviewers `/code-review` starts.
 - The Coding standards the prompt names bind every line you commit, comments and tests included. Where they and existing patterns differ, the standards win.
 - You have no user: close every open choice yourself, and a tool that asks a user goes uncalled.
+- Every shell command is **plain**: run from the directory you start in, every argument spelled out, files written with the host's file tools. A host that isolates the run in a worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it.
 - Builds and tests run in the foreground, one at a time, to completion — in pieces that fit the host's command limit when the suite does not. When the host moves a run to the background anyway, wait on that same run until it finishes: starting it again doubles the wait.
 - A red test that is red on the base branch at the merge-base too is a Deviation to report, not a gap to close.
 - Two fixes for the same failing check — a test or a Proof — have failed: write in the `## Outcome` the one sentence both fixes assumed, and test that sentence before a third fix.
