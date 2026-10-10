@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-10: Implement saves its proofs in its own working folder
+`/implement`, `/implement-oneshot`, and `/implement-yolo` now save each step's proof files in `.agents/proof/` inside the run's own working folder, not in your repo's `.git` folder. Claude Code blocks a session in a worktree from writing outside that worktree. Because of this, steps often could not save their proofs and wrote the results into the step file instead. The new proof folder carries its own git ignore rule. Your repo's ignore files stay as they are, and no proof file ends up in a commit.
+
 ## 2026-10-10: Re-sending implement no longer resets work
 If you send `/implement`, `/implement-oneshot`, or `/implement-yolo` again while that same run is still working in the same session, it now says the run is still going and keeps waiting. Before, it could reset the run's working folder and delete what its helper agents had not saved yet, such as the plan being written. A run that stopped, or one you pick up in a new session, still resumes where it left off.
 
