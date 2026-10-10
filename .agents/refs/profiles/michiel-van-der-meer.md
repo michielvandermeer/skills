@@ -1,6 +1,6 @@
 # Grilling profile: Michiel van der Meer
 
-Email: mvdm@hey.com
+Email: mvdm@hey.com, michiel@mvdm.io, mvdmeer@jewelsoftware.com
 Sessions: 25, from 2026-08-28 to 2026-10-09
 Picked the recommendation: 81 of 105 answers (77%)
 
