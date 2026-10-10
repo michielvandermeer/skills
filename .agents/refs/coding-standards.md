@@ -20,6 +20,8 @@ Before a skill edit coins a term, grep `skills/` and `CONTEXT.md` for it. A skil
 
 `/implement`, `/implement-oneshot`, and `/implement-yolo` differ only in planning and worktree ([ADR-0054](../../docs/adr/0054-the-implement-commands-differ-only-in-planning-and-worktree.md)). An edit to a rule they share — in-flight detection, resume, land, cleanup — greps the other two `SKILL.md` files for the same passage and changes each one in the same commit. `c981138` taught oneshot and yolo that a bare branch `<slug>` is a run in flight and left `/implement` resetting over it.
 
+`/hillclimb` copies their worktree entry, run scratch, and landing passages. An edit to one of those greps `skills/hillclimb/SKILL.md` too and changes its copy in the same commit, whether or not a Hillclimb has hit the problem yet. `b6cdf22` and `2a305be` fixed the scratch folder and the `cd … &&` advice in the implement commands only, and the user filed #21 to bring `/hillclimb` along.
+
 ## Moved passages
 
 An edit that moves, merges, or deletes a passage lists each duty the old passage carried — a `/retro` call, a path level, a commit — and gives each one a home in the new text. `3e6a1f2` moved writing a map's Specs into a fresh session and left its `/retro` behind. `f245997` deleted the CONTEXT-PATHS row for Decision tickets and lost their context subfolder. An ADR rewrite keeps every exception the old text stated: `ad43b88` cut ADR-0010 to "Snippets are banned" and lost the snippet that `## What to build` may hold.
