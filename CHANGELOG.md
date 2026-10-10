@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-10: Re-sending implement no longer resets work
+If you send `/implement`, `/implement-oneshot`, or `/implement-yolo` again while that same run is still working in the same session, it now says the run is still going and keeps waiting. Before, it could reset the run's working folder and delete what its helper agents had not saved yet, such as the plan being written. A run that stopped, or one you pick up in a new session, still resumes where it left off.
+
 ## 2026-10-09: Grilling learns how you choose
 Grilling sessions now learn your habits, such as widening a change or leaving out safeguards nobody needs yet, and recommend the option you would likely pick, with a line saying which habit moved it. Each person gets a profile per repo under `.agents/refs/profiles/`, so the round also names which option each teammate would likely pick. The profile updates when a grilling session ends, and the new `/learn-habits` command rebuilds yours from your last 100 grilling sessions in the repo.
 
