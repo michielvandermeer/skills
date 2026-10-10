@@ -29,3 +29,5 @@ A skill's step never starts a user-invoked skill (`disable-model-invocation: tru
 ## Hosts
 
 Skill and agent prose names the agent to dispatch (`skills:explorer`, a sub-agent), never the host tool that dispatches it, such as Claude Code's Agent tool or a `subagent_type=` argument. The plugin also runs on Grok, where those names do not exist.
+
+A command skill or agent prose hands an agent is **plain**: every argument spelled out, run from the working directory. A value such as a path from `git rev-parse` is resolved once and handed on as a literal path, never as a `$(…)` to paste into commands. Claude Code refuses other forms in a session it isolates in a worktree — a `cd` or `git -C` to another path, a shell variable, `$(…)`, a heredoc — and refused about 70 such commands across nine `/implement` runs before `2a305be`.
