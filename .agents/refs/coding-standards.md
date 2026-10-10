@@ -35,3 +35,5 @@ A skill's step never starts a user-invoked skill (`disable-model-invocation: tru
 Skill and agent prose names the agent to dispatch (`skills:explorer`, a sub-agent), never the host tool that dispatches it, such as Claude Code's Agent tool or a `subagent_type=` argument. The plugin also runs on Grok, where those names do not exist.
 
 A command skill or agent prose hands an agent is **plain**: every argument spelled out, run from the working directory. A value such as a path from `git rev-parse` is resolved once and handed on as a literal path, never as a `$(…)` to paste into commands. Claude Code refuses other forms in a session it isolates in a worktree — a `cd` or `git -C` to another path, a shell variable, `$(…)`, a heredoc — and refused about 70 such commands across nine `/implement` runs before `2a305be`.
+
+Prose that has an agent wait on work it started — a reviewer, a background build — names that work's own report or exit as what it waits on. Left to choose, an agent waits with a `sleep` or a watch that outlives the work and wakes it after it has reported: the Checker reported twice that way in mvdmio-suite #285, and `dc798c0` fixed it.
