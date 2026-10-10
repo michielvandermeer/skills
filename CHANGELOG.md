@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-10: Each implement step reports once
+In `/implement`, `/implement-oneshot`, and `/implement-yolo`, the agent that checks each step now waits for its two code reviews to come back instead of setting a timer. Before, a timer still running after the check was done woke the agent, so it reported a second time. The run then waited up to four minutes for that report before it started the next step.
+
 ## 2026-10-10: Fewer blocked commands in hillclimb runs
 `/hillclimb` now keeps its measurement output in a `scratch/` folder beside its log, inside the run's own working folder, instead of in your repo's `.git` folder. It and its helper agents also run each command as a simple command from that folder. Claude Code blocks a session in a worktree from writing outside it, or from running a command it cannot tell stays inside, as `/implement` runs found on 9 and 10 October.
 
