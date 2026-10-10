@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-10: Implement no longer undoes work that lands during its final checks
+`/implement` and `/implement-oneshot` now notice when another session lands work on your branch while the run is doing its final tests and proof checks. In that case the run updates its branch again, tests again, and then lands. Before, the run's single commit could quietly undo the other session's work. On 10 October one run almost removed another run's fix this way.
+
 ## 2026-10-10: Fewer blocked commands in implement runs
 `/implement`, `/implement-oneshot`, and `/implement-yolo` now run each command as a simple command from the run's working folder, and write files with the agent's file tools. Claude Code blocks a command in a worktree when it cannot tell that the command stays inside, for example one that starts with `cd` or uses a variable. On 9 and 10 October that blocked about 70 commands across nine runs, and each one cost the agent an extra try.
 
