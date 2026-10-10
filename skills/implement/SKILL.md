@@ -53,7 +53,7 @@ The plan succeeded when that reply is the index and `.agents/steps/<slug>/` hold
 
 ### 3. Run each step in `NN` order
 
-`<proof>` is the run's Proof folder: `$(git rev-parse --path-format=absolute --git-common-dir)/proof/<slug>`.
+`<proof>` is the run's Proof folder: `.agents/proof/<slug>/` in the run's working tree, by absolute path. It sits inside because a host that isolates the session in its worktree refuses writes outside it ([ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)). Before the first dispatch, create it when it is missing, with a `.gitignore` inside that holds `*`, so git ignores the folder and no commit sweeps it in.
 
 Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and section names — it reads what is behind them:
 

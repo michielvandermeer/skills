@@ -28,7 +28,7 @@ A Step needs rung 3, and rung 4 when it changes what a person or client sees thr
 
 A Proof names the narrowest command that shows its Safety fact: one test, a test run filtered to the tests that exercise the fact, or the throwaway script. A run of a whole project or the whole suite is the Checker's Green check, not a Proof, and the Prover never re-runs it as one.
 
-Every script, screenshot, and transcript goes in the Proof folder the prompt names, `<git common dir>/proof/<slug>/` — outside every working tree, so no commit sweeps it in. The folder is run scratch: the run's final cleanup deletes it, and a halt leaves it for the resume.
+Every script, screenshot, and transcript goes in the Proof folder the prompt names, `.agents/proof/<slug>/` in the run's working tree, which git ignores. The folder is run scratch: the run's final cleanup deletes it, and a halt leaves it for the resume.
 
 ## The Outcome entry
 

@@ -4,7 +4,7 @@ A Step counted as **Green** once its tests passed, plus whatever verification th
 
 The **Proof ladder** has four rungs: stated or read in the code, which is not Proof; the existing tests pass; a test or throwaway script calls the real code on the risky path; reproduced in the running app. Every Step that changes code that runs needs rung 3. A Step that changes a web page, a command-line tool or an HTTP service needs rung 4. A library tops out at rung 3. When rung 4 is out of reach — the app cannot start locally without a live system, credentials, or a paid account, or how to launch it cannot be worked out — rung 3 stands and the run reports a Deviation. A docs-only Step needs no Safety fact.
 
-Rung 4 runs through a **Run recipe**, kept in the consuming repo at `.agents/refs/run-recipe.md`. A repo with a `CONTEXT-MAP.md` keeps one recipe per context with a running surface. The first agent that has to drive the app writes the recipe. Later agents follow it, and edit it only where it steered them wrong. Every section is a plain shell command, so the recipe works on every host. Proof files live in `<git common dir>/proof/<slug>/`, outside every working tree, so no commit can sweep them in. They are agent artifacts that no person reads, so the run deletes the folder when it finishes and keeps it only through a halt, for the resume. The rules are in `skills/implement/PROOF.md`.
+Rung 4 runs through a **Run recipe**, kept in the consuming repo at `.agents/refs/run-recipe.md`. A repo with a `CONTEXT-MAP.md` keeps one recipe per context with a running surface. The first agent that has to drive the app writes the recipe. Later agents follow it, and edit it only where it steered them wrong. Every section is a plain shell command, so the recipe works on every host. Proof files live in `.agents/proof/<slug>/` inside the run's working tree, where every agent of the run can write and a resumed run finds them. A `.gitignore` in that folder holding `*` keeps them out of git, so no commit can sweep them in. They are agent artifacts that no person reads, so the run deletes the folder when it finishes and keeps it only through a halt, for the resume. The rules are in `skills/implement/PROOF.md`.
 
 ## Considered Options
 
@@ -15,8 +15,10 @@ Rung 4 runs through a **Run recipe**, kept in the consuming repo at `.agents/ref
 - **The recipe as a host project skill under `.claude/skills/`, or whatever a host's own run or verify command writes.** Rejected: the rule has to work on every host the plugin supports, and those files are tied to one host and have no fixed format.
 - **Proofs written before the code and kept as a regression suite.** Rejected: it adds a second test suite to maintain beside the repo's real one, and that suite risks becoming slow and flaky.
 - **A Safety-fact check in `/code-review`.** Rejected: its reviewers see only the diff, and the Checker already refuses a fact that names nothing that could break.
-- **Keeping the Proof folder after the run so the user can look through it.** Rejected: nobody reads Proofs once the Checker has re-run them, and kept folders pile up in `.git`.
-- **Proof files in a system temp directory, or in an ignored folder inside the run worktree.** Rejected: a run resumed from a new session cannot find a temp directory, and a run with the worktree waived would need its own cleanup rule for an in-tree folder.
+- **Keeping the Proof folder after the run so the user can look through it.** Rejected: nobody reads Proofs once the Checker has re-run them, and kept folders pile up.
+- **Proof files in a system temp directory.** Rejected: a run resumed from a new session cannot find it.
+- **Proof files in the git common directory, at `<git common dir>/proof/<slug>/`, outside every working tree.** Rejected: a host that isolates a session in its worktree refuses writes there. Claude Code refuses both file writes to that path and shell commands that name `.git`, so agents could not save their Proofs.
+- **Ignoring the folder through the repo's `.gitignore` or `.git/info/exclude`.** Rejected: the first changes a file the user's repo tracks, and the second sits in the git common directory, where the same isolation refuses writes.
 
 ## Consequences
 
