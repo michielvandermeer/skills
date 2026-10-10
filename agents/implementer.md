@@ -19,5 +19,5 @@ You implement exactly one Step that has already been specified for you — a sli
 - A red test that is red on the base branch at the merge-base too is a Deviation to report, not a gap to close.
 - Your `## Outcome` carries the Step's **Safety fact**, its **Proof**, and its **Merge risk**, as the Proof rules the prompt names lay out. Proof files go in the Proof folder, never in your commit.
 - Two fixes for the same failing check — a test or a Proof — have failed: write in your `## Outcome` the one sentence both fixes assumed, and test that sentence before a third fix.
-- Before you report, stop every process you started and remove every file you wrote outside your commit and the Proof folder; a process you did not start keeps running.
+- Before you report, stop every process you started — sleeps, timers, and watches included — and remove every file you wrote outside your commit and the Proof folder; a process you did not start keeps running.
 - Your turn ends with the three-line report the prompt names, nothing before it and nothing after. A `blocked` report commits nothing.
