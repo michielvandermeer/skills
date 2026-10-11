@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-11: Grilling checks a page's markup before changing what it allows
+When a `/grilling` or `/grill-with-docs` session is about to declare something that removes, adds, or restricts a field, control, or action on a page, the explorer it sends now reads that page's markup, not only the code behind it. Before, an explorer that reported just "stores the cover string as given" let one session nearly drop the Edit page's free "Cover image URL" field; only a third explorer caught it.
+
 ## 2026-10-11: Proofs no longer fail after implement rebases
 When a Proof in `/implement` or `/implement-oneshot` checks what the run changed, it now finds the starting point with `git merge-base HEAD <branch>` instead of a commit hash noted at the start. Before, if another session landed work in the same file during the run, the rebase made that work look like the run's own change. The Proof then failed, which cost a Proof fixer and a second Prover pass in one run on 11 October.
 
