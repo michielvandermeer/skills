@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-11: Proofs no longer fail after implement rebases
+When a Proof in `/implement` or `/implement-oneshot` checks what the run changed, it now finds the starting point with `git merge-base HEAD <branch>` instead of a commit hash noted at the start. Before, if another session landed work in the same file during the run, the rebase made that work look like the run's own change. The Proof then failed, which cost a Proof fixer and a second Prover pass in one run on 11 October.
+
 ## 2026-10-11: Skills pick cheaper models themselves
 The skills you type and their helper agents now choose their own model and effort instead of inheriting yours. `/triage` and the `/implement` commands run on Sonnet at high effort, the interview skills such as `/grill-with-docs` run on Opus at high, code reviews run on Opus, and code searches run on Haiku. Before, every run took your session's setting, and three implement, three triage, and one grilling session in parallel used about 16% of a weekly limit in five hours.
 
