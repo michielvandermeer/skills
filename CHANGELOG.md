@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-11: Implement lands sooner when other sessions land only notes
+`/implement` and `/implement-oneshot` no longer repeat their final proof check when another session lands only notes on your branch during the run's last steps, such as docs or files under `.agents/`. If none of those files is read by a build, a test, or a proof, the check that already passed still counts, and the run lands. Before, each such landing started a new check of 2 to 5 minutes, and other sessions could land again during it. On 11 October one run spent about 5 minutes checking code again that had not changed.
+
 ## 2026-10-10: Each implement step reports once
 In `/implement`, `/implement-oneshot`, and `/implement-yolo`, the agent that checks each step now waits for its two code reviews to come back instead of setting a timer. Before, a timer still running after the check was done woke the agent, so it reported a second time. The run then waited up to four minutes for that report before it started the next step.
 
