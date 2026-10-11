@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-11: Skills pick cheaper models themselves
+The skills you type and their helper agents now choose their own model and effort instead of inheriting yours. `/triage` and the `/implement` commands run on Sonnet at high effort, the interview skills such as `/grill-with-docs` run on Opus at high, code reviews run on Opus, and code searches run on Haiku. Before, every run took your session's setting, and three implement, three triage, and one grilling session in parallel used about 16% of a weekly limit in five hours.
+
 ## 2026-10-11: Implement lands sooner when other sessions land only notes
 `/implement` and `/implement-oneshot` no longer repeat their final proof check when another session lands only notes on your branch during the run's last steps, such as docs or files under `.agents/`. If none of those files is read by a build, a test, or a proof, the check that already passed still counts, and the run lands. Before, each such landing started a new check of 2 to 5 minutes, and other sessions could land again during it. On 11 October one run spent about 5 minutes checking code again that had not changed.
 
