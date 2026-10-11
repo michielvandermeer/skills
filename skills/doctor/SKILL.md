@@ -2,6 +2,8 @@
 name: doctor
 description: "Moves documents into this project's canonical layout, closes local Issues the code already implements, and brings every ADR to state the decision in force."
 disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 # Doctor

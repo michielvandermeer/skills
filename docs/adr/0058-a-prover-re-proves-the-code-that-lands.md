@@ -25,4 +25,4 @@ A pass that held still holds after a later rebase that brought only files nothin
 - The final report lists each Step's Safety fact as the pass left it. It names each flake, each Proof the Proof fixer restored or updated, and each fact it retired.
 - A Step's **Green** does not wait on the pass, because the pass checks the whole run.
 - In rare cases, state left by an earlier drive could hide a break from a later rung-4 Proof. That is the price of one launch.
-- The Prover is Spec-bound and runs at `effort: medium` on the session's model ([ADR-0049](0049-spec-bound-agents-keep-the-session-model.md)).
+- The Prover is Spec-bound and pinned to Sonnet at `effort: medium` ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)).

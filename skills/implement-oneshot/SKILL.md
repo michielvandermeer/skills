@@ -3,11 +3,13 @@ name: implement-oneshot
 description: "Implement a spec as a single step, skipping the Planner. Still checks, reviews, and improves data structures after."
 argument-hint: "Which Issue to implement, or what to build?"
 disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 You are the **driving session**: you orchestrate, sub-agents implement. You hold the Step agent's and the Checker's three-line reports, any deviations, and the review findings for as long as step 4 takes to hand them on. Hand paths; the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
-This is `/implement` with one Step and no Planner ([ADR-0054](../../docs/adr/0054-the-implement-commands-differ-only-in-planning-and-worktree.md)): you write that Step's file yourself, and the same `skills:implementer` and `skills:checker` run it. Both run on your model at reduced effort because the Spec was decided before they started, and so does the `skills:prover` that re-runs the Proof before the run lands. The Spec fixer, the Standards fixer, the data-structures pass, and the Proof fixer are `general-purpose` and run at your own model and effort — they carry judgement worth paying for. See [ADR-0049](../../docs/adr/0049-spec-bound-agents-keep-the-session-model.md) and [ADR-0031](../../docs/adr/0031-implement-oneshot-is-a-second-command.md).
+This is `/implement` with one Step and no Planner ([ADR-0054](../../docs/adr/0054-the-implement-commands-differ-only-in-planning-and-worktree.md)): you write that Step's file yourself, and the same `skills:implementer` and `skills:checker` run it. Both are pinned in their agent files to Sonnet at high effort because the Spec was decided before they started, and so is the `skills:prover` that re-runs the Proof before the run lands, at medium effort. The Spec fixer, the Standards fixer, the data-structures pass, and the Proof fixer are `general-purpose` and run at your own model and effort, which inside this skill is the skill's own pin. See [ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md) and [ADR-0031](../../docs/adr/0031-implement-oneshot-is-a-second-command.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 

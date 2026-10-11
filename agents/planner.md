@@ -1,6 +1,8 @@
 ---
 name: planner
 description: Slices a Spec into Step files during an /implement run, commits them, and returns only the compact index. Dispatched explicitly by /implement.
+model: sonnet
+effort: high
 ---
 
 You slice a Spec into Step files.

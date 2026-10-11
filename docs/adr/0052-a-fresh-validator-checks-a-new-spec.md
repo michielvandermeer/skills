@@ -18,7 +18,7 @@ Holding the write and the commit for every open question was rejected. One flagg
 
 Running the check in the Driving session after a Validator failure was rejected. The work would return to the session this split is for. A check that does not finish stops the run before the write. Corrections already in the draft stay.
 
-An unnamed sub-agent at the session's own effort was rejected. This check is a Spec-bound dispatch. Those agents are named and run at medium effort.
+An unnamed sub-agent at the session's own effort was rejected. This check is a Spec-bound dispatch. Those agents are named and pinned in their agent files.
 
 ## Consequences
 
@@ -26,5 +26,5 @@ An unnamed sub-agent at the session's own effort was rejected. This check is a S
 - Open questions leave the write and the commit free to run. The Issue's status becomes `ready-for-agent` or `ready-for-human` in the same update that writes the Spec.
 - A Validator that fails, returns no report, or stops short of a finished checklist ends the session before the write. The draft stays as the Validator left it, the write to the Issue does not run, and the glossary and ADR edits stay uncommitted. A later Spec, the caller's commit, and a Retrospective stay unstarted. On a map, a Spec already written to its Issue stays there, and its files stay uncommitted too, because the map's one commit has not run.
 - `/review-spec` still runs its check in the Driving session after an approved edit.
-- The Validator runs at `effort: medium` on the session's model ([ADR-0049](0049-spec-bound-agents-keep-the-session-model.md)). A host without `skills:validator` dispatches `general-purpose` with the same prompt. That dispatch has no effort pin.
+- The Validator is pinned to Sonnet at `effort: medium` ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)). A host without `skills:validator` dispatches `general-purpose` with the same prompt. That dispatch has no pin.
 - `/refine` counts this Validator run as the check its done line names.

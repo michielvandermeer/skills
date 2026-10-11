@@ -2,6 +2,8 @@
 name: wayfinder
 description: Plan a change too big for one agent session as a shared map of decision tickets in the repo's Tracker, resolved one at a time until the way is clear and its Specs can be written.
 disable-model-invocation: true
+model: opus
+effort: high
 ---
 
 A loose idea has arrived — too big for one agent session, and wrapped in fog: the way from here to the **destination** isn't visible yet. Wayfinding is about finding that way, not charging at the destination. This skill charts the way as a **shared map** in the repo's Tracker, then works its **decision tickets** — questions whose resolution is a decision, not slices of a build to execute — one at a time until the route is clear.

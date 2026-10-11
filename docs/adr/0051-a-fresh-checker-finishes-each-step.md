@@ -28,4 +28,4 @@ Amending the Step agent's commit with the Checker's fixes and status flip was re
 - A `built` Step can be red in a Footprint project that its Step agent's tests did not reach. The Checker's full run finds it, and the Checker fixes it as it fixes a review finding.
 - Before its fix phase, the Checker runs the Proof and no other tests, so the full run happens on fixed code.
 - A Step is **Green** only on the Checker's own test run and its Proof re-run.
-- The Checker is Spec-bound and runs at `effort: medium`, the effort the review-and-fix loop already ran at inside the Step agent ([ADR-0049](0049-spec-bound-agents-keep-the-session-model.md)).
+- The Checker is Spec-bound and pinned to Sonnet at `effort: high`, the same as the Step agent it finishes after ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)).

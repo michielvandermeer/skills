@@ -2,6 +2,8 @@
 name: brainstorm
 description: Explore a vague problem as very different Directions, side by side, and file the ones you keep as Issues.
 disable-model-invocation: true
+model: opus
+effort: high
 argument-hint: "<problem or issue reference>"
 ---
 

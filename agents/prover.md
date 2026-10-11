@@ -1,6 +1,7 @@
 ---
 name: prover
 description: Re-runs every Step's Proof at the end of an /implement, /implement-oneshot, or /implement-yolo run, on the code that lands. Dispatched explicitly by those skills — it works to a contract decided before it starts, so it is not a general coding agent.
+model: sonnet
 effort: medium
 ---
 

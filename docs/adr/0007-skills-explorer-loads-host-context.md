@@ -4,4 +4,4 @@
 
 ## Consequences
 
-- Spec-bound agents keep the session's model and run at `effort: medium` ([ADR-0049](0049-spec-bound-agents-keep-the-session-model.md)). That pin is separate from this cost.
+- Spec-bound agents are pinned in their agent files, the explorer to Haiku at `effort: high` ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)). That pin is separate from this cost.

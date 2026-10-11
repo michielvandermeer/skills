@@ -2,6 +2,8 @@
 name: setup
 description: Set up or update the repo's Tracker ref — where its Issues live and how the skills work with them.
 disable-model-invocation: true
+model: sonnet
+effort: high
 argument-hint: "[local | github | jira | other]"
 ---
 

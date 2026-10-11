@@ -17,7 +17,7 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 Draft the Spec using the template below in a new temporary file in the OS temp directory. On a local Markdown Tracker the Issue file itself is the draft: file it at this step when the Issue is new, and write the whole of step 5's update into it. Run the `/plain-language` skill first: a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar. In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
 
-4. Dispatch a fresh **Validator** (`skills:validator`, `agents/validator.md` at the plugin root) with the draft's path. That path is the whole prompt. The Validator runs on your model at medium effort ([ADR-0052](../../docs/adr/0052-a-fresh-validator-checks-a-new-spec.md)). A host without that agent type dispatches `general-purpose` with the same prompt.
+4. Dispatch a fresh **Validator** (`skills:validator`, `agents/validator.md` at the plugin root) with the draft's path. That path is the whole prompt. The Validator is pinned to Sonnet at medium effort ([ADR-0052](../../docs/adr/0052-a-fresh-validator-checks-a-new-spec.md)). A host without that agent type dispatches `general-purpose` with the same prompt.
 
 Wait for it.
 

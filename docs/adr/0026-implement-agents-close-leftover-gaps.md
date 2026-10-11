@@ -8,4 +8,4 @@ Stopping the run so the user could decide was rejected: they still would not hav
 
 - A result that is a question is a failed step, retried once. A second failure stops the run without quoting the question.
 - The Planner fills only silence in the Spec. When a Step file and the Spec disagree, the Spec wins.
-- Step agents stay on the session's model at `effort: medium` ([ADR-0049](0049-spec-bound-agents-keep-the-session-model.md)).
+- Step agents are pinned to Sonnet at `effort: high` ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)).

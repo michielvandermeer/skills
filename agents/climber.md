@@ -1,6 +1,7 @@
 ---
 name: climber
 description: Writes one Attempt of a /hillclimb run — a single idea, left uncommitted for the driving session to measure. Dispatched explicitly by /hillclimb — it works to a contract decided before it starts, so it is not a general coding agent.
+model: sonnet
 effort: medium
 ---
 

@@ -247,6 +247,10 @@ _Avoid_: attempt agent, hillclimber, worker
 The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just drafted. It works from the draft's path, corrects facts in that file, and returns the report of corrections and open questions; `/to-spec` then writes the corrected Spec to its Issue in one update.
 _Avoid_: spec checker, spec reviewer, linter
 
+**Reviewer**:
+The sub-agent (`skills:reviewer`) that `/code-review` dispatches once per axis — Standards and Spec — in parallel, each starting fresh. It reads the changes since the fixed point and reports findings on its axis; it fixes nothing, so a **Fixer** does that.
+_Avoid_: review agent, critic, review bot
+
 **Fixer**:
 A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands, and of a **Hillclimb**, sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too. So does a Proof that fails the **Prover**'s pass: that **Proof fixer** restores the Safety fact, updates a Proof that only went stale, or, when the Spec asked a later Step to change that behaviour, leaves the code alone and records a Deviation.
 
@@ -273,7 +277,7 @@ The section a Step agent appends to its own Step file, recording what it built a
 Anything a Step agent or Checker did that contradicts the Spec or changes what a later Step must do, any failure it left red because the Base branch already fails it, any post-rebase failure that passed on the Driving session's re-run, and any Safety fact a later Step changed on purpose, as the Spec asked, so that its Proof no longer holds. The one piece of a run's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
-A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question, an **Attempt**'s idea. It runs at reduced effort because the scope of the work was already settled. Its opposite carries design or review judgement and is dispatched at the Driving session's own settings.
+A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled. Its opposite carries design or review judgement: the **Planner** and the **Reviewer** are pinned to the model and effort that judgement needs, while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
 _Avoid_: cheap agent, worker, low-tier agent
 
 **Tracer bullet**:

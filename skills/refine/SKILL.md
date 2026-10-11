@@ -2,6 +2,8 @@
 name: refine
 description: Take an Issue through grilling, an optional Prototype, and a Spec that becomes the Issue's body.
 disable-model-invocation: true
+model: opus
+effort: high
 argument-hint: "<issue reference>"
 ---
 
@@ -29,7 +31,7 @@ Done when you have the Issue in hand and the slug is named.
 
 Run `/grilling` with the subject pinned to **functional** for the whole session. How it is built is declared from the codebase. A developer who wants to grill implementation types `/grill-with-docs`.
 
-Facts from the code come from grilling's explorers.
+Facts from the code come from grilling's `skills:explorer` agents.
 
 Run `/domain-modeling`. Glossary entries land in `CONTEXT.md` as terms settle. An ADR that passes the three-part test is written at Spec time, without a Question about it.
 

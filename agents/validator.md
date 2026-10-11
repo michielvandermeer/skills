@@ -1,6 +1,7 @@
 ---
 name: validator
 description: Checks the Spec draft /to-spec has just written — corrects facts in the draft file and returns the report. Dispatched explicitly by /to-spec — it works to a contract decided before it starts, so it is not a general coding agent.
+model: sonnet
 effort: medium
 ---
 

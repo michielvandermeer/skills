@@ -1,7 +1,8 @@
 ---
 name: explorer
 description: Walks a codebase read-only and reports what it finds, without changing anything.
-effort: medium
+model: haiku
+effort: high
 disallowedTools: Write, Edit
 ---
 

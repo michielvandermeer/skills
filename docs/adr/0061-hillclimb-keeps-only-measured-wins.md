@@ -30,7 +30,7 @@ The shape follows from what those efforts learned:
 ## Consequences
 
 - `/hillclimb` joins the Named session skill list ([ADR-0038](0038-named-session-skills-apply-high-priority-retro.md)) and starts a retrospective even when the agent loaded it.
-- The Climber runs at `effort: medium` ([ADR-0049](0049-spec-bound-agents-keep-the-session-model.md)).
+- The Climber is pinned to Sonnet at `effort: medium` ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)).
 - The final measurement after the rebase compares the result with the Base branch. It goes in the report and does not block landing.
 - A Hillclimb writes no Changelog entry. Every number so far is one only developers notice, and `/document-changes` can backfill one from git.
 - The README credits pstack (MIT).

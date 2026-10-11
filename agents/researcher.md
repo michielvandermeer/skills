@@ -1,6 +1,7 @@
 ---
 name: researcher
 description: Investigates one question against primary sources and writes the findings to a Markdown file. Dispatched by /research to run in the background while the main session keeps working.
+model: sonnet
 effort: medium
 background: true
 ---

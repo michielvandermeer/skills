@@ -138,6 +138,7 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 │   ├── planner.md
 │   ├── prover.md
 │   ├── researcher.md
+│   ├── reviewer.md
 │   └── validator.md
 ├── docs/adr/              # architecture decision records
 ├── skills/                # one directory per skill, each with a SKILL.md
@@ -153,14 +154,25 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 
 The `skills/` and `agents/` directories are discovered automatically by the plugin loader — no manifest fields are required. Agents register under a scoped name, so `agents/implementer.md` is dispatched as `skills:implementer`.
 
-## Sub-agent cost tiers
+## Model and effort pins
 
-These skills pin the effort of the sub-agents they dispatch, to keep spend off work whose scope was already decided. Two roles carry the policy:
+These skills pin the model and effort they run on, so parallel runs do not all inherit your session's most expensive setting. Nothing is pinned above `high`. A pin lives in a skill's or agent's header, so it is the same in every repo and there is no per-repo setting. [ADR-0049](docs/adr/0049-agents-are-pinned-in-their-agent-files.md) records why.
 
-- A **spec-bound dispatch** works to a document settled before it started, so it runs at `effort: medium` on your session's model — `skills:implementer`, `skills:checker`, `skills:prover`, `skills:climber`, `skills:explorer`, `skills:researcher`, and `skills:validator`.
-- Anything carrying design or review judgement is left at your session's own model and effort. That covers `/implement`'s Planner (`skills:planner`, `agents/planner.md`), both `/code-review` reviewers, the `/improve-data-structures` pass, the `/codebase-design` design-it-twice fan-out, and the `/brainstorm` Direction fan-out.
+**Skills you type.** Only the skills that no other skill can load pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
 
-> **These skills assume a session at `high` effort or above.** The effort pin is absolute, not relative to your session, so a session at `low` effort gets `medium` sub-agents and spends more than you chose. [ADR-0049](docs/adr/0049-spec-bound-agents-keep-the-session-model.md) records why it works that way and what it costs.
+- Opus at high: `/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/refine`, `/wayfinder`.
+- Sonnet at high: `/triage`, `/implement`, `/implement-oneshot`, `/implement-yolo`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`.
+
+**Sub-agents.**
+
+- Sonnet at high: `skills:implementer`, `skills:checker`, `skills:planner`.
+- Sonnet at medium: `skills:prover`, `skills:climber`, `skills:validator`, `skills:researcher`.
+- Haiku at high: `skills:explorer`.
+- Opus at high: `skills:reviewer`, the two `/code-review` reviewers. The Checker runs its per-Step review on Sonnet at high instead.
+
+Everything else runs on the setting of the skill that starts it: the fixers, the `/improve-data-structures` pass, the `/codebase-design` and `/brainstorm` fan-outs, and `/document-changes`' sub-agent.
+
+> **Your environment can override a pin.** When `CLAUDE_CODE_EFFORT_LEVEL` is set, it beats every effort pin. Your session's settings and `/effort` do not.
 
 ## Skills
 

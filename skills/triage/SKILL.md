@@ -2,6 +2,8 @@
 name: triage
 description: Sort incoming reports into Specs and parked Issues — one Issue per distinct problem.
 disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 # Triage

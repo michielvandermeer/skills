@@ -2,6 +2,8 @@
 name: codebase-audit
 description: Audit the whole codebase for simpler data structures and organizing models. Read-only.
 disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 # Codebase Audit
