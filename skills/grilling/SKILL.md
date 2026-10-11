@@ -16,6 +16,7 @@ Finding *facts* is your job, never mine — and it is a sub-agent's job, never y
 - Read `CONTEXT.md`, the ADRs, and the brief we start from yourself, an Issue's comments included; every fact from the code arrives as an **explorer**'s report (a `skills:explorer`, a read-only sub-agent, sent with named questions).
 - Dispatch the explorer with the questions it must answer, wait for it however long that takes, and carry its report rather than the files. A running exploration is an unsettled prerequisite, and a round posted before it lands is built on guesses.
 - Scope needs no facts from the code, so round 1 may go out while explorers run when it asks only scope.
+- Before a declaration or question that changes what a page lets a person do — drops, adds, or restricts a field, control, or action — the explorer's questions include that page's markup: the controls it renders, not only what the code behind it stores or accepts. A report that covers only the code behind the page leaves that declaration unsettled.
 - A report that lands after a round is posted waits silently for the next round.
 - A fact only I hold — who the contracting party is, what a price should be — is a question, with a line saying why you could not find it.
 
