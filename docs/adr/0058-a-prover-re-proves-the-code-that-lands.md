@@ -4,6 +4,8 @@ Each Step's Checker re-runs that Step's Proof ([ADR-0053](0053-green-needs-a-pro
 
 A Proof that fails twice goes to one **Proof fixer**, at the Driving session's model and effort. That fixer does one of three things. It restores the fact. It updates a Proof that only went stale, such as one calling something a later change renamed. Or, when the Spec asked a later Step to change that behaviour, it leaves the code alone and retires the fact as a Deviation. A fresh Prover then re-runs every Proof that is not retired, and a second failure halts the run. Runs get slightly longer. A run that is a little slower is better than bugs left to find after landing.
 
+A pass that held still holds after a later rebase that brought only files nothing it runs reads. When the base branch moves during the land, the run rebases again. If that rebase skipped the build and test run because no build or test reads what the base branch gained ([ADR-0029](0029-green-is-measured-against-the-base-branch.md)), and no Proof reads it either, the code the Proofs exercise has not changed, and a new pass could only find what the last one found. Parallel sessions land retro and doc commits all day. Each such move would otherwise cost another pass of 2 to 5 minutes, and the base branch can move again during it.
+
 ## Considered Options
 
 - **Re-running the Proofs only once, at the end, in place of the Checker's re-run after every Step.** Rejected: it delays finding a broken Step until later Steps have already built on it, and it saves only the Proof minutes, which were 1–13% of Checker time in measured runs.
@@ -12,10 +14,12 @@ A Proof that fails twice goes to one **Proof fixer**, at the Driving session's m
 - **Fixing only what the final fixers or the rebase broke.** The Prover would first re-run a failing Proof on the code from before them, and a fact that already failed there would only be flagged. Rejected: a later Step that broke an earlier fact would land with a flag and no fix, and the run would have to keep that older code reachable across the rebase and a resume.
 - **Halting on any failure that survives the flake re-run.** Rejected: a run whose last Step retires an earlier fact on purpose, such as removing an old path a first Step kept working, would halt at the very end every time.
 - **A fresh app launch for every rung-4 Proof.** Rejected: each launch adds time for every Step that changes a running surface, and the fresh launch on a re-run already stops leftover state from failing a Proof.
+- **Skipping the pass after a rebase on the build and test condition alone.** Rejected: a Proof can read what no build or test reads, such as a file its script in the Proof folder greps, or a Markdown page the app renders.
+- **Checking the base branch as soon as the Prover returns, before building the landing commit.** Rejected: the fast-forward fails on a moved base branch anyway, and checking earlier saves only the deletion commit and the trip out of the worktree — seconds, against a pass of minutes.
 
 ## Consequences
 
-- In `/implement` and `/implement-oneshot`, the pass runs after the rebase and the post-rebase build. Deleting the Step files and the Spec in a commit on the run's branch, and building the landing commit from it, come after the pass. The Proof folder is deleted once the merge has succeeded. When the merge fails because the base branch moved, the run drops that deletion commit, rebases again, and runs the pass again before the next merge.
+- In `/implement` and `/implement-oneshot`, the pass runs after the rebase and the post-rebase build. Deleting the Step files and the Spec in a commit on the run's branch, and building the landing commit from it, come after the pass. The Proof folder is deleted once the merge has succeeded. When the merge fails because the base branch moved, the run drops that deletion commit, rebases again, and runs the pass again before the next merge — unless a pass already held and every rebase since brought only files no build, test, or Proof reads. The final report then names each range the held pass covers.
 - In `/implement-yolo`, which has no rebase, the pass runs after `/document-changes` and before the landing commit.
 - A halted run resumes at the final review once every Step is `done`, as before, so the pass is never skipped. A halt keeps the Step files and the Proof folder.
 - The final report lists each Step's Safety fact as the pass left it. It names each flake, each Proof the Proof fixer restored or updated, and each fact it retired.

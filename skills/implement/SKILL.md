@@ -169,7 +169,11 @@ The run's last lines name the landing commit, then say what each push sent and t
 
 ## The Prover's pass
 
-A fresh **Prover** re-runs every Step's Proof on the code that lands, after the final fixers and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`. Otherwise dispatch a `skills:prover` with a prompt of paths: the Step files, PROOF.md, `<proof>`, the working directory, and this report format:
+A fresh **Prover** re-runs every Step's Proof on the code that lands, after the final fixers and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`.
+
+Skip it too when step 6 comes back here after `<base>` moved, a Prover already held in this land, and every rebase since then skipped its build and test run under step 6, item 1. A Proof can read what no build or test reads, so also check each path those rebases compared: no Step's `Proof:` line or script in `<proof>` names it, and no app a rung-4 Proof launches reads it. Any doubt about one, and the pass runs. The Prover that held still stands for the code that lands. Its deviations line goes in the final report, with each range `<fork>..<onto>` it now covers.
+
+Otherwise dispatch a `skills:prover` with a prompt of paths: the Step files, PROOF.md, `<proof>`, the working directory, and this report format:
 
 ```
 status: held | failed | blocked
