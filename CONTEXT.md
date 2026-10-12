@@ -63,7 +63,7 @@ The record of every **Attempt** on one measured number, in that number's **Hillc
 _Avoid_: decision log (that is an ADR), decision.tsv, experiment log
 
 **Spec**:
-The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, user stories, implementation and testing decisions — replacing whatever the Issue said before. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
+The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, **Hand checks**, user stories, implementation and testing decisions — replacing whatever the Issue said before. Its problem, solution, Hand checks, and user stories are written for the **Product reader**; the rest is written for a developer new to the repo. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
 **ADR**:
@@ -77,6 +77,10 @@ _Avoid_: ADR history, supersession chain, lineage
 **Fold**:
 Merging the ADRs that record one decision at different times into a single ADR that states the decision as it stands, keeping the number of the newest.
 _Avoid_: squash, consolidate, supersede
+
+**Hand check**:
+One check in a **Spec**'s How to Check It section: what a person does on the running product, and what they should see, written so a QA tester can follow it by hand. The **Prover** runs every Hand check too, at the end of an implement run, on the code that lands. A Spec where nothing changes for a person has none, and says so.
+_Avoid_: acceptance check, acceptance criterion (that is a Step's own list), test case, manual test, QA script
 
 **Unstated claim**:
 A claim a Spec treats as settled that it never states as a decision and that the code does not establish as fact.
@@ -132,6 +136,10 @@ _Avoid_: style guide, conventions, coding-standards.md
 **Plain language**:
 Writing pitched at a reader who does not know this repo, in the sense of ISO 24495-1:2023. The standard every piece of text a skill puts in front of a person is held to.
 _Avoid_: simple English, simplified language, readability
+
+**Product reader**:
+Someone who knows the product but not its code — a QA tester, a product owner. The reader of the part of a **Tracker** document that says what is wrong and what changes: a **Spec**'s problem, solution, **Hand checks**, and user stories, a `needs-` **Issue**'s motivation and goal, a **Map**'s Destination. That part names only what this reader sees on the product, in words `CONTEXT.md` defines; the rest of the document keeps the developer reader of **Plain language**.
+_Avoid_: QA reader, business reader, non-technical reader, end user
 
 **Definition site**:
 Text whose job is to fix the meaning of a term — a `CONTEXT.md` entry, a glossary heading, an ADR passage that coins a name. The one place precision outranks **Plain language**, because careful words paid once are what make the shorthand safe to use everywhere else.
@@ -236,7 +244,7 @@ The sub-agent (`skills:checker`) that finishes a Step once its Step agent has co
 _Avoid_: verifier, step reviewer, finisher
 
 **Prover**:
-The sub-agent (`skills:prover`) that re-runs every Step's **Proof** once more at the end of an implement run, on the code that lands: after the final review's fixers and, in a command that rebases, after the rebase. It wrote none of those Proofs and changes nothing. It works from each Step's `Safety fact:` and `Proof:` lines and the Proof folder, launches the app once for every rung-4 Proof, and reports which Proofs held. A Proof that fails it goes to a **Proof fixer**, and a fresh Prover then re-runs every Proof the fixer did not retire. It checks the run as a whole, so a Step's **Green** does not wait on it.
+The sub-agent (`skills:prover`) that re-runs every Step's **Proof** once more at the end of an implement run, on the code that lands: after the final review's fixers and, in a command that rebases, after the rebase. It wrote none of those Proofs and changes nothing. It works from each Step's `Safety fact:` and `Proof:` lines and the Proof folder, launches the app once for every rung-4 Proof, runs the Spec's **Hand checks** in the same session, and reports which Proofs and Hand checks held. A Proof or Hand check that fails it goes to a **Proof fixer**, and a fresh Prover then re-runs every Proof the fixer did not retire. It checks the run as a whole, so a Step's **Green** does not wait on it.
 _Avoid_: final checker, end-of-run checker, re-prover, verifier
 
 **Climber**:
@@ -252,7 +260,7 @@ The sub-agent (`skills:reviewer`) that `/code-review` dispatches once per axis �
 _Avoid_: review agent, critic, review bot
 
 **Fixer**:
-A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands, and of a **Hillclimb**, sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too. So does a Proof that fails the **Prover**'s pass: that **Proof fixer** restores the Safety fact, updates a Proof that only went stale, or, when the Spec asked a later Step to change that behaviour, leaves the code alone and records a Deviation.
+A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of all three implement commands, and of a **Hillclimb**, sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too. So does a Proof or **Hand check** that fails the **Prover**'s pass: that **Proof fixer** restores the Safety fact, updates a Proof that only went stale, or, when the Spec asked a later Step to change that behaviour, leaves the code alone and records a Deviation.
 
 **Footprint**:
 The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite the Checker runs for that Step.

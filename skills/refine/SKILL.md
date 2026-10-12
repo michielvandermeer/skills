@@ -9,7 +9,7 @@ argument-hint: "<issue reference>"
 
 # Refine
 
-One person, often a non-developer who knows the product. Start from an Issue. Grill until nothing is left to ask, ask for a Prototype, and write a Spec that becomes the Issue's body. Its Problem Statement, Solution, and User Stories are the plain-language summary that person reads in the Issue. Finish in this session ([ADR-0039](../../docs/adr/0039-refine-ends-in-a-spec.md)).
+One person, often a non-developer who knows the product. Start from an Issue. Grill until nothing is left to ask, ask for a Prototype, and write a Spec that becomes the Issue's body. Its Problem Statement, Solution, How to Check It, and User Stories are the plain-language summary that person reads in the Issue. Finish in this session ([ADR-0039](../../docs/adr/0039-refine-ends-in-a-spec.md)).
 
 Live rounds run `/plain-language`.
 

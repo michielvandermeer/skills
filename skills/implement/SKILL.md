@@ -141,7 +141,7 @@ Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remai
 4. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 5. From the original directory, on `<base>`: `git merge --ff-only <landing>`. (`<base>` lives here, so only the original directory can fast-forward it.) `<landing>`'s parent is `<onto>`, so this is a fast-forward only while `<base>` is still `<onto>`. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — the branch is deleted, and `<proof>` is deleted. Delete the branch with `git branch -D <branch>` once `git diff --quiet <branch> <base>` succeeds: its commits never reach `<base>`, so `-d` refuses it, and the empty diff shows `<base>` holds all of its work. When the diff is not empty, keep the branch and name it in the final report. When the merge errors, `<base>` moved: re-enter the worktree, drop the deletion commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Step files come back for the Prover — then go through 1 to 4 again and retry this merge.
 
-The final report lists each Step's `Safety fact:`, `Proof:`, and `Merge risk:` lines as step 3 held them, and says the Prover re-ran every Proof on the code that lands. It names each Proof that passed only on its re-run, and each Proof the Proof fixer restored, updated, or retired.
+The final report lists each Step's `Safety fact:`, `Proof:`, and `Merge risk:` lines as step 3 held them, and says the Prover re-ran every Proof and ran every Hand check on the code that lands. It names each Proof or Hand check that passed only on its re-run, each Hand check the Prover skipped and what it needs, each Proof the Proof fixer restored, updated, or retired, and each Hand check it made pass.
 
 ### 7. Push
 
@@ -171,16 +171,16 @@ The run's last lines name the landing commit, then say what each push sent and t
 
 ## The Prover's pass
 
-A fresh **Prover** re-runs every Step's Proof on the code that lands, after the final fixers and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`.
+A fresh **Prover** re-runs every Step's Proof and runs the Spec's **Hand checks** on the code that lands, after the final fixers and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`, and the run has no Spec or its `## How to Check It` lists no Hand check.
 
-Skip it too when step 6 comes back here after `<base>` moved, a Prover already held in this land, and every rebase since then skipped its build and test run under step 6, item 1. A Proof can read what no build or test reads, so also check each path those rebases compared: no Step's `Proof:` line or script in `<proof>` names it, and no app a rung-4 Proof launches reads it. Any doubt about one, and the pass runs. The Prover that held still stands for the code that lands. Its deviations line goes in the final report, with each range `<fork>..<onto>` it now covers.
+Skip it too when step 6 comes back here after `<base>` moved, a Prover already held in this land, and every rebase since then skipped its build and test run under step 6, item 1. A Proof can read what no build or test reads, so also check each path those rebases compared: no Step's `Proof:` line or script in `<proof>` names it, and no app a rung-4 Proof or Hand check launches reads it. Any doubt about one, and the pass runs. The Prover that held still stands for the code that lands. Its deviations line goes in the final report, with each range `<fork>..<onto>` it now covers.
 
-Otherwise dispatch a `skills:prover` with a prompt of paths: the Step files, PROOF.md, `<proof>`, the working directory, and this report format:
+Otherwise dispatch a `skills:prover` with a prompt of paths: the Step files, the Spec (or that there is none), PROOF.md, `<proof>`, the working directory, and this report format:
 
 ```
 status: held | failed | blocked
-failed: <each Step whose Proof failed twice, by number, with one line on what the re-run showed — or "none">
-deviations: <each Step whose Proof passed only on its re-run, by number — or "none">
+failed: <each Step whose Proof failed twice, and each Hand check that failed twice, by number, with one line on what the re-run showed — or "none">
+deviations: <each Step whose Proof passed only on its re-run, and each Hand check that did, by number; each Hand check skipped, with what it needs — or "none">
 ```
 
 - **`held`**: carry its deviations line into the final report and go on.
@@ -188,6 +188,8 @@ deviations: <each Step whose Proof passed only on its re-run, by number — or "
   - restores the Safety fact in the code;
   - updates a Proof that only went stale — its `Proof:` line, or its script in `<proof>` — when the fact still holds;
   - leaves the code as it is when the Spec asked a later Step to change that behaviour, and retires the fact as PROOF.md lays out.
+
+  For each failed Hand check, it changes the code until the product does what the check says.
 
   It leaves the projects it touched green, commits its work, and reports in the same three lines as the other fixers. Then dispatch a fresh Prover the same way. A second `failed` **halts** the run.
 

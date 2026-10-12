@@ -5,7 +5,7 @@ description: Plain language in the sense of ISO 24495-1:2023 — the house stand
 
 # Plain Language
 
-Every sentence a skill puts in front of a person is written for a developer new to this codebase. They know software. They do not know this repo, and they cannot look up a word that exists only inside a skill.
+Every sentence a skill puts in front of a person is written for a developer new to this codebase. They know software. They do not know this repo, and they cannot look up a word that exists only inside a skill. The one other reader is the **Product reader** of a Tracker document, below.
 
 This binds wording. A grilling session asks the same questions at the same depth, and a review reports the same findings — only the sentences change.
 
@@ -33,6 +33,8 @@ The test on any sentence: can the reader read it once and act?
 A document travels. An Issue is shared well beyond the session that wrote it, and a Spec is read cold weeks later by someone who was never in that session. That reader cannot ask what a word meant.
 
 So a durable document spends the plain words rather than a **Gloss**: *"what we do not know yet"*, not *"fog"*. Where a template fixes a section name, keep the name and gloss it once underneath.
+
+A document in the Tracker — an Issue, a Map, a Spec — is also read by the **Product reader**: someone who knows the product but not its code, such as a QA tester. The part that says what is wrong and what changes is theirs. It names only what that reader meets on the product — screens, controls, commands they type, messages — and terms `CONTEXT.md` defines. Files, functions, classes, and internal parts belong to the technical part, which keeps the developer reader. Those sections are a Spec's Problem Statement, Solution, How to Check It, and User Stories; a `needs-` Issue's Motivation and Goal; a Map's Destination.
 
 ## Where the bar stops
 

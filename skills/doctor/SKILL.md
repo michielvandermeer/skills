@@ -44,7 +44,7 @@ Read [LEGACY-MOVES.md](LEGACY-MOVES.md) for the old layouts whose destination fo
 
 Classify each remaining document by what it actually contains. Filename and current directory are hints at best — a document could be anywhere.
 
-- **Spec** (also plan and PRD): has (or is clearly meant to have) sections like Problem Statement, Solution, User Stories, Implementation Decisions, Testing Decisions, Out of Scope — the `/to-spec` template — or a `Status:` line with a triage role plus prose describing a feature to build.
+- **Spec** (also plan and PRD): has (or is clearly meant to have) sections like Problem Statement, Solution, How to Check It, User Stories, Implementation Decisions, Testing Decisions, Out of Scope — the `/to-spec` template — or a `Status:` line with a triage role plus prose describing a feature to build.
 - **Idea**: has sections like Motivation, Goal, Decisions (locked), Out of scope, Open questions — the shape `/validate-spec` checks on an Issue in `needs-grilling`. Looser and earlier-stage than a Spec; no implementation detail.
 - **ADR**: the shape in [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) — a short title plus 1-3 sentences of context/decision/why, with or without a `status:` line, optionally Considered Options or Consequences. Usually sequentially numbered. The ADR pass below strips any status line once the ADR lands.
 - **Coding standards**: documents how code should be written or how the repo/team works, contribution guidelines included. Common filenames: `CODING_STANDARDS.md`, `CONTRIBUTING.md`, `STYLEGUIDE.md`.

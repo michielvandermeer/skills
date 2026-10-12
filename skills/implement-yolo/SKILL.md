@@ -96,7 +96,7 @@ First run `/implement`'s [Prover's pass](../implement/SKILL.md#the-provers-pass)
 
 Then write the landing commit's message as `/implement`'s [landing commit](../implement/SKILL.md#the-landing-commit) section says, reading only that section of that file. Hold `grep -hE '^(Safety fact|Proof|Merge risk):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, and delete the whole `.agents/steps/<slug>/` directory, the Spec with it, and the Proof folder. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Fold the run into the landing commit: `git reset --soft <start>`, `git add -A`, then commit with that message. Anything still uncommitted goes in with it. This step is done when `git status` is clean and `git rev-list --count <start>..HEAD` prints `1`.
 
-The final report carries the `Safety fact:`, `Proof:`, and `Merge risk:` lines as this step held them, and says the Prover re-ran the Proof on the code the run leaves. It names a Proof that passed only on its re-run, or that the Proof fixer restored, updated, or retired.
+The final report carries the `Safety fact:`, `Proof:`, and `Merge risk:` lines as this step held them, and says the Prover re-ran the Proof and ran every Hand check on the code the run leaves. It names a Proof or Hand check that passed only on its re-run, a Hand check the Prover skipped and what it needs, a Proof the Proof fixer restored, updated, or retired, and a Hand check it made pass.
 
 ### 7. Push
 

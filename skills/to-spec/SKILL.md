@@ -15,7 +15,7 @@ This skill takes the current conversation context and codebase understanding and
 
 Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-Draft the Spec using the template below in a new temporary file in the OS temp directory. On a local Markdown Tracker the Issue file itself is the draft: file it at this step when the Issue is new, and write the whole of step 5's update into it. Run the `/plain-language` skill first: a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar. In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+Draft the Spec using the template below in a new temporary file in the OS temp directory. On a local Markdown Tracker the Issue file itself is the draft: file it at this step when the Issue is new, and write the whole of step 5's update into it. Run the `/plain-language` skill first: a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar. Problem Statement, Solution, How to Check It, and User Stories are the **Product reader**'s — someone who knows the product but not its code, such as a QA tester. There, "the user" is the person who uses the part of the product the change touches, and the sections name only what that person meets on the product and terms `CONTEXT.md` defines. Every file, function, class, and internal part goes in Implementation Decisions. In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
 
 4. Dispatch a fresh **Validator** (`skills:validator`, `agents/validator.md` at the plugin root) with the draft's path. That path is the whole prompt. The Validator is pinned to Sonnet at medium effort ([ADR-0052](../../docs/adr/0052-a-fresh-validator-checks-a-new-spec.md)). A host without that agent type dispatches `general-purpose` with the same prompt.
 
@@ -33,11 +33,21 @@ Then commit the files this session created or changed — glossary and ADR edits
 
 ## Problem Statement
 
-The problem that the user is facing, from the user's perspective.
+What goes wrong for the user today, told as they meet it on the product.
 
 ## Solution
 
-The solution to the problem, from the user's perspective.
+What the product does for the user once this lands: the screens, controls, commands, and messages they meet. When nothing changes for them, as in a refactor, one sentence says so.
+
+## How to Check It
+
+A numbered list of **Hand checks**, covering every element of the Solution. Each is the setup it needs, the steps a person takes on the running product, and what they then see:
+
+<hand-check-example>
+1. Sign in as a customer with two accounts. Open Accounts. You see each account with its balance, and a total at the bottom.
+</hand-check-example>
+
+For a library, the person is the developer who calls it: call this, and get that back. When nothing changes for a person, one sentence says so and the list is empty.
 
 ## User Stories
 

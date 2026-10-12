@@ -29,7 +29,7 @@ Go section by section through the doc, checking every applicable item below agai
 
 - **Shape** — the target has the sections its type's template requires:
   - `needs-` Issue: Motivation, Goal, Decisions (locked), Out of scope, Open questions.
-  - Spec: Problem Statement, Solution, User Stories, Implementation Decisions, Testing Decisions, Out of Scope, Further Notes.
+  - Spec: Problem Statement, Solution, How to Check It, User Stories, Implementation Decisions, Testing Decisions, Out of Scope, Further Notes. A Spec without How to Check It is a fact: write it from the Solution and User Stories, as the `/to-spec` template lays out.
 
   An Issue carries exactly one status: `needs-triage`, `needs-info`, `needs-grilling`, `needs-human`, `wayfinding`, `ready-for-agent`, or `ready-for-human`. Any other status, or a second one, is a question: which status it holds is a decision. Until it is answered, check the Issue as the type its sections fit. A `needs-` Issue carries none of the banned implementation detail — file paths, class/method names, schemas, code blocks.
 
@@ -37,9 +37,11 @@ Go section by section through the doc, checking every applicable item below agai
 
 - **Drift** — every named file, class, method, glossary term, or docstring claim still matches the current codebase. Grep or read to confirm — don't take the doc's word for it.
 
+- **Product reader** — Problem Statement, Solution, How to Check It, and User Stories name only what a person meets on the product, and terms `CONTEXT.md` defines. A file, function, class, or internal part named there is a fact: reword it as what the person meets, and carry the detail to Implementation Decisions when they do not already hold it. Every screen, control, or message a Hand check names is in the markup or the code, or the Solution adds it.
+
 - **Testing shape** — Testing Decisions describe external behavior, not markup or implementation structure.
 
-- **Completeness** — every Problem Statement claim is addressed by the Solution; every Solution element has at least one User Story; anything adjacent the doc doesn't cover is named in Out of Scope, not left implicit.
+- **Completeness** — every Problem Statement claim is addressed by the Solution; every Solution element has at least one User Story and one Hand check, unless How to Check It says nothing changes for a person; anything adjacent the doc doesn't cover is named in Out of Scope, not left implicit.
 
 </validation-checklist>
 
