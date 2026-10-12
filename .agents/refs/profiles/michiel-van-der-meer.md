@@ -1,13 +1,13 @@
 # Grilling profile: Michiel van der Meer
 
 Email: mvdm@hey.com, michiel@mvdm.io, mvdmeer@jewelsoftware.com
-Sessions: 27, from 2026-08-28 to 2026-10-12
-Picked the recommendation: 92 of 122 answers (75%)
+Sessions: 28, from 2026-08-28 to 2026-10-12
+Picked the recommendation: 95 of 125 answers (76%)
 
 ## Habits
 
 - **Reuse how an existing skill already does it when asked how a new step should work.** 5 sessions, last 2026-10-12. Last 10: ✓✓✗✓✓✓✗✓✓
-- **Build the extra feature when asked whether a skill should also do one more thing for its user.** 5 sessions, last 2026-10-12. Last 10: ✓✗✓✓✓✗✓✓
+- **Build the extra feature when asked whether a skill should also do one more thing for its user.** 6 sessions, last 2026-10-12. Last 10: ✓✗✓✓✓✗✓✓✓
 - **Pin one fixed setting rather than add a way to choose it when asked how a model or effort level is picked.** 3 sessions, last 2026-10-11. Last 10: ✓✓✓
 
 ## Patterns
