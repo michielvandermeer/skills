@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-12: Specs open with a part QA can read, and say how to check the change
+A Spec's Problem Statement, Solution, and User Stories are now written for someone who knows the product but not its code, such as a QA tester. They name only the screens, controls, commands, and messages a person meets, and leave files and internal parts to the technical sections below. A new How to Check It section after the Solution lists steps a person can follow on the running product, with what they should see. At the end of an `/implement`, `/implement-oneshot`, or `/implement-yolo` run, the agent that re-checks the landing code runs those steps too, and a failed one gets fixed before the run lands. Before, the opening sections often named internal parts and terms defined nowhere, and QA could not tell what had changed or what to test.
+
 ## 2026-10-11: Grilling checks a page's markup before changing what it allows
 When a `/grilling` or `/grill-with-docs` session is about to declare something that removes, adds, or restricts a field, control, or action on a page, the explorer it sends now reads that page's markup, not only the code behind it. Before, an explorer that reported just "stores the cover string as given" let one session nearly drop the Edit page's free "Cover image URL" field; only a third explorer caught it.
 
