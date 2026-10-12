@@ -39,6 +39,8 @@ Go section by section through the doc, checking every applicable item below agai
 
 - **Product reader** — Problem Statement, Solution, How to Check It, and User Stories name only what a person meets on the product, and terms `CONTEXT.md` defines. A file, function, class, or internal part named there is a fact: reword it as what the person meets, and carry the detail to Implementation Decisions when they do not already hold it. Every screen, control, or message a Hand check names is in the markup or the code, or the Solution adds it.
 
+- **Width** — Spec only. Search the code for how it already does each job an Implementation Decision takes on. A decision that builds a new mechanism where the code already does the same job another way, without saying why that way falls short, is a question. So is a decision that guards against a failure without naming the failure and how it realistically happens. Both stay questions: how wide a Spec builds is a decision.
+
 - **Testing shape** — Testing Decisions describe external behavior, not markup or implementation structure.
 
 - **Completeness** — every Problem Statement claim is addressed by the Solution; every Solution element has at least one User Story and one Hand check, unless How to Check It says nothing changes for a person; anything adjacent the doc doesn't cover is named in Out of Scope, not left implicit.

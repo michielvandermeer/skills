@@ -9,7 +9,9 @@ This skill takes the current conversation context and codebase understanding and
 
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
 
-2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
+2. Choose the smallest change that does the work, riding what the code already does ([ADR-0065](../../docs/adr/0065-a-spec-takes-the-smallest-change-that-does-the-job.md)). This binds every implementation choice you make yourself. A choice a person settled keeps its width: their answer in a grilling round, a declaration that stood through its round, or a line the Issue or brief states outright. A choice you reasoned out earlier in this conversation — during `/triage`, say — is yours, and this rule binds it. Where the Issue proposes several remedies, take the smallest that does the work. A decision that builds a new mechanism where the code already does the same job another way says why that way falls short. A decision that guards against a failure names that failure and how it realistically happens; a failure nobody can describe that way buys no width.
+
+Then sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
 
 3. Pick the Spec's **Issue**: the one the caller names; otherwise the Issue this session started from; otherwise, or when the caller asks for a new one, a new Issue that step 5 files.
 
@@ -72,6 +74,8 @@ A list of implementation decisions that were made. This can include:
 - Schema changes
 - API contracts
 - Specific interactions
+
+Hold every decision to step 2's width: the smallest change that does the work, and the reason for any new mechanism or guard.
 
 Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
 
