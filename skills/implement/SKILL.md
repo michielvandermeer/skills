@@ -118,7 +118,7 @@ Give the user a short paragraph per axis in your own words. That summary replace
 Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule, each on its own retry. Hand each the Spec path (or that there is none), the Coding standards from step 3 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code. Hand each the instruction to read the Coding standards and the testing documents by section, as step 3 words it, and to run every build or test command with the tool's quiet flags and its output bounded to failures plus the summary — `--nologo -v q` for dotnet, piped through `tail -n 60` or grepped for failures and the summary line, a failure re-run narrower with `--filter`, never the whole log into context; a pipe still counts as a plain command:
 
 1. The fixer fixes every finding of both axes, which you paste into its prompt as the reviewer wrote them. It fixes the Spec axis's first, because a Spec fix can remove code that a Standards finding points at, and skips a Standards finding whose code is gone, naming that finding on its deviations line. Where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When both axes report no finding, skip the fixer and tell the user so.
-2. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it. Dispatch it with `effort: medium` on its Agent call, and skip it when `git diff --shortstat <base>...HEAD` shows 120 changed lines or fewer.
+2. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it. Dispatch it with `effort: medium` on its Agent call, and skip it when `git diff --shortstat <base>...HEAD` shows 120 changed lines or fewer, since a small diff leaves nothing to restructure.
 
 Retry-then-halt, and the Prover's pass in step 5, are the whole check on their work.
 
@@ -172,7 +172,7 @@ In benchmark mode every outward write is a **no-op**: the claim in step 1 and th
 
 ## The Prover's pass
 
-A fresh **Prover** re-runs every Step's Proof and runs the Spec's **Hand checks** on the code that lands, after the final fixers and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`, and the run has no Spec or its `## How to Check It` lists no Hand check.
+A fresh **Prover** re-runs every Step's Proof and runs the Spec's **Hand checks** on the code that lands, after the fixer, the data-structures pass, and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`, and the run has no Spec or its `## How to Check It` lists no Hand check.
 
 Skip it too when step 5 comes back here after `<base>` moved, a Prover already held in this land, and every rebase since then skipped its build and test run under step 5, item 1. A Proof can read what no build or test reads, so also check each path those rebases compared: no Step's `Proof:` line or script in `<proof>` names it, and no app a rung-4 Proof or Hand check launches reads it. Any doubt about one, and the pass runs. The Prover that held still stands for the code that lands. Its deviations line goes in the final report, with each range `<fork>..<onto>` it now covers.
 
@@ -192,7 +192,7 @@ deviations: <each Step whose Proof passed only on its re-run, and each Hand chec
 
   For each failed Hand check, it changes the code until the product does what the check says.
 
-  It leaves the projects it touched green, commits its work, and reports in the same three lines as the other fixers. Then dispatch a fresh Prover the same way. A second `failed` **halts** the run.
+  It leaves the projects it touched green, commits its work, and reports in the same three lines as the fixer. Then dispatch a fresh Prover the same way. A second `failed` **halts** the run.
 
 The Prover and the Proof fixer each fall under step 3's retry-then-halt rule, each on its own retry.
 
