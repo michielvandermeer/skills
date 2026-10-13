@@ -1,17 +1,18 @@
 # Grilling profile: Michiel van der Meer
 
 Email: mvdm@hey.com, michiel@mvdm.io, mvdmeer@jewelsoftware.com
-Sessions: 28, from 2026-08-28 to 2026-10-12
-Picked the recommendation: 95 of 125 answers (76%)
+Sessions: 29, from 2026-08-28 to 2026-10-13
+Picked the recommendation: 97 of 128 answers (76%)
 
 ## Habits
 
-- **Reuse how an existing skill already does it when asked how a new step should work.** 5 sessions, last 2026-10-12. Last 10: ✓✓✗✓✓✓✗✓✓
+- **Reuse how an existing skill already does it when asked how a new step should work.** 6 sessions, last 2026-10-13. Last 10: ✓✓✗✓✓✓✗✓✓✗
 - **Build the extra feature when asked whether a skill should also do one more thing for its user.** 6 sessions, last 2026-10-12. Last 10: ✓✗✓✓✓✗✓✓✓
 - **Pin one fixed setting rather than add a way to choose it when asked how a model or effort level is picked.** 3 sessions, last 2026-10-11. Last 10: ✓✓✓
 
 ## Patterns
 
+- Leave a duty that only some repos want to that repo's own docs, with no slot for it in the skills, when asked how a skill makes room for a repo's own step. 1 session, last 2026-10-13.
 - Let the agent go on without stopping or asking for approval when asked whether a run should halt. 2 sessions, last 2026-09-17.
 - Drop a gap or idea that has caused no trouble when asked whether to file it as an Issue or Idea. 2 sessions, last 2026-10-06.
 - Read less by default, such as only the main document or a bounded window, when asked how much input a skill takes in. 2 sessions, last 2026-10-09.
