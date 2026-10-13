@@ -1,0 +1,4 @@
+__pycache__/
+# Throwaway worktrees and per-run transcripts; results/*.csv is what gets committed
+work/
+runs/
