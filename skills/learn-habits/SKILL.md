@@ -1,7 +1,8 @@
 ---
 name: learn-habits
-description: Learn a person's grilling Habits into their Grilling profile. Use when a grilling session ends, or when the user wants their profile rebuilt from past sessions.
+description: Learn a person's grilling Habits into their Grilling profile. Use when the user wants their profile rebuilt from past sessions.
 argument-hint: "[window, such as past month or last 50]"
+disable-model-invocation: true
 ---
 
 A **Grilling profile** holds one person's **Habits** in this repo, at `.agents/refs/profiles/<name>.md`, so grilling can predict which option each person would pick. It learns only from that person's grilling sessions in this repo; the same person may choose differently elsewhere. See [ADR-0063](../../docs/adr/0063-grilling-profiles-live-in-the-repo-per-person.md).
@@ -12,11 +13,9 @@ The person is whoever runs this session: `git config user.email`. When that is e
 
 One person may commit under a different email on each machine, so a profile's `Email:` line lists every one of them. Their profile is the file in `.agents/refs/profiles/` whose `Email:` line lists their email. None lists it → their profile is the file named after `git config user.name` in kebab case (`ana-silva.md`): add the email to its `Email:` line, or create it when it does not exist. Write only this person's profile; a teammate's file is theirs to write from their own sessions.
 
-## Two uses
+## Rebuild
 
-**After a session** — another skill loaded this one. Read the Rounds and answers in this conversation. No answered Round → change nothing, commit nothing, and say so in one line. Otherwise fold this one session into the profile under [Habit rules](#habit-rules): record each Habit that applied, note new patterns, promote a pattern its third session shows, and update the counts.
-
-**Typed, to rebuild** — the user typed `/learn-habits`. Rebuild the profile from scratch over a window: the last 100 grilling sessions in this repo, or the window the argument names. A rebuild replaces the whole file except its `Email:` line.
+Typed by the user, never loaded by a grilling skill. Rebuild the profile from scratch over a window: the last 100 grilling sessions in this repo, or the window the argument names. A rebuild replaces the whole file except its `Email:` line.
 
 1. **Find the sessions.** Read the session logs of every host on this machine, not only this one. Look up where each keeps them; today Claude Code keeps `~/.claude/projects/<cwd with / as ->/<session>.jsonl` (skip `/subagents/`), and Grok keeps `~/.grok/sessions/<url-encoded cwd>/<session>/`, where only a session whose `prompt_context.json` says `"audience": "primary"` is top-level. A worktree's sessions belong to its repo. A grilling session is one where an assistant message holds a `## Round N` heading and an option marked `← recommended`, whichever skill ran it; that text inside a file the session merely read is not a Round.
 2. **Read them in batches.** Dispatch `skills:explorer` sub-agents, about 15 sessions each, in parallel. Each returns one record per answered Question: session date, the kind of question in a few plain words, the options, which one was recommended, what the person picked or wrote, any `*Your habit:*` line and the Habit it named, and the person's stated reason, paraphrased. Carry their records, never the logs.
@@ -55,6 +54,6 @@ Picked the recommendation: 131 of 180 answers (73%)
 
 ## Commit
 
-Stage the profile by name and commit it on its own — `learn-habits: <first name>'s Grilling profile`, saying whether it added one session or rebuilt from a window.
+Stage the profile by name and commit it on its own — `learn-habits: <first name>'s Grilling profile`, naming the window it rebuilt from.
 
-**Done** when that commit is made, or the one line saying why nothing changed is in the chat.
+**Done** when that commit is made.

@@ -196,7 +196,7 @@ Everything else runs on the setting of the skill that starts it: the fixers, the
 | `implement-yolo` | Implement an Issue's Spec, or a description, as a single step on this checkout and this branch. No worktree, no new branch, no merge. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then file the ones you pick as Issues — as Specs when they are clear enough to build. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
-| `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Runs when a grilling session ends; type it to rebuild your profile from past sessions. |
+| `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Type it to rebuild your profile from past sessions; no grilling session runs it for you. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |
 | `pr` | Shape a pull request description: a small picture of the change, before-and-after evidence, and how risky it is to merge. Loads on its own whenever the agent writes one. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |

@@ -194,7 +194,7 @@ The altitude a `/grilling` session grills at, named on one line in its first Rou
 How deep a Round grills, set by the Subject. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
 
 **Grilling profile**:
-One person's **Habits** in one repo, learned only from their grilling sessions in that repo and kept there at `.agents/refs/profiles/<name>.md`, so it travels with git to everyone who works there. The same person may have different Habits in different repos. A grilling session reads every profile in the repo to predict which option each person would pick.
+One person's **Habits** in one repo, learned only from their grilling sessions in that repo and kept there at `.agents/refs/profiles/<name>.md`, so it travels with git to everyone who works there. The same person may have different Habits in different repos. A grilling session reads every profile in the repo to predict which option each person would pick. A profile changes only when a person types `/learn-habits`.
 _Avoid_: user profile, preferences, persona, agent memory
 
 **Habit**:

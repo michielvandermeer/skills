@@ -6,4 +6,4 @@ model: opus
 effort: high
 ---
 
-Run a `/grilling` session, then `/learn-habits`.
+Run a `/grilling` session.
