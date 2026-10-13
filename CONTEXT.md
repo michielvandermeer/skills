@@ -302,6 +302,10 @@ _Avoid_: evidence, verification, test result
 The scale that ranks how strongly a **Proof** shows its **Safety fact** holds, in four rungs: (1) stated, or read in the code, which is not Proof at all; (2) the existing tests pass; (3) a test or throwaway script calls the real code on the risky path and would fail if the fact were false; (4) reproduced in the running app through the **Run recipe**.
 _Avoid_: evidence rung, confidence level, verification level
 
+**Benchmark mode**:
+The state of an `/implement` run the `benchmark/` runner starts to measure what it costs: `SKILLS_BENCHMARK=1`, named in the session's system prompt. The claim and every push become no-ops that write one line to a log, and every other part of the run goes as it does in production. Compared with what the run does, it changes only whether the run reaches outside the checkout.
+_Avoid_: dry run, test mode, simulation
+
 **Run recipe**:
 The record, kept in the consuming repo, of how to launch its app, tell that it is ready, drive it, keep evidence from it, and clean up afterwards — runnable from a plain shell command on any host. It lives at `.agents/refs/run-recipe.md`; in a repo with a `CONTEXT-MAP.md`, each context with a running surface keeps its own under that context's folder. Written by the first agent that has to drive the app, and edited only when it steers an agent wrong.
 _Avoid_: verify recipe, run skill, smoke script, test plan

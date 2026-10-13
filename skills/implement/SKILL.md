@@ -13,7 +13,7 @@ Steps run one at a time, in `NN` order, in one checkout — the run worktree, or
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-No Step pushes, publishes, or changes a live system; a Step that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and [the push](#the-push) of `<base>` once it has landed. The closing reference its landing commit carries is how the Tracker learns the work is done. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
+No Step pushes, publishes, or changes a live system; a Step that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and [the push](#the-push) of `<base>` once it has landed. The closing reference its landing commit carries is how the Tracker learns the work is done. Under [benchmark mode](#benchmark-mode) it reaches outside zero times. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
 
 ## Process
 
@@ -162,6 +162,12 @@ The push sends `<base>` from the original directory: in step 6, once the landing
 The push sends `<base>` as it stands, commits the user had not pushed yet included. It is a plain push with hooks running — never `--force`, `--force-with-lease`, or `--no-verify`. A refused or failed push gets no retry and is not a halt: the run has landed, and nothing is left to resume.
 
 The run's last lines name the landing commit, then say what each push sent and to which remote branch. When it pushed nothing, they say why: the `AGENTS.md` or `CLAUDE.md` line, no remote, or no `origin`. When a push failed, they quote the error and name the commits that wait on this machine — the landing commit and `/retro`'s after a failed first push, `/retro`'s after a failed second — for the user to pull and push.
+
+## Benchmark mode
+
+The `benchmark/` runner measures what a run costs. It exports `SKILLS_BENCHMARK=1` and `SKILLS_BENCHMARK_LOG` and names `SKILLS_BENCHMARK=1` in the session's system prompt, so the mode is on when your system prompt says so and costs no call to find out. Without that line, skip this section ([ADR-0066](../../docs/adr/0066-a-benchmark-run-writes-nothing-outside-its-checkout.md)).
+
+In benchmark mode every outward write is a **no-op**: the claim in step 1 and the push in steps 6 and 7 each run `bench-log "<step>: <the command it would have run>"` instead, and the run goes on as though that write succeeded. Tracker reads stay. Every sub-agent prompt, `general-purpose` ones included, gets one more line: this is a benchmark run, so a `gh` write or a `git push` is a `bench-log` line. The final report says each push was a no-op.
 
 ## The Prover's pass
 
