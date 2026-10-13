@@ -1,0 +1,64 @@
+# Frozen Specs for the /implement benchmark. Never edit a base or landing once results exist:
+# a changed Spec is a different benchmark. Base is the parent of the landing commit, found with
+#   gh api repos/<repo>/issues/<n>/events   (the `closed` event's commit_id = landing)
+#   gh api repos/<repo>/commits/<landing>   (parents[0] = base)
+# landing_lines is additions + deletions of the landing commit. build and tests are the commands the
+# scorer runs from the repo root of the finished run; tests must run at least one test.
+# A field that reads TODO is unknown, and the runner refuses to run that Spec.
+defaults:
+  repo: michielvandermeer/mvdmio-suite
+
+specs:
+  - id: ui-bug-394
+    issue: 394
+    category: UI bug
+    base: 90fa149b099e2a69bbcf2031dfb61f06147135fa
+    landing: 65ada89d25b916f5716ee9a05530bd97c8e2e14b
+    landing_lines: 56
+    build:
+      - 'dotnet build Commonplace/src/mvdmio.Commonplace.Web/mvdmio.Commonplace.Web.csproj --nologo -v q -m:2'
+      - 'dotnet build Statistics/src/mvdmio.Statistics.Web/mvdmio.Statistics.Web.csproj --nologo -v q -m:2'
+    tests:
+      - 'dotnet test Commonplace/test/mvdmio.Commonplace.Tests.Integration/mvdmio.Commonplace.Tests.Integration.csproj --filter "FullyQualifiedName~Changelog" --nologo'
+      - 'dotnet test Statistics/test/mvdmio.Statistics.Tests.Integration/mvdmio.Statistics.Tests.Integration.csproj --filter "FullyQualifiedName~Changelog" --nologo'
+
+  - id: backend-n-plus-1-393
+    issue: 393
+    category: backend N+1
+    base: 8c3904d1912931cee0544375c1898503e806d8bb
+    landing: 62c45fffbad725da243c196d26a1f290a79914ab
+    landing_lines: 234
+    build:
+      - 'dotnet build Compliance/src/mvdmio.Compliance.Web/mvdmio.Compliance.Web.csproj --nologo -v q -m:2'
+    tests:
+      - 'dotnet test Compliance/test/mvdmio.Compliance.Tests.Integration/mvdmio.Compliance.Tests.Integration.csproj --filter "FullyQualifiedName~Findings|FullyQualifiedName~TaskRepository" --nologo'
+
+  - id: test-only-311
+    issue: 311
+    category: test-only
+    base: 287fd1f0b268ed1ec5f168e1663334e4e94852ed
+    landing: b58dfe573400af826ef1c7b5adaa045c8a208a33
+    landing_lines: 1061
+    build:
+      - 'dotnet build Libraries/test/mvdmio.UnitTest.Common.xUnit/mvdmio.UnitTest.Common.xUnit.csproj --nologo -v q -m:2'
+    tests:
+      - 'dotnet test Auth/test/mvdmio.Auth.Tests.Integration/mvdmio.Auth.Tests.Integration.csproj --filter "FullyQualifiedName~Changelog" --nologo'
+      - 'dotnet test Commonplace/test/mvdmio.Commonplace.Tests.Integration/mvdmio.Commonplace.Tests.Integration.csproj --filter "FullyQualifiedName~Changelog" --nologo'
+      - 'dotnet test Compliance/test/mvdmio.Compliance.Tests.Integration/mvdmio.Compliance.Tests.Integration.csproj --filter "FullyQualifiedName~Changelog" --nologo'
+      - 'dotnet test HealthCheck/test/mvdmio.HealthCheck.Tests.Integration/mvdmio.HealthCheck.Tests.Integration.csproj --filter "FullyQualifiedName~Changelog" --nologo'
+      - 'dotnet test Statistics/test/mvdmio.Statistics.Tests.Integration/mvdmio.Statistics.Tests.Integration.csproj --filter "FullyQualifiedName~Changelog" --nologo'
+      - 'dotnet test TranslationTools/test/mvdmio.TranslationTools.Tests.Integration/mvdmio.TranslationTools.Tests.Integration.csproj --filter "FullyQualifiedName~Changelog" --nologo'
+
+  - id: small-library-feature-280
+    issue: 280
+    category: small library feature
+    base: f2cd7d661817857a102da4e4cbc16aa814a03696
+    landing: 63be5b5bfc218a8e720d88c97ecf6294972365c7
+    landing_lines: 184
+    build:
+      - 'dotnet build HealthCheck/nuget/mvdmio.HealthCheck.Client/mvdmio.HealthCheck.Client.csproj --nologo -v q -m:2'
+      - 'dotnet build Libraries/src/mvdmio.ASP/mvdmio.ASP.csproj --nologo -v q -m:2'
+    tests:
+      - 'dotnet test HealthCheck/test/mvdmio.HealthCheck.Tests.Unit/mvdmio.HealthCheck.Tests.Unit.csproj --nologo'
+
+# A fifth Spec goes here, with a different category. Copy a block above and fill every field.

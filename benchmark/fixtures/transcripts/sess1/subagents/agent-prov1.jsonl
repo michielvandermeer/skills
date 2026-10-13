@@ -1,0 +1,1 @@
+{"type":"assistant","timestamp":"2026-01-01T10:04:00Z","requestId":"req_p1","uuid":"up1","message":{"id":"msg_p1","model":"claude-sonnet-5","role":"assistant","content":[{"type":"text","text":"status: held\nfailed: none\ndeviations: none"}],"usage":{"input_tokens":1,"cache_creation_input_tokens":0,"cache_read_input_tokens":100,"output_tokens":10}}}
