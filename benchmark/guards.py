@@ -110,9 +110,10 @@ def install(dest, log_path):
         "SKILLS_BENCHMARK": "1",
         "SKILLS_BENCHMARK_LOG": str(log_path),
         # env config outranks the repo's own, so no worktree the run makes can push
-        "GIT_CONFIG_COUNT": "2",
+        "GIT_CONFIG_COUNT": "3",
         "GIT_CONFIG_KEY_0": "core.hooksPath", "GIT_CONFIG_VALUE_0": str(hooks),
         "GIT_CONFIG_KEY_1": "remote.origin.pushurl", "GIT_CONFIG_VALUE_1": "benchmark-no-push://refused",
+        "GIT_CONFIG_KEY_2": "core.longpaths", "GIT_CONFIG_VALUE_2": "true",
         "GIT_TERMINAL_PROMPT": "0",
     }
 

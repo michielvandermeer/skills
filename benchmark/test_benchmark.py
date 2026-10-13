@@ -1,4 +1,5 @@
 """Tests for the benchmark tooling, on synthetic data only: python benchmark/test_benchmark.py"""
+import csv
 import os
 import subprocess
 import sys
@@ -9,8 +10,10 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+import collect  # noqa: E402
 import guards  # noqa: E402
 import metrics  # noqa: E402
+import run  # noqa: E402
 import score  # noqa: E402
 
 
@@ -193,6 +196,78 @@ class ScoreTests(unittest.TestCase):
             self.assertEqual((s["landed"], s["commits"], s["landing_lines"], s["diff_ratio"]), (True, 1, 2, 0.5))
             self.assertEqual((s["build_ok"], s["tests_ok"], s["tests_run"], s["noop_writes"], s["proof"]), (True, True, 2, 1, "held"))
             self.assertTrue(s["valid"], s["invalid_reasons"])
+
+
+class RunnerTests(unittest.TestCase):
+    def test_argv_pins_settings_and_ends_with_the_variadic_flag(self):
+        settings = run.Settings("sonnet", "high", "claim", claude_cmd=["claude"])
+        argv = run.build_argv(settings, {"issue": 394}, "/skills", "sid", "/mcp.json")
+        self.assertEqual(argv[:3], ["claude", "-p", "/implement #394"])
+        for pair in (["--model", "sonnet"], ["--effort", "high"], ["--plugin-dir", "/skills"], ["--session-id", "sid"]):
+            self.assertEqual(argv[argv.index(pair[0]) + 1], pair[1])
+        self.assertIn("--strict-mcp-config", argv)
+        self.assertEqual(argv[argv.index("--disallowedTools") + 1:], guards.DENIED_TOOLS)
+
+    def test_the_plugin_under_test_must_be_the_one_that_loaded(self):
+        init = {"plugins": [{"name": "skills", "path": "/a/skills"}]}
+        self.assertTrue(run.plugin_verified(init, "/a/skills"))
+        self.assertFalse(run.plugin_verified(init, "/b/skills"))
+        self.assertIsNone(run.plugin_verified({}, "/a/skills"))
+        both = {"plugins": [{"name": "skills", "path": "/a/skills"}, {"name": "skills", "path": "/installed"}]}
+        self.assertIsNone(run.plugin_verified(both, "/a/skills"))
+
+    def test_a_spec_with_a_todo_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "specs.yaml"
+            path.write_text("defaults:\n  repo: o/r\nspecs:\n  - id: a\n    base: TODO\n", encoding="utf-8")
+            with self.assertRaises(SystemExit):
+                run.load_specs(path=path)
+        self.assertEqual(len(run.load_specs()), 4)
+
+    def test_a_skills_commit_without_benchmark_mode_is_refused(self):
+        with self.assertRaises(SystemExit):
+            run.skills_checkout("f4f9239")
+
+    def test_run_one_end_to_end_against_a_fake_claude(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            git = lambda cwd, *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a], cwd=cwd,
+                                                 capture_output=True, text=True, check=True).stdout.strip()
+            origin, clone = tmp / "origin.git", tmp / "clone"
+            git(tmp, "init", "-q", "--bare", str(origin))
+            clone.mkdir()
+            git(clone, "init", "-q", "-b", "main")
+            (clone / "a.txt").write_text("one\n")
+            git(clone, "add", "."), git(clone, "commit", "-q", "-m", "base")
+            git(clone, "remote", "add", "origin", str(origin))
+            base = git(clone, "rev-parse", "HEAD")
+            ok = f'"{sys.executable}" -c "print(\'Passed!  - Failed: 0, Passed: 2, Skipped: 0, Total: 2\')"'
+            spec = {"id": "s", "repo": "o/r", "issue": 7, "base": base, "landing_lines": 4, "build": [ok], "tests": [ok]}
+            settings = run.Settings("sonnet", "high", "cheaper", claude_cmd=[sys.executable, str(HERE / "fixtures" / "fake_claude.py")],
+                                    timeout=120, clone=clone)
+            (tmp / "plugin").mkdir()
+            old = {k: os.environ.get(k) for k in ("CLAUDE_CONFIG_DIR", "FAKE_PUSH_TARGET")}
+            os.environ.update(CLAUDE_CONFIG_DIR=str(tmp / "cfg"), FAKE_PUSH_TARGET=str(origin))
+            saved = (run.HERE, collect.HERE, run.spec_hash)
+            run.HERE = collect.HERE = tmp / "bench"
+            run.spec_hash = lambda spec: "hash"
+            try:
+                s = run.run_one("baseline", "a" * 40, tmp / "plugin", spec, 1, settings)
+            finally:
+                run.HERE, collect.HERE, run.spec_hash = saved
+                for k, v in old.items():
+                    os.environ.pop(k, None) if v is None else os.environ.__setitem__(k, v)
+            self.assertTrue(s["valid"], s["invalid_reasons"])
+            self.assertEqual((s["landed"], s["tests_run"], s["noop_writes"]), (True, 2, 1))
+            self.assertEqual(s["blocked_writes"], 2)  # the gh write and the explicit-URL push
+            self.assertEqual(git(origin, "for-each-ref"), "")  # nothing ever reached the remote
+            self.assertEqual(git(clone, "branch", "--format=%(refname:short)"), "main")  # throwaway branch and worktree gone
+            with open(tmp / "bench" / "results" / ("a" * 12 + ".csv"), encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+            self.assertEqual(len(rows), 1)
+            self.assertEqual((rows[0]["valid"], rows[0]["model"], rows[0]["effort"], rows[0]["subagents"]), ("True", "sonnet", "high", "4"))
+            self.assertAlmostEqual(float(rows[0]["cost_usd"]), 0.0339, places=4)
+            self.assertAlmostEqual(float(rows[0]["cost_reviewer"]), 0.0111, places=4)
 
 
 if __name__ == "__main__":
