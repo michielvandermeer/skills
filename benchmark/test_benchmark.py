@@ -11,6 +11,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import collect  # noqa: E402
+import compare  # noqa: E402
 import guards  # noqa: E402
 import metrics  # noqa: E402
 import run  # noqa: E402
@@ -196,6 +197,116 @@ class ScoreTests(unittest.TestCase):
             self.assertEqual((s["landed"], s["commits"], s["landing_lines"], s["diff_ratio"]), (True, 1, 2, 0.5))
             self.assertEqual((s["build_ok"], s["tests_ok"], s["tests_run"], s["noop_writes"], s["proof"]), (True, True, 2, 1, "held"))
             self.assertTrue(s["valid"], s["invalid_reasons"])
+
+
+def make_rows(base_costs, cand_costs, **cand_over):
+    """Synthetic CSV rows, alternating baseline and candidate in time, per Spec: {spec: [cost, ...]}."""
+    rows = {"base": [], "cand": []}
+    clock = iter(range(1000))
+
+    def row(side, spec, cost, over):
+        r = {"run_id": "r", "skills_sha": side * 12, "spec": spec, "index": "1", "model": "sonnet", "effort": "high",
+             "spec_hash": "h", "claim": "the change cuts cost", "started": f"2026-01-01T10:{next(clock):04d}",
+             "valid": "True", "invalid_reasons": "", "flags": "", "failed": "False", "cost_usd": str(cost),
+             "tokens_total": str(cost * 1e5), "subagents": "6", "wall_s": "600", "max_context": "90000",
+             "api_errors": "0", "tool_errors": "3", "landed": "True", "diff_ratio": "1.0", "build_ok": "True",
+             "tests_ok": "True", "tests_run": "5", "proof": "held", "forbidden_html": "0", "forbidden_text": "0",
+             "blocked_writes": "0", "noop_writes": "2", "checks_done": "True"}
+        r.update({f"cost_{role}": str(cost * share) for role, share in
+                  zip(compare.ROLES, (0.1, 0.05, 0.5, 0.2, 0.1, 0.02, 0.02, 0.01))})
+        r.update(over)
+        return r
+
+    for spec in base_costs:
+        for b, c in zip(base_costs[spec], cand_costs[spec]):
+            rows["base"].append(row("b", spec, b, {}))
+            rows["cand"].append(row("c", spec, c, cand_over))
+    return rows["base"], rows["cand"]
+
+
+class CompareTests(unittest.TestCase):
+    A_BASE, A_CAND = [10, 10.5, 11, 10.2, 10.8], [7, 7.2, 7.5, 7.1, 7.4]
+    B_BASE, B_CAND = [20, 21, 20.5, 19.8, 20.2], [14, 14.5, 15, 14.2, 14.8]
+
+    def text(self, base, cand):
+        return compare.report(base, cand, "the change cuts cost", ("bbbbbbbbbbbb", "cccccccccccc"))
+
+    def test_rows_load_from_a_csv_path_or_a_sha_prefix(self):
+        base, _ = make_rows({"a": self.A_BASE}, {"a": self.A_CAND})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "bbbbbbbbbbbb.csv"
+            with open(path, "w", encoding="utf-8", newline="") as f:
+                writer = csv.DictWriter(f, list(base[0]))
+                writer.writeheader()
+                writer.writerows(base)
+            self.assertEqual(compare.load_rows(str(path)), base)
+            self.assertEqual(compare.load_rows("bbbb", results=tmp), base)
+            with self.assertRaises(SystemExit):
+                compare.load_rows("zzzz", results=tmp)
+
+    def test_rank_sum_p_is_exact(self):
+        self.assertAlmostEqual(compare.rank_sum_p([1, 2, 3], [4, 5, 6]), 0.1)
+        self.assertAlmostEqual(compare.rank_sum_p([1, 2, 3], [1, 2, 3]), 1.0)
+        self.assertAlmostEqual(compare.rank_sum_p([1, 2], [3, 4]), 1 / 3)
+        self.assertEqual(compare.decide([5, 5, 5], [5, 5, 5])[0], "no measurable difference")
+
+    def test_a_clear_gap_is_cheaper_and_leads_with_the_claim_and_verdict(self):
+        text, verdict = self.text(*make_rows({"a": self.A_BASE, "b": self.B_BASE}, {"a": self.A_CAND, "b": self.B_CAND}))
+        self.assertEqual(verdict, "cheaper")
+        lines = text.splitlines()
+        self.assertEqual(lines[0], "Claim: the change cuts cost")
+        self.assertTrue(lines[2].startswith("VERDICT: cheaper (-3"), lines[2])
+        self.assertIn("Limiter: the implementer role is 50% of baseline cost", text)
+        self.assertIn("Runs alternated baseline and candidate", text)
+        self.assertIn("Quality regressions: none flagged.", text)
+
+    def test_a_gap_inside_the_spread_is_no_measurable_difference(self):
+        text, verdict = self.text(*make_rows({"a": [10, 12, 9, 13, 11]}, {"a": [10.5, 11.5, 9.5, 12, 10]}))
+        self.assertEqual(verdict, "no measurable difference")
+
+    def test_too_few_runs_is_inconclusive_with_the_reason(self):
+        text, verdict = self.text(*make_rows({"a": [10, 11]}, {"a": [7, 7.5]}))
+        self.assertEqual(verdict, "inconclusive")
+        self.assertIn("rank-sum p is 0.333", text)
+        self.assertIn("fewer than 5 valid runs per side on a", text)
+
+    def test_mismatched_settings_are_refused_with_no_table(self):
+        text, verdict = self.text(*make_rows({"a": self.A_BASE}, {"a": self.A_CAND}, effort="medium"))
+        self.assertEqual(verdict, "inconclusive")
+        self.assertIn("different settings", text)
+        self.assertNotIn("Quality", text)
+
+    def test_unscored_work_makes_it_inconclusive(self):
+        text, verdict = self.text(*make_rows({"a": self.A_BASE}, {"a": self.A_CAND}, checks_done="False"))
+        self.assertEqual(verdict, "inconclusive")
+        self.assertIn("could not be done", text)
+
+    def test_a_changed_issue_makes_it_inconclusive(self):
+        text, verdict = self.text(*make_rows({"a": self.A_BASE}, {"a": self.A_CAND}, spec_hash="other"))
+        self.assertEqual(verdict, "inconclusive")
+        self.assertIn("the Issue changed between runs", text)
+
+    def test_invalid_runs_are_counted_and_left_out_of_the_medians(self):
+        base, cand = make_rows({"a": self.A_BASE}, {"a": self.A_CAND})
+        bad = dict(cand[0], valid="False", cost_usd="0.1", invalid_reasons="no commit landed", landed="False")
+        text, verdict = self.text(base, cand + [bad])
+        self.assertEqual(verdict, "cheaper")
+        self.assertIn("Invalid candidate runs: 1x no commit landed", text)
+        self.assertRegex(text, r"did not do the work \(invalid\)\s+0\s+1")
+        self.assertIn("1 of 6 candidate runs did not do the work", text)
+
+    def test_a_quality_regression_is_flagged_even_when_cheaper(self):
+        base, cand = make_rows({"a": self.A_BASE}, {"a": self.A_CAND})
+        for r in cand[:2]:
+            r["tests_ok"] = "False"
+        text, verdict = self.text(base, cand)
+        self.assertEqual(verdict, "cheaper")
+        self.assertIn("with quality regressions", text)
+        self.assertIn("tests passed on 3 of 5 valid candidate runs, against 5 of 5", text)
+
+    def test_a_saving_past_the_biggest_role_share_is_called_out(self):
+        text, _ = self.text(*make_rows({"a": [10, 10.5, 11, 10.2, 10.8]}, {"a": [3, 3.2, 3.1, 3.4, 3.3]}))
+        self.assertIn("something else is being measured", text)
 
 
 class RunnerTests(unittest.TestCase):
