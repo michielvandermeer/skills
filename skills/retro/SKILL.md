@@ -58,7 +58,7 @@ Rank by how often the pain will recur and how much it costs. An every-turn conte
 
 **High-priority** is pain that will recur every turn or every session. It includes a judgement-call coding standard, a new check this session demonstrated, and a *lesson*'s rule (see **Corrections**). Apply those without asking to **Owned files**. Each edit is the smallest change that encodes what this session demonstrated. A new check that would fail on the current branch still applies.
 
-Owned-file high-priority edits: one commit, no Changelog entry.
+Owned-file high-priority edits: one commit.
 
 A file that is not an **Owned file**, or a write or commit that cannot complete: that item is not applied; continue the rest.
 

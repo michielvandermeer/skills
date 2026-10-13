@@ -25,7 +25,7 @@ Each step is a **tracer bullet**:
 - It fits in a single fresh context window.
 - It leaves green every project in its **footprint**. Every step agent is held to this, so a step that cannot end green is mis-sliced.
 
-Slice to whatever number of steps the spec actually needs. A small spec legitimately yields one step. Every step delivers behaviour: documentation the Spec names rides the step whose behaviour it describes, the Changelog is `/document-changes`'s to write after review, and the last real step is the one that leaves the whole suite green.
+Slice to whatever number of steps the spec actually needs. A small spec legitimately yields one step. Every step delivers behaviour: documentation the Spec names rides the step whose behaviour it describes, and the last real step is the one that leaves the whole suite green.
 
 ## Prefactor first
 

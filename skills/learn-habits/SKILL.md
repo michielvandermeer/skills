@@ -55,6 +55,6 @@ Picked the recommendation: 131 of 180 answers (73%)
 
 ## Commit
 
-Stage the profile by name and commit it on its own — `learn-habits: <first name>'s Grilling profile`, saying whether it added one session or rebuilt from a window — with no Changelog entry.
+Stage the profile by name and commit it on its own — `learn-habits: <first name>'s Grilling profile`, saying whether it added one session or rebuilt from a window.
 
 **Done** when that commit is made, or the one line saying why nothing changed is in the chat.

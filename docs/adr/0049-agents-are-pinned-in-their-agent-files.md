@@ -12,7 +12,7 @@ Each skill you type and each plugin agent sets `model:` and `effort:` in its own
   | Explorer | Haiku | high |
   | Reviewer | Opus | high |
 
-- **Everything else** runs on the setting of the skill that starts it: the Fixers, the `/improve-data-structures` pass, the `/brainstorm` and `/codebase-design` fan-outs, and `/document-changes`' sub-agent.
+- **Everything else** runs on the setting of the skill that starts it: the Fixers, the `/improve-data-structures` pass, and the `/brainstorm` and `/codebase-design` fan-outs.
 
 A skill's pin lasts for the rest of the turn. A skill that another skill loads would swap its caller's model, so only skills that no other skill can load are pinned. `/review-spec` stays on the session because [ADR-0036](0036-review-spec-uses-the-session-model.md) says you choose its model by opening the session.
 

@@ -121,7 +121,7 @@ The implement commands read an Issue and claim it before they start, so other ru
 
 To stop runs from pushing, add a line to your repo's `AGENTS.md` or `CLAUDE.md` saying implement runs do not push. Do this when a push to your branch deploys, or when you want to push yourself. If someone else pushed to your branch during the run, the run tells you, and the work waits on your machine for you to pull and push.
 
-Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, Attempt logs, architecture reviews, codebase audits, Changelogs, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
+Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, Attempt logs, architecture reviews, codebase audits, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
 
 ## Repository layout
 
@@ -170,7 +170,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 - Haiku at high: `skills:explorer`.
 - Opus at high: `skills:reviewer`, the two `/code-review` reviewers. The Checker runs its per-Step review on Sonnet at high instead.
 
-Everything else runs on the setting of the skill that starts it: the fixers, the `/improve-data-structures` pass, the `/codebase-design` and `/brainstorm` fan-outs, and `/document-changes`' sub-agent.
+Everything else runs on the setting of the skill that starts it: the fixers, the `/improve-data-structures` pass, and the `/codebase-design` and `/brainstorm` fan-outs.
 
 > **Your environment can override a pin.** When `CLAUDE_CODE_EFFORT_LEVEL` is set, it beats every effort pin. Your session's settings and `/effort` do not.
 
@@ -184,7 +184,6 @@ Everything else runs on the setting of the skill that starts it: the fixers, the
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
 | `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, and brings every ADR to state the decision in force. Once `/setup` has run, it leaves Issues alone. |
-| `document-changes` | Write product-facing Changelog entries beside each CONTEXT.md; used by `/implement`, `/implement-oneshot`, `/implement-yolo`, and for manual backfill. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `explain` | Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |

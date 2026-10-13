@@ -43,7 +43,7 @@ Find worktrees with `git worktree list` (or the host's equivalent):
 
 A dirty tree is the working copy, and the tree as it is is the resume.
 
-Before leaving this step, when the argument is an Issue and `.agents/steps/<slug>/spec.md` is missing, write the Issue's title, as an H1, and its body to that file — nothing else. From here on **the Spec** is that copy: every sub-agent and `/document-changes` reads it, a resume reads it rather than the Issue, and step 2 commits it with the Step file.
+Before leaving this step, when the argument is an Issue and `.agents/steps/<slug>/spec.md` is missing, write the Issue's title, as an H1, and its body to that file — nothing else. From here on **the Spec** is that copy: every sub-agent reads it, a resume reads it rather than the Issue, and step 2 commits it with the Step file.
 
 ### 2. Write the Step file
 
@@ -72,7 +72,7 @@ Done when every Step file reads `Status: done`.
 
 ### 4. Review and improve
 
-**Run `/code-review` yourself**, with `<start>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that the Changelog is written in step 5 and that `.agents/steps/<slug>/` is run bookkeeping — its Outcome is evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
+**Run `/code-review` yourself**, with `<start>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that `.agents/steps/<slug>/` is run bookkeeping — its Outcome is evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run finishes unattended.
 
@@ -82,15 +82,11 @@ Three sub-agents follow, in this order, each reporting in the same three lines a
 2. The Standards fixer fixes every finding of the Standards axis, pasted the same way. Tell it to skip a finding whose code is gone and name that finding on its deviations line.
 3. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it.
 
-The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt, and the Prover's pass in step 6, are the whole check on a fixer's work.
+The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt, and the Prover's pass in step 5, are the whole check on a fixer's work.
 
 Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change any of the three makes goes to the user as a deviations line before you continue.
 
-### 5. Document the change
-
-Run `/document-changes` in **implement mode** while the Spec and the Step's Outcome are still on disk — after review/improve, before delete. Name `<start>` as the fixed point. It prepends product-facing **Changelog** entries beside each affected context's `CONTEXT.md` and commits when it wrote; when nothing is product-visible it reports that and leaves the tree clean.
-
-### 6. Clean up
+### 5. Clean up
 
 First run `/implement`'s [Prover's pass](../implement/SKILL.md#the-provers-pass), reading only that section of that file. `<start>` stands in for `<base>`, and a retry never resets or cleans the tree, as in step 3.
 
@@ -98,13 +94,13 @@ Then write the landing commit's message as `/implement`'s [landing commit](../im
 
 The final report carries the `Safety fact:`, `Proof:`, and `Merge risk:` lines as this step held them, and says the Prover re-ran the Proof and ran every Hand check on the code the run leaves. It names a Proof or Hand check that passed only on its re-run, a Hand check the Prover skipped and what it needs, a Proof the Proof fixer restored, updated, or retired, and a Hand check it made pass.
 
-### 7. Push
+### 6. Push
 
 Run `/implement`'s [push](../implement/SKILL.md#the-push), reading only that section of that file. `<base>` is this branch, and this checkout is the original directory.
 
-### 8. Retrospective
+### 7. Retrospective
 
-Run `/retro`. When it committed and step 7's push went out, run that push again.
+Run `/retro`. When it committed and step 6's push went out, run that push again.
 
 ## Work in another repository
 

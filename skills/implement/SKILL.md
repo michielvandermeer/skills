@@ -25,7 +25,7 @@ The argument is an Issue reference — normally an Issue in `ready-for-agent` �
 
 When this session already drives the run for `<slug>` and a sub-agent it dispatched for that run has not reported yet, this invocation is a repeat and the run is still going: say so, and keep waiting for that report. A repeat claims, resets, and dispatches nothing ([ADR-0064](../../docs/adr/0064-a-repeated-implement-command-waits-for-its-run.md)).
 
-`<base>` is the **base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is reviewed and measured green against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). If it is empty, **halt** — HEAD is detached. The main checkout's working tree is the user's and stays as you found it until step 6.
+`<base>` is the **base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is reviewed and measured green against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). If it is empty, **halt** — HEAD is detached. The main checkout's working tree is the user's and stays as you found it until step 5.
 
 An Issue blocked by another Issue waits on it: while the blocker is open, stop before anything else and say it lands first — unless `<base>` already holds the blocker's closing reference, found as the Tracker ref says ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
@@ -43,7 +43,7 @@ Find worktrees with `git worktree list` (or the host's equivalent). The **run wo
 
 The session must work *inside* the run worktree for the rest of the run — creating a worktree alone is not enough. Run every command from there as a **plain** command: every argument spelled out, and files written with the host's file tools. A host that isolates the session in its worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it. Scope every search to the worktree, and name it in every sub-agent prompt as the only directory the agent works in, adding the plain-command rule for a `general-purpose` agent. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it and begin every command with `cd <that path> &&`. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
 
-Before leaving this step, when the argument is an Issue and `.agents/steps/<slug>/spec.md` is missing, write the Issue's title, as an H1, and its body to that file — nothing else. From here on **the Spec** is that copy: every sub-agent and `/document-changes` reads it, a resume reads it rather than the Issue, and step 2 commits it with the Step files.
+Before leaving this step, when the argument is an Issue and `.agents/steps/<slug>/spec.md` is missing, write the Issue's title, as an H1, and its body to that file — nothing else. From here on **the Spec** is that copy: every sub-agent reads it, a resume reads it rather than the Issue, and step 2 commits it with the Step files.
 
 ### 2. Plan the steps
 
@@ -76,7 +76,6 @@ Require of it: **its build and the tests closest to its change passing before it
 - It builds every project on its footprint's `Projects:` line, and the whole suite on the last Step.
 - The tests closest to its change are the ones it wrote or changed and the ones covering the code it changed, filtered as narrowly as the test runner allows. The full set of those projects' tests is the Checker's to run, once, after its fixes ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)).
 - Its tests are measured against `<base>` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md)): a failure that also fails on `<base>` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
-- `CHANGELOG.md` stays untouched whatever the repo's docs rules say; step 5 writes it.
 
 Its entire response is three lines:
 
@@ -110,7 +109,7 @@ Done when every Step file, `.agents/steps/<slug>/[0-9][0-9]-*.md`, reads `Status
 
 ### 4. Review and improve
 
-**Run `/code-review` yourself**, with `<base>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that the Changelog is written in step 5 and that `.agents/steps/<slug>/` is run bookkeeping — its Outcomes are evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
+**Run `/code-review` yourself**, with `<base>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that `.agents/steps/<slug>/` is run bookkeeping — its Outcomes are evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
 
@@ -120,20 +119,15 @@ Three sub-agents follow, in this order, each reporting in the same three lines a
 2. The Standards fixer fixes every finding of the Standards axis, pasted the same way. Tell it to skip a finding whose code is gone and name that finding on its deviations line.
 3. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it.
 
-The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt, and the Prover's pass in step 6, are the whole check on a fixer's work.
+The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt, and the Prover's pass in step 5, are the whole check on a fixer's work.
 
 Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change any of the three makes goes to the user as a deviations line before you continue.
 
-### 5. Document the change
-
-Run `/document-changes` in **implement mode** while the Spec and step Outcomes are still on disk — after review/improve, before delete and land. It prepends product-facing **Changelog** entries beside each affected context's `CONTEXT.md` and commits when it wrote; when nothing is product-visible it reports that and leaves the tree clean.
-
-### 6. Land the branch
+### 5. Land the branch
 
 Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
 1. From the worktree, still on the branch: hold `git merge-base HEAD <base>` as `<fork>` and `git rev-parse <base>` as `<onto>`, then `git rebase <onto>`. A conflict is `/resolving-merge-conflicts` (the branch lives here, so only the worktree can rebase it). Later items build on `<onto>`: other sessions can land on `<base>` while this run tests and proves, and a commit built on the moved `<base>` would undo what they landed.
-   - A `CHANGELOG.md` conflict is always keep both, this run's entry above.
    - When the rebase replayed the branch onto commits `<base>` gained during the run, green is not known any more: build and run the projects on every Step's `Projects:` line — the whole suite when the last Step ran it — before going on. Before any fixer dispatch, re-run each failing project once, yourself. A failure that passes on the re-run is a flaky test and does not block landing: its test name goes on the deviations line and into the final report, the same way a failure `<base>` already has does under [ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md). A failure that fails again is red and gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)).
    - Skip that build and test run when no build or test reads anything `<base>` gained: every path `git diff --name-only <fork> <onto>` lists is Markdown or sits under `.agents/` — another run's ADR, its glossary edit, its retro edit to `.agents/refs/tracker.md` — and no project file, build script, or test names that file or pulls in Markdown by a wildcard. Green then still holds. Any other path — code, a project or build file, test data, config a test reads — or any doubt about one, and the build and test run goes ahead. A skip goes in the final report: the range `<fork>..<onto>` you compared, and why none of its files is read by a build or test.
 2. Still in the worktree: run [the Prover's pass](#the-provers-pass).
@@ -143,13 +137,13 @@ Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remai
 
 The final report lists each Step's `Safety fact:`, `Proof:`, and `Merge risk:` lines as step 3 held them, and says the Prover re-ran every Proof and ran every Hand check on the code that lands. It names each Proof or Hand check that passed only on its re-run, each Hand check the Prover skipped and what it needs, each Proof the Proof fixer restored, updated, or retired, and each Hand check it made pass.
 
-### 7. Push
+### 6. Push
 
 Run [the push](#the-push).
 
-### 8. Retrospective
+### 7. Retrospective
 
-Run `/retro`. When it committed and step 7's push went out, run [the push](#the-push) again.
+Run `/retro`. When it committed and step 6's push went out, run [the push](#the-push) again.
 
 ## The landing commit
 
@@ -160,7 +154,7 @@ The landing commit is the one commit the run leaves on `<base>`: the run's whole
 
 ## The push
 
-The push sends `<base>` from the original directory: in step 7, once the landing commit is on it, so the CI run it starts carries the landing commit's subject; and in step 8, when `/retro` committed ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip both when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
+The push sends `<base>` from the original directory: in step 6, once the landing commit is on it, so the CI run it starts carries the landing commit's subject; and in step 7, when `/retro` committed ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip both when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
 
 - `<base>` tracks a remote branch: `git push <remote> <base>:<branch>`, with `<remote>` from `git config branch.<base>.remote` and `<branch>` from `git config branch.<base>.merge`.
 - `<base>` tracks nothing: `git push -u origin <base>`. A repo with no `origin` skips the push.
@@ -173,7 +167,7 @@ The run's last lines name the landing commit, then say what each push sent and t
 
 A fresh **Prover** re-runs every Step's Proof and runs the Spec's **Hand checks** on the code that lands, after the final fixers and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`, and the run has no Spec or its `## How to Check It` lists no Hand check.
 
-Skip it too when step 6 comes back here after `<base>` moved, a Prover already held in this land, and every rebase since then skipped its build and test run under step 6, item 1. A Proof can read what no build or test reads, so also check each path those rebases compared: no Step's `Proof:` line or script in `<proof>` names it, and no app a rung-4 Proof or Hand check launches reads it. Any doubt about one, and the pass runs. The Prover that held still stands for the code that lands. Its deviations line goes in the final report, with each range `<fork>..<onto>` it now covers.
+Skip it too when step 5 comes back here after `<base>` moved, a Prover already held in this land, and every rebase since then skipped its build and test run under step 5, item 1. A Proof can read what no build or test reads, so also check each path those rebases compared: no Step's `Proof:` line or script in `<proof>` names it, and no app a rung-4 Proof or Hand check launches reads it. Any doubt about one, and the pass runs. The Prover that held still stands for the code that lands. Its deviations line goes in the final report, with each range `<fork>..<onto>` it now covers.
 
 Otherwise dispatch a `skills:prover` with a prompt of paths: the Step files, the Spec (or that there is none), PROOF.md, `<proof>`, the working directory, and this report format:
 
@@ -197,7 +191,7 @@ The Prover and the Proof fixer each fall under step 3's retry-then-halt rule, ea
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 6 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, run the Prover's pass and make the deletion commit and `<landing>` there, check out `<base>` yourself, then fast-forward to `<landing>`. That merge is done when it succeeds, the branch is deleted as step 6 says, and `<proof>` is deleted. When it errors, `<base>` moved: check out the branch, drop the deletion commit as step 6 says, go through items 1 to 3 of step 6 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
+Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 5 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, run the Prover's pass and make the deletion commit and `<landing>` there, check out `<base>` yourself, then fast-forward to `<landing>`. That merge is done when it succeeds, the branch is deleted as step 5 says, and `<proof>` is deleted. When it errors, `<base>` moved: check out the branch, drop the deletion commit as step 5 says, go through items 1 to 3 of step 5 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
 
 ## Work in another repository
 

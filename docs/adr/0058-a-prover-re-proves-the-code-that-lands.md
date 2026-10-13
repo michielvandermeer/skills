@@ -23,7 +23,7 @@ A pass that held still holds after a later rebase that brought only files nothin
 ## Consequences
 
 - In `/implement` and `/implement-oneshot`, the pass runs after the rebase and the post-rebase build. Deleting the Step files and the Spec in a commit on the run's branch, and building the landing commit from it, come after the pass. The Proof folder is deleted once the merge has succeeded. When the merge fails because the base branch moved, the run drops that deletion commit, rebases again, and runs the pass again before the next merge — unless a pass already held and every rebase since brought only files no build, test, or Proof reads. The final report then names each range the held pass covers.
-- In `/implement-yolo`, which has no rebase, the pass runs after `/document-changes` and before the landing commit.
+- In `/implement-yolo`, which has no rebase, the pass runs after review and before the landing commit.
 - A Proof that compares with the run's start reads it from `git merge-base HEAD <base>`, never a fixed SHA: the rebase moves the merge-base, so the Prover's re-run on the rebased code compares against the right point.
 - A halted run resumes at the final review once every Step is `done`, as before, so the pass is never skipped. A halt keeps the Step files and the Proof folder.
 - The final report lists each Step's Safety fact as the pass left it. It names each flake, each Proof the Proof fixer restored or updated, each fact it retired, each Hand check it made pass, and each Hand check the Prover skipped.
