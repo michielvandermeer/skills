@@ -53,7 +53,7 @@ def budget_left():
 def run_pair(baseline, candidate):
     r = subprocess.run([sys.executable, str(ROOT / "benchmark" / "run.py"), "--baseline", baseline, "--candidate", candidate,
                         "--model", "sonnet", "--effort", "high", "--claim", CLAIM, "--runs", "1", "--specs", SPECS,
-                        "--target-clone", CLONE, "--yes"], capture_output=True, text=True, encoding="utf-8", errors="replace")
+                        "--target-clone", CLONE, "--max-budget", "60", "--yes"], capture_output=True, text=True, encoding="utf-8", errors="replace")
     (SCRATCH / "run.out").open("a", encoding="utf-8").write(r.stdout + r.stderr)
     lines = [l for l in r.stdout.splitlines() if l.startswith(("baseline ", "candidate "))]
     return r.returncode, lines
@@ -80,6 +80,9 @@ def main():
             break
         code, lines = run_pair(baseline, candidate)
         print(f"pair {i + 1}/{pairs}: " + " | ".join(lines) + (f" (run.py exit {code})" if code else ""), flush=True)
+        if code:
+            stopped = f"STOPPED: run.py exited {code} on pair {i + 1}; see scratch/run.out"
+            break
     used, spent, _ = budget_left()
     base, cand = compare.load_rows(baseline), compare.load_rows(candidate)
     names = (base[0]["skills_sha"][:12], cand[0]["skills_sha"][:12])
