@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-13: Learn-habits runs only when typed
+Grilling sessions no longer run `/learn-habits` when they end, so your profile no longer changes without you asking. Before, `/grill-me`, `/grill-with-docs`, `/refine`, and `/wayfinder` each updated it on their own. Type `/learn-habits` to rebuild your profile from your past grilling sessions.
+
 ## 2026-10-13: Implement no longer writes a Changelog
 `/implement`, `/implement-oneshot`, and `/implement-yolo` no longer add entries to `CHANGELOG.md`, and `/document-changes` is gone. Whether a repo keeps a Changelog, and who writes its entries, is now that repo's choice, set in its own `AGENTS.md`, `CLAUDE.md`, or the docs they link. Before, every run wrote one, even in a repo that did not want it.
 
