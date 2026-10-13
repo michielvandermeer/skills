@@ -11,6 +11,7 @@ sys.path.insert(0, str(HERE))
 
 import guards  # noqa: E402
 import metrics  # noqa: E402
+import score  # noqa: E402
 
 
 class GhGuardTests(unittest.TestCase):
@@ -112,6 +113,86 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(self.m["tool_errors"], 1)
         self.assertEqual(self.m["test_commands"], 1)
         self.assertEqual(self.m["prover_status"], "held")
+
+
+DIFF = """\
+diff --git a/Commonplace/test/X/ChangelogWebTests.cs b/Commonplace/test/X/ChangelogWebTests.cs
++++ b/Commonplace/test/X/ChangelogWebTests.cs
++        Assert.Equal(1, changelog.Controls.Count);
++        Assert.Contains("<div class=\\"changelog-entry\\">", html);
++        Assert.Equal("Fixed the date picker", entry.TextContent);
++        Assert.True(page.QuerySelectorAll("[data-changelog-control]").Length == 1);
++        // Assert.Contains("<b>", html);
+diff --git a/Commonplace/src/Web/Page.cshtml b/Commonplace/src/Web/Page.cshtml
++++ b/Commonplace/src/Web/Page.cshtml
++<div class="changelog-entry">Fixed the date picker</div>
+"""
+
+
+class ScoreTests(unittest.TestCase):
+    def test_test_counts_from_each_runner_format(self):
+        self.assertEqual(score.parse_test_counts("Passed!  - Failed:     0, Passed:    12, Skipped:     1, Total:    13"), (12, 0))
+        self.assertEqual(score.parse_test_counts("Failed!  - Failed: 2, Passed: 3, Skipped: 0, Total: 5\nFailed: 0, Passed: 4, Skipped: 0, Total: 4"), (9, 2))
+        self.assertEqual(score.parse_test_counts("Test run summary: Passed!\r\n  total: 7\r\n  failed: 0\r\n  succeeded: 7\r\n  skipped: 0"), (7, 0))
+        self.assertEqual(score.parse_test_counts("Total: 6, Errors: 0, Failed: 1, Skipped: 2, Not Run: 0"), (4, 1))
+        self.assertIsNone(score.parse_test_counts("Build succeeded."))
+        self.assertEqual(score.parse_test_counts("No test matches the given testcase filter\nPassed!  - Failed: 0, Passed: 0, Skipped: 0, Total: 0"), (0, 0))
+
+    def test_forbidden_assertions_are_found_in_added_test_lines_only(self):
+        hits = score.find_forbidden(DIFF)
+        self.assertEqual([k for k, _ in hits], ["html", "text"])
+        self.assertIn("changelog-entry", hits[0][1])
+
+    def judged(self, **over):
+        meta = {"exit_code": 0, "plugin_verified": True}
+        s = {"landed": True, "checks_done": True, "tests_run": 3, "blocked_writes": 0}
+        m = {"subagents": 5, "test_commands": 4, "unpriced_models": []}
+        for key, value in over.items():
+            {"exit_code": meta, "landed": s, "tests_run": s, "subagents": m, "test_commands": m, "blocked_writes": s,
+             "plugin_verified": meta, "timed_out": meta}[key][key] = value
+        return score.judge(meta, {}, s, m)
+
+    def test_a_run_that_did_the_work_is_valid(self):
+        self.assertEqual(self.judged(), (True, [], []))
+
+    def test_early_exits_and_failures_are_invalid(self):
+        for over, text in (({"exit_code": 1}, "claude failed"), ({"timed_out": True}, "timed out"),
+                           ({"landed": False}, "no commit landed"), ({"subagents": 0}, "no subagent"),
+                           ({"test_commands": 0}, "no test command"), ({"tests_run": 0}, "ran no tests"),
+                           ({"plugin_verified": False}, "not the plugin")):
+            valid, reasons, _ = self.judged(**over)
+            self.assertFalse(valid, over)
+            self.assertIn(text, " ".join(reasons))
+
+    def test_a_tripped_guard_flags_but_does_not_invalidate(self):
+        valid, _, flags = self.judged(blocked_writes=1)
+        self.assertTrue(valid)
+        self.assertIn("guard trip", flags[0])
+
+    def test_score_run_on_a_real_git_history(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, run = Path(tmp) / "repo", Path(tmp) / "run"
+            repo.mkdir()
+            run.mkdir()
+            git = lambda *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a], cwd=repo,
+                                            capture_output=True, text=True, check=True).stdout.strip()
+            git("init", "-q")
+            (repo / "a.txt").write_text("one\n")
+            git("add", "."), git("commit", "-q", "-m", "base")
+            base = git("rev-parse", "HEAD")
+            (repo / "a.txt").write_text("one\ntwo\nthree\n")
+            (repo / ".agents" / "steps").mkdir(parents=True)
+            (repo / ".agents" / "steps" / "01.md").write_text("step\n" * 50)
+            git("add", "."), git("commit", "-q", "-m", "Add lines (#7)")
+            (run / "bench.log").write_text("2026-01-01T00:00:00 NOOP step 6: git push\n")
+            ok = f'"{sys.executable}" -c "print(\'Passed!  - Failed: 0, Passed: 2, Skipped: 0, Total: 2\')"'
+            spec = {"base": base, "issue": 7, "landing_lines": 4, "build": [ok], "tests": [ok]}
+            meta = {"worktree": str(repo), "exit_code": 0, "plugin_verified": True}
+            m = {"subagents": 3, "test_commands": 2, "unpriced_models": [], "prover_status": "held"}
+            s = score.score_run(run, meta, spec, m)
+            self.assertEqual((s["landed"], s["commits"], s["landing_lines"], s["diff_ratio"]), (True, 1, 2, 0.5))
+            self.assertEqual((s["build_ok"], s["tests_ok"], s["tests_run"], s["noop_writes"], s["proof"]), (True, True, 2, 1, "held"))
+            self.assertTrue(s["valid"], s["invalid_reasons"])
 
 
 if __name__ == "__main__":
