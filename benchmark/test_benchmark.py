@@ -10,6 +10,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import guards  # noqa: E402
+import metrics  # noqa: E402
 
 
 class GhGuardTests(unittest.TestCase):
@@ -80,6 +81,37 @@ class GuardProcessTests(unittest.TestCase):
             self.assertEqual(env["SKILLS_BENCHMARK"], "1")
             self.assertTrue(env["PATH"].startswith(str(Path(tmp).resolve() / "g" / "bin")))
             self.assertNotIn(b"\r\n", (Path(tmp) / "g" / "bin" / "gh").read_bytes())
+
+
+class MetricsTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.m = metrics.extract(HERE / "fixtures" / "transcripts")
+
+    def test_token_totals_dedupe_the_streamed_call(self):
+        m = self.m
+        self.assertEqual((m["input"], m["cache_write"], m["cache_read"], m["output"]), (137, 3500, 5100, 661))
+        self.assertEqual(m["calls"], 6)
+
+    def test_cost_uses_list_prices_per_model(self):
+        # sonnet: 5280+1065+16260+183 µ$, opus: 11125, unknown model priced as sonnet: 18
+        self.assertAlmostEqual(self.m["cost_usd"], 0.033931, places=6)
+        self.assertAlmostEqual(self.m["by_model"]["claude-opus-5"]["cost_usd"], 0.011125, places=6)
+        self.assertEqual(self.m["unpriced_models"], ["claude-fable-5-1"])
+
+    def test_roles_come_from_the_subagent_meta(self):
+        roles = self.m["by_role"]
+        self.assertEqual(sorted(roles), ["fixer", "implementer", "main", "prover", "reviewer"])
+        self.assertAlmostEqual(roles["implementer"]["cost_usd"], 0.01626, places=6)
+        self.assertEqual(roles["main"]["calls"], 2)
+        self.assertEqual(self.m["subagents"], 4)
+
+    def test_context_wall_time_and_checks(self):
+        self.assertEqual(self.m["max_context"], 6020)
+        self.assertEqual(self.m["wall_s"], 330.0)
+        self.assertEqual(self.m["tool_errors"], 1)
+        self.assertEqual(self.m["test_commands"], 1)
+        self.assertEqual(self.m["prover_status"], "held")
 
 
 if __name__ == "__main__":
