@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-13: Implement no longer writes a Changelog
+`/implement`, `/implement-oneshot`, and `/implement-yolo` no longer add entries to `CHANGELOG.md`, and `/document-changes` is gone. Whether a repo keeps a Changelog, and who writes its entries, is now that repo's choice, set in its own `AGENTS.md`, `CLAUDE.md`, or the docs they link. Before, every run wrote one, even in a repo that did not want it.
+
 ## 2026-10-12: Specs choose the smallest working change
 When `/to-spec` writes a Spec, it now picks the smallest change that does the job and reuses what the code already does. If a Spec builds something new or adds a safeguard anyway, it must say why the existing way falls short or which realistic failure it prevents, and the check that follows flags it when it does not. Before, one Spec after `/triage` moved a security check into a single SQL statement in a shared library, when five lines in the handler did the same job.
 
