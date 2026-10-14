@@ -57,7 +57,7 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 ### 4. Spawn the reviewers
 
-Spawn the two axes in parallel as `skills:reviewer` (`agents/reviewer.md` at the plugin root), which is pinned to Sonnet at high effort ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)). A caller that names another model and effort for the reviewers has them passed as `model` and `effort` on each Agent call, which override the pin. A caller that asks for **one reviewer** spawns a single `skills:reviewer` whose prompt carries both briefs below and asks it to report under `## Standards` and `## Spec`, findings kept separate per axis. A host without that agent type dispatches `general-purpose` with the same prompt.
+Spawn the two axes in parallel as `skills:reviewer` (`agents/reviewer.md` at the plugin root), which is pinned to Opus at high effort ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)). A caller that names another model and effort for the reviewers has them passed as `model` and `effort` on each Agent call, which override the pin. A caller that asks for **one reviewer** spawns a single `skills:reviewer` whose prompt carries both briefs below and asks it to report under `## Standards` and `## Spec`, findings kept separate per axis. A host without that agent type dispatches `general-purpose` with the same prompt.
 
 Both briefs end with the same instruction: "Run the `/plain-language` skill and write your findings to its bar. Your entire report is one message." You present their reports nearly verbatim, so the plainness has to come from them. The parent keeps only the last message.
 

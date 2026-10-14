@@ -248,7 +248,7 @@ The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just drafte
 _Avoid_: spec checker, spec reviewer, linter
 
 **Reviewer**:
-The sub-agent (`skills:reviewer`, pinned to Sonnet) that `/code-review` dispatches once per axis — Standards and Spec — in parallel, each starting fresh, or once carrying both axes when the caller asks for one. A Checker's per-Step review and the oneshot and yolo commands' final review run on the pin; `/implement`'s final review runs one Opus Reviewer carrying both axes. It reads the changes since the fixed point and reports findings; it fixes nothing, so a **Fixer** does that.
+The sub-agent (`skills:reviewer`, pinned to Opus) that `/code-review` dispatches once per axis — Standards and Spec — in parallel, each starting fresh, or once carrying both axes when the caller asks for one. A Checker's per-Step review runs one Sonnet Reviewer carrying both axes; the implement commands' final review runs the two on the pin. It reads the changes since the fixed point and reports findings; it fixes nothing, so a **Fixer** does that.
 _Avoid_: review agent, critic, review bot
 
 **Fixer**:
@@ -277,7 +277,7 @@ The section a Step agent appends to its own Step file, recording what it built a
 Anything a Step agent or Checker did that contradicts the Spec or changes what a later Step must do, any failure it left red because the Base branch already fails it, any post-rebase failure that passed on the Driving session's re-run, and any Safety fact a later Step changed on purpose, as the Spec asked, so that its Proof no longer holds. The one piece of a run's detail the Driving session does carry forward.
 
 **Spec-bound dispatch**:
-A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled. Its opposite carries design or review judgement: the **Planner** and the **Reviewer** are pinned to Sonnet at high, which a caller overrides where its review needs more (`/implement`'s final review passes Opus), while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
+A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled. Its opposite carries design or review judgement: the **Planner** and the **Reviewer** are pinned to the model and effort that judgement needs, which a caller overrides where its review needs less (a Checker's per-Step review passes Sonnet), while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
 _Avoid_: cheap agent, worker, low-tier agent
 
 **Tracer bullet**:

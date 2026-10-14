@@ -68,7 +68,7 @@ Done when every Step file reads `Status: done`.
 
 ### 4. Review and improve
 
-**Run `/code-review` yourself**, with `<base>` as the fixed point, its two reviewers passed `model: opus` at `effort: high`. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that `.agents/steps/<slug>/` is run bookkeeping — its Outcome is evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
+**Run `/code-review` yourself**, with `<base>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that `.agents/steps/<slug>/` is run bookkeeping — its Outcome is evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
 
