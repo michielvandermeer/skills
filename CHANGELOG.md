@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-14: Goals can start implement runs
+A `/goal` session can now start `/implement`, `/implement-oneshot`, and `/implement-yolo` when its goal names one. Before, these commands ran only when you typed them, so a goal that asked for one could never run it. A plain request to build something still does not start a run.
+
 ## 2026-10-13: Learn-habits runs only when typed
 Grilling sessions no longer run `/learn-habits` when they end, so your profile no longer changes without you asking. Before, `/grill-me`, `/grill-with-docs`, `/refine`, and `/wayfinder` each updated it on their own. Type `/learn-habits` to rebuild your profile from your past grilling sessions.
 
