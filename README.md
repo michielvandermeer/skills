@@ -158,7 +158,7 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 
 These skills pin the model and effort they run on, so parallel runs do not all inherit your session's most expensive setting. Nothing is pinned above `high`. A pin lives in a skill's or agent's header, so it is the same in every repo and there is no per-repo setting. [ADR-0049](docs/adr/0049-agents-are-pinned-in-their-agent-files.md) records why.
 
-**Skills you type.** Only the skills that no other skill can load pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
+**Skills you type.** Only the skills that no other skill loads pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
 
 - Opus at high: `/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/refine`, `/wayfinder`.
 - Sonnet at high: `/triage`, `/implement`, `/implement-oneshot`, `/implement-yolo`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`.

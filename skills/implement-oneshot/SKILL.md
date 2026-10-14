@@ -1,8 +1,7 @@
 ---
 name: implement-oneshot
-description: "Implement a spec as a single step, skipping the Planner. Still checks, reviews, and improves data structures after."
+description: "Implement a spec as a single step, skipping the Planner. Still checks, reviews, and improves data structures after. Use only when the user or a /goal names /implement-oneshot."
 argument-hint: "Which Issue to implement, or what to build?"
-disable-model-invocation: true
 model: sonnet
 effort: high
 ---

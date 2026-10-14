@@ -1,8 +1,7 @@
 ---
 name: implement
-description: "Implement a spec by slicing it into steps and running each one in its own sub-agent."
+description: "Implement a spec by slicing it into steps and running each one in its own sub-agent. Use only when the user or a /goal names /implement."
 argument-hint: "Which Issue to implement, or what to build?"
-disable-model-invocation: true
 model: sonnet
 effort: high
 ---

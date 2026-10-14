@@ -1,8 +1,7 @@
 ---
 name: implement-yolo
-description: "Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge."
+description: "Implement a spec as a single step on this checkout and this branch. No worktree, no new branch, no merge. Use only when the user or a /goal names /implement-yolo."
 argument-hint: "Which Issue to implement, or what to build?"
-disable-model-invocation: true
 model: sonnet
 effort: high
 ---
