@@ -34,6 +34,7 @@ Otherwise agree the start. Name, in plain language:
 - the number, its unit, and which direction is better — the end-to-end number the user waits on, not a piece of it;
 - the command it comes from;
 - the **target**, the **minimum number of Attempts**, and a **time limit** if any — the stop rule in step 5;
+- when runs are too costly for MEASURE.md's count and fewer are agreed, the smallest change those runs can show — the run-to-run spread — since an idea worth less can never be kept;
 - the tests that must keep passing: the whole suite unless the request narrows it.
 
 Propose a value for everything the request left out — a target such as 30% better than the baseline, at least 10 Attempts. When the request already named the number and the target, state the start and go on. Otherwise wait for the user's OK; from that OK on, the Hillclimb runs unattended.

@@ -81,7 +81,9 @@ def skills_checkout(ref, root=ROOT):
 def target_clone(repo, override, specs):
     path = Path(override) if override else HERE / "work" / repo.split("/")[1]
     if path.exists():
-        git(path, "fetch", "--quiet", "origin")
+        # fetch only for a missing base: a clone that holds them all runs even when its credentials have lapsed
+        if any(subprocess.run(["git", "cat-file", "-e", f"{s['base']}^{{commit}}"], cwd=path, capture_output=True).returncode for s in specs):
+            git(path, "fetch", "--quiet", "origin")
     else:
         git(HERE, "clone", "--quiet", f"https://github.com/{repo}.git", str(path))
     for s in specs:
@@ -242,6 +244,10 @@ def main(argv=None):
 
     settings = Settings(a.model, a.effort, a.claim, timeout=a.timeout, max_budget=a.max_budget, run_checks=not a.no_checks,
                         clone=target_clone(specs[0]["repo"], a.target_clone, specs))
+    unreadable = [s["id"] for s in specs if spec_hash(s) is None]
+    if unreadable:
+        raise SystemExit(f"gh cannot read the Issue of {', '.join(unreadable)}, so /implement could not read its Spec: "
+                         "make an account that can see the target repo the active one (gh auth switch).")
     if a.claude:
         settings.claude_cmd = [a.claude]
     for index in range(1, a.runs + 1):
