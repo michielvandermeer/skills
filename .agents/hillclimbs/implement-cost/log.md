@@ -1,16 +1,31 @@
 # List-price cost of one /implement run (USD, lower is better)
 
-Measured by `measure.py`: alternating baseline/candidate pairs of `benchmark/run.py` (`claude -p '/implement #394'` on the frozen Spec `ui-bug-394`, `--model sonnet --effort high`, target clone `C:\Users\MichielvanderMeer\work\mvdmio-suite`), judged by `benchmark/compare.py` (verdict first, median and range, invalid runs counted, exact rank-sum test). It reads `claude -p /usage` before every pair and stops at 80% of the week used or 25 points spent.
+Measured by `measure.py`: `run <ref> <runs>` runs `/implement` on one frozen Spec through `benchmark/run.py`'s `run_one` (`--model sonnet --effort high`, target clone `C:\Users\MichielvanderMeer\work\mvdmio-suite`), one side at a time; `judge <baseline> <candidate>` applies the keep rule. The 2026-10-13 Hillclimb used an earlier version that ran alternating pairs on `ui-bug-394` and judged them with `benchmark/compare.py` (in git history at `51555c0`).
 
 ## Ideas not yet tried
 
-Supplied with the request (from `ref/token-analysis.md`); no profiling Explorer was dispatched, because profiling runs would spend the weekly budget the Attempts need.
+From the 2026-10-14 profiling Explorer, which read four `d07f8b7` transcripts of `ui-bug-394` (no new runs). Where a run's cost goes: cache writes 48% (all at the 1-hour rate), cache reads 33%, output 19%. Each context's fixed start is about 43% (main $0.38, each subagent about $0.11 before it reads anything); tool output kept in context about 19%; main runs 27-37 turns, its context growing from 26k to 68k tokens. No single limiter. Each idea is worth 2-6% alone, below what one run can show, so Attempts bundle ideas that share a mechanism. Reviewer count and model are out of scope (the user's quality decision in `0bcd7a8`).
 
-- Smaller Steps from the Planner (~15-20 tool calls each, `skills/implement/STEPS.md`) — Implementer context ~125k -> ~70k. Little to gain on ui-bug-394, which is probably one or two Steps.
-- Haiku for the Prover and the data-structures pass — mechanical roles; Prover is only ~2% of cost.
-- No browser pass for test-only or doc-only Specs — PNG proofs read into context. Not measurable on ui-bug-394 (a UI Spec, and the target's Playwright MCP is off in the benchmark).
-- Per-agent cache TTL (5m for short-lived agents) — no host setting known; probably a wash.
-- Split `testing.md` / `coding-standards.md` into a core plus topic files — **cannot be tested as asked**: the refs live in `mvdmio-suite/.agents/refs`, the clone is read-only, and each benchmark run starts from a worktree of the Spec's base commit, so a ref edit would not reach the run. Attempt 1 tries the skill-side equivalent: agents read refs by section.
+- **Read less (bundle)** — tool output and re-reads kept in context: reviewers diff with `':!.agents/steps'` and do not read Step files; byte-bound test output (`cut -c1-200` before `tail`) in the Implementer, Checker, Prover and SKILL.md step 4; the Planner's walk in STEPS.md greps with `-l` or a head limit and reads STEPS.md by section; a fixer reads `file:line` ±30 when a finding cites one; main reads only the claim section of `.agents/refs/tracker.md`. Expected $0.15-0.30 per run, more with more Steps.
+- **Smaller main context** — move conditional sections of `skills/implement/SKILL.md` (Benchmark mode, Worktree waived, Work in another repository, Halting, landing and push detail) into sibling files read when needed; main reads the 30k-char SKILL.md on every one of its ~30 turns. Expected $0.05-0.15.
+- **Fewer Implementer turns** — `agents/implementer.md` batches reads only; extend to independent Edits and Bash checks in one turn (each turn re-reads 15-50k of context). Expected $0.05-0.08 per Step.
+- **Restricted tool lists** — a `tools:` line in `agents/planner.md`, `prover.md`, `reviewer.md` (the Checker needs Skill, Agent, Monitor) cuts the tool schemas each subagent loads. Size unknown (inferred 2-4k tokens per agent); risk an agent lacks a tool it uses. Expected $0.10-0.15.
+- Smaller Steps from the Planner (~15-20 tool calls each, `skills/implement/STEPS.md`) — Implementer context ~125k -> ~70k; but each extra Step costs ~$0.8-1.0 of fixed agent start, so it may cost more.
+- Haiku for the Prover — a mechanical role; the Prover is ~$0.16 per run.
+- No browser pass for test-only or doc-only Specs — not measurable on `backend-n-plus-1-393`.
+- 5-minute cache writes for short-lived agents — worth ~$0.35-0.45 per run, but no host setting is known and no skill edit reaches it.
+- Split `testing.md` / `coding-standards.md` in the target repo — cannot be tested: the refs live in the read-only target clone.
+
+## Hillclimb 2026-10-14
+
+Started from: the request "reduce the token cost of `/implement` without hurting the output", measured with `benchmark/` on `backend-n-plus-1-393` (the user ruled `ui-bug-394` out as a poor `/implement` test). Base branch `hillclimb-implement-tokens` at `0bcd7a8` (reviewers back on Opus: a quality decision by the user, out of scope for Attempts). Target: 20% below the baseline median, no quality loss. Minimum Attempts: 4. Deadline: 2026-10-15 11:36 (25 h).
+Measurement (agreed with the user, a departure from MEASURE.md to save budget): the baseline is measured once on its own, 3 runs; each Attempt is **one** run, put in a WIP commit so the runner can load it by SHA. Keep rule (`measure.py judge`): the run is valid, cheaper than the cheapest baseline run, build, tests and Proof held, diff size within 0.67-1.5x of the baseline median, no more markup-asserting tests, guard trips or API errors. Budget: a run starts only while the share of the week used is at most the share of the 7-day window passed; otherwise the script waits, up to the deadline. No `<before>` checkout: the runner makes its own checkout of each SHA. The sensitivity check is skipped again (it costs real runs); the baseline's own spread stands in for it. Machine: Docker containers of other projects running (`mvdmio-suite-db`, `jewel-local-postgres` and others), 4 claude processes; one run at a time.
+Agreed tests: `python benchmark/test_benchmark.py` (32 tests, OK at the start), plus the target's build, tests and Proof on every run.
+Baseline: pending. Already failing: none.
+Result: written in step 7.
+
+| # | Idea | Change | Before | After | Tests | Verdict | Note |
+|---|------|--------|--------|-------|-------|---------|------|
 
 ## Hillclimb 2026-10-13
 

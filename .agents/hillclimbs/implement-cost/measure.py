@@ -1,103 +1,143 @@
-"""Frozen measurement for the implement-cost Hillclimb: a thin wrapper around benchmark/run.py and compare.py.
+"""Frozen measurement for the implement-cost Hillclimb: one side at a time, through benchmark/run.py's run_one.
 
-  python measure.py <baseline-ref> <candidate-ref> <pairs>    run <pairs> more alternating pairs (baseline, candidate), then judge
-  python measure.py <baseline-ref> <candidate-ref> 0          judge the runs already on disk
+  python measure.py run <ref> <runs>                   run <runs> /implement runs of skills commit <ref>, then summarise it
+  python measure.py show <ref>                         summarise the runs of <ref> already on disk
+  python measure.py judge <baseline-ref> <candidate-ref>   keep or revert, by the rule agreed for this Hillclimb
 
-One pair is one baseline run and one candidate run of /implement on ui-bug-394 (model sonnet, effort high, the mvdmio-suite
-clone). The budget is the account's weekly limit: before every pair it reads `claude -p /usage` and stops at LIMIT percent
-used, or when the points spent since the Hillclimb started reach CAP (state in scratch/usage.json, which survives a weekly reset).
-Prints the verdict line, one line per side and the regressions; the full report goes to benchmark/results/."""
-import json
-import os
+One run is `/implement` on SPEC (model sonnet, effort high, the mvdmio-suite clone), scored for build, tests, Proof and
+diff size. The baseline is measured once on its own; an Attempt is one run (the user ruled out alternating pairs as too
+costly). Budget: before every run the share of the week used (`claude -p /usage`) must not exceed the share of the
+7-day window that has passed; while it does, the script waits, and gives up at DEADLINE.
+Prints one summary line per side; the full rows go to benchmark/results/<sha12>.csv."""
 import re
 import statistics
 import subprocess
 import sys
+import time
+import os
+from datetime import datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-SCRATCH = HERE / "scratch"
-STATE = SCRATCH / "usage.json"
 sys.path.insert(0, str(ROOT / "benchmark"))
+import collect  # noqa: E402
 import compare  # noqa: E402
+import run as bench  # noqa: E402
 
 CLONE = r"C:\Users\MichielvanderMeer\work\mvdmio-suite"
-SPECS = "ui-bug-394"
-LIMIT, CAP, START = 80, 25, 57
-CLAIM = "Cutting agent hand-offs, pinned models and tool output cuts the list-price cost of an /implement run by 30% with the same quality."
+SPEC = "backend-n-plus-1-393"
+TZ =ZoneInfo("Europe/Amsterdam")
+DEADLINE = datetime(2026, 10, 15, 11, 36, tzinfo=TZ)
+CLAIM = "Cutting the tokens /implement spends cuts the list-price cost of a run by 20% with the same quality."
+ROLES = ("main", "planner", "implementer", "checker", "reviewer", "prover", "fixer", "other")
 
 
-def weekly_used():
+def pace():
+    """(percent of the week used, percent of the 7-day window passed)."""
     env = {**os.environ, "MSYS_NO_PATHCONV": "1"}
-    r = subprocess.run(["claude", "-p", "/usage"], stdin=subprocess.DEVNULL, capture_output=True, text=True, encoding="utf-8", env=env)
-    m = re.search(r"Current week \(all models\): (\d+)% used", r.stdout)
+    out = subprocess.run(["claude", "-p", "/usage"], stdin=subprocess.DEVNULL, capture_output=True, text=True,
+                         encoding="utf-8", env=env).stdout
+    m = re.search(r"Current week \(all models\): (\d+)% used · resets (?:(\w{3} \d{1,2}), )?(\d{1,2}(?::\d\d)?[ap]m)", out)
     if not m:
-        raise SystemExit(f"cannot read /usage: {r.stdout[:200]!r}")
-    return int(m.group(1))
+        raise SystemExit(f"cannot read /usage: {out[:200]!r}")
+    now = datetime.now(TZ)
+    clock = m.group(3) if ":" in m.group(3) else m.group(3)[:-2] + ":00" + m.group(3)[-2:]
+    day = m.group(2) or now.strftime("%b %d")
+    reset = datetime.strptime(f"{now.year} {day} {clock}", "%Y %b %d %I:%M%p").replace(tzinfo=TZ)
+    if reset < now - timedelta(days=1):  # a reset date in January read in December
+        reset = reset.replace(year=now.year + 1)
+    passed = 100 * (now - (reset - timedelta(days=7))) / timedelta(days=7)
+    return int(m.group(1)), passed
 
 
-def budget_left():
-    """(percent used now, points spent since the start across a weekly reset, may another pair start)."""
-    used = weekly_used()
-    state = json.loads(STATE.read_text()) if STATE.exists() else {"before_reset": 0, "base": START, "last": START}
-    if used < state["last"] - 2:  # the week reset: bank the points spent so far
-        state["before_reset"] += state["last"] - START
-        state["base"] = 0
-    state["last"] = used
-    spent = state["before_reset"] + used - state["base"]
-    STATE.write_text(json.dumps(state))
-    return used, spent, used < LIMIT and spent < CAP
+def wait_for_budget():
+    while True:
+        used, passed = pace()
+        if used <= passed:
+            return used, passed
+        if datetime.now(TZ) >= DEADLINE:
+            raise SystemExit(f"BUDGET STOP: {used}% of the week used, {passed:.0f}% passed, deadline reached")
+        print(f"waiting: {used}% of the week used, {passed:.0f}% passed", flush=True)
+        time.sleep(900)
 
 
-def run_pair(baseline, candidate):
-    r = subprocess.run([sys.executable, str(ROOT / "benchmark" / "run.py"), "--baseline", baseline, "--candidate", candidate,
-                        "--model", "sonnet", "--effort", "high", "--claim", CLAIM, "--runs", "1", "--specs", SPECS,
-                        "--target-clone", CLONE, "--max-budget", "60", "--yes"], capture_output=True, text=True, encoding="utf-8", errors="replace")
-    (SCRATCH / "run.out").open("a", encoding="utf-8").write(r.stdout + r.stderr)
-    lines = [l for l in r.stdout.splitlines() if l.startswith(("baseline ", "candidate "))]
-    return r.returncode, lines
+def rows_of(ref):
+    sha = bench.git(ROOT, "rev-parse", "--verify", f"{ref}^{{commit}}")
+    collect.rebuild(sha)
+    return sha, [r for r in compare.load_rows(sha[:12]) if r["spec"] == SPEC]
 
 
-def side(rows):
-    cost = compare.by_spec(rows, "cost_usd").get(SPECS, [])
-    sub = compare.by_spec(rows, "subagents").get(SPECS, [])
+def summary(ref):
+    sha, rows = rows_of(ref)
+    valid = [r for r in rows if compare.is_true(r["valid"])]
+    if not valid:
+        return f"{sha[:12]}: no valid runs of {len(rows)}"
+    cost = [compare.num(r["cost_usd"]) for r in valid]
     q = compare.quality(rows)
-    if not cost:
-        return f"no valid runs of {q['runs']}"
-    return (f"median ${statistics.median(cost):.2f} (${min(cost):.2f}-${max(cost):.2f}), {len(cost)} valid of {q['runs']} runs, "
-            f"{statistics.median(sub):.0f} subagents, errors: invalid {q['invalid']}, failed {q['failed']}, API {q['api_errors']:.0f}, "
-            f"tests ok {q['tests']}/{q['valid']}")
+    med = lambda key: statistics.median(compare.num(r[key]) or 0 for r in valid)
+    roles = " ".join(f"{k} {med('cost_' + k):.2f}" for k in ROLES if med("cost_" + k))
+    return (f"{sha[:12]}: median ${statistics.median(cost):.2f} (${min(cost):.2f}-${max(cost):.2f}), {len(valid)} valid of {len(rows)}, "
+            f"{med('subagents'):.0f} subagents, {med('wall_s') / 60:.0f} min | build {q['build']} tests {q['tests']} proof {q['proof']} "
+            f"of {len(valid)}, diff {q['diff_ratio']:.2f}, markup-tests {q['forbidden']}, guard trips {q['guard_trips']}, "
+            f"API errors {q['api_errors']:.0f} | roles: {roles}")
+
+
+def judge(baseline, candidate):
+    """The agreed rule: the candidate's runs are all valid, cheaper than the cheapest baseline run, and lose no quality."""
+    _, base = rows_of(baseline)
+    _, cand = rows_of(candidate)
+    bv = [r for r in base if compare.is_true(r["valid"])]
+    if not bv or not cand:
+        return "NO DATA"
+    qb, qc = compare.quality(bv), compare.quality(cand)
+    why = []
+    if qc["invalid"]:
+        why.append(f"{qc['invalid']} of {qc['runs']} runs invalid")
+    floor = min(compare.num(r["cost_usd"]) for r in bv)
+    worst = max((compare.num(r["cost_usd"]) or 0) for r in cand)
+    if worst >= floor:
+        why.append(f"${worst:.2f} is not below the cheapest baseline run ${floor:.2f}")
+    for key in ("build", "tests", "proof"):
+        if qc[key] < qc["valid"]:
+            why.append(f"{key} held on {qc[key]} of {qc['valid']}")
+    if qc["valid"] and not 0.67 <= qc["diff_ratio"] / qb["diff_ratio"] <= 1.5:
+        why.append(f"diff size {qc['diff_ratio']:.2f} against baseline median {qb['diff_ratio']:.2f}")
+    if qc["forbidden"] and qc["forbidden"] / qc["valid"] > qb["forbidden"] / qb["valid"]:
+        why.append("more tests asserting markup or text")
+    if qc["guard_trips"]:
+        why.append("guard tripped")
+    if qc["api_errors"] / qc["runs"] > qb["api_errors"] / qb["runs"]:
+        why.append("more API errors")
+    return "KEEP" if not why else "REVERT: " + "; ".join(why)
 
 
 def main():
-    baseline, candidate, pairs = sys.argv[1], sys.argv[2], int(sys.argv[3])
-    stopped = None
-    for i in range(pairs):
-        used, spent, ok = budget_left()
-        if not ok:
-            stopped = f"BUDGET STOP: {used}% of the week used, {spent} points spent since the start (limit {LIMIT}%, cap {CAP} points)"
-            break
-        code, lines = run_pair(baseline, candidate)
-        print(f"pair {i + 1}/{pairs}: " + " | ".join(lines) + (f" (run.py exit {code})" if code else ""), flush=True)
-        if code:
-            stopped = f"STOPPED: run.py exited {code} on pair {i + 1}; see scratch/run.out"
-            break
-    used, spent, _ = budget_left()
-    base, cand = compare.load_rows(baseline), compare.load_rows(candidate)
-    names = (base[0]["skills_sha"][:12], cand[0]["skills_sha"][:12])
-    text, verdict = compare.report(base, cand, CLAIM, names)
-    (ROOT / "benchmark" / "results" / f"compare-{names[0]}-{names[1]}.md").write_text(text + "\n", encoding="utf-8")
-    print(next(l for l in text.splitlines() if l.startswith("VERDICT")))
-    print(f"baseline  {names[0]}: {side(base)}")
-    print(f"candidate {names[1]}: {side(cand)}")
-    reg = text.split("Quality regressions:")[1].splitlines()
-    print("regressions:" + (" none" if "none flagged" in reg[0] else "") + "".join("\n" + l for l in reg[1:] if l.strip().startswith("-")))
-    print(f"budget: week {used}% used, {spent} points spent since the start")
-    if stopped:
-        print(stopped)
-    return 2 if verdict == "inconclusive" else 0
+    mode = sys.argv[1]
+    if mode == "run":
+        ref, runs = sys.argv[2], int(sys.argv[3])
+        sha, plugin_dir = bench.skills_checkout(ref)
+        spec = bench.load_specs([SPEC])[0]
+        bench.git(CLONE, "cat-file", "-e", f"{spec['base']}^{{commit}}")  # no fetch: the clone already holds the Spec's base
+        settings = bench.Settings("sonnet", "high", CLAIM, max_budget=60.0, clone=Path(CLONE))
+        for i in range(runs):
+            used, passed = wait_for_budget()
+            done = len(rows_of(sha)[1])
+            started = time.time()
+            s = bench.run_one("measured", sha, plugin_dir, spec, done + 1, settings)
+            print(f"run {i + 1}/{runs}: {'valid' if s['valid'] else 'INVALID ' + '; '.join(s['invalid_reasons'])} "
+                  f"({(time.time() - started) / 60:.0f} min; week {used}% used, {passed:.0f}% passed)", flush=True)
+        print(summary(sha))
+    elif mode == "show":
+        print(summary(sys.argv[2]))
+    elif mode == "judge":
+        print(summary(sys.argv[2]))
+        print(summary(sys.argv[3]))
+        print(judge(sys.argv[2], sys.argv[3]))
+    else:
+        raise SystemExit(__doc__)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
