@@ -93,7 +93,7 @@ def reset_clone(clone):
     """No worktree and no branch of an earlier run: a leftover <slug> branch would make /implement resume it."""
     main = git(clone, "worktree", "list", "--porcelain").splitlines()[0].split(" ", 1)[1]
     for line in git(clone, "worktree", "list", "--porcelain").splitlines():
-        if line.startswith("worktree ") and Path(line[9:]) != Path(main):
+        if line.startswith("worktree ") and Path(line[9:]) != Path(main) and Path(line[9:]).exists():  # a worktree /implement made inside the run's goes with it
             shutil.rmtree(line[9:], onerror=_unlock)
     git(clone, "worktree", "prune")
     keep = git(clone, "branch", "--show-current")
@@ -178,7 +178,8 @@ def run_one(side, sha, plugin_dir, spec, index, settings):
     reset_clone(clone)
     git(clone, "-c", "core.longpaths=true", "worktree", "add", "-q", "-b", "bench-run", str(worktree), spec["base"])
     (run_dir / "mcp-empty.json").write_text('{"mcpServers": {}}', encoding="utf-8")
-    env = {**os.environ, **guards.install(run_dir / "guards", run_dir / "bench.log")}
+    # print mode stops a session 10 minutes after its last turn while a Step agent still runs in the background; 0 waits for it
+    env = {**os.environ, **guards.install(run_dir / "guards", run_dir / "bench.log"), "CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS": "0"}
     (run_dir / "bench.log").touch()
     meta = {"run_id": run_id, "side": side, "skills_sha": sha, "spec": spec["id"], "issue": spec["issue"], "index": index,
             "model": settings.model, "effort": settings.effort, "claim": settings.claim, "spec_hash": spec_hash(spec),

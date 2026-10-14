@@ -55,9 +55,9 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 - **Middle Man** — a class or function that mostly just delegates onward. → cut it, call the real target direct.
 - **Refused Bequest** — a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
 
-### 4. Spawn both sub-agents in parallel
+### 4. Spawn the reviewers
 
-Spawn both in parallel as `skills:reviewer` (`agents/reviewer.md` at the plugin root), which is pinned to Opus at high effort ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)). A caller that names another model and effort for the reviewers has them passed as `model` and `effort` on each Agent call, which override the pin. A host without that agent type dispatches `general-purpose` with the same prompt.
+Spawn the two axes in parallel as `skills:reviewer` (`agents/reviewer.md` at the plugin root), which is pinned to Opus at high effort ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)). A caller that names another model and effort for the reviewers has them passed as `model` and `effort` on each Agent call, which override the pin. A caller that asks for **one reviewer** spawns a single `skills:reviewer` whose prompt carries both briefs below and asks it to report under `## Standards` and `## Spec`, findings kept separate per axis. A host without that agent type dispatches `general-purpose` with the same prompt.
 
 Both briefs end with the same instruction: "Run the `/plain-language` skill and write your findings to its bar. Your entire report is one message." You present their reports nearly verbatim, so the plainness has to come from them. The parent keeps only the last message.
 
@@ -77,7 +77,7 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 
 ### 5. Aggregate
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
+Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned; a single reviewer's one report already carries both headings. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
 
 End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
 

@@ -9,7 +9,7 @@ effort: high
 
 You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, the Step agent's and the Checker's three-line reports per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 1's read of the Issue, step 3's two structural checks, and the `git rev-parse` that finds the Checker's fixed point, and nothing more. While a sub-agent runs, waiting is the work.
 
-Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), and the **Checker** that finishes each Step is `skills:checker` (`agents/checker.md` at the plugin root); both are pinned in their agent files to Sonnet at high effort because their scope was decided before they started ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)). So is the **Prover** that re-runs every Proof before the run lands, `skills:prover` (`agents/prover.md` at the plugin root), at medium effort. The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root), pinned to Sonnet at high effort. The Spec fixer, the Standards fixer, the data-structures pass, and the Proof fixer are `general-purpose` and run at your own model and effort, which inside this skill is the skill's own pin. See [ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
+Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), and the **Checker** that finishes each Step is `skills:checker` (`agents/checker.md` at the plugin root); both are pinned in their agent files to Sonnet, the Step agent at high effort and the Checker at medium, because their scope was decided before they started ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)). So is the **Prover** that re-runs every Proof before the run lands, `skills:prover` (`agents/prover.md` at the plugin root), at medium effort. The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root), pinned to Sonnet at high effort. The fixer, the data-structures pass, and the Proof fixer are `general-purpose` and run at your own model and effort, which inside this skill is the skill's own pin; the data-structures pass is dispatched at medium effort. See [ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
@@ -63,7 +63,8 @@ Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and 
 - an instruction to read, before starting, the `## Outcome` of each step on its step file's `Depends on:` line — none for `Depends on: none`, and every lower-numbered step's when the line is missing
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
 - the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
-- the spec's Testing Decisions section, which governs what it tests
+- the spec's Testing Decisions section, which governs what it tests, and the testing documents it names
+- an instruction to read the Coding standards and those testing documents by section: list the headings first (`grep -n '^#'` on the file), then read only the sections that apply to the code the Step touches, never the whole file
 - the Proof rules, [PROOF.md](PROOF.md) in this skill's directory by absolute path, and `<proof>`
 - `<base>`, the branch its tests are measured against
 - the deviations reported by earlier steps, verbatim, when there are any
@@ -94,6 +95,7 @@ Once that check passes, resolve the parent of the Step's commit with `git rev-pa
 - the spec, and the step file
 - that SHA, as the fixed point of its review
 - `CONTEXT.md` and any ADR covering the area, the Coding standards, the spec's Testing Decisions section, PROOF.md, `<proof>`, and `<base>`, found as above
+- the same instruction to read the Coding standards and the testing documents by section
 - the deviations reported by earlier steps and by this step's agent, verbatim, when there are any
 - its Step number and the total, and the same three-line report format
 
@@ -113,15 +115,14 @@ Done when every Step file, `.agents/steps/<slug>/[0-9][0-9]-*.md`, reads `Status
 
 Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
 
-Three sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule, each on its own retry. Hand each the Spec path (or that there is none), the Coding standards from step 3 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code:
+Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule, each on its own retry. Hand each the Spec path (or that there is none), the Coding standards from step 3 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code. Hand each the instruction to read the Coding standards and the testing documents by section, as step 3 words it, and to run every build or test command with the tool's quiet flags and its output bounded to failures plus the summary — `--nologo -v q` for dotnet, piped through `tail -n 60` or grepped for failures and the summary line, a failure re-run narrower with `--filter`, never the whole log into context; a pipe still counts as a plain command:
 
-1. The Spec fixer fixes every finding of the Spec axis, which you paste into its prompt as the reviewers wrote them.
-2. The Standards fixer fixes every finding of the Standards axis, pasted the same way. Tell it to skip a finding whose code is gone and name that finding on its deviations line.
-3. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it.
+1. The fixer fixes every finding of both axes, which you paste into its prompt as the reviewers wrote them. It fixes the Spec axis's first, because a Spec fix can remove code that a Standards finding points at, and skips a Standards finding whose code is gone, naming that finding on its deviations line. Where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When both axes report no finding, skip the fixer and tell the user so.
+2. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it. Dispatch it with `effort: medium` on its Agent call, and skip it when `git diff --shortstat <base>...HEAD` shows 120 changed lines or fewer, since a small diff leaves nothing to restructure.
 
-The Spec fixer goes first because a Spec fix can remove code that a Standards finding points at. For both fixers, where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When an axis reports no finding, skip its fixer and tell the user so. Retry-then-halt, and the Prover's pass in step 5, are the whole check on a fixer's work.
+Retry-then-halt, and the Prover's pass in step 5, are the whole check on their work.
 
-Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change any of the three makes goes to the user as a deviations line before you continue.
+Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change either makes goes to the user as a deviations line before you continue.
 
 ### 5. Land the branch
 
@@ -143,7 +144,7 @@ Run [the push](#the-push).
 
 ### 7. Retrospective
 
-Run `/retro`. When it committed and step 6's push went out, run [the push](#the-push) again.
+Run `/retro` only when the run had a deviations line that was not `none`, a retried or halted agent, a fixer dispatch, or a Prover failure; otherwise the final report says retro was skipped as nothing went wrong. When it committed and step 6's push went out, run [the push](#the-push) again.
 
 ## The landing commit
 
@@ -171,7 +172,7 @@ In benchmark mode every outward write is a **no-op**: the claim in step 1 and th
 
 ## The Prover's pass
 
-A fresh **Prover** re-runs every Step's Proof and runs the Spec's **Hand checks** on the code that lands, after the final fixers and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`, and the run has no Spec or its `## How to Check It` lists no Hand check.
+A fresh **Prover** re-runs every Step's Proof and runs the Spec's **Hand checks** on the code that lands, after the fixer, the data-structures pass, and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`, and the run has no Spec or its `## How to Check It` lists no Hand check.
 
 Skip it too when step 5 comes back here after `<base>` moved, a Prover already held in this land, and every rebase since then skipped its build and test run under step 5, item 1. A Proof can read what no build or test reads, so also check each path those rebases compared: no Step's `Proof:` line or script in `<proof>` names it, and no app a rung-4 Proof or Hand check launches reads it. Any doubt about one, and the pass runs. The Prover that held still stands for the code that lands. Its deviations line goes in the final report, with each range `<fork>..<onto>` it now covers.
 
@@ -191,7 +192,7 @@ deviations: <each Step whose Proof passed only on its re-run, and each Hand chec
 
   For each failed Hand check, it changes the code until the product does what the check says.
 
-  It leaves the projects it touched green, commits its work, and reports in the same three lines as the other fixers. Then dispatch a fresh Prover the same way. A second `failed` **halts** the run.
+  It leaves the projects it touched green, commits its work, and reports in the same three lines as the fixer. Then dispatch a fresh Prover the same way. A second `failed` **halts** the run.
 
 The Prover and the Proof fixer each fall under step 3's retry-then-halt rule, each on its own retry.
 

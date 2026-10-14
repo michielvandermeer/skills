@@ -165,10 +165,10 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 
 **Sub-agents.**
 
-- Sonnet at high: `skills:implementer`, `skills:checker`, `skills:planner`.
-- Sonnet at medium: `skills:prover`, `skills:climber`, `skills:validator`, `skills:researcher`.
+- Sonnet at high: `skills:implementer`, `skills:planner`.
+- Sonnet at medium: `skills:checker`, `skills:prover`, `skills:climber`, `skills:validator`, `skills:researcher`.
 - Haiku at high: `skills:explorer`.
-- Opus at high: `skills:reviewer`, the two `/code-review` reviewers. The Checker runs its per-Step review on Sonnet at high instead.
+- Opus at high: `skills:reviewer`, the two `/code-review` reviewers. The Checker runs its per-Step review in one reviewer on Sonnet at high instead.
 
 Everything else runs on the setting of the skill that starts it: the fixers, the `/improve-data-structures` pass, and the `/codebase-design` and `/brainstorm` fan-outs.
 
