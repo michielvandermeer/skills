@@ -22,7 +22,7 @@ PRICES = {
 ROLES = ["main", "poteto-agent", "verifier", "interrogate", "arena", "architect"]
 # A run from before the poteto-mode flow dispatched these agent types; they stay so a baseline run is still attributed.
 OLD_ROLES = ("implementer", "checker", "prover", "planner", "fixer", "reviewer")
-PREFIXES = {"build:": "poteto-agent", "fix:": "poteto-agent", "verify:": "verifier", "design:": "architect"}
+PREFIXES = {"investigate:": "poteto-agent", "build:": "poteto-agent", "fix:": "poteto-agent", "verify:": "verifier", "design:": "architect"}
 TEST_RE = re.compile(r"\b(dotnet\s+test|run-tests\.mjs|bun\s+(run\s+)?test|vitest|npm\s+(run\s+)?test|pytest|cargo\s+test|go\s+test)\b")
 
 
