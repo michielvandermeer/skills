@@ -17,6 +17,10 @@ import metrics  # noqa: E402
 import run  # noqa: E402
 import score  # noqa: E402
 
+BUILDER_COST = 0.016260
+FIX_ROUND_COST = 0.000018
+POTETO_AGENT_COST = BUILDER_COST + FIX_ROUND_COST
+
 
 class GhGuardTests(unittest.TestCase):
     def test_reads_pass(self):
@@ -106,17 +110,56 @@ class MetricsTests(unittest.TestCase):
 
     def test_roles_come_from_the_subagent_meta(self):
         roles = self.m["by_role"]
-        self.assertEqual(sorted(roles), ["fixer", "implementer", "main", "prover", "reviewer"])
-        self.assertAlmostEqual(roles["implementer"]["cost_usd"], 0.01626, places=6)
+        self.assertEqual(sorted(roles), ["interrogate", "main", "poteto-agent", "verifier"])
+        self.assertEqual(roles["poteto-agent"]["agents"], 2)
+        self.assertAlmostEqual(roles["poteto-agent"]["cost_usd"], POTETO_AGENT_COST, places=6)
+        self.assertAlmostEqual(roles["interrogate"]["cost_usd"], 0.011125, places=6)
         self.assertEqual(roles["main"]["calls"], 2)
         self.assertEqual(self.m["subagents"], 4)
+
+    def test_roles_are_read_from_the_description_prefix_then_the_type(self):
+        self.assertEqual(metrics.role_of("skills:poteto-agent", "Build: unit 1, the roles column"), "poteto-agent")
+        self.assertEqual(metrics.role_of("skills:poteto-agent-high", "Fix: round 1, interrogate Act-on findings"), "poteto-agent")
+        self.assertEqual(metrics.role_of("skills:poteto-agent", "Verify: the change and the Hand checks"), "verifier")
+        self.assertEqual(metrics.role_of("skills:poteto-agent", "Explore the Person subsystem"), "poteto-agent")
+        self.assertEqual(metrics.role_of("general-purpose", "Reviewer B"), "interrogate")
+        self.assertEqual(metrics.role_of("general-purpose", "Arena runner 2"), "arena")
+        self.assertEqual(metrics.role_of("general-purpose", "Design: candidate 2, the registry shape"), "architect")
+        self.assertEqual(metrics.role_of("general-purpose", "Explore the Person subsystem"), "general-purpose")
+
+    def test_old_role_names_still_attribute_a_baseline_run(self):
+        self.assertEqual(metrics.role_of("skills:implementer", "Step 01: add the column"), "implementer")
+        self.assertEqual(metrics.role_of("skills:checker", "Check step 01"), "checker")
+        self.assertEqual(metrics.role_of("skills:prover", "Re-run every Proof"), "prover")
+        self.assertEqual(metrics.role_of("skills:planner", "Slice the Spec"), "planner")
+        self.assertEqual(metrics.role_of("general-purpose", "Fix the review findings"), "fixer")
+        self.assertEqual(metrics.role_of("skills:reviewer", "Review the Standards axis"), "reviewer")
+        self.assertEqual(collect.ROLE_COLUMNS, ["main", "poteto-agent", "verifier", "interrogate", "arena", "architect",
+                                               "implementer", "checker", "prover", "planner", "fixer", "reviewer", "other"])
+
+    def test_each_side_is_attributed_by_its_own_role_columns(self):
+        base, cand = make_rows({"a": CompareTests.A_BASE}, {"a": CompareTests.A_CAND})
+        for r in base:
+            del r["cost_verifier"]
+        text = compare.limiter(base, cand, 0.0, "inconclusive")
+        self.assertIn("Limiter: the poteto-agent role is 50% of baseline cost (50% on the candidate)", text)
+        self.assertIn("Roles only the candidate has: verifier", text)
+        for r in cand:
+            r["cost_arena"] = ""
+        with self.assertRaises(ValueError):
+            compare.limiter(base, cand, 0.0, "inconclusive")
+
+    def test_the_old_flow_csvs_compare_without_a_key_error(self):
+        base, cand = compare.load_rows("889e5cd27967"), compare.load_rows("d07f8b77bc67")
+        text = compare.limiter(base, cand, 0.0, "inconclusive")
+        self.assertRegex(text, r"^Limiter: the reviewer role is \d+% of baseline cost \(\d+% on the candidate\)")
+        self.assertNotIn("Roles only", text)
 
     def test_context_wall_time_and_checks(self):
         self.assertEqual(self.m["max_context"], 6020)
         self.assertEqual(self.m["wall_s"], 330.0)
         self.assertEqual(self.m["tool_errors"], 1)
         self.assertEqual(self.m["test_commands"], 1)
-        self.assertEqual(self.m["prover_status"], "held")
 
 
 DIFF = """\
@@ -185,17 +228,17 @@ class ScoreTests(unittest.TestCase):
             git("add", "."), git("commit", "-q", "-m", "base")
             base = git("rev-parse", "HEAD")
             (repo / "a.txt").write_text("one\ntwo\nthree\n")
-            (repo / ".agents" / "steps").mkdir(parents=True)
-            (repo / ".agents" / "steps" / "01.md").write_text("step\n" * 50)
+            (repo / ".agents" / "runs").mkdir(parents=True)
+            (repo / ".agents" / "runs" / "todo.md").write_text("- [x] unit\n" * 50)
             git("add", "."), git("commit", "-q", "-m", "Add lines (#7)")
             (run / "bench.log").write_text("2026-01-01T00:00:00 NOOP step 6: git push\n")
             ok = f'"{sys.executable}" -c "print(\'Passed!  - Failed: 0, Passed: 2, Skipped: 0, Total: 2\')"'
             spec = {"base": base, "issue": 7, "landing_lines": 4, "build": [ok], "tests": [ok]}
             meta = {"worktree": str(repo), "exit_code": 0, "plugin_verified": True}
-            m = {"subagents": 3, "test_commands": 2, "unpriced_models": [], "prover_status": "held"}
+            m = {"subagents": 3, "test_commands": 2, "unpriced_models": []}
             s = score.score_run(run, meta, spec, m)
             self.assertEqual((s["landed"], s["commits"], s["landing_lines"], s["diff_ratio"]), (True, 1, 2, 0.5))
-            self.assertEqual((s["build_ok"], s["tests_ok"], s["tests_run"], s["noop_writes"], s["proof"]), (True, True, 2, 1, "held"))
+            self.assertEqual((s["build_ok"], s["tests_ok"], s["tests_run"], s["noop_writes"]), (True, True, 2, 1))
             self.assertTrue(s["valid"], s["invalid_reasons"])
 
 
@@ -210,10 +253,10 @@ def make_rows(base_costs, cand_costs, **cand_over):
              "valid": "True", "invalid_reasons": "", "flags": "", "failed": "False", "cost_usd": str(cost),
              "tokens_total": str(cost * 1e5), "subagents": "6", "wall_s": "600", "max_context": "90000",
              "api_errors": "0", "tool_errors": "3", "landed": "True", "diff_ratio": "1.0", "build_ok": "True",
-             "tests_ok": "True", "tests_run": "5", "proof": "held", "forbidden_html": "0", "forbidden_text": "0",
+             "tests_ok": "True", "tests_run": "5", "forbidden_html": "0", "forbidden_text": "0",
              "blocked_writes": "0", "noop_writes": "2", "checks_done": "True"}
         r.update({f"cost_{role}": str(cost * share) for role, share in
-                  zip(compare.ROLES, (0.1, 0.05, 0.5, 0.2, 0.1, 0.02, 0.02, 0.01))})
+                  zip(collect.ROLE_COLUMNS, (0.1, 0.5, 0.15, 0.2, 0.03, 0.02))})
         r.update(over)
         return r
 
@@ -256,7 +299,7 @@ class CompareTests(unittest.TestCase):
         lines = text.splitlines()
         self.assertEqual(lines[0], "Claim: the change cuts cost")
         self.assertTrue(lines[2].startswith("VERDICT: cheaper (-3"), lines[2])
-        self.assertIn("Limiter: the implementer role is 50% of baseline cost", text)
+        self.assertIn("Limiter: the poteto-agent role is 50% of baseline cost", text)
         self.assertIn("Runs alternated baseline and candidate", text)
         self.assertIn("Quality regressions: none flagged.", text)
 
@@ -378,7 +421,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual((rows[0]["valid"], rows[0]["model"], rows[0]["effort"], rows[0]["subagents"]), ("True", "sonnet", "high", "4"))
             self.assertAlmostEqual(float(rows[0]["cost_usd"]), 0.0339, places=4)
-            self.assertAlmostEqual(float(rows[0]["cost_reviewer"]), 0.0111, places=4)
+            self.assertAlmostEqual(float(rows[0]["cost_interrogate"]), 0.0111, places=4)
 
 
 if __name__ == "__main__":

@@ -19,9 +19,10 @@ PRICES = {
     "sonnet": (3.0, 15.0, 3.75, 6.0, 0.30),
     "haiku": (1.0, 5.0, 1.25, 2.0, 0.10),
 }
-ROLES = ["main", "planner", "implementer", "checker", "reviewer", "prover", "fixer"]
+ROLES = ["main", "poteto-agent", "verifier", "interrogate", "arena", "architect"]
+PRE_POTETO_ROLES = ("implementer", "checker", "prover", "planner", "fixer", "reviewer")
+PREFIXES = {"investigate:": "poteto-agent", "build:": "poteto-agent", "fix:": "poteto-agent", "verify:": "verifier", "design:": "architect"}
 TEST_RE = re.compile(r"\b(dotnet\s+test|run-tests\.mjs|bun\s+(run\s+)?test|vitest|npm\s+(run\s+)?test|pytest|cargo\s+test|go\s+test)\b")
-PROVER_STATUS_RE = re.compile(r"^\s*status:\s*(held|failed|blocked)\b", re.I | re.M)
 
 
 def family(model):
@@ -38,10 +39,22 @@ def call_cost(model, call):
 
 
 def role_of(agent_type, description=""):
-    role = (agent_type or "unknown").split(":")[-1]
-    if role == "general-purpose" and "fix" in description.lower():
+    kind = (agent_type or "unknown").split(":")[-1]
+    text = description.lower().strip()
+    for prefix, role in PREFIXES.items():
+        if text.startswith(prefix):
+            return role
+    if kind.startswith("poteto-agent"):
+        return "poteto-agent"
+    if kind in PRE_POTETO_ROLES:
+        return kind
+    if "reviewer" in text or "interrogate" in text:
+        return "interrogate"
+    if "runner" in text or "arena" in text or "candidate" in text:
+        return "arena"
+    if kind == "general-purpose" and "fix" in text:
         return "fixer"
-    return role
+    return kind
 
 
 def _lines(path):
@@ -60,13 +73,6 @@ def _time(ts):
     return datetime.fromisoformat(ts.replace("Z", "+00:00")).timestamp()
 
 
-def _text(message):
-    content = message.get("content", "")
-    if isinstance(content, str):
-        return content
-    return "\n".join(b.get("text", "") for b in content if isinstance(b, dict) and b.get("type") == "text")
-
-
 def extract(directory):
     directory = Path(directory)
     files = [(p, "main", "") for p in sorted(directory.glob("*.jsonl"))]
@@ -76,10 +82,8 @@ def extract(directory):
         files.append((p, role_of(meta.get("agentType"), meta.get("description", "")), p.stem))
 
     calls, times = {}, []
-    out = {"api_errors": 0, "tool_errors": 0, "test_commands": 0, "bad_lines": 0, "prover_status": None}
-    prover_last = (0.0, None)
+    out = {"api_errors": 0, "tool_errors": 0, "test_commands": 0, "bad_lines": 0}
     for path, role, agent in files:
-        last_text, last_ts = "", 0.0
         for o in _lines(path):
             if o.get("type") == "_bad_lines":
                 out["bad_lines"] += o["count"]
@@ -94,7 +98,6 @@ def extract(directory):
                 usage = message.get("usage")
                 if usage and message.get("model") != "<synthetic>":
                     _add_call(calls, o, message, usage, role, agent)
-                last_text, last_ts = _text(message) or last_text, ts or last_ts
             content = message.get("content")
             for block in content if isinstance(content, list) else []:
                 if not isinstance(block, dict):
@@ -104,11 +107,6 @@ def extract(directory):
                 if block.get("type") == "tool_use" and block.get("name") in ("Bash", "PowerShell"):
                     if TEST_RE.search(str(block.get("input", {}).get("command", ""))):
                         out["test_commands"] += 1
-        if role == "prover":
-            m = PROVER_STATUS_RE.findall(last_text)
-            if m and last_ts >= prover_last[0]:
-                prover_last = (last_ts, m[-1].lower())
-    out["prover_status"] = prover_last[1]
     return _summarise(out, calls.values(), files, times)
 
 

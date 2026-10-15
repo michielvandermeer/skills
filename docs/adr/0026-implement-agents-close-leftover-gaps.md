@@ -1,11 +1,10 @@
-# `/implement` sub-agents close leftover gaps themselves
+# Implement delegates close leftover gaps themselves
 
-Every `/implement` sub-agent closes leftover gaps from the documents it was handed, the code, and existing patterns, and keeps going. The user did not write the Spec or the Step, so a question about something those left unnamed has no useful answer. A choice that contradicts the Spec or changes a later Step is a Deviation on the `deviations:` line of the agent's report, which the Driving session relays with the Step's progress line.
+Every delegate of an implement run, the `skills:poteto-agent` that builds a unit, the Verifier, and a fixer, closes leftover gaps from the Spec, the design, the code, and existing patterns, and keeps going. The user did not write the Spec, so a question about something it left unnamed has no useful answer, and the run lands unattended. A choice that contradicts the Spec is a Deviation: it goes in `design.md`'s Implementation reconciliation section and the trail, and the report names it.
 
-Stopping the run so the user could decide was rejected: they still would not have the answer. Asking the Driving session was rejected: there is no channel that would keep the question off the user's screen. Raising the Step agent's effort to close a gap was rejected: closing a gap is still work inside a Step whose scope was already settled.
+Stopping the run so the user could decide was rejected: they still would not have the answer. Asking the Driving session was rejected: there is no channel that would keep the question off the user's screen, and the Driving session decides reversible calls itself under its full-autonomy grant, so a delegate's question would only route the same decision through a second context.
 
 ## Consequences
 
-- A result that is a question is a failed step, retried once. A second failure stops the run without quoting the question.
-- The Planner fills only silence in the Spec. When a Step file and the Spec disagree, the Spec wins.
-- Step agents are pinned to Sonnet at `effort: high` ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)).
+- A result that is a question is a failed delegate. A fresh delegate with consolidated scope takes the work; a second failure of the same kind triggers the premise census before a third, and a third halts the run.
+- The Driving session's own calls follow the same rule: a call the grant covers is decided, logged in the trail, and reported; a call only the operator can make gets a default, a full explanation in the report, and what the operator could say instead.

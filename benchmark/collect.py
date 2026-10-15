@@ -10,14 +10,14 @@ from pathlib import Path
 import metrics
 
 HERE = Path(__file__).resolve().parent
-ROLE_COLUMNS = metrics.ROLES + ["other"]
+ROLE_COLUMNS = metrics.ROLES + list(metrics.PRE_POTETO_ROLES) + ["other"]
 COLUMNS = (
     ["run_id", "skills_sha", "spec", "index", "model", "effort", "spec_hash", "claim", "started",
      "valid", "invalid_reasons", "flags", "failed",
      "cost_usd", "tokens_total", "input", "cache_write", "cache_read", "output", "calls", "subagents",
      "wall_s", "max_context", "api_errors", "tool_errors"]
     + [f"cost_{r}" for r in ROLE_COLUMNS] + [f"tokens_{r}" for r in ROLE_COLUMNS]
-    + ["landed", "landing_lines", "diff_ratio", "build_ok", "tests_ok", "tests_run", "proof",
+    + ["landed", "landing_lines", "diff_ratio", "build_ok", "tests_ok", "tests_run",
        "forbidden_html", "forbidden_text", "blocked_writes", "noop_writes", "checks_done"]
 )
 
@@ -28,7 +28,7 @@ def row_for(run_dir):
     s = json.loads((run_dir / "score.json").read_text(encoding="utf-8"))
     m = metrics.extract(run_dir / "transcripts")
     row = {k: meta.get(k) for k in ("run_id", "skills_sha", "spec", "index", "model", "effort", "spec_hash", "claim", "started")}
-    row.update({k: s.get(k) for k in COLUMNS if k in s})
+    row.update({k: s[k] for k in COLUMNS if k in s})
     row["invalid_reasons"] = "; ".join(s["invalid_reasons"])
     row["flags"] = "; ".join(s["flags"])
     row["failed"] = bool(meta.get("timed_out") or meta.get("exit_code") not in (0, None) or meta.get("result_is_error"))
@@ -40,7 +40,7 @@ def row_for(run_dir):
     for column in ROLE_COLUMNS:
         row[f"cost_{column}"] = row[f"tokens_{column}"] = 0
     for role, b in m["by_role"].items():
-        key = role if role in metrics.ROLES else "other"
+        key = role if role in ROLE_COLUMNS else "other"
         row[f"cost_{key}"] = round(row[f"cost_{key}"] + b["cost_usd"], 4)
         row[f"tokens_{key}"] += b["input"] + b["cache_write"] + b["cache_read"] + b["output"]
     return row

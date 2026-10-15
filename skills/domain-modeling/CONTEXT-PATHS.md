@@ -9,7 +9,7 @@ A repo with a root `CONTEXT-MAP.md` files every work document one folder deeper:
 | Codebase audit | `.agents/codebase-audits/<timestamp>/` | `.agents/codebase-audits/<context>/<timestamp>/` |
 | Hillclimb folder | `.agents/hillclimbs/<slug>/` | `.agents/hillclimbs/<context>/<slug>/` |
 
-Issues follow the repo's Tracker ref, or [setup/LOCAL.md](../setup/LOCAL.md) when it has none; the local Tracker picks its context subfolder by the rules below. Steps (`.agents/steps/<run-slug>/`), worktrees (`.agents/worktrees/`), and refs (`.agents/refs/`) take no context subfolder.
+Issues follow the repo's Tracker ref, or [setup/LOCAL.md](../setup/LOCAL.md) when it has none; the local Tracker picks its context subfolder by the rules below. Run directories (`.agents/runs/<run-slug>/`), worktrees (`.agents/worktrees/`), and refs (`.agents/refs/`) take no context subfolder.
 
 ## The context subfolder
 

@@ -15,7 +15,6 @@ from math import comb
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROLES = ["main", "planner", "implementer", "checker", "reviewer", "prover", "fixer", "other"]
 METRICS = [("cost_usd", "List-price cost per run (USD)", "{:.2f}"), ("tokens_total", "Tokens per run (millions)", None),
            ("subagents", "Subagents per run", "{:.0f}"), ("wall_s", "Wall time per run (minutes)", None),
            ("max_context", "Largest context in any call (thousand tokens)", None)]
@@ -86,7 +85,7 @@ def spans(values, fmt, scale=1):
 def by_spec(rows, key):
     out = {}
     for r in rows:
-        if is_true(r["valid"]) and num(r.get(key)) is not None:
+        if is_true(r["valid"]) and num(r[key]) is not None:
             out.setdefault(r["spec"], []).append(num(r[key]))
     return out
 
@@ -97,7 +96,6 @@ def quality(rows):
     return {"runs": len(rows), "valid": len(valid), "invalid": len(rows) - len(valid),
             "failed": sum(is_true(r["failed"]) for r in rows),
             "build": count(lambda r: is_true(r["build_ok"])), "tests": count(lambda r: is_true(r["tests_ok"])),
-            "proof": count(lambda r: r["proof"] in ("held", "skipped")),
             "forbidden": count(lambda r: (num(r["forbidden_html"]) or 0) + (num(r["forbidden_text"]) or 0) > 0),
             "guard_trips": count(lambda r: (num(r["blocked_writes"]) or 0) > 0),
             "api_errors": sum(num(r["api_errors"]) or 0 for r in rows),
@@ -106,7 +104,7 @@ def quality(rows):
 
 def regressions(qb, qc):
     found = []
-    for key, label in (("build", "build passed"), ("tests", "tests passed"), ("proof", "Prover's Proof held")):
+    for key, label in (("build", "build passed"), ("tests", "tests passed")):
         if qb["valid"] and qc["valid"] and qc[key] / qc["valid"] < qb[key] / qb["valid"]:
             found.append(f"{label} on {qc[key]} of {qc['valid']} valid candidate runs, against {qb[key]} of {qb['valid']} baseline runs")
     if qb["valid"] and qc["valid"] and qc["forbidden"] / qc["valid"] > qb["forbidden"] / qb["valid"]:
@@ -189,7 +187,7 @@ def report(base, cand, claim, names):
                     out[-1] += "  " + decide(vb, vc)[0]
     out += ["", "Quality (valid runs unless noted)", f"{'':34} {'baseline':>10} {'candidate':>10}"]
     for label, key in (("runs", "runs"), ("did not do the work (invalid)", "invalid"), ("failed (claude error or timeout)", "failed"),
-                       ("valid", "valid"), ("build passed", "build"), ("tests passed", "tests"), ("Proof held or not needed", "proof"),
+                       ("valid", "valid"), ("build passed", "build"), ("tests passed", "tests"),
                        ("tests asserting markup or text", "forbidden"), ("guard trips", "guard_trips"),
                        ("API errors", "api_errors"), ("diff size vs landing commit (median)", "diff_ratio")):
         out.append(f"{label:34} {qb[key]:>10} {qc[key]:>10}")
@@ -201,19 +199,38 @@ def report(base, cand, claim, names):
     return "\n".join(out), verdict
 
 
+def roles_of(rows):
+    return [key[len("cost_"):] for key in rows[0] if key.startswith("cost_") and key != "cost_usd"]
+
+
+def cost(row, col):
+    value = num(row[col])
+    if value is None:
+        raise ValueError(f"{col} is {row[col]!r} on run {row['run_id']}, not a number")
+    return value
+
+
 def limiter(base, cand, change, verdict):
-    mean = lambda rows, col: sum(num(r[col]) or 0 for r in rows if is_true(r["valid"])) / max(1, sum(is_true(r["valid"]) for r in rows))
+    mean = lambda rows, col: sum(cost(r, col) for r in rows if is_true(r["valid"])) / max(1, sum(is_true(r["valid"]) for r in rows))
+    roles = [r for r in roles_of(base) if r in roles_of(cand)]
+    only = {name: [r for r in roles_of(rows) if r not in roles] for name, rows in (("baseline", base), ("candidate", cand))}
     shares, means = {}, {}
     for name, rows in (("baseline", base), ("candidate", cand)):
         total = mean(rows, "cost_usd") or 1
-        means[name] = {r: mean(rows, f"cost_{r}") for r in ROLES}
+        means[name] = {r: mean(rows, f"cost_{r}") for r in roles_of(rows)}
         shares[name] = {r: v / total * 100 for r, v in means[name].items()}
-    top = max(ROLES, key=lambda r: shares["baseline"][r])
-    moved = {r: means["candidate"][r] - means["baseline"][r] for r in ROLES}
-    mover = max(ROLES, key=lambda r: abs(moved[r]))
-    text = (f"Limiter: the {top} role is {shares['baseline'][top]:.0f}% of baseline cost ({shares['candidate'][top]:.0f}% on the candidate), "
-            f"so a change that touched only that role could save at most {shares['baseline'][top]:.0f}%. "
-            f"The biggest mover is the {mover} role: {moved[mover]:+.2f} USD per run.")
+    top = max(roles_of(base), key=lambda r: shares["baseline"][r])
+    text = f"Limiter: the {top} role is {shares['baseline'][top]:.0f}% of baseline cost"
+    if top in roles:
+        text += f" ({shares['candidate'][top]:.0f}% on the candidate)"
+    text += f", so a change that touched only that role could save at most {shares['baseline'][top]:.0f}%."
+    if roles:
+        moved = {r: means["candidate"][r] - means["baseline"][r] for r in roles}
+        mover = max(roles, key=lambda r: abs(moved[r]))
+        text += f" The biggest mover is the {mover} role: {moved[mover]:+.2f} USD per run."
+    for name, missing in only.items():
+        if missing:
+            text += f" Roles only the {name} has: {', '.join(missing)}, with no counterpart to move against."
     if verdict == "cheaper" and -change > shares["baseline"][top]:
         text += (f" The saving ({-change:.0f}%) is bigger than any one role's share: if the change touched one role, "
                  "something else is being measured (a cache, a no-op, a bug); check the invalid and flagged runs.")

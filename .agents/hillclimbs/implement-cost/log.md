@@ -1,5 +1,7 @@
 # List-price cost of one /implement run (USD, lower is better)
 
+Closed 2026-10-15: the roles this Hillclimb priced no longer exist, an implement run is now a poteto-mode playbook ([ADR-0069](../../../docs/adr/0069-an-implement-run-is-a-poteto-mode-playbook.md)), and its cost is unmeasured until `benchmark/` runs on both sides.
+
 Measured by `measure.py`: alternating baseline/candidate pairs of `benchmark/run.py` (`claude -p '/implement #394'` on the frozen Spec `ui-bug-394`, `--model sonnet --effort high`, target clone `C:\Users\MichielvanderMeer\work\mvdmio-suite`), judged by `benchmark/compare.py` (verdict first, median and range, invalid runs counted, exact rank-sum test). It reads `claude -p /usage` before every pair and stops at 80% of the week used or 25 points spent.
 
 ## Ideas not yet tried

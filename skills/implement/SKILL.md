@@ -1,210 +1,151 @@
 ---
 name: implement
-description: "Implement a spec by slicing it into steps and running each one in its own sub-agent. Use only when the user or a /goal names /implement."
+description: "Build a Spec as a poteto-mode run and land it on this branch as one commit: route the Spec to a playbook, design before code, delegate to poteto-agents, verify on the matching surface, review with interrogate. Use only when the user or a /goal names /implement."
 argument-hint: "Which Issue to implement, or what to build?"
-model: sonnet
+model: opus
 effort: high
 ---
 
-You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, the Step agent's and the Checker's three-line reports per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 1's read of the Issue, step 3's two structural checks, and the `git rev-parse` that finds the Checker's fixed point, and nothing more. While a sub-agent runs, waiting is the work.
-
-Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), and the **Checker** that finishes each Step is `skills:checker` (`agents/checker.md` at the plugin root); both are pinned in their agent files to Sonnet, the Step agent at high effort and the Checker at medium, because their scope was decided before they started ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)). So is the **Prover** that re-runs every Proof before the run lands, `skills:prover` (`agents/prover.md` at the plugin root), at medium effort. The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root), pinned to Sonnet at high effort. The fixer, the data-structures pass, and the Proof fixer are `general-purpose` and run at your own model and effort, which inside this skill is the skill's own pin; the data-structures pass is dispatched at medium effort. See [ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
-
-Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
-
-No Step pushes, publishes, or changes a live system; a Step that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and [the push](#the-push) of `<base>` once it has landed. The closing reference its landing commit carries is how the Tracker learns the work is done. Under [benchmark mode](#benchmark-mode) it reaches outside zero times. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
+You are the **Driving session** of a poteto-mode run whose brief is a Spec and whose exit is a landing ([ADR-0069](../../docs/adr/0069-an-implement-run-is-a-poteto-mode-playbook.md)). You own the playbook, `todo.md`, the trail, and every delegate; delegates write the code, and the review gate's skills edit it. The invocation is a full-autonomy grant: decide every call it covers, log each one in the trail, and report it. `AskUserQuestion` goes uncalled. The run reaches outside the local checkout twice, for the **claim** on its Issue and for [the push](LANDING.md#the-push) of `<base>` once it has landed; under [benchmark mode](#benchmark-mode), never ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)).
 
 ## Process
 
-### 1. Enter the worktree
+### 0. Read poteto-mode
 
-Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, claim, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
+Read [`../poteto-mode/SKILL.md`](../poteto-mode/SKILL.md) in full, Principles index included. Its Non-negotiables, Autonomy, Subagents, Writing the reply, and Comments sections govern the whole run; this file adds only what a landing needs. Then prove the [Overlay](.agents/playbooks/implement.md): `node <this skill's directory>/../poteto-mode/scripts/check-playbooks.mjs <this skill's directory>`, both paths absolute, from the repository root.
 
-The argument is an Issue reference — normally an Issue in `ready-for-agent` — or a description of the change, which touches no Tracker; an issue outside this repo's Tracker is read as a description. Read the Issue. Derive `<slug>`: the Issue's run slug as the Tracker ref gives it, otherwise a kebab-case slug from the description.
+Done when it prints that every project playbook matches. Any other line **halts**: report each line verbatim. The fix is to the Overlay or the playbook, never a guess at where a change belongs.
 
-When this session already drives the run for `<slug>` and a sub-agent it dispatched for that run has not reported yet, this invocation is a repeat and the run is still going: say so, and keep waiting for that report. A repeat claims, resets, and dispatches nothing ([ADR-0064](../../docs/adr/0064-a-repeated-implement-command-waits-for-its-run.md)).
+### 1. Intake and claim
 
-`<base>` is the **base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is reviewed and measured green against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). If it is empty, **halt** — HEAD is detached. The main checkout's working tree is the user's and stays as you found it until step 5.
+Issues live in the repo's **Tracker**: carry out each operation on one as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-An Issue blocked by another Issue waits on it: while the blocker is open, stop before anything else and say it lands first — unless `<base>` already holds the blocker's closing reference, found as the Tracker ref says ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
+The argument is an Issue reference, normally an Issue in `ready-for-agent`, or a description of the change, which touches no Tracker; an issue outside this repo's Tracker is read as a description. Read the Issue. Derive `<slug>`: the Issue's run slug as the Tracker ref gives it, otherwise a kebab-case slug from the description.
 
-Then claim the Issue as the Tracker ref says. When the ref says another user holds it, stop and name them. A ref that gives no claim for Issues skips this.
+When this session already drives the run for `<slug>` and a delegate it dispatched has not reported yet, this invocation is a repeat and the run is still going: say so, and keep waiting for that report. A repeat claims, commits, and dispatches nothing ([ADR-0064](../../docs/adr/0064-a-repeated-implement-command-waits-for-its-run.md)). A delegate that returned an error has reported: step 5's retry rule applies to it, and this waiting rule does not.
 
-Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). A prior run is **in flight** when that run worktree exists, when branch `<slug>` exists, or when any linked worktree contains `.agents/steps/<slug>/`.
+`<base>` is the **Base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is verified against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). Empty means a detached HEAD: **halt**. The main checkout's working tree is the user's and stays as you found it until the land.
 
-- **In flight** → a run worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
-  - Put the session's working directory on the run worktree's path. When the branch exists without a worktree, `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>` first (ensure `.agents/worktrees/` is ignored; prefer a local ignore when the repo uses one).
-  - `git reset --hard && git clean -fd` drops whatever a halted Step left behind. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
-  - When `.agents/steps/<slug>/` holds Step files (`[0-9][0-9]-*.md`), the Steps are already planned: skip step 2 and resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. A steps directory with no Step files is a fresh plan — continue at step 2.
-- **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git reset --hard <base>` so the run starts from the `<base>` you actually have — the new branch has no commits of its own yet:
-  - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
-  - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
+An Issue blocked by another Issue waits on it: while the blocker is open, **halt** and say it lands first, unless `<base>` already holds the blocker's closing reference, found as the Tracker ref says ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
-The session must work *inside* the run worktree for the rest of the run — creating a worktree alone is not enough. Run every command from there as a **plain** command: every argument spelled out, and files written with the host's file tools. A host that isolates the session in its worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it. Scope every search to the worktree, and name it in every sub-agent prompt as the only directory the agent works in, adding the plain-command rule for a `general-purpose` agent. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it and begin every command with `cd <that path> &&`. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
+Then claim the Issue as the Tracker ref says. Another user's claim **halts** the run and names them. A ref that gives no claim for Issues skips this, and a claim this user already holds is a no-op.
 
-Before leaving this step, when the argument is an Issue and `.agents/steps/<slug>/spec.md` is missing, write the Issue's title, as an H1, and its body to that file — nothing else. From here on **the Spec** is that copy: every sub-agent reads it, a resume reads it rather than the Issue, and step 2 commits it with the Step files.
+Done when the Issue is claimed, or the argument is a description.
 
-### 2. Plan the steps
+### 2. Enter the run
 
-Dispatch a `skills:planner`. Give it the Spec's path (or the argument text), `<slug>`, and the absolute path to [STEPS.md](STEPS.md) in this skill's directory — those three and nothing else. It reads the slicing rules itself, writes one file per Step to `.agents/steps/<slug>/`, and commits them with the Spec in one commit before returning, so the resets in steps 1 and 3 cannot delete the Spec or a Step not yet done ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)). When `git status` still shows that directory afterwards, commit it yourself as `plan: <slug>`. A host without that agent type dispatches `general-purpose` with the same prompt.
+Find worktrees with `git worktree list`. The **run worktree** is the one on branch `<slug>` (or the name a host tool recorded). A run is **in flight** when that worktree exists, when branch `<slug>` exists, or when `.agents/runs/<slug>/todo.md` in any linked worktree, this checkout included, has an open item and no `Landed:` line.
 
-It returns the index and nothing else: one line per step, `NN | title | one-line deliverable`.
+- **In flight.** A run worktree whose lock names a live process is another session's run: **halt** and say so. Otherwise put the session's working directory on the run worktree, creating it first with `git -c checkout.workers=0 worktree add .agents/worktrees/<slug> <slug>` when the branch exists without one. A dirty tree is committed as one `wip:` unit commit on the run branch and logged in the trail; it is never stashed or reset away. Resume at the first open item of `todo.md`, with a trail row of phase `resume` naming that item. When `todo.md` is gone (a halt at step 4 leaves the [Run directory](#run-directory) without one), the run restarts at step 3 with the branch's commits kept: write `spec.md` from the Issue again when it is missing, generate a fresh `todo.md` in step 4, and log the restart as a trail row of phase `resume`. No item is rebuilt from the commits, but the commits are read: a Bug fix restart whose branch already has commits past `<fork>` reproduces at `<fork>`, in the base copy the Verification gate describes, and its restart row says so; a Feature restart reads the branch's `Unit:` trailers (`git log <fork>..HEAD --format=%(trailers:key=Unit,valueonly)`) and briefs the next delegate with them, so a committed unit is not built again. The report says the run restarted.
+- **Fresh.** Open a worktree for this run and put the session's working directory inside it. Use a host tool that creates the worktree and moves the session into it when one exists, recording the branch name it chose when that is not `<slug>`, then `git reset --hard <base>` so the run starts from the `<base>` you actually have. Otherwise ensure the consuming repo ignores `.agents/worktrees/` (prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add -b <slug> .agents/worktrees/<slug> <base>` and change directory there.
 
-The plan succeeded when that reply is the index and `.agents/steps/<slug>/` holds Step files. Otherwise **halt** — the Planner failed, returned no steps, left no Step files in the directory, or replied with something other than the index. Do not dispatch another agent to write or commit the files; the dirty-directory commit above is the only Driving-session write for this step.
+The session works *inside* the run worktree for the rest of the run. Run every command from there as a **plain** command: every argument spelled out, files written with the host's file tools. A host that isolates the session in its worktree refuses a `cd`, a `git -C`, a shell variable, `$(…)`, or a heredoc. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once and begin every command with `cd <that path> &&`. Name the worktree in every delegate brief as the only directory the delegate works in.
 
-### 3. Run each step in `NN` order
+Then create the [Run directory](#run-directory) when it is missing: `.agents/runs/<slug>/` with a `.gitignore` holding `*`, `spec.md` as the Issue's title as an H1 plus its body and nothing else (a description is written as-is), and the trail's first row through the **show-me-your-work** skill's `log.sh`. From here on **the Spec** is `spec.md`: every delegate reads it, and a resume reads it rather than the Issue.
 
-`<proof>` is the run's Proof folder: `.agents/proof/<slug>/` in the run's working tree, by absolute path. It sits inside because a host that isolates the session in its worktree refuses writes outside it ([ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)). Before the first dispatch, create it when it is missing, with a `.gitignore` inside that holds `*`, so git ignores the folder and no commit sweeps it in.
+An `/implement-yolo` run takes [Worktree waived](LANDING.md#worktree-waived) in place of the worktree.
 
-Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and section names — it reads what is behind them:
+Done when the session is inside the run's working tree and `spec.md` exists.
 
-- the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
-- an instruction to read, before starting, the `## Outcome` of each step on its step file's `Depends on:` line — none for `Depends on: none`, and every lower-numbered step's when the line is missing
-- `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
-- the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
-- the spec's Testing Decisions section, which governs what it tests, and the testing documents it names
-- an instruction to read the Coding standards and those testing documents by section: list the headings first (`grep -n '^#'` on the file), then read only the sections that apply to the code the Step touches, never the whole file
-- the Proof rules, [PROOF.md](PROOF.md) in this skill's directory by absolute path, and `<proof>`
-- `<base>`, the branch its tests are measured against
-- the deviations reported by earlier steps, verbatim, when there are any
-- its Step number and the total, and the report format below
+### 3. Route
 
-Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so the steps that depend on it inherit the correction.
+Read the Spec once and name its playbook from this table. One playbook covers the whole run. Log the route as a trail row whose evidence is the Spec line that decided it.
 
-Require of it: **its build and the tests closest to its change passing before it finishes**, then its `## Outcome` — Safety fact, Proof, and Merge risk included — appended to its Step file, that file's `Status:` set to `built`, and its code and Step file committed together in one commit.
+| The Spec | Playbook |
+|---|---|
+| Describes behaviour that is wrong: category `bug`, a repro, an observed-versus-expected pair | **Bug fix** |
+| Adds or changes behaviour: category `enhancement`, however many call sites or subsystems it spans | **Feature** |
+| Keeps behaviour and changes structure: rename, extract, move, dedupe | **Refactoring** |
+| Names one measured number to improve | **Perf issue** |
+| Names pixel equivalence between two renderings | **Visual parity** |
 
-- It builds every project on its footprint's `Projects:` line, and the whole suite on the last Step.
-- The tests closest to its change are the ones it wrote or changed and the ones covering the code it changed, filtered as narrowly as the test runner allows. The full set of those projects' tests is the Checker's to run, once, after its fixes ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)).
-- Its tests are measured against `<base>` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md)): a failure that also fails on `<base>` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
+A large or cross-cutting Spec is still a Feature: its throughput checkpoint (Feature step 3) decides how the work splits, and a Spec this session cannot finish halts at the checkpoint with the split written down.
 
-Its entire response is three lines:
+**Design-skip rule.** Feature's `how` and `architect` steps are skipped, each with `skip: <the Spec line that fixed the shape>`, when the Spec's Implementation Decisions already name the data shape and its organizing structure and the change touches one or two files. Otherwise both run. This is the only skip the route decides; every other skip is the playbook's own.
+
+Done when the trail holds the route row.
+
+### 4. Open `todo.md`
+
+`todo.md` in the Run directory is the run's only todolist; session task tools stay unused, so `check-run.mjs` and a resume read one file. Generate it, never type it:
 
 ```
-status: done | blocked
-built: <one sentence on what now works>
-deviations: <what contradicts the Spec or changes a later Step, or "none">
+node <this skill's directory>/scripts/open-todo.mjs <playbook> --root <repository root> --landing worktree --done "<run item>" ...
 ```
 
-A fact a successor needs goes in `## Outcome`; the successor reads it there.
+with `--landing in-place --start <start>` under `/implement-yolo`, and one `--done` per run item already behind you, in your own words: the claim (or why there was none), the worktree, `spec.md`. Write its stdout to `todo.md` as it is. It holds the header lines, the run items checked, the playbook's steps copied verbatim with the consuming repo's `.agents/playbooks/` changes and then the [Overlay](.agents/playbooks/implement.md) applied at their anchors, the three gates of step 6, a `## Landing` section, and a `## Playbook` section holding the playbook's own prose outside its steps. A line it prints on stderr **halts**: an anchor a repo playbook replaced, or one no playbook has.
 
-Then **check the step structurally** — `grep '^Status:'` on the Step file reads `built`, and `git log -1` shows a new commit. That is the whole check; open the Step file only when it fails.
+Then mark each step you skip by adding an indented `skip: <reason>` line under it, whichever box it carries (the note decides), and a checkpoint dimension that does not apply with `n/a: <reason>` as Feature's step 3 says. A step done only in part is skipped too: its `skip:` line names the part not done, and it never gets a bare `[x]`. A step that names `architect` and did not run it carries that note; the Design gate reads it. Never reword, cut, or add a step line: `check-run.mjs` regenerates the checklist from the file's own headers and refuses a line that differs.
 
-Once that check passes, resolve the parent of the Step's commit with `git rev-parse HEAD~1`, then dispatch a fresh `skills:checker` for the same step. Its prompt is paths and section names too:
+Done when `node <this skill's directory>/scripts/check-run.mjs <run directory>` prints the open items and nothing else.
 
-- the spec, and the step file
-- that SHA, as the fixed point of its review
-- `CONTEXT.md` and any ADR covering the area, the Coding standards, the spec's Testing Decisions section, PROOF.md, `<proof>`, and `<base>`, found as above
-- the same instruction to read the Coding standards and the testing documents by section
-- the deviations reported by earlier steps and by this step's agent, verbatim, when there are any
-- its Step number and the total, and the same three-line report format
+### 5. Run the playbook
 
-The Step's one full test run, re-running the Proof, and driving the app through the Run recipe when the Step needs rung 4 are the Checker's, with the rest of its work as `agents/checker.md` lays it out. A step is **Green** only on the Checker's own test run and Proof re-run ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md), [ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)).
+poteto-mode governs: its Non-negotiables, Subagents, Comments, and Principles apply as written, and each principle you apply is read from its leaf and named in the report. The `## Playbook` section of `todo.md` governs too: it is the routed playbook's own prose outside its steps, its ownership line, its preamble (a Bug fix delegates the investigation and the fix and stays in the lead), its closing paragraphs, and its `**Reply:**` line, which the [Report](#report) carries. A pointer there to another playbook or skill for the whole task, such as figure-it-out or Hillclimb, was already decided by step 3's route and does not re-route the run. Implement adds these rules:
 
-Then **check the Checker structurally** — `grep '^Status:'` on the Step file reads `done`. Step 4's review covers the rest.
+- **Delegates.** Every delegate you dispatch yourself is `skills:poteto-agent`; a routed skill (`how`, `architect`, `arena`, `interrogate`, `/no-comments`, and **show-me-your-work**'s trail reviewer) sets its own `subagent_type` and description. Its model is the sheet's model for the playbook's role by default, and poteto-mode's Subagents tiering applies within that: the hardest changes go to the `strongest judgment` model, trivial mechanical edits to the fast code model. A brief is file pointers: `spec.md`, `design.md` when it exists, the run worktree as the only directory it works in, `CONTEXT.md` and the ADRs covering the area, the Coding standards found as `/code-review` finds them and read by section, the Spec's Testing Decisions, `<base>`, the named data shape and its organizing structure, and the success check. Its `description` starts with its role, `Investigate:`, `Build:`, `Fix:`, or `Verify:`, so a transcript reader can tell them apart; an `architect` runner's starts with `Design:`. The delegate has no user and closes gaps from the Spec, the design, and the code ([ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md)). It writes nothing outside the worktree; it never pushes, publishes, or touches a live system; every build or test command runs with the tool's quiet flags and its output bounded to failures plus the summary.
+- **One writer.** The run worktree is the only worktree, and delegates write in it one at a time ([ADR-0069](../../docs/adr/0069-an-implement-run-is-a-poteto-mode-playbook.md)). A workstream the throughput checkpoint names as independent still waits its turn. `architect` and `arena` run under the same rule: each candidate writes its design package, or its patch, under `.agents/runs/<slug>/design/candidate-<n>/`, arena's location when it has no worktree, and never edits the run worktree. `architect`'s Phase A reuses the playbook's earlier `how` output; its Phase D is skipped, because the playbook's delegate step implements; its synthesized rationale is `design.md`. An `arena` at Feature's step 4 ends with a fresh `Build:` delegate that applies the graft in the worktree.
+- **Investigation.** In a Bug fix you reproduce (step 1) and stay in the lead; step 2's hypotheses go to `Investigate:` delegates, one probe each, and you read their evidence and eliminate.
+- **Unit commits.** Each delegate commits on the run branch, one commit per unit with a `Unit: <title>` trailer in the message's last paragraph, beside any other trailer, so `git log --format=%(trailers:key=Unit)` reads it; a Bug fix's failing test comes before its fix, and that unit saves its red output to `evidence/test-red.txt`. The landing folds them, and the trailers give the landing commit its body.
+- **Fresh per retry.** A delegate that returns blocked, a question, an error, or anything but its report, or whose diff fails your review, is replaced by a fresh delegate with consolidated scope: the original brief, every later directive, the prior report, and the branch. Two failed fixes that share one premise trigger the **attack-the-premise** principle skill: write the premise in a trail row of phase `census`, take the census, and only then dispatch a third. A third failure **halts**.
+- **Follow-ups.** A follow-up is an item of the report, with what it would change and why. The run files no Issue for it and lands nothing beyond the Spec: it reaches outside the checkout only for the claim and the push.
+- **Your reads.** You read diffs, verdicts, the trail, and evidence files by path; never a delegate's transcript or a whole test log.
+- **Deviations.** A delegate's deviation from the design goes in `design.md`'s Implementation reconciliation section and a trail row; a deviation from the Spec is named in the report. A change you revert gets a trail row of phase `revert`.
 
-Report one line to the user after that check — `Step <NN>/<total> — <title>: done` — plus each report's deviations line when it is not `none`, and carry both reports' deviations verbatim into later dispatches.
+Done when every playbook step in `todo.md` is checked or skipped and step 6's gates have passed.
 
-A `blocked` report, a failed structural check, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry, for the Step agent and the Checker alike. When the host can resume the same agent, resume it once with one line: the step is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd`, then re-dispatch the same agent for the same step, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The Step agent's commit survives that reset, so a re-dispatched Checker starts from it. The failure is the failed agent's to diagnose. A second failure **halts** the run.
+### 6. Gates
 
-Done when every Step file, `.agents/steps/<slug>/[0-9][0-9]-*.md`, reads `Status: done`.
+The three gates are items `open-todo.mjs` put after the playbook's steps, on every route. Each passes on a trail row whose phase is the gate's name in lowercase (`design gate`, `review gate`, `verification gate`) and whose result names the pass condition below; the item is checked when that row exists, and `check-run.mjs` refuses a checked gate without it. A gate is never skipped: a gate that cannot pass **halts**. The range a gate reads is `<fork>..HEAD` in a worktree, with `<fork>` as `git merge-base HEAD <base>`, and `<start>..HEAD` in place; pass it to every skill the gate runs, spelled out.
 
-### 4. Review and improve
+- **Design gate.** A trail row names the data shape and its organizing structure (the **model-the-domain** principle skill): from `design.md` when `architect` ran, otherwise from the Spec line the design-skip rule quoted or from your own reasoning in the row. `design.md` is required only when `architect` ran: `check-run.mjs` wants it unless a step that names `architect` carries a skip note. A Bug fix also needs a trail row whose evidence is `evidence/repro-red.txt`, the step 1 red output trimmed to the assertion and the counts, confirming the mechanism; `check-run.mjs` wants that file, and a symptom that never goes red **halts**, with every way you tried in the report.
+- **Review gate.** `/deslop`, then `/no-comments`, then `interrogate`, each over the range. `interrogate`'s intent is a paragraph you write from `spec.md` and pass in: what the change does, for whom, and what must hold; it never asks. `/no-comments` runs with its caller's pre-approval stated in the call: encode a claimed constraint when the cheapest check is in scope, otherwise delete the comment and name the constraint in the report. Any other offer or question a called skill directs at a person is yours to decide and log; `AskUserQuestion` stays uncalled. Write `interrogate`'s Output Format to `evidence/interrogate.md` and each reviewer's report to `evidence/interrogate-<label>.md`; `check-run.mjs` wants its seven headings there. Every Act-on finding goes to a fresh delegate, and you review that diff; the Consider findings go to the report. When no independent reviewer can run, add an indented `BLOCKED: independent review` note under the Review gate item, log a trail row of phase `blocked`, and **halt**; the note is removed when the gate passes, and `check-run.mjs` refuses the file while it is anywhere in it.
+- **Verification gate.** Runs last, after the review, on the head that will land apart from [Close the Issue](LANDING.md#close-the-issue): that commit comes after the Verifier and changes only Tracker files, so it reopens nothing, and [the landing commit](LANDING.md#the-landing-commit)'s body names the sha the Verifier checked. A fresh `skills:poteto-agent` that wrote none of the code, the **Verifier**, on the `judgment and prose` model, builds, runs the tests of every project the run touched (the whole suite when the run touched shared code), drives the matching surface, runs every Hand check (each item of `spec.md`'s `## How to Check It` list), saves artifacts under `evidence/`, and returns VERIFIED, NOT VERIFIED, or INCONCLUSIVE per item with the evidence path. A failure is compared against `<base>` at `<fork>`, or `<start>` in place, in a **base copy**: the Verifier removes any `evidence/base/` left behind, extracts `git archive <fork> | tar -x -C <run directory>/evidence/base` only when a failure needs comparing, never into a temporary directory or another worktree, writes the comparison to `evidence/base-comparison.txt`, and deletes `evidence/base/` before any later build or test run; the copy is never copied out of the worktree. A failure `<base>` already has is a flag ([ADR-0029](../../docs/adr/0029-test-failures-are-measured-against-the-base-branch.md)). The driver skill resolves in this order: the project `verify` skill at `.claude/skills/verify/`, then `run`. The gate passes on VERIFIED for the change and for every Hand check it can reach; a Hand check that needs what no agent can reach (a live system, credentials, a device) is skipped with what it needs and passes as a flag. INCONCLUSIVE and a wrong surface fail it. A NOT VERIFIED item goes to a fresh delegate under step 5's retry rule. Any code change after the Verifier ran, a fix round included, reopens the gate for a fresh Verifier.
+- **Landing gate.** `node <this skill's directory>/scripts/check-run.mjs <run directory>` exits 0, then [LANDING.md](LANDING.md), whose post-rebase re-check is this verification gate again on the rebased head when its skip rule does not apply.
 
-**Run `/code-review` yourself**, with `<base>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that `.agents/steps/<slug>/` is run bookkeeping — its Outcomes are evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
+### 7. Land
 
-Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
+Follow [LANDING.md](LANDING.md) from its first section. Done when `<base>` holds the landing commit and the push has run or been skipped with its reason.
 
-Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule, each on its own retry. Hand each the Spec path (or that there is none), the Coding standards from step 3 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code. Hand each the instruction to read the Coding standards and the testing documents by section, as step 3 words it, and to run every build or test command with the tool's quiet flags and its output bounded to failures plus the summary — `--nologo -v q` for dotnet, piped through `tail -n 60` or grepped for failures and the summary line, a failure re-run narrower with `--filter`, never the whole log into context; a pipe still counts as a plain command:
+### 8. Retrospective
 
-1. The fixer fixes every finding of both axes, which you paste into its prompt as the reviewers wrote them. It fixes the Spec axis's first, because a Spec fix can remove code that a Standards finding points at, and skips a Standards finding whose code is gone, naming that finding on its deviations line. Where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When both axes report no finding, skip the fixer and tell the user so.
-2. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it. Dispatch it with `effort: medium` on its Agent call, and skip it when `git diff --shortstat <base>...HEAD` shows 120 changed lines or fewer, since a small diff leaves nothing to restructure.
+The trigger is mechanical. Run `/retro` when `awk -F '\t' '$2 ~ /^(revert|census|halt|blocked|flaky|operator-call|resume)$/' <run directory>/trail.tsv` prints a row; those are the phases the run logs for a revert, a premise census, a halt, a closed review gate, a flaky test, an [operator call made by default](#halts-and-flags), and a resume. When it prints nothing, the report says retro was skipped as nothing went wrong. When `/retro` committed and step 7's push went out, run [the push](LANDING.md#the-push) again.
 
-Retry-then-halt, and the Prover's pass in step 5, are the whole check on their work.
+## Run directory
 
-Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change either makes goes to the user as a deviations line before you continue.
+`.agents/runs/<slug>/` in the run's working tree, by absolute path, with its own `.gitignore` holding `*`: no commit sweeps it in, `git reset --hard` and `git clean -fd` leave it alone, and a host that isolates a session in its worktree can write it.
 
-### 5. Land the branch
+| File | Holds | Writer |
+|---|---|---|
+| `spec.md` | The Issue's title as an H1 and its body, written once at intake | you |
+| `todo.md` | The header lines, the checklist, the `## Landing` items, and the `## Playbook` prose, generated by `open-todo.mjs`; the run's state machine. An item line is open `- [ ]`, done `- [x]`, or skipped by an indented `skip: <reason>` or `n/a: <reason>` line under it; an indented `BLOCKED: <reason>` note under the Review gate is a closed gate; a `Landed: <sha>` header marks a run that landed | `open-todo.mjs`, then you |
+| `trail.tsv` | The show-me-your-work log: append-only, one row per decision, evidence as paths. The phase column is what `check-run.mjs` and step 8 read: a gate's name in lowercase for its pass row, and `revert`, `census`, `halt`, `blocked`, `flaky`, `operator-call`, or `resume` for the events step 8 names | you |
+| `design.md` | The architect's synthesized design with its Implementation reconciliation section; absent when design was skipped | the architect run, then deviations through you |
+| `design/` | Each `architect` or `arena` candidate's package under `candidate-<n>/` | the candidates |
+| `evidence/` | Repro output, `interrogate`'s verdict and reviewer reports, screenshots, verification and Hand-check transcripts, and the Verifier's base comparison | the repro step, you at the review gate, and the Verifier |
 
-Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
+`scripts/check-run.mjs <run directory>` is the landing gate in one command: it exits non-zero and prints a line for each rule it breaks; its header comment and `check-run.test.mjs` list every rule, and this file restates none. A resume reads the first open item. Nothing else is stored that git or the Issue can give back; `<base>` is re-read, never stored ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)).
 
-1. From the worktree, still on the branch: hold `git merge-base HEAD <base>` as `<fork>` and `git rev-parse <base>` as `<onto>`, then `git rebase <onto>`. A conflict is `/resolving-merge-conflicts` (the branch lives here, so only the worktree can rebase it). Later items build on `<onto>`: other sessions can land on `<base>` while this run tests and proves, and a commit built on the moved `<base>` would undo what they landed.
-   - When the rebase replayed the branch onto commits `<base>` gained during the run, green is not known any more: build and run the projects on every Step's `Projects:` line — the whole suite when the last Step ran it — before going on. Before any fixer dispatch, re-run each failing project once, yourself. A failure that passes on the re-run is a flaky test and does not block landing: its test name goes on the deviations line and into the final report, the same way a failure `<base>` already has does under [ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md). A failure that fails again is red and gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)).
-   - Skip that build and test run when no build or test reads anything `<base>` gained: every path `git diff --name-only <fork> <onto>` lists is Markdown or sits under `.agents/` — another run's ADR, its glossary edit, its retro edit to `.agents/refs/tracker.md` — and no project file, build script, or test names that file or pulls in Markdown by a wildcard. Green then still holds. Any other path — code, a project or build file, test data, config a test reads — or any doubt about one, and the build and test run goes ahead. A skip goes in the final report: the range `<fork>..<onto>` you compared, and why none of its files is read by a build or test.
-2. Still in the worktree: run [the Prover's pass](#the-provers-pass).
-3. Still in the worktree: hold `grep -hE '^(Safety fact|Proof|Merge risk):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory and the Spec with it, and commit the deletion. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Then build [the landing commit](#the-landing-commit) from that tree, on top of `<onto>`, leaving the branch where it is: `git commit-tree HEAD^{tree} -p <onto> -F -`, with the message on stdin. Hold the hash it prints as `<landing>`.
-4. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-5. From the original directory, on `<base>`: `git merge --ff-only <landing>`. (`<base>` lives here, so only the original directory can fast-forward it.) `<landing>`'s parent is `<onto>`, so this is a fast-forward only while `<base>` is still `<onto>`. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — the branch is deleted, and `<proof>` is deleted. Delete the branch with `git branch -D <branch>` once `git diff --quiet <branch> <base>` succeeds: its commits never reach `<base>`, so `-d` refuses it, and the empty diff shows `<base>` holds all of its work. When the diff is not empty, keep the branch and name it in the final report. When the merge errors, `<base>` moved: re-enter the worktree, drop the deletion commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Step files come back for the Prover — then go through 1 to 4 again and retry this merge.
+After the land the directory sits at `.agents/runs/<slug>/` in the original checkout, copied there without `evidence/base/` once the fast-forward succeeded, with `Landed: <sha>` as a header line of `todo.md`. Its readers are `/retro`, which runs right after, and the person who reviews the trail after stepping away; the report names the path. A later run on the same slug replaces it.
 
-The final report lists each Step's `Safety fact:`, `Proof:`, and `Merge risk:` lines as step 3 held them, and says the Prover re-ran every Proof and ran every Hand check on the code that lands. It names each Proof or Hand check that passed only on its re-run, each Hand check the Prover skipped and what it needs, each Proof the Proof fixer restored, updated, or retired, and each Hand check it made pass.
+## Halts and flags
 
-### 6. Push
+A **halt** is non-destructive and ends the session. The branch, the run worktree, and the Run directory stay as they are, with uncommitted work committed as one `wip:` commit on the run branch and the resume note written as the trail's last row, phase `halt`: the open item, why it stopped, and what a resume needs. That row is the whole hand-off; the **Pause safely** playbook's publish steps and `resume.mjs` go unused, because they write to the git common directory, which a host that isolates the session refuses. The report says which todo item is open and why. Re-invoking `/implement` with the same argument resumes at that item.
 
-Run [the push](#the-push).
+Halt on these and only these: a detached HEAD; an open blocker Issue; another user's claim; another session's live run; a line from `check-playbooks.mjs` or `open-todo.mjs`; a Bug fix whose symptom never goes red; a control surface that cannot reach the target, or a baseline that looks wrong, where the playbook says to ask; a gate that cannot pass; a third failed delegate on one check; `BLOCKED: independent review`; work that would publish outside the checkout, such as a deploy, a package push, or a live record ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)); a rebase conflict `/resolving-merge-conflicts` cannot settle; a fast-forward refused on its third try.
 
-### 7. Retrospective
+A **flag** goes in the report and does not halt: a Hand check skipped for an unreachable surface, a Deviation, a flaky test that passed on its re-run, logged with phase `flaky` ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)), a failure `<base>` already has ([ADR-0029](../../docs/adr/0029-test-failures-are-measured-against-the-base-branch.md)), a refused push, an operator call made by default. An **operator call made by default** is a product or preference call poteto-mode reserves for the operator, decided under the grant with a default and logged with phase `operator-call`; a routine skip, a step the playbook lets you skip, or a design choice the Spec covers is not one.
 
-Run `/retro` only when the run had a deviations line that was not `none`, a retried or halted agent, a fixer dispatch, or a Prover failure; otherwise the final report says retro was skipped as nothing went wrong. When it committed and step 6's push went out, run [the push](#the-push) again.
+## Report
 
-## The landing commit
-
-The landing commit is the one commit the run leaves on `<base>`: the run's whole change, without the Step files ([ADR-0062](../../docs/adr/0062-an-implement-run-lands-as-one-commit.md)). Write its message before the Spec is deleted:
-
-- **Subject**: what the change does, ending with the Issue's reference — `Roles are given from the Person (#104)`. Write it from the Spec, not from the Issue's title, which often names the problem. Follow the commit style the repo's `AGENTS.md`, `CLAUDE.md`, or Coding standards document, when they document one. A run from a description has no reference.
-- **Body**: each Step's title from the index, one per line, when the run had more than one Step. Then the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the final report names the Issue for the user to close.
-
-## The push
-
-The push sends `<base>` from the original directory: in step 6, once the landing commit is on it, so the CI run it starts carries the landing commit's subject; and in step 7, when `/retro` committed ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip both when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
-
-- `<base>` tracks a remote branch: `git push <remote> <base>:<branch>`, with `<remote>` from `git config branch.<base>.remote` and `<branch>` from `git config branch.<base>.merge`.
-- `<base>` tracks nothing: `git push -u origin <base>`. A repo with no `origin` skips the push.
-
-The push sends `<base>` as it stands, commits the user had not pushed yet included. It is a plain push with hooks running — never `--force`, `--force-with-lease`, or `--no-verify`. A refused or failed push gets no retry and is not a halt: the run has landed, and nothing is left to resume.
-
-The run's last lines name the landing commit, then say what each push sent and to which remote branch. When it pushed nothing, they say why: the `AGENTS.md` or `CLAUDE.md` line, no remote, or no `origin`. When a push failed, they quote the error and name the commits that wait on this machine — the landing commit and `/retro`'s after a failed first push, `/retro`'s after a failed second — for the user to pull and push.
+The run's last message is the reply poteto-mode's **Writing the reply** section describes, with the `**Reply:**` line of `todo.md`'s `## Playbook` section, and these on top: the landing commit's subject and hash; what each push sent and to which remote branch, or why it pushed nothing, quoting a failed push's error and naming the commits that wait on this machine; the Verifier's verdict per item with its evidence path, and for a Bug fix the decisive red and green output trimmed to the assertion and the counts; `interrogate`'s Consider findings; each follow-up; each flag; each operator call made by default and what the operator could say instead; under `/implement-yolo`, each path that was already modified or untracked at intake and that the fold swept in; the Run directory's path; whether retro ran; and the show-me-your-work **Attention** section.
 
 ## Benchmark mode
 
 The `benchmark/` runner measures what a run costs. It exports `SKILLS_BENCHMARK=1` and `SKILLS_BENCHMARK_LOG` and names `SKILLS_BENCHMARK=1` in the session's system prompt, so the mode is on when your system prompt says so and costs no call to find out. Without that line, skip this section ([ADR-0066](../../docs/adr/0066-a-benchmark-run-writes-nothing-outside-its-checkout.md)).
 
-In benchmark mode every outward write is a **no-op**: the claim in step 1 and the push in steps 6 and 7 each run `bench-log "<step>: <the command it would have run>"` instead, and the run goes on as though that write succeeded. Tracker reads stay. Every sub-agent prompt, `general-purpose` ones included, gets one more line: this is a benchmark run, so a `gh` write or a `git push` is a `bench-log` line. The final report says each push was a no-op.
-
-## The Prover's pass
-
-A fresh **Prover** re-runs every Step's Proof and runs the Spec's **Hand checks** on the code that lands, after the fixer, the data-structures pass, and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`, and the run has no Spec or its `## How to Check It` lists no Hand check.
-
-Skip it too when step 5 comes back here after `<base>` moved, a Prover already held in this land, and every rebase since then skipped its build and test run under step 5, item 1. A Proof can read what no build or test reads, so also check each path those rebases compared: no Step's `Proof:` line or script in `<proof>` names it, and no app a rung-4 Proof or Hand check launches reads it. Any doubt about one, and the pass runs. The Prover that held still stands for the code that lands. Its deviations line goes in the final report, with each range `<fork>..<onto>` it now covers.
-
-Otherwise dispatch a `skills:prover` with a prompt of paths: the Step files, the Spec (or that there is none), PROOF.md, `<proof>`, the working directory, and this report format:
-
-```
-status: held | failed | blocked
-failed: <each Step whose Proof failed twice, and each Hand check that failed twice, by number, with one line on what the re-run showed — or "none">
-deviations: <each Step whose Proof passed only on its re-run, and each Hand check that did, by number; each Hand check skipped, with what it needs — or "none">
-```
-
-- **`held`**: carry its deviations line into the final report and go on.
-- **`failed`**: dispatch one **Proof fixer**. Hand it the Spec path (or that there is none), the Step files, PROOF.md, `<proof>`, `<base>`, the Coding standards from step 3, and the `failed:` line verbatim. For each failed Proof it does exactly one of three things, and names which on its deviations line:
-  - restores the Safety fact in the code;
-  - updates a Proof that only went stale — its `Proof:` line, or its script in `<proof>` — when the fact still holds;
-  - leaves the code as it is when the Spec asked a later Step to change that behaviour, and retires the fact as PROOF.md lays out.
-
-  For each failed Hand check, it changes the code until the product does what the check says.
-
-  It leaves the projects it touched green, commits its work, and reports in the same three lines as the fixer. Then dispatch a fresh Prover the same way. A second `failed` **halts** the run.
-
-The Prover and the Proof fixer each fall under step 3's retry-then-halt rule, each on its own retry.
-
-## Worktree waived
-
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 5 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, run the Prover's pass and make the deletion commit and `<landing>` there, check out `<base>` yourself, then fast-forward to `<landing>`. That merge is done when it succeeds, the branch is deleted as step 5 says, and `<proof>` is deleted. When it errors, `<base>` moved: check out the branch, drop the deletion commit as step 5 says, go through items 1 to 3 of step 5 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
+In benchmark mode every outward write is a **no-op**: the claim in step 1 and the pushes in steps 7 and 8 each run `bench-log "<step>: <the command it would have run>"` instead, and the run goes on as though that write succeeded. Tracker reads stay. Every delegate brief, the Verifier's included, gets one more line, and the intent paragraph you pass to `interrogate` carries the same line for its reviewers: this is a benchmark run, so a `gh` write or a `git push` is a `bench-log` line. The final report says each push was a no-op.
 
 ## Work in another repository
 
-The worktree, the review diff, the land, and the push cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Step that did it and never pushed; the final report names the repository, the branch, and what sits on it.
-
-## Halting
-
-A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, `<proof>`, the branch, and the run worktree exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why, and what a re-invoke will do; for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
-
-Re-invoking `/implement` with the same argument picks the run back up — a steps directory with no Step files runs the Planner again; Step files already on disk resume where step 1 says.
+The worktree, the review diff, the land, and the push cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the delegate that did it and never pushed; the final report names the repository, the branch, and what sits on it.

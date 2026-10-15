@@ -178,7 +178,7 @@ def run_one(side, sha, plugin_dir, spec, index, settings):
     reset_clone(clone)
     git(clone, "-c", "core.longpaths=true", "worktree", "add", "-q", "-b", "bench-run", str(worktree), spec["base"])
     (run_dir / "mcp-empty.json").write_text('{"mcpServers": {}}', encoding="utf-8")
-    # print mode stops a session 10 minutes after its last turn while a Step agent still runs in the background; 0 waits for it
+    # print mode stops a session 10 minutes after its last turn while a delegate still runs in the background; 0 waits for it
     env = {**os.environ, **guards.install(run_dir / "guards", run_dir / "bench.log"), "CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS": "0"}
     (run_dir / "bench.log").touch()
     meta = {"run_id": run_id, "side": side, "skills_sha": sha, "spec": spec["id"], "issue": spec["issue"], "index": index,
