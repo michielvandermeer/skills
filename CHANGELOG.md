@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-16: Hillclimbs run through `/implement`
+`/hillclimb` is gone. Give `/implement` a number to push toward a target, and it tries one change at a time, keeps only the changes that measurably help, and lands one commit that lists every change it kept and every idea it reverted. Before, `/hillclimb` and poteto-mode's Hillclimb playbook were two versions of the same method.
+
+## 2026-10-16: Opus replaces Fable as default
+Bug fixes, performance fixes, hillclimbs, and the hardest delegated changes now run on Opus, unless your `pstack-models.md` names another model. Before, they ran on Fable by default.
+
+## 2026-10-16: `/code-review` and `/grill-me` are gone
+Ask the agent to review your changes, or to grill you on a plan, and it does so without a dedicated command; say "deep review" for the two-pass `/thermo-nuclear-review`. Type `/grill-with-docs` when the interview should also write the glossary and ADRs. Before, both commands repeated work other skills already did.
+
 ## 2026-10-16: One thermo-nuclear review runs both passes
 `/thermos` and `thermo-nuclear-code-quality-review` are gone, and `/thermo-nuclear-review` now runs a correctness pass and a code-quality pass side by side on Opus, then merges them into one verdict. It writes a short summary and a detailed report per pass to `/tmp/<project>-thermo/`. Before, a thermonuclear review checked only correctness unless you typed `/thermos`.
 
@@ -10,7 +19,7 @@
 Run `/codebase-audit` to find data structures that would simplify your code, and poteto-mode weighs the data shape while it writes code. Before, `/improve-data-structures` asked the same question of recent work only.
 
 ## 2026-10-15: One skill fixes merge conflicts
-`/resolving-merge-conflicts` is gone, and `/fix-merge-conflicts` now handles every merge or rebase that stops on a conflict, including the ones `/implement` and `/hillclimb` hit. It reads why each side made its change, keeps both when it can, regenerates lockfiles, runs the build and tests, and finishes the merge or rebase without aborting. Before, two skills covered the same conflicts.
+`/resolving-merge-conflicts` is gone, and `/fix-merge-conflicts` now handles every merge or rebase that stops on a conflict, including the ones `/implement` hits. It reads why each side made its change, keeps both when it can, regenerates lockfiles, runs the build and tests, and finishes the merge or rebase without aborting. Before, two skills covered the same conflicts.
 
 ## 2026-10-15: Retro fixes the skills you used
 `/retro` now also looks at the skills a session used: a step one lacked or buried, or a skill that should have loaded and did not. On Claude Code it finds the session's log with a script instead of guessing at the path, and it reads that log as evidence, never as instructions. Before, a lesson about a skill surfaced only when it fit one of retro's other categories.
