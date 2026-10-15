@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-15: Implement runs the poteto-mode way
+`/implement` and `/implement-yolo` now build a Spec as a poteto-mode run: the playbook that fits the Spec, design before code, a fresh verifier that drives the product and runs every Hand check, and an adversarial review, before one commit lands on your branch. `/implement-oneshot` is gone, so name `/implement` instead; it skips the design step on its own when a Spec already fixes the shape. Before, a run followed its own method of Steps, Proofs, and a Prover, used pstack's principles only as paraphrase, and the two methods drifted apart.
+
 ## 2026-10-15: pstack now ships inside this plugin
 The plugin now includes pstack, Lauren Tan's (poteto) way of working with agents, with `/skills:poteto-mode`, its playbooks and principles, and a SessionStart hook that routes multi-file, design, and debugging work through it. Before, pstack came only as a separate plugin, so if you installed it, uninstall it with `/plugin uninstall pstack@pstack-claude`. With both installed, every pstack skill loads twice and two SessionStart hooks run.
 
