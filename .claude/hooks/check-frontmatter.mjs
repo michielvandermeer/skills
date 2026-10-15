@@ -2,7 +2,7 @@
 // every frontmatter line is one known key, and no key was merged into another's line.
 import { readFileSync } from "node:fs";
 
-const KEYS = ["name", "description", "argument-hint", "disable-model-invocation", "effort", "disallowedTools", "background", "model", "tools", "allowed-tools", "user-invocable"];
+const KEYS = ["name", "description", "argument-hint", "disable-model-invocation", "effort", "disallowedTools", "background", "model", "tools", "allowed-tools", "user-invocable", "paths"];
 
 const input = JSON.parse(readFileSync(0, "utf8"));
 const path = (input.tool_input?.file_path ?? "").replaceAll("\\", "/");

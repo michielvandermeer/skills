@@ -229,8 +229,11 @@ def cmd_doctor(a):
         result = next((e for e in events if e.get("type") == "result"), {})
         check("live session loads this checkout as the skills plugin", plugin_check(init, plugin_dir) == "ok",
               plugin_check(init, plugin_dir))
+        # The session lists only skills a user can type; `user-invocable: false` ones still load for the model.
+        typed = [f for f in skill_files
+                 if "\nuser-invocable: false\n" not in f.read_text(encoding="utf-8").split("\n---", 1)[0] + "\n"]
         loaded = [s for s in (init or {}).get("skills") or [] if s.startswith("skills:")]
-        check("every skill registered", len(loaded) == len(skill_files), f"{len(loaded)} of {len(skill_files)}")
+        check("every user-invocable skill registered", len(loaded) == len(typed), f"{len(loaded)} of {len(typed)}")
         loaded_agents = [s for s in (init or {}).get("agents") or [] if s.startswith("skills:")]
         check("every agent registered", len(loaded_agents) == len(agent_files), f"{len(loaded_agents)} of {len(agent_files)}")
         check("no MCP server loaded", init and not init.get("mcp_servers"), str((init or {}).get("mcp_servers")))

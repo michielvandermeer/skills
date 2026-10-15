@@ -2,7 +2,7 @@
 
 A collection of software-engineering [skills](https://docs.claude.com/en/docs/claude-code/skills) for Claude Code, distributed as a Claude Code **plugin**. This repository is both the plugin and its own single-plugin **marketplace**, so adding the marketplace and installing the plugin gets you every skill below.
 
-These skills are based on [Matt Pocock's skills](https://github.com/mattpocock/skills) — see [Credits](#credits).
+These skills are based on [Matt Pocock's skills](https://github.com/mattpocock/skills) — see [Credits](#credits). The plugin also includes [pstack](#pstack).
 
 ## Install
 
@@ -141,18 +141,22 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 │   ├── reviewer.md
 │   └── validator.md
 ├── docs/adr/              # architecture decision records
+├── hooks/                 # pstack's SessionStart hook
 ├── skills/                # one directory per skill, each with a SKILL.md
 │   ├── code-review/
 │   ├── implement/
 │   ├── implement-oneshot/
 │   ├── implement-yolo/
 │   └── ...
+├── tools/import_pstack.py # imports pstack from pstack-claude
 ├── CONTEXT.md             # the vocabulary these skills share
 ├── LICENSE
+├── LICENSE-pstack         # and LICENSE-cursor-team-kit, LICENSE-thermos: pstack's licenses
+├── NOTICE.md              # what pstack brings in, and from where
 └── README.md
 ```
 
-The `skills/` and `agents/` directories are discovered automatically by the plugin loader — no manifest fields are required. Agents register under a scoped name, so `agents/implementer.md` is dispatched as `skills:implementer`.
+The `skills/` and `agents/` directories and `hooks/hooks.json` are discovered automatically by the plugin loader — no manifest fields are required. Agents register under a scoped name, so `agents/implementer.md` is dispatched as `skills:implementer`.
 
 ## Model and effort pins
 
@@ -213,6 +217,20 @@ Everything else runs on the setting of the skill that starts it: the fixers, the
 | `wizard` | Generate an interactive bash wizard that walks a person through steps only they can perform. |
 | `writing-for-agents` | Reference for writing any document an agent consumes — skills, AGENTS.md, CLAUDE.md. |
 
+## pstack
+
+The plugin includes pstack, Lauren Tan's (poteto) way of working with agents, as ported to Claude Code by Michael Denyer in [pstack-claude](https://github.com/michael-denyer/pstack-claude). Start with `/skills:poteto-mode`, which picks a playbook for the task and runs the other pstack skills as it needs them. `/skills:poteto-help` answers questions about the rest. Its skills, the `principle-*` skills among them, are in [`skills/`](skills/), next to the ones above, and its agents are in [`agents/`](agents/).
+
+A SessionStart hook tells each new session to use `poteto-mode` for work that touches more than one file, involves a design choice, or chases an unknown bug. To turn it off, or to choose which models pstack's roles use, run `/skills:setup-pstack`. It writes `~/.claude/pstack-models.md`, the same file the separate pstack plugin reads.
+
+**If you installed the separate `pstack` plugin, uninstall it.** With both installed, every pstack skill loads twice and two SessionStart hooks run:
+
+```
+/plugin uninstall pstack@pstack-claude
+```
+
+[`tools/import_pstack.py`](tools/import_pstack.py) brings in a newer pstack-claude: it copies the upstream files, rewrites them for this plugin, and fails when an upstream change needs a new rewrite. [NOTICE.md](NOTICE.md) names the upstream commit and the sources.
+
 ## Credits
 
 These skills are derived from and inspired by [**Matt Pocock's skills**](https://github.com/mattpocock/skills). Many thanks to Matt for the original work.
@@ -221,6 +239,8 @@ The pictures `pr` draws come from Dex Horthy's [`show-me`](https://github.com/hu
 
 `hillclimb` and its measurement rules adapt the Hillclimb playbook and the `benchmark-checklist` skill from Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT).
 
+[pstack](#pstack) is Lauren Tan's (poteto) [pstack](https://github.com/cursor/plugins/tree/main/pstack), with skills from Cursor's cursor-team-kit and thermos plugins, as ported to Claude Code by Michael Denyer in [pstack-claude](https://github.com/michael-denyer/pstack-claude). Many thanks to both.
+
 ## License
 
-[MIT](./LICENSE)
+[MIT](./LICENSE). pstack keeps its own MIT licenses and copyright notices, listed in [NOTICE.md](NOTICE.md).
