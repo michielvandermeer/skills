@@ -142,7 +142,7 @@ Everything else stays in the repo, whichever Tracker you use: Prototypes, Attemp
 ├── hooks/                 # pstack's SessionStart hook
 ├── skills/                # one directory per skill, each with a SKILL.md
 │   ├── code-review/
-│   ├── implement/         # SKILL.md, LANDING.md, the overlay, and scripts/check-run.mjs
+│   ├── implement/         # SKILL.md, LANDING.md, the overlay, and scripts/ (open-todo.mjs, check-run.mjs)
 │   ├── implement-yolo/
 │   └── ...
 ├── tools/import_pstack.py # imports pstack from pstack-claude

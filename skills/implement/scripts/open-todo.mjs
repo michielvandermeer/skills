@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Writes an /implement run's todo.md to stdout: the routed playbook's steps verbatim, the consuming repo's project
-// playbooks and then the implement Overlay applied at their anchors, the three gates, and the landing items.
+// playbooks and then the implement Overlay applied at their anchors, the three gates, the landing items, and the
+// playbook's prose outside its steps under `## Playbook`.
 // Usage: node open-todo.mjs <playbook> --root <consuming repo> --landing worktree|in-place [--start <sha>] [--done "<run item>"]...
 import { existsSync, readdirSync, realpathSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -10,9 +11,11 @@ import { BUNDLED, bundledPlaybook, checkPlaybooks, flat, readProjectPlaybook } f
 
 export const IMPLEMENT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const STEP = /^(\d+)\. (.*)$/;
-const SUB_BULLET = /^\s+- (.*)$/;
+const SUB_ITEM = /^\s+(?:- |\d+\. )(.*)$/;
 const INDENTED = /^\s+\S/;
+const HEADING = /^#+ /;
 
+export const GATE_NAMES = ["Design gate", "Review gate", "Verification gate"];
 export const GATES = [
   "Design gate: a trail row names the data shape and its organizing structure, from `design.md` when `architect` ran; a Bug fix also has its runtime-evidence row (`/implement` step 6).",
   "Review gate: `/deslop`, `/no-comments`, then `interrogate` with the intent paragraph from `spec.md`, each over the run's range (`/implement` step 6).",
@@ -41,12 +44,14 @@ export const LANDING_ITEMS = {
 
 const item = (text) => ({ text: flat(text).trim(), done: false, children: [] });
 
-// The numbered steps of a bundled playbook. A step runs to the next step or the next unindented line; an indented
-// `- ` bullet under it is an item of its own, any other indented line is more of the step's text.
+// The numbered steps of a bundled playbook, and its prose outside them. A step runs to the next step or the next
+// unindented line; an indented `- ` bullet or `1. ` line under it is an item of its own, any other indented line is
+// more of the step's text. The prose is every other line but the heading, verbatim, with blank runs collapsed.
 export function parseSteps(text) {
   const lines = text.replace(/^﻿/, "").split(/\r?\n/);
-  const title = lines.find((line) => /^#+ /.test(line))?.replace(/^#+ /, "").trim() ?? "";
+  const title = lines.find((line) => HEADING.test(line))?.replace(HEADING, "").trim() ?? "";
   const steps = [];
+  const prose = [];
   let step = null;
   for (const line of lines) {
     const top = line.match(STEP);
@@ -55,13 +60,18 @@ export function parseSteps(text) {
       steps.push(step);
       continue;
     }
-    if (!step || line.trim() === "") continue;
-    const sub = line.match(SUB_BULLET);
+    if (step && line.trim() === "") continue;
+    const sub = step && line.match(SUB_ITEM);
     if (sub) step.children.push(item(sub[1]));
-    else if (INDENTED.test(line)) step.text = `${step.text} ${line.trim()}`;
-    else step = null;
+    else if (step && INDENTED.test(line)) step.text = `${step.text} ${line.trim()}`;
+    else {
+      step = null;
+      if (!HEADING.test(line) && !(line.trim() === "" && prose.at(-1) === "")) prose.push(line.trimEnd());
+    }
   }
-  return { title, steps };
+  while (prose.at(-1) === "") prose.pop();
+  while (prose[0] === "") prose.shift();
+  return { title, steps, prose: prose.join("\n") };
 }
 
 function locate(items, anchor) {
@@ -77,7 +87,7 @@ function locate(items, anchor) {
 const APPLY = {
   After: ({ list, index }, text) => list.splice(index + 1, 0, item(text)),
   Before: ({ list, index }, text) => list.splice(index, 0, item(text)),
-  Replace: ({ entry }, text, anchor) => { entry.text = flat(entry.text.replace(anchor, text)).trim(); },
+  Replace: ({ entry }, text, anchor) => { entry.text = flat(entry.text.replace(anchor, () => text)).trim(); },
   In: ({ entry }, text) => { entry.text = `${entry.text} ${text}`; },
 };
 
@@ -122,7 +132,7 @@ export function generate({ playbook, root, landing, start = "", done = [], imple
   if (landing === "in-place" && !start) problems.push("--landing in-place needs --start <sha>");
   if (problems.length > 0) return { text: "", problems };
 
-  const { title, steps } = parseSteps(source);
+  const { title, steps, prose } = parseSteps(source);
   const projectDir = join(root, ".agents/playbooks");
   const projectPlaybooks = existsSync(projectDir)
     ? readdirSync(projectDir).filter((name) => name.endsWith(".md")).sort()
@@ -143,6 +153,10 @@ export function generate({ playbook, root, landing, start = "", done = [], imple
     "## Landing",
     "",
     ...render(LANDING_ITEMS[landing].map(item)),
+    "",
+    "## Playbook",
+    "",
+    prose,
   ];
   return { text: `${lines.join("\n")}\n`, problems: [] };
 }
