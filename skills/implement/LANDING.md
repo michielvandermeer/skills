@@ -1,6 +1,6 @@
 # Landing
 
-Read from the top once step 6's landing gate opens. `<branch>` is `<slug>`, or the name recorded when a host tool chose another. Each command runs where its branch is checked out, and that fixes the order. Under `/implement-yolo`, [Worktree waived](#worktree-waived) replaces the rebase, the landing commit, and the fast-forward.
+Read from the top once step 6's landing gate opens. `<branch>` is `<slug>`, or the name recorded when a host tool chose another. Each command runs where its branch is checked out, and that fixes the order. Under `/implement-yolo`, [Worktree waived](#worktree-waived) replaces the rebase, the landing commit, and the fast-forward. Mark each `## Landing` item of `todo.md` as you finish it; an item not done, such as a push skipped for no remote or a retro skipped, gets an indented `skip: <reason>` line under it rather than a bare `[x]`.
 
 ## Before the rebase
 
@@ -21,7 +21,7 @@ The Tracker ref's "close as done" operation runs here, on the run branch, when i
 The landing commit is the one commit the run leaves on `<base>` ([ADR-0062](../../docs/adr/0062-an-implement-run-lands-as-one-commit.md)). Build it from the branch's tree on top of `<onto>`, leaving the branch where it is: `git commit-tree HEAD^{tree} -p <onto> -F -`, with the message on stdin. Hold the hash it prints as `<landing>`. The Run directory is ignored, so the tree holds none of it and no deletion commit is needed.
 
 - **Subject.** What the change does, ending with the Issue's reference: `Roles are given from the Person (#104)`. Write it from the Spec, not the Issue's title, which often names the problem. Follow the commit style the repo's `AGENTS.md`, `CLAUDE.md`, or Coding standards document, when they document one. A run from a description has no reference.
-- **Body.** Each unit's title, one per line in commit order, from the branch's `Unit:` trailers, when the run had more than one. A Bug fix adds a `Verification` section quoting the red output from `evidence/` and the green output from the Verifier, each trimmed to the assertion and the counts. A Perf issue adds the baseline and post-fix numbers with their unit. Then the Issue's closing reference as the Tracker ref gives it; a ref whose close is a file change carries nothing here, and when the ref gives no close at all, the report names the Issue for the user to close.
+- **Body.** Each unit's title, one per line in commit order, from the branch's `Unit:` trailers, when the run had more than one. A Bug fix adds a `Verification` section quoting the red output from `evidence/` and the green output from the Verifier, each trimmed to the assertion and the counts. A Perf issue adds the baseline and post-fix numbers with their unit. A `Verified: <sha>` line names the head the Verifier checked last. Then the Issue's closing reference as the Tracker ref gives it; a ref whose close is a file change carries nothing here, and when the ref gives no close at all, the report names the Issue for the user to close.
 
 ## Fast-forward and cleanup
 

@@ -5,7 +5,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 export const BUNDLED = resolve(dirname(fileURLToPath(import.meta.url)), "../playbooks");
-const CHANGE = /^\s*(?:[-*]|\d+\.)\s+\*\*(After|Before|Replace|In)\*\*\s+"([^"]+)"\s*(.*)$/;
+const CHANGE = /^\s*(?:[-*]|\d+\.)\s+\*\*(After|Before|Replace|In)\*\*\s+"((?:[^"\\]|\\.)+)"\s*(.*)$/;
 const CHANGE_VERB = /^\s*(?:[-*]|\d+\.)\s+\*\*(?:After|Before|Replace|In)\*\*/;
 export const flat = (text) => text.replace(/\s+/g, " ");
 
@@ -24,7 +24,7 @@ export function readProjectPlaybook(file, label = file) {
   const changes = [];
   for (const line of text.split("\n")) {
     const change = line.match(CHANGE);
-    if (change) changes.push({ verb: change[1], anchor: change[2], text: change[3].trim() });
+    if (change) changes.push({ verb: change[1], anchor: change[2].replace(/\\(.)/g, "$1"), text: change[3].trim() });
     else if (CHANGE_VERB.test(line)) {
       problems.push(`${label}: a change has no straight-quoted step text to anchor on: ${line.trim().slice(0, 80)}`);
     }

@@ -114,6 +114,9 @@ test("the anchored results read as intended on the routes that differ", () => {
     "- [ ] Decide the design-skip rule (`/implement` step 3) for this step and the `architect` step.",
     "- [ ] 1. `how` over the affected subsystem.",
   ]);
+  const delegate = feature.find((line) => line.startsWith("- [ ] 4. "));
+  assert.ok(delegate.includes("No \"standing by\" reply that waits on a nested agent. The run worktree is the only worktree, and writers go one at a time (`/implement` step 5, One writer). Fencing a file in the brief's prose is not a lock"));
+  assert.ok(!feature.some((line) => line.includes("isolation: \"worktree\"") || line.includes("its own worktree")), "no line still sends a delegate to a worktree of its own");
   assert.ok(feature.includes("- [ ] 6. Units already commit in order with `Unit:` trailers, and the landing folds them (`/implement` step 5, Unit commits). Stack follow-ups. Use the **sequence-verifiable-units** principle skill, building, verifying, and committing each small unit before the next. A follow-up is a new Tracker Issue (`/implement` step 5, Follow-ups)."));
   assert.ok(feature.includes("- [ ] 8. No pull request is opened: the gates below, then LANDING.md, one landing for the run."));
   const bug = lines(todo("bug-fix"));
