@@ -101,7 +101,7 @@ Once that check passes, resolve the parent of the Step's commit with `git rev-pa
 
 The Step's one full test run, re-running the Proof, and driving the app through the Run recipe when the Step needs rung 4 are the Checker's, with the rest of its work as `agents/checker.md` lays it out. A step is **Green** only on the Checker's own test run and Proof re-run ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md), [ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)).
 
-Then **check the Checker structurally** — `grep '^Status:'` on the Step file reads `done`. Step 4's review covers the rest.
+Then **check the Checker structurally** — `grep -E '^(Status|Workflow check):'` on the Step file reads `done` and finds a `Workflow check:` line. Step 4's review covers the rest.
 
 Report one line to the user after that check — `Step <NN>/<total> — <title>: done` — plus each report's deviations line when it is not `none`, and carry both reports' deviations verbatim into later dispatches.
 
