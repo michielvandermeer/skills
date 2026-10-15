@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: `/pr` now cleans up a pull request
+`/pr` now prepares a pull request for review: it proposes a cleaner commit history, rewrites only once you agree and checks that the code stayed the same, then drafts the description with notes for reviewers. Descriptions the agent writes on its own follow poteto-mode's pull request rules. `/handoff` and `/improve-codebase-architecture` are gone, and `/doctor` lists an old architecture review as unclassified and leaves it where it is.
+
 ## 2026-10-16: Hillclimbs run through `/implement`
 `/hillclimb` is gone. Give `/implement` a number to push toward a target, and it tries one change at a time, keeps only the changes that measurably help, and lands one commit that lists every change it kept and every idea it reverted. Before, `/hillclimb` and poteto-mode's Hillclimb playbook were two versions of the same method.
 
