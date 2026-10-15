@@ -43,7 +43,7 @@ If cost is the worry, say where the tokens go and how to spend less. pstack spen
 
 `/poteto-mode` matches the task to a playbook, copies the playbook's steps into the todo list, and runs the other skills as the steps need them. A step it skips stays in the list as `skip: <reason>`. A good prompt states the goal and how to tell it's done. It doesn't list skills, because a hand-written sequence tends to drop or reorder steps the playbook would keep. Read [`references/prompting.md`](references/prompting.md) before you help word one.
 
-For whether later tasks route automatically, use the setup and runtime sources under [Get set up](#get-set-up). Check that routing is enabled for this installation before promising it. Without automatic routing, invoke `poteto-mode` for each new task. Mid-chat, "new task" makes the mode match a fresh playbook. For subagent defaults, read [poteto-mode's Subagents section](../poteto-mode/SKILL.md#subagents).
+Later tasks route automatically while the plugin's SessionStart hook is on. Check the sheet's `session hook` line, as [`/setup-pstack`](../setup-pstack/SKILL.md) describes, before promising it. Without automatic routing, invoke `poteto-mode` for each new task. Mid-chat, "new task" makes the mode match a fresh playbook. For subagent defaults, read [poteto-mode's Subagents section](../poteto-mode/SKILL.md#subagents).
 
 ## Pick a skill
 
@@ -117,13 +117,13 @@ Principles are one-rule skills that `/poteto-mode` reads and cites in its replie
 
 | Symptom | Fix |
 |---|---|
-| The mode stopped applying after a few turns | Check the current runtime's routing configuration through the sources under Get set up. Without automatic routing, invoke `poteto-mode` for each task. |
+| The mode stopped applying after a few turns | Check the sheet's `session hook` line, as [setup-pstack](../setup-pstack/SKILL.md) describes. With the hook off, invoke `poteto-mode` for each task. |
 | A question got treated as the next step of the last task | Say "new task", or say the turn doesn't need the mode. |
 | A new model choice had no effect | Read [setup-pstack](../setup-pstack/SKILL.md), then check the sheet's location and how it loads. |
 | Runs cost more than expected | See the cost paragraph under Get set up. |
-| A skill didn't load on its own | Read its description and the current runtime's skill-loading instructions. Invoke it explicitly when needed; `/poteto-mode` doesn't run every skill. |
+| A skill didn't load on its own | Read its description. Claude Code loads a skill on its own only when the request matches that description. Invoke it explicitly when needed; `/poteto-mode` doesn't run every skill. |
 | Parallel agents overwrote each other | Give each agent its own worktree. |
-| An overnight run moved but finished nothing | Read [Autonomous run](../poteto-mode/playbooks/autonomous-run.md) and the current runtime's wake mechanism. For a queue, read the selected Autopilot playbook above. Give the run a check that can pass or fail. |
+| An overnight run moved but finished nothing | Read [Autonomous run](../poteto-mode/playbooks/autonomous-run.md), including its wake mechanism. For a queue, read the selected Autopilot playbook above. Give the run a check that can pass or fail. |
 | The reply claims success from a green build | Ask for the real command, flow, stored value, or profile. That's the prove-it-works principle. |
 
 For a run that drifts, [`references/prompting.md`](references/prompting.md) has one-line steers, and [`references/recipes.md`](references/recipes.md) has prompts to adapt.
