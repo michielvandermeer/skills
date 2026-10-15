@@ -10,7 +10,8 @@ from pathlib import Path
 import metrics
 
 HERE = Path(__file__).resolve().parent
-ROLE_COLUMNS = metrics.ROLES + ["other"]
+# The old roles keep their own columns, so a baseline run from before the poteto-mode flow is attributed by role.
+ROLE_COLUMNS = metrics.ROLES + list(metrics.OLD_ROLES) + ["other"]
 COLUMNS = (
     ["run_id", "skills_sha", "spec", "index", "model", "effort", "spec_hash", "claim", "started",
      "valid", "invalid_reasons", "flags", "failed",
@@ -40,7 +41,7 @@ def row_for(run_dir):
     for column in ROLE_COLUMNS:
         row[f"cost_{column}"] = row[f"tokens_{column}"] = 0
     for role, b in m["by_role"].items():
-        key = role if role in metrics.ROLES else "other"
+        key = role if role in ROLE_COLUMNS else "other"
         row[f"cost_{key}"] = round(row[f"cost_{key}"] + b["cost_usd"], 4)
         row[f"tokens_{key}"] += b["input"] + b["cache_write"] + b["cache_read"] + b["output"]
     return row

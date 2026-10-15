@@ -15,7 +15,6 @@ from math import comb
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROLES = ["main", "poteto-agent", "verifier", "interrogate", "arena", "other"]
 METRICS = [("cost_usd", "List-price cost per run (USD)", "{:.2f}"), ("tokens_total", "Tokens per run (millions)", None),
            ("subagents", "Subagents per run", "{:.0f}"), ("wall_s", "Wall time per run (minutes)", None),
            ("max_context", "Largest context in any call (thousand tokens)", None)]
@@ -200,19 +199,40 @@ def report(base, cand, claim, names):
     return "\n".join(out), verdict
 
 
+def roles_of(rows):
+    """The roles a CSV carries, from its cost_<role> columns in column order; each side names its own."""
+    return [key[len("cost_"):] for key in rows[0] if key.startswith("cost_") and key != "cost_usd"]
+
+
+def cost(row, col):
+    """A cost cell as a number; a cell that is not one fails instead of counting as zero."""
+    value = num(row[col])
+    if value is None:
+        raise ValueError(f"{col} is {row[col]!r} on run {row['run_id']}, not a number")
+    return value
+
+
 def limiter(base, cand, change, verdict):
-    mean = lambda rows, col: sum(num(r[col]) or 0 for r in rows if is_true(r["valid"])) / max(1, sum(is_true(r["valid"]) for r in rows))
+    mean = lambda rows, col: sum(cost(r, col) for r in rows if is_true(r["valid"])) / max(1, sum(is_true(r["valid"]) for r in rows))
+    roles = [r for r in roles_of(base) if r in roles_of(cand)]
+    only = {name: [r for r in roles_of(rows) if r not in roles] for name, rows in (("baseline", base), ("candidate", cand))}
     shares, means = {}, {}
     for name, rows in (("baseline", base), ("candidate", cand)):
         total = mean(rows, "cost_usd") or 1
-        means[name] = {r: mean(rows, f"cost_{r}") for r in ROLES}
+        means[name] = {r: mean(rows, f"cost_{r}") for r in roles_of(rows)}
         shares[name] = {r: v / total * 100 for r, v in means[name].items()}
-    top = max(ROLES, key=lambda r: shares["baseline"][r])
-    moved = {r: means["candidate"][r] - means["baseline"][r] for r in ROLES}
-    mover = max(ROLES, key=lambda r: abs(moved[r]))
-    text = (f"Limiter: the {top} role is {shares['baseline'][top]:.0f}% of baseline cost ({shares['candidate'][top]:.0f}% on the candidate), "
-            f"so a change that touched only that role could save at most {shares['baseline'][top]:.0f}%. "
-            f"The biggest mover is the {mover} role: {moved[mover]:+.2f} USD per run.")
+    top = max(roles_of(base), key=lambda r: shares["baseline"][r])
+    text = f"Limiter: the {top} role is {shares['baseline'][top]:.0f}% of baseline cost"
+    if top in roles:
+        text += f" ({shares['candidate'][top]:.0f}% on the candidate)"
+    text += f", so a change that touched only that role could save at most {shares['baseline'][top]:.0f}%."
+    if roles:
+        moved = {r: means["candidate"][r] - means["baseline"][r] for r in roles}
+        mover = max(roles, key=lambda r: abs(moved[r]))
+        text += f" The biggest mover is the {mover} role: {moved[mover]:+.2f} USD per run."
+    for name, missing in only.items():
+        if missing:
+            text += f" Roles only the {name} has: {', '.join(missing)}, with no counterpart to move against."
     if verdict == "cheaper" and -change > shares["baseline"][top]:
         text += (f" The saving ({-change:.0f}%) is bigger than any one role's share: if the change touched one role, "
                  "something else is being measured (a cache, a no-op, a bug); check the invalid and flagged runs.")

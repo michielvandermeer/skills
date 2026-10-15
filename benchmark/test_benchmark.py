@@ -122,6 +122,7 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(metrics.role_of("skills:poteto-agent", "Explore the Person subsystem"), "poteto-agent")
         self.assertEqual(metrics.role_of("general-purpose", "Reviewer B"), "interrogate")
         self.assertEqual(metrics.role_of("general-purpose", "Arena runner 2"), "arena")
+        self.assertEqual(metrics.role_of("general-purpose", "Design: candidate 2, the registry shape"), "architect")
         self.assertEqual(metrics.role_of("general-purpose", "Explore the Person subsystem"), "general-purpose")
 
     def test_old_role_names_still_attribute_a_baseline_run(self):
@@ -130,14 +131,27 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(metrics.role_of("skills:prover", "Re-run every Proof"), "prover")
         self.assertEqual(metrics.role_of("skills:planner", "Slice the Spec"), "planner")
         self.assertEqual(metrics.role_of("general-purpose", "Fix the review findings"), "fixer")
-        self.assertEqual(collect.ROLE_COLUMNS, ["main", "poteto-agent", "verifier", "interrogate", "arena", "other"])
+        self.assertEqual(metrics.role_of("skills:reviewer", "Review the Standards axis"), "reviewer")
+        self.assertEqual(collect.ROLE_COLUMNS, ["main", "poteto-agent", "verifier", "interrogate", "arena", "architect",
+                                               "implementer", "checker", "prover", "planner", "fixer", "reviewer", "other"])
 
-    def test_a_csv_missing_a_role_column_fails_instead_of_reading_zero(self):
+    def test_each_side_is_attributed_by_its_own_role_columns(self):
         base, cand = make_rows({"a": CompareTests.A_BASE}, {"a": CompareTests.A_CAND})
-        for r in base + cand:
+        for r in base:
             del r["cost_verifier"]
-        with self.assertRaises(KeyError):
-            compare.report(base, cand, "the change cuts cost", ("bbbbbbbbbbbb", "cccccccccccc"))
+        text = compare.limiter(base, cand, 0.0, "inconclusive")
+        self.assertIn("Limiter: the poteto-agent role is 50% of baseline cost (50% on the candidate)", text)
+        self.assertIn("Roles only the candidate has: verifier", text)
+        for r in cand:
+            r["cost_arena"] = ""
+        with self.assertRaises(ValueError):
+            compare.limiter(base, cand, 0.0, "inconclusive")
+
+    def test_the_old_flow_csvs_compare_without_a_key_error(self):
+        base, cand = compare.load_rows("889e5cd27967"), compare.load_rows("d07f8b77bc67")
+        text = compare.limiter(base, cand, 0.0, "inconclusive")
+        self.assertRegex(text, r"^Limiter: the reviewer role is \d+% of baseline cost \(\d+% on the candidate\)")
+        self.assertNotIn("Roles only", text)
 
     def test_context_wall_time_and_checks(self):
         self.assertEqual(self.m["max_context"], 6020)
@@ -240,7 +254,7 @@ def make_rows(base_costs, cand_costs, **cand_over):
              "tests_ok": "True", "tests_run": "5", "forbidden_html": "0", "forbidden_text": "0",
              "blocked_writes": "0", "noop_writes": "2", "checks_done": "True"}
         r.update({f"cost_{role}": str(cost * share) for role, share in
-                  zip(compare.ROLES, (0.1, 0.5, 0.15, 0.2, 0.03, 0.02))})
+                  zip(collect.ROLE_COLUMNS, (0.1, 0.5, 0.15, 0.2, 0.03, 0.02))})
         r.update(over)
         return r
 
