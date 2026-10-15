@@ -22,6 +22,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from typing import NamedTuple
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "tools/pstack-import-manifest.txt"
@@ -29,17 +30,12 @@ NOTICE = "NOTICE-pstack.md"
 UPSTREAM_URL = "https://github.com/michael-denyer/pstack-claude"
 PLUGIN = "plugins/pstack/"
 
-# Upstream plugin directory -> destination directory. Every file under them comes in unless OWNED or DROP claims it.
 COPY = {"skills/": "skills/", "agents/": "agents/", "effort-agents/": "agents/"}
-# Upstream root license -> destination. Copied byte for byte: no rule rewrites a license.
 LICENSES = {"LICENSE": "LICENSE-pstack", "LICENSE-cursor-team-kit": "LICENSE-cursor-team-kit",
             "LICENSE-thermos": "LICENSE-thermos"}
-# Upstream plugin paths this repo owns outright, at the same path here. They began as imported copies and are now
-# mostly this repo's own text, so the import never writes them.
 OWNED = ["hooks/hooks.json", "hooks/session-start.sh", "hooks/session-start-context.md", "skills/poteto-help/SKILL.md",
          "skills/setup-pstack/SKILL.md", "skills/setup-pstack/scripts/read-sheet.sh"]
-# Upstream plugin paths the import leaves out, as fnmatch globs (* also matches /), each with its reason. Each must
-# match an upstream file, so an upstream rename is caught.
+# fnmatch's * also matches /.
 DROP = {
     ".claude-plugin/plugin.json": "pstack-claude's manifest. check_plugin_json reads it; this repo has its own",
     ".claude-plugin/icon.png": "pstack-claude's plugin icon",
@@ -68,27 +64,29 @@ DROP = {
     "*.test-helper.ts": "upstream's tests",
     "skills/poteto-mode/scripts/watch-pr/live-merge-safety.mjs": "an opt-in live test that no imported file runs",
 }
-# Every upstream file outside plugins/pstack/ belongs to pstack-claude's own repo: its tooling, tests, CI, docs, and
-# marketplaces. Of those, only LICENSES and NOTICE.md are read.
 
-# Keys of upstream's plugin.json. Its agents are checked against the import; the rest is metadata this repo's own
-# plugin.json replaces. Any other key would add something the import does not bring in, so it stops the run.
 PLUGIN_JSON_KEYS = {"name", "displayName", "version", "description", "author", "homepage", "repository", "license",
                     "keywords", "agents"}
 
 EFFORT = ("architect", "arena", "how", "interrogate", "poteto-mode", "reflect", "swarm", "why")
 
-# (name, {file: expected count} or None for any imported text file, old, new, old is a regex). Applied in order. A
-# rule with files must match exactly that often in each; a rule without must match somewhere.
+class Rule(NamedTuple):
+    name: str
+    files: dict | None
+    old: str
+    new: str
+    regex: bool
+
+
 RULES = [
-    ("namespace pstack: becomes skills:", None, r"\bpstack:(?=[A-Za-z<])", "skills:", True),
-    ("Codex platform-mapping line", None,
+    Rule("namespace pstack: becomes skills:", None, r"\bpstack:(?=[A-Za-z<])", "skills:", True),
+    Rule("Codex platform-mapping line", None,
      "On Codex, read the [platform mapping](../poteto-mode/references/codex-tools.md), including its per-skill notes, "
      "before following this skill.\n\n", "", False),
-    ("Copilot platform-mapping line", None,
+    Rule("Copilot platform-mapping line", None,
      "On GitHub Copilot, read the [platform mapping](../poteto-mode/references/copilot-tools.md), including its "
      "per-skill notes, before following this skill.\n\n", "", False),
-    ("poteto-mode: Platform Adaptation folds into the opening paragraph", {"skills/poteto-mode/SKILL.md": 1},
+    Rule("poteto-mode: Platform Adaptation folds into the opening paragraph", {"skills/poteto-mode/SKILL.md": 1},
      "\n\n## Platform Adaptation\n\nThese skills use Claude Code tool names (the `Skill` tool, the `Agent` tool, "
      "`AskUserQuestion`) and the Claude model names the `Agent` tool accepts, as each Models section lists them. On "
      "Claude Code they work as written. On Codex, read [`references/codex-tools.md`](references/codex-tools.md) for "
@@ -99,24 +97,22 @@ RULES = [
      "mappings is a cross-runtime map.",
      " These skills use Claude Code tool names (the `Skill` tool, the `Agent` tool, `AskUserQuestion`) and the Claude "
      "model names the `Agent` tool accepts, as each Models section lists them.", False),
-    ("Reasoning effort: Codex sentence", {f"skills/{s}/SKILL.md": 1 for s in EFFORT},
+    Rule("Reasoning effort: Codex sentence", {f"skills/{s}/SKILL.md": 1 for s in EFFORT},
      " On Codex, pass the level as `spawn_agent`'s `reasoning_effort` and keep the usual instructions.", "", False),
-    ("Models: upstream generator and per-runtime path", {f"skills/{s}/SKILL.md": 1 for s in EFFORT if s != "interrogate"},
+    Rule("Models: upstream generator and per-runtime path", {f"skills/{s}/SKILL.md": 1 for s in EFFORT if s != "interrogate"},
      "Role defaults, stamped from `plugins/pstack/models.json` (edit there, rerun `tools/generate.mjs`). A matching "
      "role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it and "
      "lists its path per runtime.",
      "Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; "
      "`/setup-pstack` writes it.", False),
-    ("resume-storage: one runtime", {"skills/poteto-mode/references/resume-storage.md": 1},
+    Rule("resume-storage: one runtime", {"skills/poteto-mode/references/resume-storage.md": 1},
      "Claude Code, Codex, and other runtimes use this same command and location. Runtime-specific home directories "
      "and transcript encodings do not affect lookup.",
      "The lookup does not depend on Claude Code's config directory or transcript encoding.", False),
 ]
 
-# Text no imported file may still contain once the rules have run.
 LEFTOVERS = [r"\bpstack:(?=[A-Za-z<])", r"(codex|copilot|pi)-tools", "#other-runtimes", "COPILOT_PLUGIN_ROOT",
              "CODEX_HOME", r"models\.json", r"tools/generate\.mjs", r"\b(Codex|Copilot|spawn_agent)\b|\bOn Pi\b"]
-# Imported files that keep other runtimes' names on purpose: the names are the script's logic, not routing prose.
 LEFTOVERS_ALLOWED = {
     "skills/reflect/scripts/find-transcript.mjs":
         "tells Claude Code, Pi, and Copilot transcripts apart, and refuses a Codex rollout by name",
@@ -141,21 +137,20 @@ def matches(path, glob):
 
 
 def dest_of(rel):
-    """The destination of an upstream plugin path under COPY, or None."""
     return next((COPY[d] + rel[len(d):] for d in COPY if rel.startswith(d)), None)
 
 
-def decode(data):
-    """UTF-8 text as str; anything else stays bytes."""
+def as_text(data):
     try:
         text = data.decode("utf-8")
     except UnicodeDecodeError:
-        return data
-    return data if "\0" in text else text
+        return None
+    return None if "\0" in text else text
 
 
-def encode(content):
-    return content.encode("utf-8") if isinstance(content, str) else content
+class UpstreamFile(NamedTuple):
+    mode: str
+    data: bytes
 
 
 def blob_id(data):
@@ -163,7 +158,6 @@ def blob_id(data):
 
 
 def read_upstream(src, sha):
-    """{path: (mode, bytes)} for every file in the commit, read from the clone's object store."""
     if subprocess.run(["git", "-C", str(src), "cat-file", "-e", f"{sha}^{{commit}}"], capture_output=True).returncode:
         fail(f"{src} has no commit {sha}")
     entries = {}
@@ -182,14 +176,13 @@ def read_upstream(src, sha):
         size = int(out[pos:header_end].split()[2])
         data[blob] = out[header_end + 1:header_end + 1 + size]
         pos = header_end + 2 + size
-    return {path: (mode, data[blob]) for path, (mode, blob) in entries.items()}
+    return {path: UpstreamFile(mode, data[blob]) for path, (mode, blob) in entries.items()}
 
 
 def classify(upstream):
-    """Sort every upstream file into imported, owned, dropped, or outside. Returns (plan, executables, counts)."""
     plan, executables, hits = {}, set(), set()
     counts = {"imported": 0, "owned here": 0, "dropped": 0, "outside plugins/pstack/": 0}
-    for path, (mode, data) in sorted(upstream.items()):
+    for path, file in sorted(upstream.items()):
         if path in LICENSES:
             dest = LICENSES[path]
         elif not path.startswith(PLUGIN):
@@ -211,8 +204,8 @@ def classify(upstream):
                 fail(f"upstream {path} is not imported, owned, or dropped; add it to COPY, OWNED, or DROP")
         if dest in plan:
             fail(f"two upstream files map to {dest}")
-        plan[dest] = decode(data)
-        if mode == "100755":
+        plan[dest] = file.data
+        if file.mode == "100755":
             executables.add(dest)
         counts["imported"] += 1
     unused = [entry for entry in [*OWNED, *DROP] if entry not in hits]
@@ -240,26 +233,29 @@ def check_plugin_json(data, plan):
 
 def rewrite(plan):
     licenses = set(LICENSES.values())
-    for name, files, old, new, regex in RULES:
+    for rule in RULES:
         counts = {}
-        for dest in files or sorted(plan):
-            content = plan.get(dest)
-            if not isinstance(content, str) or dest in licenses:
+        for dest in rule.files or sorted(plan):
+            content = as_text(plan[dest]) if dest in plan else None
+            if content is None or dest in licenses:
                 continue
-            content, n = re.subn(old, new, content) if regex else (content.replace(old, new), content.count(old))
-            plan[dest] = content
+            if rule.regex:
+                content, n = re.subn(rule.old, rule.new, content)
+            else:
+                content, n = content.replace(rule.old, rule.new), content.count(rule.old)
+            plan[dest] = content.encode("utf-8")
             if n:
                 counts[dest] = n
-        print(f"rule {sum(counts.values()):4d}  {name}")
-        if files is None and not counts:
-            fail(f"rule '{name}' matched nothing; upstream changed, so revisit the rule")
-        if files is not None and counts != files:
-            fail(f"rule '{name}' matched {counts}, expected {files}; upstream changed, so revisit the rule")
+        print(f"rule {sum(counts.values()):4d}  {rule.name}")
+        if rule.files is None and not counts:
+            fail(f"rule '{rule.name}' matched nothing; upstream changed, so revisit the rule")
+        if rule.files is not None and counts != rule.files:
+            fail(f"rule '{rule.name}' matched {counts}, expected {rule.files}; upstream changed, so revisit the rule")
 
 
 def check_licenses(plan, upstream):
     for path, dest in LICENSES.items():
-        if encode(plan[dest]) != upstream[path][1]:
+        if plan[dest] != upstream[path].data:
             fail(f"{dest} differs from upstream {path}")
 
 
@@ -267,8 +263,8 @@ def leftovers(plan):
     missing = [dest for dest in LEFTOVERS_ALLOWED if dest not in plan]
     if missing:
         fail(f"LEFTOVERS_ALLOWED names files the import does not write: {missing}")
-    return [f"{dest}: {m.group(0)}" for dest, text in sorted(plan.items())
-            if isinstance(text, str) and dest not in LEFTOVERS_ALLOWED
+    texts = {dest: as_text(data) for dest, data in sorted(plan.items()) if dest not in LEFTOVERS_ALLOWED}
+    return [f"{dest}: {m.group(0)}" for dest, text in texts.items() if text is not None
             for pattern in LEFTOVERS for m in re.finditer(pattern, text)]
 
 
@@ -282,11 +278,10 @@ def anchors(text):
 
 
 def broken_links(plan):
-    """Relative Markdown links in the imported and owned Markdown whose file or heading anchor does not resolve."""
     def text_of(dest):
         if dest in plan:
-            return plan[dest]
-        return decode((ROOT / dest).read_bytes()) if (ROOT / dest).is_file() else None
+            return as_text(plan[dest])
+        return as_text((ROOT / dest).read_bytes()) if (ROOT / dest).is_file() else None
 
     def exists(dest):
         return dest in plan or (ROOT / dest).exists() or any(key.startswith(dest + "/") for key in plan)
@@ -294,7 +289,7 @@ def broken_links(plan):
     checked, broken = 0, []
     for dest in sorted({*plan, *OWNED}):
         text = text_of(dest)
-        if not dest.endswith(".md") or not isinstance(text, str):
+        if not dest.endswith(".md") or text is None:
             continue
         for target in LINK.findall(re.sub(r"`[^`\n]*`", "", FENCE.sub("", text))):
             if re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", target):
@@ -303,7 +298,7 @@ def broken_links(plan):
             path, _, anchor = target.partition("#")
             resolved = posixpath.normpath(posixpath.join(posixpath.dirname(dest), path)) if path else dest
             target_text = text_of(resolved) if resolved.endswith(".md") else None
-            if not exists(resolved) or (anchor and isinstance(target_text, str) and anchor not in anchors(target_text)):
+            if not exists(resolved) or (anchor and target_text is not None and anchor not in anchors(target_text)):
                 broken.append(f"{dest}: {target}")
     return checked, broken
 
@@ -315,7 +310,6 @@ def expand_braces(path):
 
 
 def notice_row(row, here):
-    """An upstream NOTICE table row with its paths and license file mapped to this repo's. Fails on what it cannot map."""
     cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
     if len(cells) != 5:
         fail(f"upstream NOTICE row does not have 5 cells: {row}")
@@ -380,7 +374,6 @@ def read_manifest():
 
 
 def local_ids(paths):
-    """The git blob id of each file here, as `git add` would store it; absent files are left out."""
     present = sorted(p for p in paths if (ROOT / p).is_file())
     out = run(["git", "hash-object", "--stdin-paths"], ROOT, "".join(f"{p}\n" for p in present).encode())
     return dict(zip(present, out.decode().split()))
@@ -390,6 +383,10 @@ def git_paths(argv, paths):
     if paths:
         run(["git", *argv, "--pathspec-from-file=-", "--pathspec-file-nul"], ROOT,
             "".join(f"{p}\0" for p in sorted(paths)).encode())
+
+
+def differs_from_last_import_and_this_one(previous, here, planned):
+    return sorted(p for p, blob in previous.items() if p not in OWNED and here.get(p) not in (blob, planned.get(p)))
 
 
 def main(argv):
@@ -405,7 +402,7 @@ def main(argv):
     upstream = read_upstream(a.src.resolve(), sha)
     plan, executables, counts = classify(upstream)
     print("upstream: " + ", ".join(f"{n} {kind}" for kind, n in counts.items()))
-    check_plugin_json(upstream[f"{PLUGIN}.claude-plugin/plugin.json"][1], plan)
+    check_plugin_json(upstream[f"{PLUGIN}.claude-plugin/plugin.json"].data, plan)
     rewrite(plan)
     check_licenses(plan, upstream)
     left = leftovers(plan)
@@ -413,18 +410,16 @@ def main(argv):
         fail("text the rules should have removed is still there:\n  " + "\n  ".join(left))
     if "NOTICE.md" not in upstream:
         fail("upstream has no NOTICE.md")
-    plan[NOTICE] = notice(decode(upstream["NOTICE.md"][1]), sha, plan)
+    plan[NOTICE] = notice(upstream["NOTICE.md"].data.decode("utf-8"), sha, plan).encode("utf-8")
     checked, broken = broken_links(plan)
     print(f"links: {checked} relative links checked, {len(broken)} broken")
     if broken:
         fail("broken relative links:\n  " + "\n  ".join(broken))
 
     previous = read_manifest()
-    planned = {dest: blob_id(encode(content)) for dest, content in plan.items()}
+    planned = {dest: blob_id(content) for dest, content in plan.items()}
     here = local_ids({*previous, *plan})
-    # A file whose content is what the last import wrote, or what this one writes, is not an edit. The second case is
-    # a run that crashed after writing it.
-    edited = sorted(p for p, blob in previous.items() if p not in OWNED and here.get(p) not in (blob, planned.get(p)))
+    edited = differs_from_last_import_and_this_one(previous, here, planned)
     if edited and not a.force:
         fail("edited since import, so not overwritten or deleted; rerun with --force to write over them:\n  "
              + "\n  ".join(edited))
@@ -449,7 +444,7 @@ def main(argv):
         path = ROOT / dest
         if here.get(dest) != planned[dest]:
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(encode(content))
+            path.write_bytes(content)
             written += 1
         path.chmod(0o755 if dest in executables else 0o644)
     manifest = ROOT / MANIFEST

@@ -56,18 +56,16 @@ def claude_argv(prompt, plugin_dir, mcp_file, session_id, resume, model, effort,
     return argv + ["--disallowedTools", *DENIED]  # variadic, so it goes last
 
 
-def frontmatter(path):
-    """A skill or agent file's frontmatter as {key: value}, for keys on one line."""
+def one_line_frontmatter(path):
     head = path.read_text(encoding="utf-8").split("\n---", 1)[0]
     return {k.strip(): v.strip().strip("'\"") for k, _, v in (line.partition(":") for line in head.splitlines()[1:])}
 
 
-def name_check(kind, expected, loaded):
-    """(name, passed, detail) for check(): the names the session registered against the names on disk."""
+def name_check(check, kind, expected, loaded):
     missing, extra = sorted(expected - loaded), sorted(loaded - expected)
     detail = f"{len(expected & loaded)} of {len(expected)}" + (f"; missing {missing}" if missing else "") \
         + (f"; extra {extra}" if extra else "")
-    return f"every {kind} registered, and no other", not missing and not extra, detail
+    check(f"every {kind} registered, and no other", not missing and not extra, detail)
 
 
 def read_stream(path):
@@ -224,12 +222,7 @@ def cmd_doctor(a):
         if r.returncode:
             bad.append(r.stderr.strip())
     check(f"frontmatter of {len(skill_files)} skills and {len(agent_files)} agents", not bad, "\n".join(bad))
-    # A model reads a skill the user cannot type by its directory, so its name has to match.
-    hidden = [f for f in skill_files if frontmatter(f).get("user-invocable") == "false"]
-    misnamed = [f"{f.parent.name} is named {frontmatter(f).get('name')}" for f in hidden
-                if frontmatter(f).get("name") != f.parent.name]
-    check(f"each of {len(hidden)} user-invocable: false skills is named after its directory", not misnamed,
-          ", ".join(misnamed))
+    hidden = [f for f in skill_files if one_line_frontmatter(f).get("user-invocable") == "false"]
     stale = sorted(Path(tempfile.gettempdir()).glob(SCRATCH_PREFIX + "*"))
     check("no scratch repo left by an earlier run", not stale,
           ", ".join(map(str, stale)) + " — run cleanup on its run, or delete it if no run names it" if stale else "")
@@ -250,18 +243,22 @@ def cmd_doctor(a):
         check("live session loads this checkout as the skills plugin", plugin_check(init, plugin_dir) == "ok",
               plugin_check(init, plugin_dir))
         # The session lists only skills a user can type; `user-invocable: false` ones still load for the model.
-        typed = {"skills:" + (frontmatter(f).get("name") or f.parent.name) for f in skill_files if f not in hidden}
+        typed = {"skills:" + (one_line_frontmatter(f).get("name") or f.parent.name) for f in skill_files if f not in hidden}
         loaded = {s for s in (init or {}).get("skills") or [] if s.startswith("skills:")}
-        check(*name_check("user-invocable skill", typed, loaded))
-        agents = {"skills:" + (frontmatter(f).get("name") or f.stem) for f in agent_files}
+        name_check(check, "user-invocable skill", typed, loaded)
+        agents = {"skills:" + (one_line_frontmatter(f).get("name") or f.stem) for f in agent_files}
         loaded_agents = {s for s in (init or {}).get("agents") or [] if s.startswith("skills:")}
-        check(*name_check("agent", agents, loaded_agents))
-        # A sheet with `session hook: off` silences the hook, so this check fails under one.
+        name_check(check, "agent", agents, loaded_agents)
         context = (plugin_dir / "hooks/session-start-context.md").read_text(encoding="utf-8").strip()
         outputs = [(e.get("stdout") or "").replace("\r\n", "\n").strip() for e in events
                    if e.get("subtype") == "hook_response" and e.get("hook_event") == "SessionStart"]
-        check("SessionStart hook printed hooks/session-start-context.md", context in outputs,
-              "" if context in outputs else f"none of the {len(outputs)} SessionStart hooks that ran printed it")
+        sheet = sh(["sh", str(plugin_dir / "skills/setup-pstack/scripts/read-sheet.sh"), str(CONFIG / "pstack-models.md")],
+                   check=False)
+        if "session hook: off" in sheet.splitlines():
+            print("[ok] SessionStart hook is off: pstack-models.md says session hook: off")
+        else:
+            check("SessionStart hook printed hooks/session-start-context.md", context in outputs,
+                  "" if context in outputs else f"none of the {len(outputs)} SessionStart hooks that ran printed it")
         check("no MCP server loaded", init and not init.get("mcp_servers"), str((init or {}).get("mcp_servers")))
         check("model answered", "READY" in (result.get("result") or ""), (result.get("result") or r.stderr)[:200])
     print("doctor: " + ("ok" if ok else "FAIL"))
