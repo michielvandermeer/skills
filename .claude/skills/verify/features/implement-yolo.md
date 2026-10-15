@@ -4,11 +4,11 @@
 
 ## Sub-features
 
-- `yolo-land` lands the Issue as exactly one commit on the starting branch and closes the Issue.
-- `yolo-route` writes `.agents/runs/<slug>/todo.md` with the playbook's steps verbatim and the overlay applied, and skips `how` and `architect` with a reason when the Spec fixes the shape and touches one or two files.
-- `yolo-agents` runs `skills:poteto-agent` delegates for the build and any fix round, one fresh `skills:poteto-agent` as the Verifier, and `interrogate`'s `general-purpose` reviewers (four on the default sheet).
+- `yolo-land` lands the Issue as exactly one commit on the starting branch, whose tree deletes the Issue file (the Tracker's "close as done" ran as a unit commit before the fold).
+- `yolo-route` generates `.agents/runs/<slug>/todo.md` with `skills/implement/scripts/open-todo.mjs`: the playbook's steps verbatim with the overlay applied, the three gate items, a `## Landing` section, and skips `how` and `architect` with an indented `skip:` line when the Spec fixes the shape and touches one or two files.
+- `yolo-agents` runs `skills:poteto-agent` delegates for the build and any fix round (descriptions starting `Build:` or `Fix:`), one fresh `skills:poteto-agent` as the Verifier (`Verify:`) after the review, and `interrogate`'s `general-purpose` reviewers (four on the default sheet).
 - `yolo-report` reports in poteto-mode's reply shape: what was built, the design or the skip reason, the Verifier's verdict per item, the landing commit, the push, and the Attention section.
-- `yolo-run-dir` leaves `.agents/runs/<slug>/` in the checkout, ignored by git, with `todo.md` fully checked or skipped and `trail.tsv` present.
+- `yolo-run-dir` leaves `.agents/runs/<slug>/` in the checkout, ignored by git, with `todo.md` fully checked or skipped above `## Landing`, a `Landed: <sha>` header, and `trail.tsv` present.
 - `yolo-halt` halts on a detached HEAD or an open blocker and leaves everything in place for a resume.
 - `yolo-no-push` skips the push when `git remote` lists nothing.
 
@@ -27,9 +27,9 @@ Preconditions:
 - Note the starting commit: `git -C <scratch> rev-parse HEAD`.
 
 - **Run.** Run `verify.py turn <run> "/skills:implement-yolo <slug>" --timeout 3600`. The run needs no further turn.
-- **Agents.** The summary lists `skills:poteto-agent` at least twice (a builder and the Verifier, with their descriptions telling them apart) and `general-purpose` reviewers from `interrogate`. On the example Spec no `how` explorers or `arena` runners appear, because the design-skip rule fires; `todo.md` holds the two `skip:` lines.
+- **Agents.** The summary lists `skills:poteto-agent` at least twice, a `Build:` and a `Verify:` description, and `general-purpose` reviewers from `interrogate`, with the `Verify:` agent starting after the reviewers finished. On the example Spec no `how` explorers or `arena` runners appear, because the design-skip rule fires; `todo.md` holds the two indented `skip:` lines under steps 1 and 2.
 - **Report.** The final message names the landing commit, says the push was skipped for having no remote, gives the Verifier's verdict per Hand check with an evidence path under `.agents/runs/<slug>/evidence/`, and ends with an Attention section that names its reviewer's model.
-- **Proof.** In `scratch-01.txt`: `git log` shows one landing commit after the start, plus at most one `/retro` commit; the landing commit adds the code and test and deletes `.agents/issues/<slug>.md`; status is clean; `git branch -a` shows only `main`; `git worktree list` shows only the scratch repo. In the scratch repo, `node <checkout>/skills/implement/scripts/check-run.mjs .agents/runs/<slug>/todo.md` exits 0, `.agents/runs/<slug>/trail.tsv` exists, and `git check-ignore .agents/runs/<slug>/todo.md` names it as ignored. Run the Spec's test in the scratch repo and see it pass.
+- **Proof.** In `scratch-01.txt`: `git log` shows one landing commit after the start, plus at most one `/retro` commit; `git show --stat` of the landing commit adds the code and test and deletes `.agents/issues/<slug>.md`; status is clean; `git branch -a` shows only `main`; `git worktree list` shows only the scratch repo. In the scratch repo, `node <checkout>/skills/implement/scripts/check-run.mjs .agents/runs/<slug>/todo.md` exits 0, `todo.md` starts with `Playbook: Feature`, `Landing: in-place`, `Start: <the starting commit>`, and holds a `Landed: <the landing commit>` line, `.agents/runs/<slug>/trail.tsv` exists, and `git check-ignore .agents/runs/<slug>/todo.md` names it as ignored. The steps were not retyped: `node <checkout>/skills/implement/scripts/open-todo.mjs feature --root <scratch> --landing in-place --start <the starting commit>` regenerates the checklist, and `diff` against the run's `todo.md` shows only `[x]` marks, the indented `skip:` lines, the run items, and the `Landed:` line. Run the Spec's test in the scratch repo and see it pass.
 - **Halt.** In another run, `git -C <scratch> checkout --detach` before the turn. The run halts, names the detached HEAD, and leaves no commit.
 
 ## Gotchas

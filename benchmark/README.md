@@ -35,7 +35,7 @@ It writes nothing outside the checkout, in layers:
 | Outward write | In the skill | Guard |
 |---|---|---|
 | Claim of the Issue (step 1, `gh issue edit --add-assignee`) | benchmark mode runs `bench-log` instead | `gh` shim refuses writes; `Bash(gh issue edit *)` denied |
-| Push (steps 6 and 7) | benchmark mode runs `bench-log` instead | `pre-push` hook, `pushurl` set to nothing, `Bash(git push *)` denied |
+| Push (steps 7 and 8) | benchmark mode runs `bench-log` instead | `pre-push` hook, `pushurl` set to nothing, `Bash(git push *)` denied |
 | Comment, close, label, PR, release | no step does them | `gh` shim, tool deny rules |
 | Production Postgres and Stripe MCP servers (the target's `.mcp.json`) | no step uses them | `--strict-mcp-config` with an empty config |
 | Delegates | no `poteto-agent`, Verifier, or `interrogate` reviewer holds a write; the skill adds one line to every delegate brief | the same guards |
@@ -44,7 +44,7 @@ Every refusal is logged to `bench.log` as `BLOCKED`, and the scorer counts them:
 
 ## What it measures
 
-- **Tokens and cost** (`metrics.py`): input, cache-write (5-minute and 1-hour), cache-read and output tokens from the main transcript and every subagent transcript, deduplicated by message id and request id, split by model and by role (the driving session, `poteto-agent` delegates, the Verifier, `interrogate` reviewers, `arena` runners, other, read from each subagent's type and description), with the subagent count, wall time, largest context and cost at list prices. A model it has no price for is priced as Sonnet and flagged.
+- **Tokens and cost** (`metrics.py`): input, cache-write (5-minute and 1-hour), cache-read and output tokens from the main transcript and every subagent transcript, deduplicated by message id and request id, split by model and by role (the driving session, `poteto-agent` delegates, the Verifier, `interrogate` reviewers, `arena` runners, other, read from each subagent's type and the `Build:`, `Fix:`, or `Verify:` prefix of its description; a transcript from before the poteto-mode run keeps its old role names so a baseline is still attributed), with the subagent count, wall time, largest context and cost at list prices. A model it has no price for is priced as Sonnet and flagged.
 - **Quality** (`score.py`): the Spec's build and tests pass (`specs.yaml` lists the commands); the diff size against the real landing commit; tests that assert exact markup (tags, class names, attributes) or exact content text, found by a pattern scan of the added test lines, which is a heuristic and lists its hits in `score.json`; errors, guard trips and failed runs.
 - **Did the work happen?** A run is **invalid** when it timed out or claude failed, no commit landed, no subagent ran, no test command appears in the transcript, the Spec's tests ran no tests, or the skills under test were not the plugin that loaded. Invalid runs are counted in the report and left out of every median.
 

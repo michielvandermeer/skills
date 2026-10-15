@@ -86,7 +86,7 @@ def spans(values, fmt, scale=1):
 def by_spec(rows, key):
     out = {}
     for r in rows:
-        if is_true(r["valid"]) and num(r.get(key)) is not None:
+        if is_true(r["valid"]) and num(r[key]) is not None:
             out.setdefault(r["spec"], []).append(num(r[key]))
     return out
 
@@ -201,7 +201,7 @@ def report(base, cand, claim, names):
 
 
 def limiter(base, cand, change, verdict):
-    mean = lambda rows, col: sum(num(r.get(col)) or 0 for r in rows if is_true(r["valid"])) / max(1, sum(is_true(r["valid"]) for r in rows))
+    mean = lambda rows, col: sum(num(r[col]) or 0 for r in rows if is_true(r["valid"])) / max(1, sum(is_true(r["valid"]) for r in rows))
     shares, means = {}, {}
     for name, rows in (("baseline", base), ("candidate", cand)):
         total = mean(rows, "cost_usd") or 1

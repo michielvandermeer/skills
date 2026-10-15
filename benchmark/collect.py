@@ -28,7 +28,7 @@ def row_for(run_dir):
     s = json.loads((run_dir / "score.json").read_text(encoding="utf-8"))
     m = metrics.extract(run_dir / "transcripts")
     row = {k: meta.get(k) for k in ("run_id", "skills_sha", "spec", "index", "model", "effort", "spec_hash", "claim", "started")}
-    row.update({k: s.get(k) for k in COLUMNS if k in s})
+    row.update({k: s[k] for k in COLUMNS if k in s})
     row["invalid_reasons"] = "; ".join(s["invalid_reasons"])
     row["flags"] = "; ".join(s["flags"])
     row["failed"] = bool(meta.get("timed_out") or meta.get("exit_code") not in (0, None) or meta.get("result_is_error"))

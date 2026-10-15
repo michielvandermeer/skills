@@ -115,13 +115,29 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(roles["main"]["calls"], 2)
         self.assertEqual(self.m["subagents"], 4)
 
-    def test_roles_are_read_from_type_and_description(self):
-        self.assertEqual(metrics.role_of("skills:poteto-agent", "Build unit 1"), "poteto-agent")
-        self.assertEqual(metrics.role_of("skills:poteto-agent-high", "Fix round 1"), "poteto-agent")
-        self.assertEqual(metrics.role_of("skills:poteto-agent", "Verify on the matching surface"), "verifier")
+    def test_roles_are_read_from_the_description_prefix_then_the_type(self):
+        self.assertEqual(metrics.role_of("skills:poteto-agent", "Build: unit 1, the roles column"), "poteto-agent")
+        self.assertEqual(metrics.role_of("skills:poteto-agent-high", "Fix: round 1, interrogate Act-on findings"), "poteto-agent")
+        self.assertEqual(metrics.role_of("skills:poteto-agent", "Verify: the change and the Hand checks"), "verifier")
+        self.assertEqual(metrics.role_of("skills:poteto-agent", "Explore the Person subsystem"), "poteto-agent")
         self.assertEqual(metrics.role_of("general-purpose", "Reviewer B"), "interrogate")
         self.assertEqual(metrics.role_of("general-purpose", "Arena runner 2"), "arena")
         self.assertEqual(metrics.role_of("general-purpose", "Explore the Person subsystem"), "general-purpose")
+
+    def test_old_role_names_still_attribute_a_baseline_run(self):
+        self.assertEqual(metrics.role_of("skills:implementer", "Step 01: add the column"), "implementer")
+        self.assertEqual(metrics.role_of("skills:checker", "Check step 01"), "checker")
+        self.assertEqual(metrics.role_of("skills:prover", "Re-run every Proof"), "prover")
+        self.assertEqual(metrics.role_of("skills:planner", "Slice the Spec"), "planner")
+        self.assertEqual(metrics.role_of("general-purpose", "Fix the review findings"), "fixer")
+        self.assertEqual(collect.ROLE_COLUMNS, ["main", "poteto-agent", "verifier", "interrogate", "arena", "other"])
+
+    def test_a_csv_missing_a_role_column_fails_instead_of_reading_zero(self):
+        base, cand = make_rows({"a": CompareTests.A_BASE}, {"a": CompareTests.A_CAND})
+        for r in base + cand:
+            del r["cost_verifier"]
+        with self.assertRaises(KeyError):
+            compare.report(base, cand, "the change cuts cost", ("bbbbbbbbbbbb", "cccccccccccc"))
 
     def test_context_wall_time_and_checks(self):
         self.assertEqual(self.m["max_context"], 6020)
