@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Fewer skills compete for context
+pstack's 24 principles are now files `/poteto-mode` reads rather than skills, and `/teach`, `/unslop`, `/figure-it-out`, and `/review-spec` are gone: ask `/explain` for a talk, `/technical-writing` now holds the slop patterns, and `/poteto-mode` runs Figure it out as a playbook. Before, the principles' descriptions took up about 40% of the skill descriptions loaded into every session, and two skills answered the same "review it after I step away" request.
+
 ## 2026-10-16: `/pr` now cleans up a pull request
 `/pr` now prepares a pull request for review: it proposes a cleaner commit history, rewrites only once you agree and checks that the code stayed the same, then drafts the description with notes for reviewers. Descriptions the agent writes on its own follow poteto-mode's pull request rules. `/handoff` and `/improve-codebase-architecture` are gone, and `/doctor` lists an old architecture review as unclassified and leaves it where it is.
 
