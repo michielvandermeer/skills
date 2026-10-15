@@ -8,7 +8,7 @@ Commit anything still uncommitted on the run branch as its own unit commit; `git
 
 ## The rebase
 
-From the worktree, still on the branch: `git rebase <onto>`. A conflict is `/resolving-merge-conflicts` (the branch lives here, so only the worktree can rebase it). Later steps build on `<onto>`, held as a hash: other sessions land on `<base>` while this run verifies, and a commit built on the moved `<base>` would undo what they landed.
+From the worktree, still on the branch: `git rebase <onto>`. A conflict is `/fix-merge-conflicts` (the branch lives here, so only the worktree can rebase it). Later steps build on `<onto>`, held as a hash: other sessions land on `<base>` while this run verifies, and a commit built on the moved `<base>` would undo what they landed.
 
 When the rebase replayed the branch onto commits `<base>` gained, the verification is not known any more. Skip the re-check only when every path `git diff --name-only <fork> <onto>` lists is Markdown or sits under `.agents/`, and no project file, build script, test, or verification command the trail names reads one of them; the report then quotes the range and why ([ADR-0029](../../docs/adr/0029-test-failures-are-measured-against-the-base-branch.md)). Otherwise a fresh Verifier re-runs step 6's verification gate on the rebased head. Before any fix, re-run each failing project once yourself: a failure that passes on the re-run is a flaky test, a trail row of phase `flaky` and a flag for the report ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)); one that fails again is red and goes to a fresh delegate under step 5's retry rule, and its commit lands before the fast-forward.
 

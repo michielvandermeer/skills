@@ -28,7 +28,7 @@ An edit that moves, merges, or deletes a passage lists each duty the old passage
 
 ## Loading other skills
 
-A skill's step never starts a user-invoked skill (`disable-model-invocation: true` in its frontmatter): no skill can reach one. The step tells the user to run it instead. `/diagnosing-bugs` once handed off to `/improve-codebase-architecture` this way, and the hand-off could never fire. The same goes for the implement commands, though they are model-invoked: their pin would swap the calling skill's model ([ADR-0067](../../docs/adr/0067-the-implement-commands-are-model-invoked-so-a-goal-can-start-them.md)).
+A skill's step never starts a user-invoked skill (`disable-model-invocation: true` in its frontmatter): no skill can reach one. The step tells the user to run it instead. A debugging skill once handed off to `/improve-codebase-architecture` this way, and the hand-off could never fire. The same goes for the implement commands, though they are model-invoked: their pin would swap the calling skill's model ([ADR-0067](../../docs/adr/0067-the-implement-commands-are-model-invoked-so-a-goal-can-start-them.md)).
 
 ## Hosts
 

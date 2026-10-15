@@ -40,6 +40,12 @@ OWNED = {"hooks/hooks.json": "hooks/hooks.json", "hooks/session-start.sh": "hook
          "skills/setup-pstack/SKILL.md": "skills/setup/MODELS.md",
          "skills/setup-pstack/scripts/read-sheet.sh": "skills/setup/scripts/read-sheet.sh",
          "skills/technical-writing/SKILL.md": "skills/technical-writing/SKILL.md",
+         "skills/fix-merge-conflicts/SKILL.md": "skills/fix-merge-conflicts/SKILL.md",
+         "skills/poteto-mode/playbooks/bug-fix.md": "skills/poteto-mode/playbooks/bug-fix.md",
+         "skills/thermo-nuclear-review/SKILL.md": "skills/thermo-nuclear-review/SKILL.md",
+         "agents/thermo-nuclear-review-subagent.md": "agents/thermo-nuclear-review-subagent.md",
+         "agents/thermo-nuclear-code-quality-review-subagent.md":
+             "agents/thermo-nuclear-code-quality-review-subagent.md",
          "skills/reflect/scripts/find-transcript.mjs": "skills/retro/scripts/find-transcript.mjs"}
 OWNED_HERE = set(OWNED.values())
 # fnmatch's * also matches /.
@@ -70,6 +76,8 @@ DROP = {
     "skills/typescript-best-practices/*": "TypeScript rules; this plugin's operator does not write TypeScript",
     "skills/tdd/*": "removed from this plugin; bug-fix's step 5 keeps the failing test first",
     "skills/reflect/*": "/retro does its job; its transcript finder is owned here",
+    "skills/thermos/*": "/thermo-nuclear-review runs both passes itself",
+    "skills/thermo-nuclear-code-quality-review/*": "its rubric is now the body of the code-quality agent, owned here",
     "*.test.ts": "upstream's tests",
     "*.test-helper.ts": "upstream's tests",
     "skills/poteto-mode/scripts/watch-pr/live-merge-safety.mjs": "an opt-in live test that no imported file runs",
@@ -93,11 +101,8 @@ TYPED = {
                               "reviewer guidance, without changing behavior.",
     "maintain-verification-skill": "Keep a project's verification skill and feature map honest, with at most one PR "
                                    "of proven corrections.",
-    "thermos": "Run both thermo-nuclear reviews in parallel and synthesize their findings.",
     "what-did-i-get-done": "Summarize your authored commits over a time period into a concise update.",
 }
-TDD_STEP = ("See the **tdd** skill for the failing-test-first cadence when the bug has a cheap local test path. "
-            "Skip it when the test would be expensive, integration-heavy, or unclear.")
 
 class Rule(NamedTuple):
     name: str
@@ -141,9 +146,6 @@ RULES = [
      "Claude Code, Codex, and other runtimes use this same command and location. Runtime-specific home directories "
      "and transcript encodings do not affect lookup.",
      "The lookup does not depend on Claude Code's config directory or transcript encoding.", False),
-    Rule("bug-fix: no tdd skill", {"skills/poteto-mode/playbooks/bug-fix.md": 1}, TDD_STEP,
-         "When the bug has a cheap local test path, write the failing test first. "
-         "Skip the test when it would be expensive, integration-heavy, or unclear.", False),
     Rule("recipes: no tdd skill", {"skills/poteto-help/references/recipes.md": 1},
          "if there's a cheap test path, /tdd it. then fix and rerun.",
          "if there's a cheap test path, write the failing test first. then fix and rerun.", False),
@@ -279,6 +281,8 @@ def check_plugin_json(data, plan):
     listed = set()
     for agent in meta.get("agents", []):
         rel = agent.removeprefix("./")
+        if rel in OWNED:
+            continue
         if not rel.endswith(".md") or "/" in rel.partition("/")[2] or dest_of(rel) not in plan:
             fail(f"upstream plugin.json lists agent {agent}, which the import does not bring in")
         listed.add(dest_of(rel))

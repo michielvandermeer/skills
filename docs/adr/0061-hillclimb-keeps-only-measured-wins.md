@@ -11,12 +11,12 @@ The shape follows from what those efforts learned:
 - **The Attempt log is committed.** It lives at `.agents/hillclimbs/<slug>/` beside the frozen measurement script, one folder per number. Most of what each round learned was what not to try again. Only a record in the repo reaches the next round on every host.
 - **A target and a minimum number of Attempts decide when to stop.** A time limit can sit on top. Both `/goal` rounds read "max 8 hours" as a ceiling and stopped after 2 to 2.5 hours. A target alone lets one lucky early win end the effort.
 - **It lands like `/implement`.** It works in its own worktree. Before landing, a fresh `/code-review` reviews the whole branch. It then rebases, runs the tests until they pass, fast-forwards the **Base branch**, and pushes under [ADR-0028](0028-implement-claims-its-issue-and-pushes-only-what-lands.md). After both `/goal` rounds the user read the result and said to land it, and both rounds left their worktree and branch behind.
-- **The agent may load it.** A request such as "my test suites are running too slow, let's improve that" started the first effort, and nobody types a command for that. So `/diagnosing-bugs` keeps "slow" only for something that got slower than it was, and `/hillclimb` takes requests to make a number better.
+- **The agent may load it.** A request such as "my test suites are running too slow, let's improve that" started the first effort, and nobody types a command for that. So `/hillclimb` takes requests to make a number better, and a one-off slowdown goes to poteto-mode's Perf issue playbook.
 
 ## Considered Options
 
 - **No skill: write the method into a `/goal` prompt or a Spec each time.** Rejected: that is the hand-carrying this skill ends, and a Spec cannot name changes nobody knows yet.
-- **Only the measurement rules, added to `/diagnosing-bugs`.** Rejected: no loop, no stop rule, and no record that carries over to the next effort.
+- **Only the measurement rules, added to a playbook that fixes one bug.** Rejected: no loop, no stop rule, and no record that carries over to the next effort.
 - **Copying pstack's playbook as it is.** Rejected: it points at pstack skills this plugin lacks, names a Grok model, and ends in a pull request. Its `benchmark-checklist` survives as the skill's `MEASURE.md`.
 - **The log outside the repo, as pstack keeps it, or in agent memory.** Rejected: the next effort cannot find it, and agent memory belongs to one host while this plugin also runs on Grok.
 - **The log as comments on the Issue.** Rejected: an effort started from a plain request has no Issue, and a hundred comments are hard to scan.

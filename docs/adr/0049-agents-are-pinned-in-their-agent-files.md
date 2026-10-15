@@ -9,7 +9,7 @@ Each skill you type and each plugin agent sets `model:` and `effort:` in its own
   |---|---|---|
   | Climber, Validator, Researcher | Sonnet | medium |
   | Explorer | Haiku | high |
-  | Reviewer | Opus | high |
+  | Reviewer, both `/thermo-nuclear-review` passes | Opus | high |
 
 - **Implement delegates** have no agent file of their own. Every role an implement run dispatches, the `skills:poteto-agent` builders and fixers, the Verifier, the `how` explorers, the `architect` runners, and the `interrogate` reviewers, takes its model from the role line in the operator's `~/.claude/pstack-models.md`, as the `poteto-mode` skill's Subagents and Models sections say, so cost has one control surface the operator already edits with `/setup models`. A sheet with no line keeps the role's default.
 - **Everything else** runs on the setting of the skill that starts it: a Hillclimb's fixers and the `/brainstorm` and `/codebase-design` fan-outs.

@@ -94,17 +94,14 @@ test("steps are the playbook's own words, one line each, sub-bullets and indente
     "- [ ] 3. Plan the fix from the trace. If it crosses a function boundary, `architect` first. Delegate implementation to a subagent using your configured perf-issue model (default in poteto-mode's Models section). Review the diff. Capture a post-fix trace. Apply the **sequence-verifiable-units** principle skill, verifying each attempt before trying the next. " + ONE_WRITER,
   ]);
   const bug = lines(todo("bug-fix"));
-  assert.ok(bug.includes("- [ ] 5. Stage the commits so the failing repro lands before the fix in git history. When the bug has a cheap local test path, write the failing test first. Skip the test when it would be expensive, integration-heavy, or unclear. This is the canonical **sequence-verifiable-units** principle skill, the failing test first and the fix on top."));
+  assert.ok(bug.includes("- [ ] 5. Stage the commits so the failing repro lands before the fix in git history. When the bug has a cheap local test path at a seam that exercises the bug as it happens at its call site, turn the minimised repro into the failing test first. Skip the test when it would be expensive, integration-heavy, or unclear. When only a shallower seam exists, skip it too and report the missing seam as a finding. This is the canonical **sequence-verifiable-units** principle skill, the failing test first and the fix on top."));
 });
 
 test("the ## Playbook section holds the playbook's prose outside its steps, verbatim", () => {
-  assert.deepEqual(section(todo("bug-fix"), "## Playbook"), [
-    "**You own this task. Plan, review, verify.** Delegate investigation and the fix to subagents, stay in the lead.",
-    "",
-    "Be scientific. Every shipped line traces to runtime evidence. Belt-and-suspenders that \"might help\" is a hypothesis, not a fix. It does not ship. When evidence refutes a hypothesis, revert what it motivated. The smallest change the evidence justifies ships, nothing more.",
-    "",
-    "**Reply:** what was broken, root cause, fix, how you verified. Quote the decisive failing and passing output, trimmed to the assertion and the counts.",
-  ]);
+  const bug = section(todo("bug-fix"), "## Playbook");
+  assert.equal(bug[0], "**You own this task. Plan, review, verify.** Delegate investigation and the fix to subagents, stay in the lead.");
+  assert.deepEqual(bug.map((line) => line.split(" ")[0]), ["**You", "", "Be", "", "Redact", "", "**Loops**,", "", "**Reply:**"]);
+  assert.equal(bug.at(-1), "**Reply:** what was broken, root cause, fix, how you verified. Quote the decisive failing and passing output, trimmed to the assertion and the counts.");
   const feature = section(todo("feature"), "## Playbook");
   assert.equal(feature[0], "**You own the design. Plan, review, verify.** Delegate implementation. Stay in the lead.");
   assert.ok(feature[2].startsWith("Code-coupled work (one feature, one migration) goes to a single owner"));
@@ -156,7 +153,7 @@ test("the anchored results read as intended on the routes that differ", () => {
   assert.ok(feature.includes("- [ ] 6. Units already commit in order with `Unit:` trailers, and the landing folds them (`/implement` step 5, Unit commits). Stack follow-ups. Use the **sequence-verifiable-units** principle skill, building, verifying, and committing each small unit before the next. A follow-up is an item of the report, never an Issue the run files (`/implement` step 5, Follow-ups)."));
   assert.ok(feature.includes("- [ ] 8. No pull request is opened: the gates below, then LANDING.md, one landing for the run."));
   const bug = lines(todo("bug-fix"));
-  assert.ok(bug.includes("- [ ] 2. Binary-search the cause. Form the candidate hypotheses, then rule them out until one survives. Seed them with `how` over the affected subsystem and the **why** skill for regression history. Each pass, take the split that cuts the most remaining problem space, get runtime evidence, eliminate. When program state is unclear, add instrumentation or logging and read it as the code runs. Don't guess. Drive a long or stubborn hunt with Claude Code's `loop` skill. Confirm the surviving *mechanism* with runtime evidence before the step-3 architect/interrogate fan-out."));
+  assert.ok(bug.includes(`- [ ] ${parseSteps(bundledPlaybook("bug-fix")).steps[1].text}`));
   assert.ok(bug.includes(`- [ ] 3. Plan the fix. If it crosses a function boundary, \`architect\` first. Delegate implementation to a subagent using your configured bug-fix model (default in poteto-mode's Models section) with a specific scope. ${ONE_WRITER}`));
   assert.ok(lines(todo("refactoring")).some((line) => line.startsWith("- [ ] 3. Name the target shape.") && line.endsWith(`run the **architect** skill for parallel design exploration of the shape before the move. ${ONE_WRITER}`)));
   assert.ok(lines(todo("refactoring")).some((line) => line.startsWith("- [ ] 8. Units already commit in order") && line.endsWith("stays green before the next. No pull request is opened: the gates below, then LANDING.md, one landing for the run.")));

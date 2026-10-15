@@ -1,7 +1,7 @@
 ca2bba771cd39dbef6acf96b52481133983451f3  LICENSE-cursor-team-kit
 3ebb69c2234f26ce81fa7fb3c67d783f9228bf25  LICENSE-pstack
 ca2bba771cd39dbef6acf96b52481133983451f3  LICENSE-thermos
-040d7ac945aa8f7876d6b3c55db1fbc8a9058ade  NOTICE-pstack.md
+f5ff616fe8075243d1f67e521e1880590c4c516d  NOTICE-pstack.md
 209e3704dfa75022060c936bd3f3362fa3bbe254  agents/comment-sicko.md
 dafa7fd0fd9ceb26cb6679470b0aedb0a1d14422  agents/effort-high.md
 bb76008f5b5758d90b151733a9b9c185922cec05  agents/effort-low.md
@@ -14,8 +14,6 @@ bb76008f5b5758d90b151733a9b9c185922cec05  agents/effort-low.md
 ee15c3b6c741e2d058758ea99d198be1cea5c6c6  agents/poteto-agent-medium.md
 343fb6e9442c5c772756a7620b21e34b0994b516  agents/poteto-agent-xhigh.md
 fa9f58fdc44f4a1e724234e3cc6a8768fe6b31ad  agents/poteto-agent.md
-898610bda10c05246cb9ca346ec990310851757f  agents/thermo-nuclear-code-quality-review-subagent.md
-949b0121d981d592be1b8c774baea272da8cf9c4  agents/thermo-nuclear-review-subagent.md
 c74144520b39827ad099445c0ff08ccea694dd49  skills/architect/SKILL.md
 f8503c9595b289c607ff5088f82b21197edf94ec  skills/architect/references/design-red-flags.md
 9ccea423df568bbedeea0c371b9ca6990f1d6b07  skills/architect/references/rationale-template.md
@@ -34,7 +32,6 @@ fb64570cfab3bbe672fe80925651933ebd57aa33  skills/create-verification-skill/refer
 1b3827c7f991182149a7abda696af43ff8f17a12  skills/deslop/SKILL.md
 4b557f6901b2fa12f9e5ad9287dac2155255f389  skills/figure-it-out/SKILL.md
 60adbdde5b63ee95cea8180df8080498680e338d  skills/fix-ci/SKILL.md
-2940fe4c7f2ada9c119b5726bf276b834e6754b6  skills/fix-merge-conflicts/SKILL.md
 396aad5ff7cbe981124e9540ae786a120af77149  skills/get-pr-comments/SKILL.md
 2d9c547d3a1c4f3683bb3c9427ea44bbe95e06bd  skills/how/SKILL.md
 3a36fb6736c5b74ac2774350841e332a019dec94  skills/how/references/explainer-prompt.md
@@ -56,7 +53,6 @@ f4ea0285a56700c9a444f421e6a64ff60af58b26  skills/poteto-mode/playbooks/authoring
 7ea13151fa19b4f901d5a111601103907f0c0d7d  skills/poteto-mode/playbooks/autopilot-full.md
 c4360ddc66601018037f0fee01523cd5ed18ef77  skills/poteto-mode/playbooks/autopilot-stack.md
 d67b251623610303348d154dda4cddab708d3980  skills/poteto-mode/playbooks/babysit.md
-accdf3df31cc9b5b7a8791edb4709686cf29ae41  skills/poteto-mode/playbooks/bug-fix.md
 4bfbc7edc67604e991e0084e45a75ab36d3724f9  skills/poteto-mode/playbooks/eval.md
 f2d0cd489c8d9c159719a86ae603904c9515d846  skills/poteto-mode/playbooks/feature.md
 9abaaa92fadf7808f15b9e9a79d737e10437433f  skills/poteto-mode/playbooks/hillclimb.md
@@ -132,9 +128,6 @@ db220376ecb8c582a6a4f6575a8f26469603a38d  skills/show-me-your-work/references/de
 004ec8d18fc3a141fd753346c65e6fe9babc4775  skills/show-me-your-work/scripts/log.sh
 cdc0c308dcd529664c0b19feb6608843742be714  skills/swarm/SKILL.md
 724c07279600c822369473c0a041a55779588289  skills/teach/SKILL.md
-4d9176be4ac90728c24eb9b29125f45d8d8aecd1  skills/thermo-nuclear-code-quality-review/SKILL.md
-dedf2a22a889878cdd5fdd6638cd8bcf53697f41  skills/thermo-nuclear-review/SKILL.md
-f88cba1fb8612e6f51261b71c7a643e30a8ac160  skills/thermos/SKILL.md
 be42292873bcf59b70f5c7c7d83e78984492e3bd  skills/unslop/SKILL.md
 d1fd4443c8787c69cb90b27e61aa794909e93de3  skills/what-did-i-get-done/SKILL.md
 3ef3d97e761f9a941ec098c87a9967eaa577180a  skills/why/SKILL.md

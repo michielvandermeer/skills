@@ -19,7 +19,7 @@ Preconditions:
 - A fresh run. For a skill that needs repo state, the state its feature file names.
 - The skill's `description:` line, read from its `SKILL.md`.
 
-- **Fires.** Run `verify.py turn <run> "<request in the description's terms>"`. The summary shows `skills:<name>` under `skills invoked by the model this turn`, and `skill bodies loaded from` names `<checkout>\skills\<name>`. Example: "the tests are failing with a null reference — debug this" fires `skills:diagnosing-bugs`.
+- **Fires.** Run `verify.py turn <run> "<request in the description's terms>"`. The summary shows `skills:<name>` under `skills invoked by the model this turn`, and `skill bodies loaded from` names `<checkout>\skills\<name>`. Example: "write the PR description for this branch" fires `skills:pr`.
 - **Stays quiet.** In a fresh run, send a request near the edge of the description that another skill owns. The summary shows the other skill or none.
 - **User-only.** In a fresh run, send a request that matches a user-only skill, such as "set up the issue tracker for this repo" for `/skills:setup`. No `skills:setup` appears under `skills invoked by the model`.
 

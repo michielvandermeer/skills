@@ -163,13 +163,13 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 **Skills you type.** Only the skills that no other skill loads pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
 
 - Opus at high: `/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/wayfinder`, `/implement`, `/implement-yolo`.
-- Sonnet at high: `/triage`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`, and the pstack skills you type: `/automate-me`, `/babysit`, `/bro`, `/correct`, `/ketchup`, `/make-pr-easy-to-review`, `/maintain-verification-skill`, `/poteto-help`, `/thermos`, `/what-did-i-get-done`.
+- Sonnet at high: `/triage`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/learn-habits`, `/setup`, and the pstack skills you type: `/automate-me`, `/babysit`, `/bro`, `/correct`, `/ketchup`, `/make-pr-easy-to-review`, `/maintain-verification-skill`, `/poteto-help`, `/what-did-i-get-done`.
 
 **Sub-agents.**
 
 - Sonnet at medium: `skills:climber`, `skills:validator`, `skills:researcher`.
 - Haiku at high: `skills:explorer`.
-- Opus at high: `skills:reviewer`, the two `/code-review` reviewers.
+- Opus at high: `skills:reviewer`, the two `/code-review` reviewers, and the two `/thermo-nuclear-review` passes.
 
 **Implement delegates.** An implement run dispatches pstack's `skills:poteto-agent` for every code-writing delegate and for the verifier, and runs pstack's `how`, `architect`, and `interrogate` skills. Each of those roles takes its model from `~/.claude/pstack-models.md`, the sheet `/skills:setup models` writes, so the cost of a run is set in one place you already own.
 
@@ -185,7 +185,6 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `code-review` | Review changes since a fixed point along two axes — Standards and Spec — in parallel sub-agents. |
 | `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
-| `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
 | `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, and brings every ADR to state the decision in force. Once `/setup` has run, it leaves Issues alone. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `explain` | Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
@@ -197,12 +196,10 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `implement` | Implement an Issue's Spec, or a description, as a pstack poteto-mode run in its own worktree: the matching playbook, design before code, a verifier that wrote none of the code, an adversarial review, then one commit landed on your branch. |
 | `implement-yolo` | The same run on this checkout and this branch. No worktree, no new branch, no merge. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then file the ones you pick as Issues — as Specs when they are clear enough to build. |
-| `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Type it to rebuild your profile from past sessions; no grilling session runs it for you. |
 | `pr` | Shape a pull request description: a small picture of the change, before-and-after evidence, and how risky it is to merge. Loads on its own whenever the agent writes one. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
-| `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
 | `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
 | `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. Then choose which model each pstack role runs on, and whether the SessionStart hook routes tasks; `/setup models` does only that part. |
