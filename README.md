@@ -152,7 +152,8 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 ├── CONTEXT.md             # the vocabulary these skills share
 ├── LICENSE
 ├── LICENSE-pstack         # and LICENSE-cursor-team-kit, LICENSE-thermos: pstack's licenses
-├── NOTICE.md              # what pstack brings in, and from where
+├── NOTICE.md              # the work by others this plugin includes
+├── NOTICE-pstack.md       # what pstack brings in, and from where
 └── README.md
 ```
 
@@ -229,7 +230,7 @@ A SessionStart hook tells each new session to use `poteto-mode` for work that to
 /plugin uninstall pstack@pstack-claude
 ```
 
-[`tools/import_pstack.py`](tools/import_pstack.py) brings in a newer pstack-claude: it copies the upstream files, rewrites them for this plugin, and fails when an upstream change needs a new rewrite. [NOTICE.md](NOTICE.md) names the upstream commit and the sources.
+pstack's files are this repo's own, to edit like any other ([ADR-0070](docs/adr/0070-pstack-is-imported-then-owned.md)). [`tools/import_pstack.py`](tools/import_pstack.py) copied them from one pstack-claude commit and rewrote them for this plugin. Rerun it to bring in a newer commit: it stops before it writes over a file edited since the last import, and `--force` writes over those edits. [NOTICE-pstack.md](NOTICE-pstack.md) names the upstream commit and the sources.
 
 ## Credits
 
@@ -243,4 +244,4 @@ The pictures `pr` draws come from Dex Horthy's [`show-me`](https://github.com/hu
 
 ## License
 
-[MIT](./LICENSE). pstack keeps its own MIT licenses and copyright notices, listed in [NOTICE.md](NOTICE.md).
+[MIT](./LICENSE). pstack keeps its own MIT licenses and copyright notices, listed in [NOTICE-pstack.md](NOTICE-pstack.md).

@@ -11,3 +11,5 @@ Match `skills/writing-for-agents/SKILL.md` on every skill file, `AGENTS.md`, or 
 Human-facing skill output runs at `skills/plain-language/SKILL.md` — see [ADR-0009](docs/adr/0009-plain-language-for-output-not-source.md).
 
 `CONTEXT.md` is the glossary for how the skills talk about the documents they read and write, and about each other. Use its terms exactly; add to it when a change coins one. Rules belong in an ADR.
+
+pstack's files are imported, then owned ([ADR-0070](docs/adr/0070-pstack-is-imported-then-owned.md)). Edit them like any other file; read the ADR before you rerun `tools/import_pstack.py`.
