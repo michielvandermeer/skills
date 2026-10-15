@@ -249,6 +249,18 @@ Anything a delegate did that contradicts the Spec or the design, any failure it 
 A sub-agent whose assignment is a document decided before it was dispatched — a research question, a Spec draft, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled. Its opposite carries design or review judgement: the **Reviewer** is pinned to the model and effort that judgement needs, while a Hillclimb's **Fixer** or a fan-out agent runs at the Driving session's own settings. An implement run's delegates are neither: they take their model from the operator's `pstack-models.md` by role, as the `poteto-mode` skill says.
 _Avoid_: cheap agent, worker, low-tier agent
 
+**Run directory**:
+`.agents/runs/<slug>/` in an implement run's working tree, with its own `.gitignore` holding `*` so no commit sweeps it in: `spec.md`, the run's copy of its **Spec**; `todo.md`, the run's only todolist and its state machine, each line open, done, skipped with a reason, or `BLOCKED:`; `trail.tsv`, the decision trail; `design.md`, the architect's synthesized design; and `evidence/`, what the repro and the **Verifier** saved. The run's only state: a resume reads `todo.md`'s first open item, and `check-run.mjs` reads nothing else at the landing gate. Copied to the original checkout before the run worktree is removed, where `/retro` and the person reviewing the trail read it; a later run on the same slug replaces it.
+_Avoid_: steps folder, proof folder, run folder, bookkeeping, scratch
+
+**Overlay**:
+The project playbook at `skills/implement/.agents/playbooks/implement.md`, written in the `poteto-mode` skill's own grammar (`extends`, `when`, and a `**Replace**`, `**After**`, `**Before**`, or `**In**` change anchored on a bundled step's quoted words), that turns each bundled playbook's end into an implement run's gates and landing and its "ask the user" points into halts. poteto-mode's `check-playbooks.mjs` proves every anchor before a run starts, and a line it prints halts the run.
+_Avoid_: patch, playbook fork, workflow file, WORKFLOWS.md
+
+**Verifier**:
+The fresh `skills:poteto-agent` that wrote none of an implement run's code, sent after the build to drive the matching surface, run every **Hand check** in the Spec, save artifacts under the **Run directory**'s `evidence/`, and return VERIFIED, NOT VERIFIED, or INCONCLUSIVE per item with the evidence path. Only VERIFIED on every item passes the verification gate; a NOT VERIFIED item goes to a fresh **Fixer** and then a fresh Verifier.
+_Avoid_: Checker, Prover, Judge, QA agent, tester
+
 **Benchmark mode**:
 The state of an `/implement` run the `benchmark/` runner starts to measure what it costs: `SKILLS_BENCHMARK=1`, named in the session's system prompt. The claim and every push become no-ops that write one line to a log, and every other part of the run goes as it does in production. Compared with what the run does, it changes only whether the run reaches outside the checkout.
 _Avoid_: dry run, test mode, simulation
