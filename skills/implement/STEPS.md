@@ -27,9 +27,19 @@ Each step is a **tracer bullet**:
 
 Slice to whatever number of steps the spec actually needs. A small spec legitimately yields one step. Every step delivers behaviour: documentation the Spec names rides the step whose behaviour it describes, and the last real step is the one that leaves the whole suite green.
 
+## Workflows
+
+Give every Step one **Workflow** from the table in [WORKFLOWS.md](WORKFLOWS.md), beside this file, and write it on the Step's `Workflow:` line. A Step that needs two Workflows is two Steps. The Workflow shapes the slice:
+
+- `bug-fix`: one Step per reported symptom. Its `## What to build` names the symptom and the input that shows it. A prefactor that gives the bug a seam a test can reach is a `refactor` Step before it.
+- `refactor`: the prefactor, and every stage of a Wide refactor.
+- `perf`: one Step per number, with the Spec's target in its acceptance criteria. A measuring script the Spec asks to keep rides that Step.
+- `visual-parity`: shared primitives first, then one Step per component, or per batch of small ones.
+- `feature`: everything else.
+
 ## Prefactor first
 
-"Make the change easy, then make the easy change." Where the current shape of the code fights the spec, step `01` is a pure prefactor: no user-visible behaviour, exempt from *demoable* but not from *green*. Any prefactoring goes before the work that depends on it.
+"Make the change easy, then make the easy change." Where the current shape of the code fights the spec, step `01` is a pure prefactor, a `refactor` Step: no user-visible behaviour, exempt from *demoable* but not from *green*. Any prefactoring goes before the work that depends on it.
 
 ## Wide refactors are the exception
 
@@ -49,6 +59,7 @@ One file per step at `.agents/steps/<slug>/<NN>-<step-slug>.md`, numbered from `
 # <NN> — <Step title>
 
 Status: pending
+Workflow: <feature | bug-fix | refactor | perf | visual-parity>
 Depends on: <comma-separated earlier step numbers, such as 02, 05 — or none>
 
 ## What to build

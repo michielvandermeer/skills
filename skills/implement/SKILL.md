@@ -65,13 +65,14 @@ Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and 
 - the spec's Testing Decisions section, which governs what it tests, and the testing documents it names
 - an instruction to read the Coding standards and those testing documents by section: list the headings first (`grep -n '^#'` on the file), then read only the sections that apply to the code the Step touches, never the whole file
 - the Proof rules, [PROOF.md](PROOF.md) in this skill's directory by absolute path, and `<proof>`
+- the Workflow rules, [WORKFLOWS.md](WORKFLOWS.md) in this skill's directory by absolute path, with an instruction to read its Every workflow section and the section its Step file's `Workflow:` line names, and no other
 - `<base>`, the branch its tests are measured against
 - the deviations reported by earlier steps, verbatim, when there are any
 - its Step number and the total, and the report format below
 
 Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so the steps that depend on it inherit the correction.
 
-Require of it: **its build and the tests closest to its change passing before it finishes**, then its `## Outcome` — Safety fact, Proof, and Merge risk included — appended to its Step file, that file's `Status:` set to `built`, and its code and Step file committed together in one commit.
+Require of it: **its build and the tests closest to its change passing before it finishes**, then its `## Outcome` — Safety fact, Proof, Merge risk, and workflow line included — appended to its Step file, that file's `Status:` set to `built`, and its code and Step file committed together in one commit.
 
 - It builds every project on its footprint's `Projects:` line, and the whole suite on the last Step.
 - The tests closest to its change are the ones it wrote or changed and the ones covering the code it changed, filtered as narrowly as the test runner allows. The full set of those projects' tests is the Checker's to run, once, after its fixes ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)).
@@ -93,7 +94,7 @@ Once that check passes, resolve the parent of the Step's commit with `git rev-pa
 
 - the spec, and the step file
 - that SHA, as the fixed point of its review
-- `CONTEXT.md` and any ADR covering the area, the Coding standards, the spec's Testing Decisions section, PROOF.md, `<proof>`, and `<base>`, found as above
+- `CONTEXT.md` and any ADR covering the area, the Coding standards, the spec's Testing Decisions section, PROOF.md, `<proof>`, WORKFLOWS.md with the same two sections, and `<base>`, found as above
 - the same instruction to read the Coding standards and the testing documents by section
 - the deviations reported by earlier steps and by this step's agent, verbatim, when there are any
 - its Step number and the total, and the same three-line report format
@@ -131,11 +132,11 @@ Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remai
    - When the rebase replayed the branch onto commits `<base>` gained during the run, green is not known any more: build and run the projects on every Step's `Projects:` line — the whole suite when the last Step ran it — before going on. Before any fixer dispatch, re-run each failing project once, yourself. A failure that passes on the re-run is a flaky test and does not block landing: its test name goes on the deviations line and into the final report, the same way a failure `<base>` already has does under [ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md). A failure that fails again is red and gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)).
    - Skip that build and test run when no build or test reads anything `<base>` gained: every path `git diff --name-only <fork> <onto>` lists is Markdown or sits under `.agents/` — another run's ADR, its glossary edit, its retro edit to `.agents/refs/tracker.md` — and no project file, build script, or test names that file or pulls in Markdown by a wildcard. Green then still holds. Any other path — code, a project or build file, test data, config a test reads — or any doubt about one, and the build and test run goes ahead. A skip goes in the final report: the range `<fork>..<onto>` you compared, and why none of its files is read by a build or test.
 2. Still in the worktree: run [the Prover's pass](#the-provers-pass).
-3. Still in the worktree: hold `grep -hE '^(Safety fact|Proof|Merge risk):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory and the Spec with it, and commit the deletion. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Then build [the landing commit](#the-landing-commit) from that tree, on top of `<onto>`, leaving the branch where it is: `git commit-tree HEAD^{tree} -p <onto> -F -`, with the message on stdin. Hold the hash it prints as `<landing>`.
+3. Still in the worktree: hold `grep -hE '^(Safety fact|Proof|Merge risk|Shape|Root cause|Reader load|Measure|Diff):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory and the Spec with it, and commit the deletion. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Then build [the landing commit](#the-landing-commit) from that tree, on top of `<onto>`, leaving the branch where it is: `git commit-tree HEAD^{tree} -p <onto> -F -`, with the message on stdin. Hold the hash it prints as `<landing>`.
 4. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 5. From the original directory, on `<base>`: `git merge --ff-only <landing>`. (`<base>` lives here, so only the original directory can fast-forward it.) `<landing>`'s parent is `<onto>`, so this is a fast-forward only while `<base>` is still `<onto>`. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — the branch is deleted, and `<proof>` is deleted. Delete the branch with `git branch -D <branch>` once `git diff --quiet <branch> <base>` succeeds: its commits never reach `<base>`, so `-d` refuses it, and the empty diff shows `<base>` holds all of its work. When the diff is not empty, keep the branch and name it in the final report. When the merge errors, `<base>` moved: re-enter the worktree, drop the deletion commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Step files come back for the Prover — then go through 1 to 4 again and retry this merge.
 
-The final report lists each Step's `Safety fact:`, `Proof:`, and `Merge risk:` lines as step 3 held them, and says the Prover re-ran every Proof and ran every Hand check on the code that lands. It names each Proof or Hand check that passed only on its re-run, each Hand check the Prover skipped and what it needs, each Proof the Proof fixer restored, updated, or retired, and each Hand check it made pass.
+The final report lists each Step's `Safety fact:`, `Proof:`, `Merge risk:`, and workflow lines as step 3 held them, and says the Prover re-ran every Proof and ran every Hand check on the code that lands. It names each Proof or Hand check that passed only on its re-run, each Hand check the Prover skipped and what it needs, each Proof the Proof fixer restored, updated, or retired, and each Hand check it made pass.
 
 ### 6. Push
 
@@ -150,7 +151,7 @@ Run `/retro` only when the run had a deviations line that was not `none`, a retr
 The landing commit is the one commit the run leaves on `<base>`: the run's whole change, without the Step files ([ADR-0062](../../docs/adr/0062-an-implement-run-lands-as-one-commit.md)). Write its message before the Spec is deleted:
 
 - **Subject**: what the change does, ending with the Issue's reference — `Roles are given from the Person (#104)`. Write it from the Spec, not from the Issue's title, which often names the problem. Follow the commit style the repo's `AGENTS.md`, `CLAUDE.md`, or Coding standards document, when they document one. A run from a description has no reference.
-- **Body**: each Step's title from the index, one per line, when the run had more than one Step. Then the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the final report names the Issue for the user to close.
+- **Body**: each Step's title from the index, one per line, when the run had more than one Step. Then each Step's `Root cause:` and `Measure:` line, when it has one, so the next person who debugs or measures this code finds them in `git log`. Then the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the final report names the Issue for the user to close.
 
 ## The push
 

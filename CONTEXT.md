@@ -286,6 +286,10 @@ A vertical slice that cuts a narrow but complete path through every layer (schem
 **Wide refactor**:
 One mechanical change whose blast radius fans across the codebase, so a single edit breaks call sites everywhere and no tracer bullet can land green. Sequenced as expand–contract instead of sliced vertically.
 
+**Workflow**:
+The kind of change one Step makes — `feature`, `bug-fix`, `refactor`, `perf`, or `visual-parity` — written on its Step file's `Workflow:` line. It sets the Step agent's first move, what the **Safety fact** names, the Outcome's fourth line (the workflow line), and what the Checker checks beyond the Proof.
+_Avoid_: kind, type, mode, playbook
+
 **Safety fact**:
 The one fact a change is safe because of, stated so that it names what breaks if the fact is false. "It compiles" names nothing that breaks, so it is not a Safety fact. Recorded in an Outcome together with its rung on the **Proof ladder** and its **Proof**.
 _Avoid_: safety claim, invariant, assumption

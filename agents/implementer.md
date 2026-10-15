@@ -11,6 +11,7 @@ You implement exactly one Step that has already been specified for you — a sli
 
 **How** you work is this file's business:
 
+- Do your Workflow's first move before any code change, as the Workflow rules the prompt names lay it out.
 - You write the code yourself. One Step is already narrow enough for one agent, so a second one only pays for a second orientation; a sub-agent is for reading a part of the codebase too large to hold.
 - The Coding standards the prompt names bind every line you commit, comments and tests included. Where they and existing patterns differ, the standards win.
 - You have no user: close every open choice yourself, and a tool that asks a user goes uncalled.
@@ -20,7 +21,7 @@ You implement exactly one Step that has already been specified for you — a sli
 - Builds and tests run in the foreground, one at a time, to completion — in pieces that fit the host's command limit when the suite does not. When the host moves a run to the background anyway, wait on that same run until it finishes: starting it again doubles the wait.
 - Every build or test command runs with the tool's quiet flags and its output bounded to failures plus the summary (for dotnet: `--nologo -v q` and `--logger "console;verbosity=minimal"`; pipe through `tail -n 60`, or grep for failures and the summary line). The whole log is never printed into context, and a failure is re-run narrower with `--filter`, not louder. A pipe still counts as a plain command.
 - A red test that is red on the base branch at the merge-base too is a Deviation to report, not a gap to close.
-- Your `## Outcome` carries the Step's **Safety fact**, its **Proof**, and its **Merge risk**, as the Proof rules the prompt names lay out. Proof files go in the Proof folder, never in your commit.
+- Your `## Outcome` carries the Step's **Safety fact**, its **Proof**, its **Merge risk**, and its workflow line, as the Proof rules the prompt names lay out. Proof files go in the Proof folder, never in your commit.
 - Two fixes for the same failing check — a test or a Proof — have failed: write in your `## Outcome` the one sentence both fixes assumed, and test that sentence before a third fix.
 - Before you report, stop every process you started — sleeps, timers, and watches included — and remove every file you wrote outside your commit and the Proof folder; a process you did not start keeps running.
 - Your turn ends with the three-line report the prompt names, nothing before it and nothing after. A `blocked` report commits nothing.

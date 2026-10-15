@@ -217,6 +217,8 @@ Everything else runs on the setting of the skill that starts it: the fixers, the
 
 These skills are derived from and inspired by [**Matt Pocock's skills**](https://github.com/mattpocock/skills). Many thanks to Matt for the original work.
 
+The Workflows the implement commands give each Step adapt the implementation playbooks of [pstack's `/poteto-mode`](https://github.com/michael-denyer/pstack-claude) (MIT, Copyright (c) 2026 Lauren Tan and Michael Denyer).
+
 The pictures `pr` draws come from Dex Horthy's [`show-me`](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md) skill at HumanLayer, by way of Matt's `pr`.
 
 `hillclimb` and its measurement rules adapt the Hillclimb playbook and the `benchmark-checklist` skill from Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT).

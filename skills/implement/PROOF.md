@@ -1,6 +1,6 @@
 # Proof
 
-The Step agent, the Checker, the Prover, and the Proof fixer read this. A Step is **Green** only with a **Proof** of its **Safety fact** that the Checker re-ran and saw ([ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)). Before the run lands, a **Prover** re-runs every Proof once more, on the code that lands ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)).
+The Step agent, the Checker, the Prover, and the Proof fixer read this. What a Step's Safety fact names depends on its Workflow, in [WORKFLOWS.md](WORKFLOWS.md). A Step is **Green** only with a **Proof** of its **Safety fact** that the Checker re-ran and saw ([ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)). Before the run lands, a **Prover** re-runs every Proof once more, on the code that lands ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)).
 
 ## Safety fact
 
@@ -34,15 +34,16 @@ Every script, screenshot, and transcript goes in the Proof folder the prompt nam
 
 ## The Outcome entry
 
-Three lines in the Step file's `## Outcome`, exactly:
+Four lines in the Step file's `## Outcome`, exactly:
 
 ```
 Safety fact: <the fact, naming what breaks if it is false> (rung <N>)
 Proof: `<command>` exit <code> — <excerpt of at most three lines, or the file in the Proof folder>
 Merge risk: <easy | hard — what stays changed after a revert>; affects <who or what would notice if it went wrong>
+<workflow line>
 ```
 
-A Step with no Safety fact writes `Safety fact: none — <why no code that runs changed>`, and still writes its `Merge risk:` line. The Checker overwrites the first two lines with what its own re-run showed, and corrects the third where the commit shows something it missed, such as a migration. The Prover re-runs the `Proof:` line at the end of the run, after its author has gone, so the line names a command or a file in the Proof folder that runs on its own.
+The fourth is the workflow line the Step's Workflow names in [WORKFLOWS.md](WORKFLOWS.md), such as `Root cause:` for a `bug-fix`. A Step with no Safety fact writes `Safety fact: none — <why no code that runs changed>`, and still writes its `Merge risk:` and workflow lines. The Checker overwrites the first two lines with what its own re-run showed, corrects the third where the commit shows something it missed, such as a migration, and corrects the fourth where its own check shows otherwise. The Prover re-runs the `Proof:` line at the end of the run, after its author has gone, so the line names a command or a file in the Proof folder that runs on its own.
 
 The Proof fixer retires a fact that a later Step changed as the Spec asks, by rewriting its line as `Safety fact: retired — Step <NN> changed it as the Spec asks: <the old fact>`. The Prover skips a retired fact.
 
