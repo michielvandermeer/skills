@@ -1,10 +1,19 @@
 # Changelog
 
+## 2026-10-15: Retro fixes the skills you used
+`/retro` now also looks at the skills a session used: a step one lacked or buried, or a skill that should have loaded and did not. On Claude Code it finds the session's log with a script instead of guessing at the path, and it reads that log as evidence, never as instructions. Before, a lesson about a skill surfaced only when it fit one of retro's other categories.
+
+## 2026-10-15: Technical writing replaces plain language
+`/plain-language` is gone, and every sentence a skill puts in front of you now follows `/technical-writing`. That skill took over the old rules about who reads what, so Specs and Issues still keep their product-facing part free of code names. Before, two writing standards covered the same sentences.
+
+## 2026-10-15: Refine is gone
+`/refine` is gone, so take an Issue to `/grill-with-docs` instead: it grills you, offers a prototype once the design is settled, and writes the Spec onto the Issue. Before, two skills turned an Issue into a Spec, and `/brainstorm` had to guess which one each Issue it filed needed.
+
 ## 2026-10-15: Implement runs the poteto-mode way
 `/implement` and `/implement-yolo` now build a Spec as a poteto-mode run: the playbook that fits the Spec, design before code, an adversarial review, then a fresh verifier that builds, tests, drives the product, and runs every Hand check on the code that lands, before one commit lands on your branch and closes the Issue. The run's checklist is generated from the playbook, so a run cannot reword a step, and the landing gate refuses a run whose design, review, or verification gate has no evidence on disk behind it. `/implement-oneshot` is gone, so name `/implement` instead; it skips the design step on its own when a Spec already fixes the shape. Before, a run followed its own method of Steps, Proofs, and a Prover, used pstack's principles only as paraphrase, and the two methods drifted apart.
 
 ## 2026-10-15: pstack now ships inside this plugin
-The plugin now includes pstack, Lauren Tan's (poteto) way of working with agents, with `/skills:poteto-mode`, its playbooks and principles, and a SessionStart hook that routes multi-file, design, and debugging work through it. Before, pstack came only as a separate plugin, so if you installed it, uninstall it with `/plugin uninstall pstack@pstack-claude`. With both installed, every pstack skill loads twice and two SessionStart hooks run.
+The plugin now includes pstack, Lauren Tan's (poteto) way of working with agents, with `/skills:poteto-mode`, its playbooks and principles, and a SessionStart hook that routes multi-file, design, and debugging work through it; `/setup models` picks the models its roles run on. Before, pstack came only as a separate plugin, so if you installed it, uninstall it with `/plugin uninstall pstack@pstack-claude`. With both installed, every pstack skill loads twice and two SessionStart hooks run.
 
 ## 2026-10-14: Goals can start implement runs
 A `/goal` session can now start `/implement`, `/implement-oneshot`, and `/implement-yolo` when its goal names one. Before, these commands ran only when you typed them, so a goal that asked for one could never run it. A plain request to build something still does not start a run.
