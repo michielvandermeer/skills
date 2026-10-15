@@ -1,5 +1,5 @@
 ---
-extends: feature, bug-fix, refactoring, perf-issue, visual-parity
+extends: feature, bug-fix, refactoring, perf-issue, hillclimb, visual-parity
 when: An /implement run builds a Spec to landing with no person in the loop.
 ---
 
@@ -16,10 +16,15 @@ when: An /implement run builds a Spec to landing with no person in the loop.
 - **In** "Reproduce it yourself on the matching surface" The red output goes where the Design gate reads it (`/implement` step 6); a symptom that never goes red is a halt (`/implement`, Halts and flags).
 - **In** "Ask the user only with a stated, specific reason the control surface cannot reach the target, and only after driving it as far as it goes." Nobody is there to ask: that reason is a halt reason (`/implement`, Halts and flags).
 - **In** "If the baseline looks wrong, stop and ask, don't edit it." The stop is a halt (`/implement`, Halts and flags).
+- **In** "Use the user's numbers when given, otherwise agree them." Nobody is there to agree them: the Spec's numbers, or an operator call made by default (`/implement` step 5, Attempts).
+- **In** "Open the decision log via the **show-me-your-work** skill." `decision.tsv` sits in the Run directory (`/implement`, Run directory).
+- **Replace** "When several independent hypotheses are live, fan them to parallel subagents, each in its own worktree (the **separate-before-serializing-shared-state** principle skill)." The run worktree is the only worktree, and attempts go one at a time (`/implement` step 5, One writer).
+- **Replace** "One commit per accepted fix, staging only the files you changed (`git add <files>`, never `-A`). Log the row either way, kept or reverted." Each attempt is one unit commit, and a reverted one is reset off the branch; log its `decision.tsv` row either way (`/implement` step 5, Attempts).
 - **In** "Stack follow-ups." A follow-up is an item of the report, never an Issue the run files (`/implement` step 5, Follow-ups).
 - **Replace** "Rebase into small, ordered commits." Units already commit in order with `Unit:` trailers, and the landing folds them (`/implement` step 5, Unit commits).
 - **Replace** "Rebase into small ordered commits." Units already commit in order with `Unit:` trailers, and the landing folds them (`/implement` step 5, Unit commits).
 - **Replace** "If the design is contested, `interrogate` before shipping." `interrogate` runs on every run, in the Review gate (`/implement` step 6).
 - **Replace** "Cite the measurement in the PR." Cite the baseline and post-fix numbers in the landing commit's body (LANDING.md, The landing commit).
 - **Replace** "Run **Opening a PR**." No pull request is opened: the gates below, then LANDING.md, one landing for the run.
+- **Replace** "Run **Opening a PR** with the accepted commits stacked in the order they landed." No pull request is opened: the gates below, then LANDING.md, whose landing commit lists each kept attempt and each reverted idea.
 - **Replace** "Run **Opening a PR** per component or per safe batch." No pull request is opened: the gates below, then LANDING.md, one landing for the run and every component.

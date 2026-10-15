@@ -47,16 +47,12 @@ One focused task in a Wizard, typically one screen.
 _Avoid_: Step, prompt
 
 **Hillclimb**:
-One effort to push one measured number in one direction by trying changes one at a time and keeping each only when the measurement shows it helped and the tests still pass. It starts once the number, its target, a minimum number of **Attempts**, and any time limit are agreed, works in its own worktree, and ends by landing on the **Base branch**. Hillclimbs on the same number share one folder at `.agents/hillclimbs/<slug>/` (`.agents/hillclimbs/<context>/<slug>/` in a multi-context repo).
+One effort to push one measured number in one direction by trying changes one at a time and keeping each only when the measurement shows it helped and the tests still pass: the `poteto-mode` skill's Hillclimb playbook. It stops when the number reaches its target and a minimum number of **Attempts** have run. `/implement` routes a Spec that asks for one to that playbook and lands it on the **Base branch**; a plain request runs it in the session and ends in a pull request.
 _Avoid_: optimization run, perf drive, benchmark loop
 
 **Attempt**:
-One change a **Hillclimb** tries: a single idea, written by the **Climber**, measured against the commit before it, then kept as its own commit or reverted in full.
+One change a **Hillclimb** tries: a single idea, written by a delegate, measured against the commit before it, then kept as its own commit or reverted in full. The agent that wrote it never judges it.
 _Avoid_: iteration, experiment, trial
-
-**Attempt log**:
-The record of every **Attempt** on one measured number, in that number's **Hillclimb** folder beside its measurement script: one row per Attempt with its idea, its change, the number before and after, and whether it was kept or reverted. Committed and kept across Hillclimbs, so the reverted rows tell the next one which ideas are proven not to help.
-_Avoid_: decision log (that is an ADR), decision.tsv, experiment log
 
 **Spec**:
 The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, **Hand checks**, user stories, implementation and testing decisions — replacing whatever the Issue said before. Its problem, solution, Hand checks, and user stories are written for the **Product reader**; the rest is written for a developer new to the repo. The input to `/implement` and `/implement-yolo`. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
@@ -112,7 +108,7 @@ The folder that stands where a context's name would in a work document's path, i
 _Avoid_: shared, global, cross-app
 
 **Coding standards**:
-A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say. Distinct from `/code-review`'s smell baseline, which applies even when a repo documents nothing.
+A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say.
 _Avoid_: style guide, conventions, coding-standards.md
 
 ### Communication
@@ -202,7 +198,7 @@ Suggestions for the agent's environment after a session. **High-priority** sugge
 _Avoid_: postmortem, wrap-up, retro as a meeting, reflection
 
 **Named session skill**:
-A skill that starts a **Retrospective** when it finishes, unless another Named session skill started it. Most are typed by the user and cannot be loaded by the agent; `/hillclimb` also starts one when the agent loaded it.
+A skill that starts a **Retrospective** when it finishes, unless another Named session skill started it.
 _Avoid_: host skill, wrapping skill, parent skill
 
 **High-priority**:
@@ -215,23 +211,15 @@ _Avoid_: fix, bugfix, regression
 
 ### Execution
 
-**Climber**:
-The sub-agent (`skills:climber`) that writes one **Attempt** of a **Hillclimb**. It gets one idea, changes the code in the Hillclimb's worktree, builds, runs the tests nearest its change, and leaves the change uncommitted. The Driving session measures it and keeps or reverts it, so the Climber never judges its own change.
-_Avoid_: attempt agent, hillclimber, worker
-
 **Validator**:
 The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just drafted. It works from the draft's path, corrects facts in that file, and returns the report of corrections and open questions; `/to-spec` then writes the corrected Spec to its Issue in one update.
 _Avoid_: spec checker, spec reviewer, linter
 
-**Reviewer**:
-The sub-agent (`skills:reviewer`, pinned to Opus) that `/code-review` dispatches once per axis — Standards and Spec — in parallel, each starting fresh, or once carrying both axes when the caller asks for one. It reads the changes since the fixed point and reports findings; it fixes nothing, so a **Fixer** does that.
-_Avoid_: review agent, critic, review bot
-
 **Fixer**:
-A sub-agent the Driving session sends to fix what a review or a build found. In an implement run it is the `Fix:` delegate, a fresh `skills:poteto-agent` with consolidated scope (the original brief, every later directive, the prior report, and the branch), one per fix round, for an Act-on finding of `interrogate`, a NOT VERIFIED item from the **Verifier**, or a red post-rebase check; its description starts with `Fix:`, and it never resumes the delegate whose work it fixes. The final review of a **Hillclimb** sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each `general-purpose` at the Driving session's own settings and each starting fresh, so no single fixer carries both axes.
+A sub-agent the Driving session sends to fix what a review or a build found. In an implement run it is the `Fix:` delegate, a fresh `skills:poteto-agent` with consolidated scope (the original brief, every later directive, the prior report, and the branch), one per fix round, for an Act-on finding of `interrogate`, a NOT VERIFIED item from the **Verifier**, or a red post-rebase check; its description starts with `Fix:`, and it never resumes the delegate whose work it fixes.
 
 **Merge risk**:
-How hard a change is to undo once it lands, and what it would affect if it went wrong. It says whether reverting the change's commits restores the old behaviour, and when it does not, what stays changed after the revert, such as data written, a migration run, or a release published, and names who or what would notice if the change went wrong. The closing section of every pull request description `/pr` shapes, and one line per kept change in a **Hillclimb**'s final report.
+How hard a change is to undo once it lands, and what it would affect if it went wrong. It says whether reverting the change's commits restores the old behaviour, and when it does not, what stays changed after the revert, such as data written, a migration run, or a release published, and names who or what would notice if the change went wrong. The closing section of every pull request description `/pr` shapes.
 _Avoid_: merge danger, one-way door, two-way door
 
 **Base branch**:
@@ -246,7 +234,7 @@ _Avoid_: squash commit, land commit, cleanup commit, merge commit
 Anything a delegate did that contradicts the Spec or the design, any failure it left red because the Base branch already fails it, and any post-rebase failure that passed on the Driving session's re-run. A deviation from the design is recorded in `design.md`'s Implementation reconciliation section and the trail; every Deviation is named in the report.
 
 **Spec-bound dispatch**:
-A sub-agent whose assignment is a document decided before it was dispatched — a research question, a Spec draft, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled. Its opposite carries design or review judgement: the **Reviewer** is pinned to the model and effort that judgement needs, while a Hillclimb's **Fixer** or a fan-out agent runs at the Driving session's own settings. An implement run's delegates are neither: they take their model from the operator's `pstack-models.md` by role, as the `poteto-mode` skill says.
+A sub-agent whose assignment is a document decided before it was dispatched — a research question, a Spec draft. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled. Its opposite carries design or review judgement: the two `/thermo-nuclear-review` passes are pinned to the model and effort that judgement needs, while a fan-out agent runs at the Driving session's own settings. An implement run's delegates are neither: they take their model from the operator's `pstack-models.md` by role, as the `poteto-mode` skill says.
 _Avoid_: cheap agent, worker, low-tier agent
 
 **Run directory**:

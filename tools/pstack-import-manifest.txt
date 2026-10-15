@@ -18,7 +18,7 @@ c74144520b39827ad099445c0ff08ccea694dd49  skills/architect/SKILL.md
 f8503c9595b289c607ff5088f82b21197edf94ec  skills/architect/references/design-red-flags.md
 9ccea423df568bbedeea0c371b9ca6990f1d6b07  skills/architect/references/rationale-template.md
 b1ad21aef22e80d718c361787190b599eb359d6c  skills/architect/references/runner-prompt.md
-559c372d9b8e38d8c3d67a07f740c7502b1f37a3  skills/arena/SKILL.md
+a5772e71099042eae5d47b6d8b34318862ec6830  skills/arena/SKILL.md
 88dbce1af192ce9201483f1910f751953014ab90  skills/automate-me/SKILL.md
 1d5e5527326bacd0e72d5b716b87b1ecf0691314  skills/babysit/SKILL.md
 301f348abf4f209caf1fbab6449929ca4598c536  skills/benchmark-checklist/SKILL.md

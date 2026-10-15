@@ -6,4 +6,4 @@ Each document the skills keep in the repo has one fixed location, and every skil
 
 - Consuming repos with docs in the old locations are brought into line by `/doctor`, which moves them without asking in its single commit.
 - References stay one file each. The folder rule does not reach them.
-- `code-review`'s standards-source discovery checks `.agents/refs/` first but still falls back to root-level `CODING_STANDARDS.md`/`CONTRIBUTING.md` if that's what a repo already has — `.agents/refs/` is the canonical spot for new docs, not an exclusive one.
+- Skills look for the Coding standards in `.agents/refs/` first but still fall back to root-level `CODING_STANDARDS.md`/`CONTRIBUTING.md` if that's what a repo already has — `.agents/refs/` is the canonical spot for new docs, not an exclusive one.

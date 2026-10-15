@@ -6,6 +6,6 @@ Counting every change to old code was rejected. A change that follows a new requ
 
 ## Consequences
 
-- `/code-review` reviews the product diff when a user runs it. `/retro` reads it only to find Corrections.
+- `/retro` reads the product diff only to find Corrections. Reviewing it is a review skill's job.
 - A repo with no Coding standards gets `.agents/refs/coding-standards.md`, the first time a Correction produces a rule.
 - `/retro` writes no rule for a one-off fact. It writes no rule for a mistake a check could catch, which the Automated checks category covers. It writes no rule when the Coding standards already hold one.

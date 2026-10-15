@@ -11,7 +11,7 @@ import { GATES, IMPLEMENT, LANDING_ITEMS, generate, parseSteps } from "./open-to
 
 const SCRIPT = join(dirname(fileURLToPath(import.meta.url)), "open-todo.mjs");
 const OVERLAY = readProjectPlaybook(join(IMPLEMENT, ".agents/playbooks/implement.md"));
-const ROUTES = ["feature", "bug-fix", "refactoring", "perf-issue", "visual-parity"];
+const ROUTES = ["feature", "bug-fix", "refactoring", "perf-issue", "hillclimb", "visual-parity"];
 const DONE = ["Claimed the Issue #7", "Entered the run worktree", "Wrote spec.md"];
 const ONE_WRITER = "Its candidates write under the Run directory, never the worktree (`/implement` step 5, One writer).";
 
@@ -117,14 +117,15 @@ test("every overlay change lands at its anchor on every route whose playbook has
   for (const route of ROUTES) {
     const out = lines(todo(route));
     const source = flat(bundledPlaybook(route));
-    const original = parseSteps(bundledPlaybook(route)).steps.map((step) => `- [ ] ${step.text}`);
+    const nested = (steps, depth = 0) => steps.flatMap((step) => [`${"  ".repeat(depth)}- [ ] ${step.text}`, ...nested(step.children, depth + 1)]);
+    const original = nested(parseSteps(bundledPlaybook(route)).steps);
+    const offset = out.findIndex((line) => line.startsWith("- [ ] 1. "));
     for (const change of OVERLAY.changes) {
       const anchor = flat(change.anchor);
       if (!source.includes(anchor)) continue;
       applied += 1;
       const at = original.findIndex((line) => line.includes(anchor));
-      const stepNumber = original[at].match(/^- \[ \] (\d+)\./)[1];
-      const now = out.find((line) => line.startsWith(`- [ ] ${stepNumber}. `));
+      const now = out[offset + at];
       const where = `${route}: ${change.verb} "${change.anchor}"`;
       if (change.verb === "Replace") {
         assert.ok(now.includes(change.text), where);
@@ -138,7 +139,7 @@ test("every overlay change lands at its anchor on every route whose playbook has
       }
     }
   }
-  assert.equal(applied, 20, "7 on feature, 4 on bug-fix, 3 on refactoring, 3 on perf-issue, 3 on visual-parity");
+  assert.equal(applied, 25, "7 on feature, 4 on bug-fix, 3 on refactoring, 3 on perf-issue, 5 on hillclimb, 3 on visual-parity");
   assert.ok(OVERLAY.changes.every((change) => change.verb === "In" || change.verb === "Replace"), "the overlay inserts no item of its own");
 });
 
@@ -158,6 +159,12 @@ test("the anchored results read as intended on the routes that differ", () => {
   assert.ok(lines(todo("refactoring")).some((line) => line.startsWith("- [ ] 3. Name the target shape.") && line.endsWith(`run the **architect** skill for parallel design exploration of the shape before the move. ${ONE_WRITER}`)));
   assert.ok(lines(todo("refactoring")).some((line) => line.startsWith("- [ ] 8. Units already commit in order") && line.endsWith("stays green before the next. No pull request is opened: the gates below, then LANDING.md, one landing for the run.")));
   assert.ok(lines(todo("visual-parity")).includes("- [ ] 5. No pull request is opened: the gates below, then LANDING.md, one landing for the run and every component."));
+  const climb = lines(todo("hillclimb"));
+  assert.ok(climb.includes("  - [ ] Measure before and after with the frozen harness, and run the regression gate."), climb.join("\n"));
+  assert.ok(climb.includes("  - [ ] Each attempt is one unit commit, and a reverted one is reset off the branch; log its `decision.tsv` row either way (`/implement` step 5, Attempts)."));
+  assert.ok(climb.some((line) => line.startsWith("  - [ ] Hand the change to a subagent") && line.endsWith("The run worktree is the only worktree, and attempts go one at a time (`/implement` step 5, One writer).")));
+  assert.ok(climb.includes("- [ ] 8. No pull request is opened: the gates below, then LANDING.md, whose landing commit lists each kept attempt and each reverted idea."));
+  assert.ok(!climb.some((line) => line.includes("its own worktree")), "no attempt runs in a worktree of its own");
 });
 
 test("a repo playbook's change lands before the overlay's, at its own anchor, and its text is taken literally", () => {
@@ -179,7 +186,7 @@ test("a repo playbook that replaced an overlay anchor fails with the anchor name
 test("an anchor no extended playbook has, and a route the overlay does not extend, fail", () => {
   const root = repoWithPlaybook("stale.md", "---\nextends: feature\nwhen: Stale.\n---\n\n- **In** \"Run the slicer.\" Slice it first.\n");
   assert.deepEqual(generate({ playbook: "feature", root, landing: "worktree" }).problems, ['.agents/playbooks/stale.md: "Run the slicer." is not in any playbook it extends']);
-  assert.deepEqual(generate({ playbook: "hillclimb", root: emptyRepo(), landing: "worktree" }).problems, ["hillclimb: the Overlay does not extend it; /implement routes only to feature, bug-fix, refactoring, perf-issue, visual-parity"]);
+  assert.deepEqual(generate({ playbook: "investigation", root: emptyRepo(), landing: "worktree" }).problems, ["investigation: the Overlay does not extend it; /implement routes only to feature, bug-fix, refactoring, perf-issue, hillclimb, visual-parity"]);
   assert.deepEqual(generate({ playbook: "feature", root: emptyRepo(), landing: "in-place" }).problems, ["--landing in-place needs --start <sha>"]);
 });
 
@@ -191,7 +198,7 @@ test("the command line writes the todo to stdout and exits 2 on a usage error", 
   const usage = spawnSync(process.execPath, [SCRIPT, "bug-fix", "--root", root, "--landing", "in-place"], { encoding: "utf8" });
   assert.equal(usage.status, 2);
   assert.equal(usage.stderr.trim(), "--landing in-place needs --start <sha>");
-  const bad = spawnSync(process.execPath, [SCRIPT, "hillclimb", "--root", root, "--landing", "worktree"], { encoding: "utf8" });
+  const bad = spawnSync(process.execPath, [SCRIPT, "investigation", "--root", root, "--landing", "worktree"], { encoding: "utf8" });
   assert.equal(bad.status, 1);
   assert.match(bad.stderr, /the Overlay does not extend it/);
   rmSync(root, { recursive: true, force: true });

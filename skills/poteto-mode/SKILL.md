@@ -156,11 +156,11 @@ A large or cross-cutting effort (a migration across many call sites, an ambitiou
 Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup models` writes it.
 
 - feature, refactoring: `opus`
-- bug-fix: `fable`
-- perf-issue: `fable`
-- hillclimb: `fable`
+- bug-fix: `opus`
+- perf-issue: `opus`
+- hillclimb: `opus`
 - judgment and prose: `opus`
-- strongest judgment: `fable`
+- strongest judgment: `opus`
 
 ## Reasoning effort
 

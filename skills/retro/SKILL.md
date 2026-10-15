@@ -4,7 +4,7 @@ description: Look at a finished session, apply high-priority changes this reposi
 argument-hint: "[session]"
 ---
 
-A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, then summarises. `/code-review` reviews the product diff when a user runs it; `/retro` reads it only to find **Corrections**.
+A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, then summarises. `/retro` reads the product diff only to find **Corrections**.
 
 Apply and present only when the skill the user typed — or, when they typed none, the outermost skill the agent loaded — is this `/retro` or has reached its own done condition.
 
@@ -47,7 +47,7 @@ Check every item. *Use when* is the evidence bar. Every suggestion is something 
 
 - **Navigation** — would a **context pointer** have shortened the hunt? *Use when* the session took a long time to find a piece of information.
 - **Automated checks** — the strongest mechanism the repo can carry that would have caught a mistake this session made: a type that cannot hold the bad state, then a lint, test, or CI rule, then a shared helper, then a runtime check. Read the repo's own check commands first (its build tool's lint or check scripts, its CI workflow): a check that already exists but is not wired in, or is silently broken, is the finding, not a new check. *Use when* the agent made a mistake a check could have caught.
-- **Coding standards** — a new, removed, or clarified rule for the reviewer (`/code-review`, `.agents/refs/`, or the repo's standards file). *Use when* the reviewer missed a mistake, or a **Correction** is a *lesson*.
+- **Coding standards** — a new, removed, or clarified rule in `.agents/refs/` or the repo's standards file. *Use when* a review missed a mistake, or a **Correction** is a *lesson*.
 - **AGENTS.md load** — steering in `AGENTS.md` / `CLAUDE.md` (repo or global) that belongs in coding standards or a check instead. *Use when* that file is carrying more than **context pointers**.
 - **Tool economy** — expensive calls that could be cheaper, or a custom tool that wastes tokens. *Use when* the session made an expensive call.
 - **No-ops** — instructions in steering files that do not change behaviour. *Use when* those files are large.
@@ -64,7 +64,7 @@ Owned-file high-priority edits: one commit.
 
 A file that is not an **Owned file**, or a write or commit that cannot complete: that item is not applied; continue the rest.
 
-Do not start `/code-review` on these edits.
+These edits go unreviewed.
 
 ## Present
 

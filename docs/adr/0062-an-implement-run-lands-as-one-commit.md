@@ -4,7 +4,7 @@ Both implement commands land a run on the base branch as one **landing commit**:
 
 The run still makes those commits, because a resume continues from them and `interrogate` reads the ordered sequence. They stay on the run's branch. After a rebase, only the newest commit on the branch is verified again, so a `git bisect` that stopped inside a run would test code nobody verified.
 
-The landing commit's subject says what the change does and ends with the Issue's reference. The run writes it from the Spec, because an Issue's title often names the problem instead. The body lists each unit's title from the branch's `Unit:` trailers, a Bug fix's red and green output trimmed to the assertion and the counts, a Perf issue's baseline and post-fix numbers, and the Issue's closing reference.
+The landing commit's subject says what the change does and ends with the Issue's reference. The run writes it from the Spec, because an Issue's title often names the problem instead. The body lists each unit's title from the branch's `Unit:` trailers, a Bug fix's red and green output trimmed to the assertion and the counts, a Perf issue's baseline and post-fix numbers, a Hillclimb's baseline and final numbers with the ideas it tried and reverted, and the Issue's closing reference.
 
 ## Considered Options
 
@@ -19,4 +19,4 @@ The landing commit's subject says what the change does and ends with the Issue's
 - The Run directory is ignored by git from inside, so the branch's tree holds none of it and the run makes no deletion commit.
 - `/implement-yolo` folds every commit since its start into one landing commit on its own branch. A commit the user makes on that branch during the run is folded in too.
 - `/retro` reads an implement run's change from its landing commit.
-- `/hillclimb` keeps its commits. Each Attempt it keeps is a measured change with its own before-and-after number, so those commits are the record of the work.
+- A Hillclimb lands as one landing commit too. Each Attempt it kept is a unit whose title carries its before-and-after number, so the body still records every measured change.

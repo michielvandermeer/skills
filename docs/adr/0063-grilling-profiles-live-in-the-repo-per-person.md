@@ -11,11 +11,11 @@ The profile lives in the repo so it travels with git and the whole team can see 
 ## Considered Options
 
 - **One profile per person in the home folder, read from every repo.** Rejected: it does not travel with git, and a teammate's session cannot read it to show what that person would pick.
-- **Host memory.** Rejected: each host keeps its own memory, and this plugin runs on Claude Code and Grok. Grok's memory also records single answers rather than habits. [ADR-0061](0061-hillclimb-keeps-only-measured-wins.md) rejected host memory for the Attempt log on the same ground.
+- **Host memory.** Rejected: each host keeps its own memory, and this plugin runs on Claude Code and Grok. Grok's memory also records single answers rather than habits.
 - **Learning from every repo's sessions.** Rejected: a person's habits differ between repos, and a client repo's sessions would shape a file in another repo, which may be public.
 - **Leaving the recommendation as the agent's own view, with a second mark for the expected pick.** Rejected: the agent would keep recommending what it expects you to turn down. The `*Your habit:*` line already shows when a Habit set the pick, and the agent says when it disagrees.
 - **Letting a strong Habit turn a question into a declaration.** Rejected: functional decisions stay questions however much the person agrees, and a wrong guess would pass in silence.
-- **Learning inside `/retro`.** Rejected: `/grill-me` never starts `/retro`.
+- **Learning inside `/retro`.** Rejected: `/grilling` never starts `/retro`.
 - **Running `/learn-habits` at the end of every grilling session.** This was the first design, and it folded in the one session that had just finished. Rejected: the maintainer chose to have it run only when typed.
 - **Changing grilling's default to recommend wider scope.** Rejected: that would move every person's recommendations. A profile moves them only for the person it describes.
 - **A git `.mailmap` that maps each of a person's emails to one.** Rejected: someone must write and keep it by hand in every repo, while the profile's file name already names the person.
