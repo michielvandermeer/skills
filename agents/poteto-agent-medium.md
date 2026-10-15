@@ -1,6 +1,6 @@
 ---
 name: poteto-agent-medium
-description: Runs `pstack:poteto-agent` at medium reasoning effort. Dispatched in place of `pstack:poteto-agent` when a pstack role's override names `@medium`. The caller passes the model.
+description: Runs `skills:poteto-agent` at medium reasoning effort. Dispatched in place of `skills:poteto-agent` when a pstack role's override names `@medium`. The caller passes the model.
 effort: medium
 ---
 
