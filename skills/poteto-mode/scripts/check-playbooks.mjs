@@ -4,40 +4,49 @@ import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
-const BUNDLED = resolve(dirname(fileURLToPath(import.meta.url)), "../playbooks");
-const CHANGE = /^\s*(?:[-*]|\d+\.)\s+\*\*(?:After|Before|Replace|In)\*\*\s+"([^"]+)"/;
+export const BUNDLED = resolve(dirname(fileURLToPath(import.meta.url)), "../playbooks");
+const CHANGE = /^\s*(?:[-*]|\d+\.)\s+\*\*(After|Before|Replace|In)\*\*\s+"([^"]+)"\s*(.*)$/;
 const CHANGE_VERB = /^\s*(?:[-*]|\d+\.)\s+\*\*(?:After|Before|Replace|In)\*\*/;
-const flat = (text) => text.replace(/\s+/g, " ");
+export const flat = (text) => text.replace(/\s+/g, " ");
+
+export function bundledPlaybook(stem, bundled = BUNDLED) {
+  const file = join(bundled, `${stem}.md`);
+  return !/[\\/]/.test(stem) && existsSync(file) ? readFileSync(file, "utf8") : null;
+}
+
+// A project playbook: its frontmatter fields, its anchored changes, and the lines that fail the grammar.
+export function readProjectPlaybook(file, label = file) {
+  const text = readFileSync(file, "utf8").replace(/^﻿/, "").replaceAll("\r\n", "\n");
+  const front = text.match(/^---\n([\s\S]*?)\n---\n/)?.[1] ?? "";
+  const field = (key) => front.match(new RegExp(`^${key}:[ \\t]*(.*)$`, "m"))?.[1].trim() ?? "";
+  const problems = [];
+  if (!field("when")) problems.push(`${label}: its frontmatter needs a "when:" line`);
+  const changes = [];
+  for (const line of text.split("\n")) {
+    const change = line.match(CHANGE);
+    if (change) changes.push({ verb: change[1], anchor: change[2], text: change[3].trim() });
+    else if (CHANGE_VERB.test(line)) {
+      problems.push(`${label}: a change has no straight-quoted step text to anchor on: ${line.trim().slice(0, 80)}`);
+    }
+  }
+  const extendsStems = field("extends").split(",").map((stem) => stem.trim()).filter(Boolean);
+  return { label, when: field("when"), extends: extendsStems, changes, problems };
+}
 
 export function checkPlaybooks(root, bundled = BUNDLED) {
   const dir = join(root, ".agents/playbooks");
   if (!existsSync(dir)) return [];
   const problems = [];
   for (const name of readdirSync(dir).filter((file) => file.endsWith(".md")).sort()) {
-    const path = `.agents/playbooks/${name}`;
-    const text = readFileSync(join(dir, name), "utf8").replace(/^\uFEFF/, "").replaceAll("\r\n", "\n");
-    const front = text.match(/^---\n([\s\S]*?)\n---\n/)?.[1] ?? "";
-    const field = (key) => front.match(new RegExp(`^${key}:[ \\t]*(.*)$`, "m"))?.[1].trim() ?? "";
-    if (!field("when")) problems.push(`${path}: its frontmatter needs a "when:" line`);
-    const bases = field("extends")
-      .split(",")
-      .map((stem) => stem.trim())
-      .filter(Boolean)
-      .map((stem) => {
-        const file = join(bundled, `${stem}.md`);
-        const known = !/[\\/]/.test(stem) && existsSync(file);
-        return { stem, text: known ? readFileSync(file, "utf8") : null };
-      });
+    const playbook = readProjectPlaybook(join(dir, name), `.agents/playbooks/${name}`);
+    problems.push(...playbook.problems);
+    const bases = playbook.extends.map((stem) => ({ stem, text: bundledPlaybook(stem, bundled) }));
     for (const base of bases) {
-      if (base.text === null) problems.push(`${path}: extends \`${base.stem}\`, which this pstack has no playbook for`);
+      if (base.text === null) problems.push(`${playbook.label}: extends \`${base.stem}\`, which this pstack has no playbook for`);
     }
-    for (const line of text.split("\n")) {
-      if (CHANGE_VERB.test(line) && !CHANGE.test(line)) {
-        problems.push(`${path}: a change has no straight-quoted step text to anchor on: ${line.trim().slice(0, 80)}`);
-      }
-      const anchor = line.match(CHANGE)?.[1];
-      if (anchor && !bases.some((base) => base.text && flat(base.text).includes(flat(anchor)))) {
-        problems.push(`${path}: "${anchor}" is not in any playbook it extends`);
+    for (const { anchor } of playbook.changes) {
+      if (!bases.some((base) => base.text && flat(base.text).includes(flat(anchor)))) {
+        problems.push(`${playbook.label}: "${anchor}" is not in any playbook it extends`);
       }
     }
   }
