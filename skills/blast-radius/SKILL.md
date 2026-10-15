@@ -44,6 +44,6 @@ Step 4 is usually one small script that imports the same library the app ships a
 - **Cleared.** What you checked and why it's fine.
 - **Before you merge.** The cheapest test or repro that catches the real bug, including the script you wrote.
 
-Write it through `unslop`, cite real code, and strip anything private before it goes anywhere public.
+Write it through `/technical-writing`, cite real code, and strip anything private before it goes anywhere public.
 
 **Reply:** the writeup above, with the one safety fact either proven or marked unproven.

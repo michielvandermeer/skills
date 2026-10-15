@@ -157,7 +157,7 @@ The `skills/` and `agents/` directories and `hooks/hooks.json` are discovered au
 
 These skills pin the model and effort they run on, so parallel runs do not all inherit your session's most expensive setting. Nothing is pinned above `high`. A pin lives in a skill's or agent's header, so it is the same in every repo and there is no per-repo setting. [ADR-0049](docs/adr/0049-agents-are-pinned-in-their-agent-files.md) records why.
 
-**Skills you type.** Only the skills that no other skill loads pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
+**Skills you type.** Only the skills that no other skill loads pin their own model, because a loaded skill would swap its caller's model for the rest of the turn.
 
 - Opus at high: `/grill-with-docs`, `/brainstorm`, `/wayfinder`, `/implement`, `/implement-yolo`.
 - Sonnet at high: `/triage`, `/codebase-audit`, `/doctor`, `/explain`, `/learn-habits`, `/setup`, and the pstack skills you type: `/automate-me`, `/babysit`, `/bro`, `/correct`, `/ketchup`, `/maintain-verification-skill`, `/poteto-help`, `/pr`, `/what-did-i-get-done`.
@@ -183,7 +183,7 @@ Everything else runs on the setting of the skill that starts it: the `/codebase-
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, and brings every ADR to state the decision in force. Once `/setup` has run, it leaves Issues alone. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
-| `explain` | Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
+| `explain` | Explain anything as a talk or a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `implement` | Implement an Issue's Spec, or a description, as a pstack poteto-mode run in its own worktree: the matching playbook, Hillclimb included for a number to push toward a target, design before code, a verifier that wrote none of the code, an adversarial review, then one commit landed on your branch. |
@@ -192,7 +192,6 @@ Everything else runs on the setting of the skill that starts it: the `/codebase-
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
-| `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
 | `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. Then choose which model each pstack role runs on, and whether the SessionStart hook routes tasks; `/setup models` does only that part. |
 | `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. |
 | `triage` | Sort incoming reports, or the Issues nobody has triaged yet, into Specs and parked Issues, one Issue per distinct problem, and close what won't be done. |
@@ -203,7 +202,7 @@ Everything else runs on the setting of the skill that starts it: the `/codebase-
 
 ## pstack
 
-The plugin includes pstack, Lauren Tan's (poteto) way of working with agents, as ported to Claude Code by Michael Denyer in [pstack-claude](https://github.com/michael-denyer/pstack-claude). Start with `/skills:poteto-mode`, which picks a playbook for the task and runs the other pstack skills as it needs them. `/skills:poteto-help` answers questions about the rest. Its skills, the `principle-*` skills among them, are in [`skills/`](skills/), next to the ones above, and its agents are in [`agents/`](agents/).
+The plugin includes pstack, Lauren Tan's (poteto) way of working with agents, as ported to Claude Code by Michael Denyer in [pstack-claude](https://github.com/michael-denyer/pstack-claude). Start with `/skills:poteto-mode`, which picks a playbook for the task and runs the other pstack skills as it needs them. `/skills:poteto-help` answers questions about the rest. Its skills are in [`skills/`](skills/), its principles in [`skills/poteto-mode/principles/`](skills/poteto-mode/principles/), next to the ones above, and its agents are in [`agents/`](agents/).
 
 A SessionStart hook tells each new session to use `poteto-mode` for work that touches more than one file, involves a design choice, or chases an unknown bug. To turn it off, or to choose which models pstack's roles use, run `/skills:setup models`. It writes `~/.claude/pstack-models.md`, the same file the separate pstack plugin reads.
 

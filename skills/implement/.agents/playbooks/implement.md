@@ -18,7 +18,7 @@ when: An /implement run builds a Spec to landing with no person in the loop.
 - **In** "If the baseline looks wrong, stop and ask, don't edit it." The stop is a halt (`/implement`, Halts and flags).
 - **In** "Use the user's numbers when given, otherwise agree them." Nobody is there to agree them: the Spec's numbers, or an operator call made by default (`/implement` step 5, Attempts).
 - **In** "Open the decision log via the **show-me-your-work** skill." `decision.tsv` sits in the Run directory (`/implement`, Run directory).
-- **Replace** "When several independent hypotheses are live, fan them to parallel subagents, each in its own worktree (the **separate-before-serializing-shared-state** principle skill)." The run worktree is the only worktree, and attempts go one at a time (`/implement` step 5, One writer).
+- **Replace** "When several independent hypotheses are live, fan them to parallel subagents, each in its own worktree (the [separate-before-serializing-shared-state](../principles/separate-before-serializing-shared-state.md) principle)." The run worktree is the only worktree, and attempts go one at a time (`/implement` step 5, One writer).
 - **Replace** "One commit per accepted fix, staging only the files you changed (`git add <files>`, never `-A`). Log the row either way, kept or reverted." Each attempt is one unit commit, and a reverted one is reset off the branch; log its `decision.tsv` row either way (`/implement` step 5, Attempts).
 - **In** "Stack follow-ups." A follow-up is an item of the report, never an Issue the run files (`/implement` step 5, Follow-ups).
 - **Replace** "Rebase into small, ordered commits." Units already commit in order with `Unit:` trailers, and the landing folds them (`/implement` step 5, Unit commits).

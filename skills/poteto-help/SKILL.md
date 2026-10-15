@@ -57,7 +57,7 @@ The default answer is `/poteto-mode`, which runs most of the others when its ste
 | Do any non-trivial task with rigor | [`/poteto-mode`](../poteto-mode/SKILL.md) |
 | Know how code works now, or where new code should live | [`/how`](../how/SKILL.md) |
 | Know why code is shaped this way, or where a number came from | [`/why`](../why/SKILL.md) |
-| Understand a change or subsystem, explained plainly | [`/teach`](../teach/SKILL.md) |
+| Understand a change or subsystem, explained plainly | [`/explain`](../explain/SKILL.md) |
 | Catch up on their own recent work on a topic | [`/recall`](../recall/SKILL.md) |
 | Catch up on everything in this chat since their last message, with enough context to decide each action item | [`/ketchup`](../ketchup/SKILL.md) |
 | Know what a small diff could break outside itself | [`/blast-radius`](../blast-radius/SKILL.md) |
@@ -66,13 +66,12 @@ The default answer is `/poteto-mode`, which runs most of the others when its ste
 | Run parallel checks over slices, or race workers | [`/swarm`](../swarm/SKILL.md) |
 | Have different models review a diff and try to break it | [`/interrogate`](../interrogate/SKILL.md) |
 | Strip comments before review, using a reviewer that didn't write them | [`/no-comments`](../no-comments/SKILL.md) |
-| Clean AI tells out of prose | [`/unslop`](../unslop/SKILL.md) |
-| Write docs, an RFC, a README, a PR description, or a commit message to a standard | [`/technical-writing`](../technical-writing/SKILL.md) |
+| Write docs, an RFC, a README, a PR description, or a commit message to a standard, or clean AI tells out of prose | [`/technical-writing`](../technical-writing/SKILL.md) |
 | Hear the last reply again in plain words | [`/bro`](../bro/SKILL.md) |
 | Give agents a scripted way to drive the app and prove behavior | [`/create-verification-skill`](../create-verification-skill/SKILL.md) |
 | Bring a verification skill and its feature map back in line with the app | [`/maintain-verification-skill`](../maintain-verification-skill/SKILL.md) |
 | Vet a performance number before reporting or acting on it | [`/benchmark-checklist`](../benchmark-checklist/SKILL.md) |
-| Run a large or cross-cutting change, or one to review after stepping away | [`/figure-it-out`](../figure-it-out/SKILL.md) |
+| Run a large or cross-cutting change, or one to review after stepping away | `/poteto-mode`, which runs the [Figure it out playbook](../poteto-mode/playbooks/figure-it-out.md) |
 | Keep a decision log during a run, and review it afterward | [`/show-me-your-work`](../show-me-your-work/SKILL.md) |
 | Pick a model for each role and a default effort | [`/setup models`](../setup/MODELS.md) |
 | Turn their own working habits into a personal mode skill | [`/automate-me`](../automate-me/SKILL.md) |
@@ -80,16 +79,16 @@ The default answer is `/poteto-mode`, which runs most of the others when its ste
 | Stop agents from repeating the same mistakes in this repo | [`/correct`](../correct/SKILL.md) |
 | Find their way around pstack | `/poteto-help` |
 
-If a skill directory next to this one is missing from the table, read its frontmatter and route by its description. The `principle-*` directories are covered under principles below.
+If a skill directory next to this one is missing from the table, read its frontmatter and route by its description.
 
 Close calls:
 
-- `/how` explains what the code does. `/why` explains the reasons. `/teach` runs one or both and explains the result plainly.
+- `/how` explains what the code does. `/why` explains the reasons. `/explain` turns both into a talk, a diagram, a page, or a video.
 - `/arena` gives every worker the same brief and merges the best parts. `/swarm` splits work into slices or a race and returns one report.
 - `/architect` implements right after it settles the design. Add "with checkpoint" to review the design before it writes code.
 - `/interrogate` reviews the diff. `/blast-radius` looks for breakage outside the diff and proves the one fact that makes the change safe.
 - `/recall` rebuilds context across recent chats. `/ketchup` covers only this chat since the user's last message. Resuming one specific chat or branch is the Session pickup playbook.
-- `/figure-it-out` designs one rigorous run. The Orchestrate playbook runs a program that spans days and many PRs. The Autonomous run playbook drives one task to a finish condition.
+- The Figure it out playbook designs one rigorous run. The Orchestrate playbook runs a program that spans days and many PRs. The Autonomous run playbook drives one task to a finish condition.
 
 Not in pstack:
 
@@ -112,7 +111,7 @@ Without `/poteto-mode`, a phrase such as "babysit this pr" can start pstack's st
 
 pstack has no planning skill. Claude Code's plan mode works alongside it. For work that spans phases or stacked PRs, asking `/poteto-mode` for a plan runs the [Multi-phase plan playbook](../poteto-mode/playbooks/multi-phase-plan.md), which writes the plan and doesn't implement it. For a design question, the Prototype playbook or `/architect` settles it in code first.
 
-Principles are one-rule skills that `/poteto-mode` reads and cites in its replies. The user rarely invokes one. They steer with the names instead, as in "apply prove it works. show me the real output." On Claude Code the `principle-*` leaves are hidden from the slash menu and `/poteto-mode` reads them by path. The [Principles index](../poteto-mode/SKILL.md#principles) lists them.
+Principles are one-rule files that `/poteto-mode` reads and cites in its replies. The user rarely invokes one. They steer with the names instead, as in "apply prove it works. show me the real output." They live in poteto-mode's `principles/` folder, outside the slash menu and the skill list, and `/poteto-mode` reads them by path. The [Principles index](../poteto-mode/SKILL.md#principles) lists them.
 
 ## Fix a run that went wrong
 

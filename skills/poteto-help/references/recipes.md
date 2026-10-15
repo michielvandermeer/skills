@@ -8,7 +8,7 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 - `/poteto-mode investigate why <symptom>. give me what we know, what data you used, and your best hypotheses. don't change any code yet.`
 - `use /how to understand <subsystem>. then use /why to find out why it broke recently.`
 - `/recall my work on <topic> from last week, then read <issue>.`
-- `/teach me why you implemented it this way and not <other way>. what did you trade off?`
+- `/explain why you implemented it this way and not <other way>, as a talk. what did you trade off?`
 - `/poteto-mode take over this branch. read the decision log, find what's done, and continue. don't redo finished work.`
 
 ## Build
@@ -24,7 +24,7 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 
 - `/poteto-mode prototype a few options for <feature>. take screenshots or videos for me to compare.`
 - `/poteto-mode we need <feature>. /architect it first, and answer open questions with prototypes. let me review before proceeding.`
-- `/poteto-mode write a tutorial for how i would use <new package> first. then /teach me why it beats the current one.`
+- `/poteto-mode write a tutorial for how i would use <new package> first. then /explain why it beats the current one.`
 - `ask /arena for a second opinion on this thread and our approach.`
 - `/poteto-mode turn this design into a plan. small verifiable PRs, each with its own verification steps.`
 - `/poteto-mode plan the migration of <library> to <target>. small verifiable PRs. the result must match the original exactly, bugs included.`

@@ -56,7 +56,7 @@ Inside poteto-mode, the **Babysit** playbook ([`../poteto-mode/playbooks/babysit
 
 - Opening a PR does not start a babysit; inside poteto-mode the Babysit playbook owns the request and starts only when asked.
 - Use `interrogate` before opening if the diff is contested; once open, babysit takes over.
-- Use `unslop` on any prose you write here (PR comments, commit messages, status reports).
+- Use `/technical-writing` on any prose you write here (PR comments, commit messages, status reports).
 
 ## Provenance
 

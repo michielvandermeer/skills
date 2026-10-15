@@ -77,7 +77,7 @@ test("steps are the playbook's own words, one line each, sub-bullets and indente
   assert.deepEqual(feature.slice(checkpoint + 1, checkpoint + 5), [
     "  - [ ] **Blocking first steps.** Gates run before fan-out.",
     "  - [ ] **Independent workstreams.** Disjoint files, services, or layers parallelize. Shared writes serialize.",
-    "  - [ ] **Shared mutable state.** Default to splitting the target (the **separate-before-serializing-shared-state** principle skill). Serialize only for real invariants.",
+    "  - [ ] **Shared mutable state.** Default to splitting the target (the [separate-before-serializing-shared-state](../principles/separate-before-serializing-shared-state.md) principle). Serialize only for real invariants.",
     "  - [ ] **Smallest safe decomposition.** If one worker is best, name why.",
   ]);
   const perf = lines(todo("perf-issue"));
@@ -91,10 +91,10 @@ test("steps are the playbook's own words, one line each, sub-bullets and indente
     "  - [ ] Do it when they're not looking.",
     "  - [ ] Do it concurrently.",
     "  - [ ] Do it cheaper.",
-    "- [ ] 3. Plan the fix from the trace. If it crosses a function boundary, `architect` first. Delegate implementation to a subagent using your configured perf-issue model (default in poteto-mode's Models section). Review the diff. Capture a post-fix trace. Apply the **sequence-verifiable-units** principle skill, verifying each attempt before trying the next. " + ONE_WRITER,
+    "- [ ] 3. Plan the fix from the trace. If it crosses a function boundary, `architect` first. Delegate implementation to a subagent using your configured perf-issue model (default in poteto-mode's Models section). Review the diff. Capture a post-fix trace. Apply the [sequence-verifiable-units](../principles/sequence-verifiable-units.md) principle, verifying each attempt before trying the next. " + ONE_WRITER,
   ]);
   const bug = lines(todo("bug-fix"));
-  assert.ok(bug.includes("- [ ] 5. Stage the commits so the failing repro lands before the fix in git history. When the bug has a cheap local test path at a seam that exercises the bug as it happens at its call site, turn the minimised repro into the failing test first. Skip the test when it would be expensive, integration-heavy, or unclear. When only a shallower seam exists, skip it too and report the missing seam as a finding. This is the canonical **sequence-verifiable-units** principle skill, the failing test first and the fix on top."));
+  assert.ok(bug.includes("- [ ] 5. Stage the commits so the failing repro lands before the fix in git history. When the bug has a cheap local test path at a seam that exercises the bug as it happens at its call site, turn the minimised repro into the failing test first. Skip the test when it would be expensive, integration-heavy, or unclear. When only a shallower seam exists, skip it too and report the missing seam as a finding. This is the canonical [sequence-verifiable-units](../principles/sequence-verifiable-units.md) principle, the failing test first and the fix on top."));
 });
 
 test("the ## Playbook section holds the playbook's prose outside its steps, verbatim", () => {
@@ -151,7 +151,7 @@ test("the anchored results read as intended on the routes that differ", () => {
   assert.ok(delegate.includes("No \"standing by\" reply that waits on a nested agent. The run worktree is the only worktree, and writers go one at a time (`/implement` step 5, One writer). Fencing a file in the brief's prose is not a lock"));
   assert.ok(delegate.endsWith("Commit liberally. Arena candidates write under the Run directory, and a fresh `Build:` delegate applies the graft (`/implement` step 5, One writer)."));
   assert.ok(!feature.some((line) => line.includes("isolation: \"worktree\"") || line.includes("its own worktree")), "no line still sends a delegate to a worktree of its own");
-  assert.ok(feature.includes("- [ ] 6. Units already commit in order with `Unit:` trailers, and the landing folds them (`/implement` step 5, Unit commits). Stack follow-ups. Use the **sequence-verifiable-units** principle skill, building, verifying, and committing each small unit before the next. A follow-up is an item of the report, never an Issue the run files (`/implement` step 5, Follow-ups)."));
+  assert.ok(feature.includes("- [ ] 6. Units already commit in order with `Unit:` trailers, and the landing folds them (`/implement` step 5, Unit commits). Stack follow-ups. Use the [sequence-verifiable-units](../principles/sequence-verifiable-units.md) principle, building, verifying, and committing each small unit before the next. A follow-up is an item of the report, never an Issue the run files (`/implement` step 5, Follow-ups)."));
   assert.ok(feature.includes("- [ ] 8. No pull request is opened: the gates below, then LANDING.md, one landing for the run."));
   const bug = lines(todo("bug-fix"));
   assert.ok(bug.includes(`- [ ] ${parseSteps(bundledPlaybook("bug-fix")).steps[1].text}`));

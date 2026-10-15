@@ -4,7 +4,7 @@
 
 ## Considered Options
 
-- **A skill that reviews only recent work for a better data structure, and may implement it.** Rejected: `/codebase-audit` asks the same question of the whole tree, and poteto-mode's **principle-model-the-domain** asks it while the code is written. Editing during the review would also change the tree mid-audit.
+- **A skill that reviews only recent work for a better data structure, and may implement it.** Rejected: `/codebase-audit` asks the same question of the whole tree, and poteto-mode's [model-the-domain](../../skills/poteto-mode/principles/model-the-domain.md) asks it while the code is written. Editing during the review would also change the tree mid-audit.
 
 ## Consequences
 

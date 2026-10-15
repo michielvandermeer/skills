@@ -14,6 +14,6 @@
 
 ## Consequences
 
-- A `/validate-spec` someone types, and `/review-spec`, run the same width check, because they use the same checklist. A `needs-` Issue is not checked, because it holds no implementation decisions.
+- A `/validate-spec` someone types runs the same width check, because it uses the same checklist. A `needs-` Issue is not checked, because it holds no implementation decisions.
 - A width flag does not stop the Spec from being written, as with any open question under ADR-0052.
 - `/triage` and `/grilling` are unchanged.

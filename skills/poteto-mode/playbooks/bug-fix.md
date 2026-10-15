@@ -11,7 +11,7 @@ Redact every secret before you show it: API keys, tokens, passwords, cookies, se
 3. Plan the fix. If it crosses a function boundary, `architect` first. Delegate implementation to a subagent using your configured bug-fix model (default in poteto-mode's Models section) with a specific scope.
 4. Verify on the same surface. The original repro, before you minimised it, now passes. "Inconclusive" or wrong-surface is not a pass. Flag it. Unit tests show branch behavior, not bug absence.
 5. Stage the commits so the failing repro lands before the fix in git history. When the bug has a cheap local test path at a seam that exercises the bug as it happens at its call site, turn the minimised repro into the failing test first. Skip the test when it would be expensive, integration-heavy, or unclear. When only a shallower seam exists, skip it too and report the missing seam as a finding.
-   This is the canonical **sequence-verifiable-units** principle skill, the failing test first and the fix on top.
+   This is the canonical [sequence-verifiable-units](../principles/sequence-verifiable-units.md) principle, the failing test first and the fix on top.
 6. Clean up. `grep` the debug prefix down to zero hits and delete throwaway harnesses. State the hypothesis that held in the commit message. Then ask what would have prevented the bug. When the answer is architectural (no seam for the test, tangled callers, hidden coupling), name the structural change in your report, with the specifics.
 7. Run **Opening a PR**.
 

@@ -48,7 +48,9 @@ OWNED = {"hooks/hooks.json": "hooks/hooks.json", "hooks/session-start.sh": "hook
          "agents/thermo-nuclear-review-subagent.md": "agents/thermo-nuclear-review-subagent.md",
          "agents/thermo-nuclear-code-quality-review-subagent.md":
              "agents/thermo-nuclear-code-quality-review-subagent.md",
-         "skills/reflect/scripts/find-transcript.mjs": "skills/retro/scripts/find-transcript.mjs"}
+         "skills/reflect/scripts/find-transcript.mjs": "skills/retro/scripts/find-transcript.mjs",
+         "skills/unslop/SKILL.md": "skills/technical-writing/SLOP-PATTERNS.md",
+         "skills/figure-it-out/SKILL.md": "skills/poteto-mode/playbooks/figure-it-out.md"}
 OWNED_HERE = set(OWNED.values())
 # fnmatch's * also matches /.
 DROP = {
@@ -79,6 +81,7 @@ DROP = {
     "skills/tdd/*": "removed from this plugin; bug-fix's step 5 keeps the failing test first",
     "skills/reflect/*": "/retro does its job; its transcript finder is owned here",
     "skills/thermos/*": "/thermo-nuclear-review runs both passes itself",
+    "skills/teach/*": "/explain's talk format does its job",
     "skills/thermo-nuclear-code-quality-review/*": "its rubric is now the body of the code-quality agent, owned here",
     "*.test.ts": "upstream's tests",
     "*.test-helper.ts": "upstream's tests",
@@ -108,7 +111,7 @@ TYPED = {
 
 class Rule(NamedTuple):
     name: str
-    files: dict | None
+    files: dict | str | None  # each file's expected count; a glob, once in each file; None, anywhere
     old: str
     new: str
     regex: bool
@@ -142,7 +145,7 @@ RULES = [
      "Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; "
      "`/setup models` writes it.", False),
     Rule("principle-type-system-discipline: no typescript-best-practices",
-         {"skills/principle-type-system-discipline/SKILL.md": 1},
+         {"skills/poteto-mode/principles/type-system-discipline.md": 1},
          " For TypeScript syntax, see the `typescript-best-practices` skill.", "", False),
     Rule("resume-storage: one runtime", {"skills/poteto-mode/references/resume-storage.md": 1},
      "Claude Code, Codex, and other runtimes use this same command and location. Runtime-specific home directories "
@@ -168,6 +171,11 @@ RULES = [
     Rule("panels: families of the Opus and Haiku seats", {"skills/interrogate/SKILL.md": 1, "skills/arena/SKILL.md": 1},
          "such as Opus, Fable, or Sonnet.", "such as Opus or Haiku.", False),
     Rule("poteto-mode: Opus wherever Fable was the default", {"skills/poteto-mode/SKILL.md": 4}, "`fable`", "`opus`", False),
+    Rule("principles: files, not skills", "skills/poteto-mode/principles/*.md", r"\A---\n(?:(?!---\n).*\n)*---\n\n?",
+         "", True),
+    Rule("principles: links between principles", None, r"\.\./principle-([a-z-]+)/SKILL\.md", r"\1.md", True),
+    Rule("principles: links out of poteto-mode", {"skills/poteto-mode/principles/explain-the-number.md": 1},
+         "](../benchmark-checklist/SKILL.md)", "](../../benchmark-checklist/SKILL.md)", False),
     Rule("make-pr-easy-to-review is /pr", {"skills/pr/SKILL.md": 1}, "name: make-pr-easy-to-review", "name: pr",
          False),
     Rule("typed skills: user-invoked, pinned to Sonnet at high", {f"skills/{s}/SKILL.md": 1 for s in TYPED},
@@ -200,7 +208,14 @@ def matches(path, glob):
     return fnmatch.fnmatchcase(path, glob)
 
 
+# A principle skill lands as a file poteto-mode reads by path (docs/adr/0071). The pattern also maps NOTICE's
+# directory and glob forms, such as skills/principle-*/.
+PRINCIPLE = re.compile(r"skills/principle-([^/]+)/(?:SKILL\.md)?")
+
+
 def dest_of(rel):
+    if m := PRINCIPLE.fullmatch(rel):
+        return f"skills/poteto-mode/principles/{m.group(1)}.md"
     return next((COPY[d] + rel[len(d):] for d in COPY if rel.startswith(d)), None)
 
 
@@ -300,8 +315,9 @@ def check_plugin_json(data, plan):
 def rewrite(plan):
     licenses = set(LICENSES.values())
     for rule in RULES:
+        expected = {d: 1 for d in sorted(plan) if matches(d, rule.files)} if isinstance(rule.files, str) else rule.files
         counts = {}
-        for dest in rule.files or sorted(plan):
+        for dest in expected or sorted(plan):
             content = as_text(plan[dest]) if dest in plan else None
             if content is None or dest in licenses:
                 continue
@@ -315,8 +331,8 @@ def rewrite(plan):
         print(f"rule {sum(counts.values()):4d}  {rule.name}")
         if rule.files is None and not counts:
             fail(f"rule '{rule.name}' matched nothing; upstream changed, so revisit the rule")
-        if rule.files is not None and counts != rule.files:
-            fail(f"rule '{rule.name}' matched {counts}, expected {rule.files}; upstream changed, so revisit the rule")
+        if rule.files is not None and (counts != expected or not expected):
+            fail(f"rule '{rule.name}' matched {counts}, expected {expected}; upstream changed, so revisit the rule")
 
 
 def check_licenses(plan, upstream):
@@ -384,8 +400,14 @@ def notice_row(row, here):
         if path.startswith(PLUGIN) and any(matches(path[len(PLUGIN):], glob) for glob in DROP):
             component = re.sub(f", `{re.escape(path)}`|`{re.escape(path)}`, ", "", component, count=1)
             continue
-        dest = dest_of(path.removeprefix(PLUGIN)) if path.startswith(PLUGIN) else None
+        rel = path.removeprefix(PLUGIN)
+        owned = [OWNED[k] for k in OWNED if path.startswith(PLUGIN) and (k == rel or rel.endswith("/") and k.startswith(rel))]
+        dest = dest_of(rel) if path.startswith(PLUGIN) else None
         globs = [p + "*" if p.endswith("/") else p for p in expand_braces(dest or "")]
+        if owned and not all(any(matches(h, g) for h in here) for g in globs):
+            # Every file under it is owned here, at another path: credit those.
+            component = component.replace(f"`{path}`", ", ".join(f"`{o}`" for o in owned))
+            continue
         if dest is None or not all(any(matches(h, g) for h in here) for g in globs):
             fail(f"upstream NOTICE names {path}, which the import does not bring in")
         component = component.replace(f"`{path}`", f"`{dest}`")

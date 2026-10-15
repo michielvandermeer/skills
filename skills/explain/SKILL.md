@@ -1,23 +1,24 @@
 ---
 name: explain
-description: Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits.
+description: Explain anything as a talk or a diagram in the chat, an HTML page, or a narrated video, picking the format that fits.
 disable-model-invocation: true
 model: sonnet
 effort: high
-argument-hint: "[topic] [as a diagram | page | video]"
+argument-hint: "[topic] [as a talk | diagram | page | video]"
 ---
 
 # Explain
 
-Answer with something to look at instead of prose. What you make is an **Explanation**, in one of three **formats**, each richer and slower than the last:
+Answer so the person understands the topic. What you make is an **Explanation**, in one of four **formats**, each richer and slower than the last:
 
+- **Talk** — plain words in the chat, built up a layer at a time as the person asks. Fits understanding a change or subsystem well enough to work on it.
 - **Diagram** — box-drawing characters in the chat. Fits one structure or flow that fits on a screen.
 - **Page** — one self-contained HTML file. Fits a topic with several parts to explore, real graphics, or controls to play with.
 - **Video** — a narrated 3Blue1Brown-style MP4. Fits an idea that unfolds over time, such as an algorithm running step by step.
 
 The topic is anything: part of this repo, a branch's changes, an ADR, or an outside idea. With no topic, explain the last thing discussed in the session. With nothing to go on, ask what to explain and wait.
 
-Run the `/technical-writing` skill before writing anything a person reads — the confirmation, labels, page text, narration — and hold its bar throughout. Write for a developer who does not know the topic yet, unless the request names another reader.
+Run the `/technical-writing` skill before writing anything a person reads — the confirmation, the talk, labels, page text, narration — and hold its bar throughout. Write for a developer who does not know the topic yet, unless the request names another reader.
 
 ## Process
 
@@ -40,13 +41,14 @@ Done when the user named the format or confirmed it.
 
 ### 3. Build
 
+- **Talk** — follow [TALK.md](TALK.md). The run ends there.
 - **Diagram** — in a code block in the chat, at most 80 columns wide, every box labelled in the topic's own words. List the sources under it. The run ends here.
 - **Page** — follow [PAGE.md](PAGE.md).
 - **Video** — follow [VIDEO.md](VIDEO.md).
 
 Page and video files go in `explain/<slug>/` under the system temp folder, `<slug>` being the topic in a few kebab-case words.
 
-Done when the diagram is in the chat, or the page or video has passed the check its file sets.
+Done when the talk has ended, the diagram is in the chat, or the page or video has passed the check its file sets.
 
 ### 4. Hand over
 
