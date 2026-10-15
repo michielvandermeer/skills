@@ -1,6 +1,9 @@
 ---
 name: poteto-help
-description: Guides users through pstack setup, /poteto-mode, and picking the skill, playbook, or principle for a task. Type /poteto-help with a question.
+description: Answer questions about pstack setup, /poteto-mode, and which skill, playbook, or principle fits a task.
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 # Poteto help
@@ -23,27 +26,27 @@ Infer the need from the message and the conversation. A named situation, such as
 
 Check the state that changes the answer, and mention it only when it does:
 
-- For model or routing questions, read [`setup-pstack`](../setup-pstack/SKILL.md) for the sheet's location and how it loads. Check that configuration before saying whether defaults or overrides apply.
+- For model or routing questions, read [`/setup models`](../setup/MODELS.md) for the sheet's location and how it loads. Check that configuration before saying whether defaults or overrides apply.
 - No project `verify` or `verify-*` skill or other app harness means agents have no scripted way to drive the app. Mention `/create-verification-skill` when the question is about proving a change works.
 
 When the model sheet is missing and it matters, ask whether the user wants to pick a model for each role and a default effort now. It matters when the user is new, the question is about setup or cost, or the answer depends on which models run. Ask at most once per chat. If the need is also unclear, ask both questions together. Offer two choices:
 
-- Now: give them `/setup-pstack` to type, and answer their question too.
-- Later: answer their question, and add one line saying every role keeps its default model until they run `/setup-pstack`.
+- Now: give them `/setup models` to type, and answer their question too.
+- Later: answer their question, and add one line saying every role keeps its default model until they run `/setup models`.
 
 ## Get set up
 
 1. pstack ships inside this plugin. Give the install commands from the [README](https://github.com/michielvandermeer/skills/blob/master/README.md#install).
-2. Read [`/setup-pstack`](../setup-pstack/SKILL.md) before explaining model choices, effort, sheet loading, or automatic routing. The sheet's `session hook: off` line turns the routing hook off.
+2. Read [`/setup models`](../setup/MODELS.md) before explaining model choices, effort, sheet loading, or automatic routing. The sheet's `session hook: off` line turns the routing hook off.
 3. Offer a first task prompt with a goal and a check that can pass or fail, per [`references/prompting.md`](references/prompting.md). Skills invoke as `/skills:<name>`.
 
-If cost is the worry, say where the tokens go and how to spend less. pstack spends extra tokens on subagents and review panels. Rerun `/setup-pstack` and pick a lower effort or cheaper models. A role set to `auto` or `inherit-parent` runs on the chat's model, which costs less when the chat runs on a cheaper model. A shorter panel list runs fewer subagents, one for each entry. Save `/poteto-mode` for work that needs rigor.
+If cost is the worry, say where the tokens go and how to spend less. pstack spends extra tokens on subagents and review panels. Rerun `/setup models` and pick a lower effort or cheaper models. A role set to `auto` or `inherit-parent` runs on the chat's model, which costs less when the chat runs on a cheaper model. A shorter panel list runs fewer subagents, one for each entry. Save `/poteto-mode` for work that needs rigor.
 
 ## Start a task with `/poteto-mode`
 
 `/poteto-mode` matches the task to a playbook, copies the playbook's steps into the todo list, and runs the other skills as the steps need them. A step it skips stays in the list as `skip: <reason>`. A good prompt states the goal and how to tell it's done. It doesn't list skills, because a hand-written sequence tends to drop or reorder steps the playbook would keep. Read [`references/prompting.md`](references/prompting.md) before you help word one.
 
-Later tasks route automatically while the plugin's SessionStart hook is on. Check the sheet's `session hook` line, as [`/setup-pstack`](../setup-pstack/SKILL.md) describes, before promising it. Without automatic routing, invoke `poteto-mode` for each new task. Mid-chat, "new task" makes the mode match a fresh playbook. For subagent defaults, read [poteto-mode's Subagents section](../poteto-mode/SKILL.md#subagents).
+Later tasks route automatically while the plugin's SessionStart hook is on. Check the sheet's `session hook` line, as [`/setup models`](../setup/MODELS.md) describes, before promising it. Without automatic routing, invoke `poteto-mode` for each new task. Mid-chat, "new task" makes the mode match a fresh playbook. For subagent defaults, read [poteto-mode's Subagents section](../poteto-mode/SKILL.md#subagents).
 
 ## Pick a skill
 
@@ -62,8 +65,6 @@ The default answer is `/poteto-mode`, which runs most of the others when its ste
 | Get several attempts at one brief, merged into the best one | [`/arena`](../arena/SKILL.md) |
 | Run parallel checks over slices, or race workers | [`/swarm`](../swarm/SKILL.md) |
 | Have different models review a diff and try to break it | [`/interrogate`](../interrogate/SKILL.md) |
-| Fix a bug test-first when a cheap local test exists | [`/tdd`](../tdd/SKILL.md) |
-| Apply TypeScript rules to `.ts` or `.tsx` work | [`/typescript-best-practices`](../typescript-best-practices/SKILL.md) |
 | Strip comments before review, using a reviewer that didn't write them | [`/no-comments`](../no-comments/SKILL.md) |
 | Clean AI tells out of prose | [`/unslop`](../unslop/SKILL.md) |
 | Write docs, an RFC, a README, a PR description, or a commit message to a standard | [`/technical-writing`](../technical-writing/SKILL.md) |
@@ -73,9 +74,9 @@ The default answer is `/poteto-mode`, which runs most of the others when its ste
 | Vet a performance number before reporting or acting on it | [`/benchmark-checklist`](../benchmark-checklist/SKILL.md) |
 | Run a large or cross-cutting change, or one to review after stepping away | [`/figure-it-out`](../figure-it-out/SKILL.md) |
 | Keep a decision log during a run, and review it afterward | [`/show-me-your-work`](../show-me-your-work/SKILL.md) |
-| Pick a model for each role and a default effort | [`/setup-pstack`](../setup-pstack/SKILL.md) |
+| Pick a model for each role and a default effort | [`/setup models`](../setup/MODELS.md) |
 | Turn their own working habits into a personal mode skill | [`/automate-me`](../automate-me/SKILL.md) |
-| Turn what a finished task taught into skill edits | [`/reflect`](../reflect/SKILL.md) |
+| Turn what a finished session taught into fixes for its skills, checks, and standards | [`/retro`](../retro/SKILL.md) |
 | Stop agents from repeating the same mistakes in this repo | [`/correct`](../correct/SKILL.md) |
 | Find their way around pstack | `/poteto-help` |
 
@@ -117,9 +118,9 @@ Principles are one-rule skills that `/poteto-mode` reads and cites in its replie
 
 | Symptom | Fix |
 |---|---|
-| The mode stopped applying after a few turns | Check the sheet's `session hook` line, as [setup-pstack](../setup-pstack/SKILL.md) describes. With the hook off, invoke `poteto-mode` for each task. |
+| The mode stopped applying after a few turns | Check the sheet's `session hook` line, as [`/setup models`](../setup/MODELS.md) describes. With the hook off, invoke `poteto-mode` for each task. |
 | A question got treated as the next step of the last task | Say "new task", or say the turn doesn't need the mode. |
-| A new model choice had no effect | Read [setup-pstack](../setup-pstack/SKILL.md), then check the sheet's location and how it loads. |
+| A new model choice had no effect | Read [`/setup models`](../setup/MODELS.md), then check the sheet's location and how it loads. |
 | Runs cost more than expected | See the cost paragraph under Get set up. |
 | A skill didn't load on its own | Read its description. Claude Code loads a skill on its own only when the request matches that description. Invoke it explicitly when needed; `/poteto-mode` doesn't run every skill. |
 | Parallel agents overwrote each other | Give each agent its own worktree. |
@@ -131,7 +132,7 @@ For a run that drifts, [`references/prompting.md`](references/prompting.md) has 
 ## Make pstack my own
 
 - [`/automate-me`](../automate-me/SKILL.md) drafts a personal mode skill from the user's own history, to use alongside `/poteto-mode`.
-- [`/reflect`](../reflect/SKILL.md) after a session turns its lessons into skill edits the user approves.
+- [`/retro`](../retro/SKILL.md) after a session applies the lessons that will recur to files this repo owns, and lists the rest.
 - `/poteto-mode write a skill for <workflow>` runs the authoring playbook. The eval playbook tests a skill change blind.
 - Fix a misbehaving skill in its own PR, not inside the feature work where it went wrong.
 

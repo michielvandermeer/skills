@@ -17,7 +17,7 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 The run writes Issues and nothing else. The next session stays one document per typed run, as [ADR-0035](../../docs/adr/0035-architecture-reviews-end-in-issues.md) sets for architecture reviews: step 7 names the command that continues each Issue, and the user types it.
 
-Run the `/plain-language` skill before the first message and hold its bar for the opening, every card, and the closing pick. Every Issue holds its durable-document bar. The briefs you send helper agents are for agents and sit outside that bar.
+Run the `/technical-writing` skill before the first message and hold its bar for the opening, every card, and the closing pick. Every Issue holds its durable-document bar. The briefs you send helper agents are for agents and sit outside that bar.
 
 ## Process
 
@@ -93,6 +93,6 @@ Done when every kept Direction, or the stopped run, has its Issue in the Tracker
 
 When the Tracker keeps Issues in the repo, commit every Issue from the run in one commit, staged by name, on the branch you are on. Leave every other working-tree change alone.
 
-List each Issue, by its reference, with the command that continues it: `/refine` when its Open questions are about what the product should do, `/grill-with-docs` when they are about how to build it. Then run `/retro`.
+List each Issue, by its reference, with `/grill-with-docs` as the command that continues it. Then run `/retro`.
 
 Done when every Issue from the run is in the Tracker and committed where the Tracker keeps it in the repo, each is listed with its next command, and `/retro` has finished.

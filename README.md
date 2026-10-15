@@ -162,8 +162,8 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 
 **Skills you type.** Only the skills that no other skill loads pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
 
-- Opus at high: `/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/refine`, `/wayfinder`, `/implement`, `/implement-yolo`.
-- Sonnet at high: `/triage`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`.
+- Opus at high: `/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/wayfinder`, `/implement`, `/implement-yolo`.
+- Sonnet at high: `/triage`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`, and the pstack skills you type: `/automate-me`, `/babysit`, `/bro`, `/correct`, `/ketchup`, `/make-pr-easy-to-review`, `/maintain-verification-skill`, `/poteto-help`, `/thermos`, `/what-did-i-get-done`.
 
 **Sub-agents.**
 
@@ -171,7 +171,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 - Haiku at high: `skills:explorer`.
 - Opus at high: `skills:reviewer`, the two `/code-review` reviewers.
 
-**Implement delegates.** An implement run dispatches pstack's `skills:poteto-agent` for every code-writing delegate and for the verifier, and runs pstack's `how`, `architect`, and `interrogate` skills. Each of those roles takes its model from `~/.claude/pstack-models.md`, the sheet `/skills:setup-pstack` writes, so the cost of a run is set in one place you already own.
+**Implement delegates.** An implement run dispatches pstack's `skills:poteto-agent` for every code-writing delegate and for the verifier, and runs pstack's `how`, `architect`, and `interrogate` skills. Each of those roles takes its model from `~/.claude/pstack-models.md`, the sheet `/skills:setup models` writes, so the cost of a run is set in one place you already own.
 
 Everything else runs on the setting of the skill that starts it: a Hillclimb's fixers and the `/codebase-design` and `/brainstorm` fan-outs.
 
@@ -199,15 +199,13 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then file the ones you pick as Issues — as Specs when they are clear enough to build. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Type it to rebuild your profile from past sessions; no grilling session runs it for you. |
-| `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |
 | `pr` | Shape a pull request description: a small picture of the change, before-and-after evidence, and how risky it is to merge. Loads on its own whenever the agent writes one. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
-| `refine` | Take any Issue through grilling, an optional Prototype, and a Spec. The Spec becomes the Issue's text, and its opening sections are the plain-language summary. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
 | `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
-| `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. |
+| `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. Then choose which model each pstack role runs on, and whether the SessionStart hook routes tasks; `/setup models` does only that part. |
 | `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. |
 | `triage` | Sort incoming reports, or the Issues nobody has triaged yet, into Specs and parked Issues, one Issue per distinct problem, and close what won't be done. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
@@ -219,7 +217,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 
 The plugin includes pstack, Lauren Tan's (poteto) way of working with agents, as ported to Claude Code by Michael Denyer in [pstack-claude](https://github.com/michael-denyer/pstack-claude). Start with `/skills:poteto-mode`, which picks a playbook for the task and runs the other pstack skills as it needs them. `/skills:poteto-help` answers questions about the rest. Its skills, the `principle-*` skills among them, are in [`skills/`](skills/), next to the ones above, and its agents are in [`agents/`](agents/).
 
-A SessionStart hook tells each new session to use `poteto-mode` for work that touches more than one file, involves a design choice, or chases an unknown bug. To turn it off, or to choose which models pstack's roles use, run `/skills:setup-pstack`. It writes `~/.claude/pstack-models.md`, the same file the separate pstack plugin reads.
+A SessionStart hook tells each new session to use `poteto-mode` for work that touches more than one file, involves a design choice, or chases an unknown bug. To turn it off, or to choose which models pstack's roles use, run `/skills:setup models`. It writes `~/.claude/pstack-models.md`, the same file the separate pstack plugin reads.
 
 **If you installed the separate `pstack` plugin, uninstall it.** With both installed, every pstack skill loads twice and two SessionStart hooks run:
 

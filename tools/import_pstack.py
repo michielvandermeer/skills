@@ -33,8 +33,15 @@ PLUGIN = "plugins/pstack/"
 COPY = {"skills/": "skills/", "agents/": "agents/", "effort-agents/": "agents/"}
 LICENSES = {"LICENSE": "LICENSE-pstack", "LICENSE-cursor-team-kit": "LICENSE-cursor-team-kit",
             "LICENSE-thermos": "LICENSE-thermos"}
-OWNED = ["hooks/hooks.json", "hooks/session-start.sh", "hooks/session-start-context.md", "skills/poteto-help/SKILL.md",
-         "skills/setup-pstack/SKILL.md", "skills/setup-pstack/scripts/read-sheet.sh"]
+# Upstream path: where this repo keeps its own version.
+OWNED = {"hooks/hooks.json": "hooks/hooks.json", "hooks/session-start.sh": "hooks/session-start.sh",
+         "hooks/session-start-context.md": "hooks/session-start-context.md",
+         "skills/poteto-help/SKILL.md": "skills/poteto-help/SKILL.md",
+         "skills/setup-pstack/SKILL.md": "skills/setup/MODELS.md",
+         "skills/setup-pstack/scripts/read-sheet.sh": "skills/setup/scripts/read-sheet.sh",
+         "skills/technical-writing/SKILL.md": "skills/technical-writing/SKILL.md",
+         "skills/reflect/scripts/find-transcript.mjs": "skills/retro/scripts/find-transcript.mjs"}
+OWNED_HERE = set(OWNED.values())
 # fnmatch's * also matches /.
 DROP = {
     ".claude-plugin/plugin.json": "pstack-claude's manifest. check_plugin_json reads it; this repo has its own",
@@ -60,6 +67,9 @@ DROP = {
     "skills/setup-pstack/copilot.md": "GitHub Copilot only",
     "skills/setup-pstack/scripts/*sheet.awk": "GitHub Copilot only: check-sheet.sh runs them",
     "skills/setup-pstack/scripts/check-sheet.sh": "GitHub Copilot only: it checks Copilot's sheet",
+    "skills/typescript-best-practices/*": "TypeScript rules; this plugin's operator does not write TypeScript",
+    "skills/tdd/*": "removed from this plugin; bug-fix's step 5 keeps the failing test first",
+    "skills/reflect/*": "/retro does its job; its transcript finder is owned here",
     "*.test.ts": "upstream's tests",
     "*.test-helper.ts": "upstream's tests",
     "skills/poteto-mode/scripts/watch-pr/live-merge-safety.mjs": "an opt-in live test that no imported file runs",
@@ -68,7 +78,26 @@ DROP = {
 PLUGIN_JSON_KEYS = {"name", "displayName", "version", "description", "author", "homepage", "repository", "license",
                     "keywords", "agents"}
 
-EFFORT = ("architect", "arena", "how", "interrogate", "poteto-mode", "reflect", "swarm", "why")
+EFFORT = ("architect", "arena", "how", "interrogate", "poteto-mode", "swarm", "why")
+# Skills only a typed slash command starts: no skill reaches them, so they leave the model's context and pin a model.
+# Each one's description is a one-line summary for the person picking it from the / menu.
+TYPED = {
+    "automate-me": "Draft or revise a personal -mode skill from how you work, optionally mining recent transcripts.",
+    "babysit": "Watch an open PR: fix failing CI, handle the straightforward review comments, and drive it to "
+               "mergeable.",
+    "bro": "Restate the last message in plain words, with no jargon.",
+    "correct": "Find the mistakes agents keep repeating in this repo and make each one impossible, architecture first "
+               "and docs last.",
+    "ketchup": "Catch up on everything in this chat since your last message, with a summary for each action item.",
+    "make-pr-easy-to-review": "Prepare a PR for review: clean noisy history, improve the description, and add "
+                              "reviewer guidance, without changing behavior.",
+    "maintain-verification-skill": "Keep a project's verification skill and feature map honest, with at most one PR "
+                                   "of proven corrections.",
+    "thermos": "Run both thermo-nuclear reviews in parallel and synthesize their findings.",
+    "what-did-i-get-done": "Summarize your authored commits over a time period into a concise update.",
+}
+TDD_STEP = ("See the **tdd** skill for the failing-test-first cadence when the bug has a cheap local test path. "
+            "Skip it when the test would be expensive, integration-heavy, or unclear.")
 
 class Rule(NamedTuple):
     name: str
@@ -104,18 +133,46 @@ RULES = [
      "role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it and "
      "lists its path per runtime.",
      "Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; "
-     "`/setup-pstack` writes it.", False),
+     "`/setup models` writes it.", False),
+    Rule("principle-type-system-discipline: no typescript-best-practices",
+         {"skills/principle-type-system-discipline/SKILL.md": 1},
+         " For TypeScript syntax, see the `typescript-best-practices` skill.", "", False),
     Rule("resume-storage: one runtime", {"skills/poteto-mode/references/resume-storage.md": 1},
      "Claude Code, Codex, and other runtimes use this same command and location. Runtime-specific home directories "
      "and transcript encodings do not affect lookup.",
      "The lookup does not depend on Claude Code's config directory or transcript encoding.", False),
+    Rule("bug-fix: no tdd skill", {"skills/poteto-mode/playbooks/bug-fix.md": 1}, TDD_STEP,
+         "When the bug has a cheap local test path, write the failing test first. "
+         "Skip the test when it would be expensive, integration-heavy, or unclear.", False),
+    Rule("recipes: no tdd skill", {"skills/poteto-help/references/recipes.md": 1},
+         "if there's a cheap test path, /tdd it. then fix and rerun.",
+         "if there's a cheap test path, write the failing test first. then fix and rerun.", False),
+    Rule("recipes: /retro, not /reflect", {"skills/poteto-help/references/recipes.md": 1},
+         "- `/reflect capture what we learned so the next run doesn't repeat it.` Approve only edits that change a "
+         "future decision.",
+         "- `/retro` after the run, so the next run doesn't repeat its mistakes. It applies the fixes that will recur "
+         "to files this repo owns, and lists the rest.", False),
+    Rule("poteto-mode: no reflect among routed skills", {"skills/poteto-mode/SKILL.md": 2},
+         r"(`interrogate`), `reflect`", r"\1", True),
+    Rule("worktree-audit: the transcript finder lives in retro", {"skills/poteto-mode/scripts/worktree-audit.mjs": 1},
+         '"../../reflect/scripts/find-transcript.mjs"', '"../../retro/scripts/find-transcript.mjs"', False),
+    Rule("panels: Opus and Haiku only", {"skills/arena/SKILL.md": 2, "skills/architect/SKILL.md": 1},
+         "`opus`, `fable`, `sonnet`, `haiku`", "`opus`, `haiku`", False),
+    Rule("interrogate: two reviewers", {"skills/interrogate/SKILL.md": 1},
+         "| Reviewer B | `fable` |\n| Reviewer C | `sonnet` |\n| Reviewer D | `haiku` |", "| Reviewer B | `haiku` |",
+         False),
+    Rule("interrogate: families of the two reviewers", {"skills/interrogate/SKILL.md": 1},
+         "such as Opus, Fable, or Sonnet.", "such as Opus or Haiku.", False),
+    Rule("typed skills: user-invoked, pinned to Sonnet at high", {f"skills/{s}/SKILL.md": 1 for s in TYPED},
+         r"\A(---\n(?:(?!---\n).*\n)*?description: .*\n)",
+         r"\1disable-model-invocation: true\nmodel: sonnet\neffort: high\n", True),
+    *(Rule(f"{skill}: description for people", {f"skills/{skill}/SKILL.md": 1}, r"(?m)^description: .*$",
+           "description: " + json.dumps(summary).replace("\\", "\\\\"), True) for skill, summary in TYPED.items()),
 ]
 
 LEFTOVERS = [r"\bpstack:(?=[A-Za-z<])", r"(codex|copilot|pi)-tools", "#other-runtimes", "COPILOT_PLUGIN_ROOT",
              "CODEX_HOME", r"models\.json", r"tools/generate\.mjs", r"\b(Codex|Copilot|spawn_agent)\b|\bOn Pi\b"]
 LEFTOVERS_ALLOWED = {
-    "skills/reflect/scripts/find-transcript.mjs":
-        "tells Claude Code, Pi, and Copilot transcripts apart, and refuses a Codex rollout by name",
     "skills/poteto-mode/scripts/worktree-audit.mjs":
         "scans Claude Code's, Codex's, and Pi's session stores for the last chat that used each worktree",
 }
@@ -287,7 +344,7 @@ def broken_links(plan):
         return dest in plan or (ROOT / dest).exists() or any(key.startswith(dest + "/") for key in plan)
 
     checked, broken = 0, []
-    for dest in sorted({*plan, *OWNED}):
+    for dest in sorted({*plan, *OWNED_HERE}):
         text = text_of(dest)
         if not dest.endswith(".md") or text is None:
             continue
@@ -315,6 +372,9 @@ def notice_row(row, here):
         fail(f"upstream NOTICE row does not have 5 cells: {row}")
     component, source, holder, kind, license_file = cells
     for path in re.findall(r"`([^`]+)`", component):
+        if path.startswith(PLUGIN) and any(matches(path[len(PLUGIN):], glob) for glob in DROP):
+            component = re.sub(f", `{re.escape(path)}`|`{re.escape(path)}`, ", "", component, count=1)
+            continue
         dest = dest_of(path.removeprefix(PLUGIN)) if path.startswith(PLUGIN) else None
         globs = [p + "*" if p.endswith("/") else p for p in expand_braces(dest or "")]
         if dest is None or not all(any(matches(h, g) for h in here) for g in globs):
@@ -339,7 +399,7 @@ def notice(upstream_notice, sha, plan):
             table.append(line)
     if len(table) < 3 or not table[0].startswith("| Component |") or not set(table[1]) <= set("|- "):
         fail("upstream NOTICE.md's Upstream sources table changed shape")
-    here = {*plan, *OWNED}
+    here = {*plan, *OWNED_HERE}
     rows = [notice_row(row, here) for row in table[2:]]
     port = f"[michael-denyer/pstack-claude @ {sha[:7]}]({UPSTREAM_URL}/tree/{sha})"
     return "\n".join([
@@ -352,7 +412,7 @@ def notice(upstream_notice, sha, plan):
         "",
         "[`tools/import_pstack.py`](tools/import_pstack.py) wrote this file and every file listed in "
         "[`tools/pstack-import-manifest.txt`](tools/pstack-import-manifest.txt). These began as pstack-claude's files "
-        "and are now this repo's own: " + ", ".join(f"`{path}`" for path in OWNED) + ".",
+        "and are now this repo's own: " + ", ".join(f"`{path}`" for path in OWNED.values()) + ".",
         "",
         "## Upstream sources",
         "",
@@ -386,7 +446,7 @@ def git_paths(argv, paths):
 
 
 def differs_from_last_import_and_this_one(previous, here, planned):
-    return sorted(p for p, blob in previous.items() if p not in OWNED and here.get(p) not in (blob, planned.get(p)))
+    return sorted(p for p, blob in previous.items() if p not in OWNED_HERE and here.get(p) not in (blob, planned.get(p)))
 
 
 def main(argv):
@@ -427,11 +487,11 @@ def main(argv):
     skills = {dest.split("/")[1] for dest in plan if dest.startswith("skills/")}
     clashes = sorted({*(d for d in plan if d not in previous and d in here and here[d] != planned[d]),
                       *(p for p in tracked if p.startswith("skills/") and p.split("/")[1] in skills
-                        and p not in previous and p not in plan and p not in OWNED)})
+                        and p not in previous and p not in plan and p not in OWNED_HERE)})
     if clashes:
         fail("these files belong to this repo, not to an import:\n  " + "\n  ".join(clashes))
 
-    stale = sorted(p for p in previous if p not in plan and p not in OWNED)
+    stale = sorted(p for p in previous if p not in plan and p not in OWNED_HERE)
     for dest in stale:
         path = ROOT / dest
         path.unlink(missing_ok=True)

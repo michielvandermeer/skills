@@ -28,7 +28,7 @@ The territory earns a place on the map only where it gives the way context. An i
 
 Every map and ticket has a **name** — its title in the Tracker. In everything the human reads — narration, the map's Decisions-so-far — refer to it by that name, never by its bare reference. A wall of bare numbers is illegible; names read at a glance. The reference and link don't vanish — a name wraps its link — but they ride *inside* the name, never stand in for it.
 
-Everything the human reads also runs at the bar the `/plain-language` skill sets. A map outlives the session that drew it, and its later readers cannot look up a word only this skill defines. The **Not yet specified** heading is that rule already applied.
+Everything the human reads also runs at the bar the `/technical-writing` skill sets. A map outlives the session that drew it, and its later readers cannot look up a word only this skill defines. The **Not yet specified** heading is that rule already applied.
 
 ## The Map
 

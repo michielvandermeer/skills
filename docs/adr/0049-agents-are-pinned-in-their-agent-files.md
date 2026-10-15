@@ -2,7 +2,7 @@
 
 Each skill you type and each plugin agent sets `model:` and `effort:` in its own header, so a run starts at the setting its work needs and not at your session's most expensive one. Three parallel implement runs on Opus at xhigh burned about 16% of a weekly limit in five hours. Nothing is pinned above `high`.
 
-- **Skills you type**, the ones marked `disable-model-invocation: true` except `/review-spec`, plus the two implement commands, which a `/goal` can also start ([ADR-0067](0067-the-implement-commands-are-model-invoked-so-a-goal-can-start-them.md)): Opus at high for the interview and design skills (`/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/refine`, `/wayfinder`) and for `/implement` and `/implement-yolo`, whose Driving session owns the design and verification judgement of a poteto-mode run ([ADR-0069](0069-an-implement-run-is-a-poteto-mode-playbook.md)); Sonnet at high for the rest.
+- **Skills you type**, the ones marked `disable-model-invocation: true` except `/review-spec`, plus the two implement commands, which a `/goal` can also start ([ADR-0067](0067-the-implement-commands-are-model-invoked-so-a-goal-can-start-them.md)): Opus at high for the interview and design skills (`/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/wayfinder`) and for `/implement` and `/implement-yolo`, whose Driving session owns the design and verification judgement of a poteto-mode run ([ADR-0069](0069-an-implement-run-is-a-poteto-mode-playbook.md)); Sonnet at high for the rest.
 - **Agents** are pinned as follows:
 
   | Agent | Model | Effort |
@@ -11,7 +11,7 @@ Each skill you type and each plugin agent sets `model:` and `effort:` in its own
   | Explorer | Haiku | high |
   | Reviewer | Opus | high |
 
-- **Implement delegates** have no agent file of their own. Every role an implement run dispatches, the `skills:poteto-agent` builders and fixers, the Verifier, the `how` explorers, the `architect` runners, and the `interrogate` reviewers, takes its model from the role line in the operator's `~/.claude/pstack-models.md`, as the `poteto-mode` skill's Subagents and Models sections say, so cost has one control surface the operator already edits with `/setup-pstack`. A sheet with no line keeps the role's default.
+- **Implement delegates** have no agent file of their own. Every role an implement run dispatches, the `skills:poteto-agent` builders and fixers, the Verifier, the `how` explorers, the `architect` runners, and the `interrogate` reviewers, takes its model from the role line in the operator's `~/.claude/pstack-models.md`, as the `poteto-mode` skill's Subagents and Models sections say, so cost has one control surface the operator already edits with `/setup models`. A sheet with no line keeps the role's default.
 - **Everything else** runs on the setting of the skill that starts it: a Hillclimb's fixers and the `/brainstorm` and `/codebase-design` fan-outs.
 
 A skill's pin lasts for the rest of the turn. A skill that another skill loads would swap its caller's model, so only skills that no other skill loads are pinned. `/review-spec` stays on the session because [ADR-0036](0036-review-spec-uses-the-session-model.md) says you choose its model by opening the session.

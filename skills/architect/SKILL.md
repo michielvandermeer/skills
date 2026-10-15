@@ -83,9 +83,9 @@ The caller's usage is written first and the type sketch derived from it. One fil
 
 ## Models
 
-Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it.
+Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup models` writes it.
 
-- architect runners: `opus`, `fable`, `sonnet`, `haiku`
+- architect runners: `opus`, `haiku`
 
 ## Reasoning effort
 

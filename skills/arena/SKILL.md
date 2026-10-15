@@ -48,10 +48,10 @@ One synthesized artifact, with a short synthesis note alongside naming the base 
 
 ## Models
 
-Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it.
+Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup models` writes it.
 
-- arena runners: `opus`, `fable`, `sonnet`, `haiku`
-- arena cross-judge pool: `opus`, `fable`, `sonnet`, `haiku`
+- arena runners: `opus`, `haiku`
+- arena cross-judge pool: `opus`, `haiku`
 
 ## Reasoning effort
 

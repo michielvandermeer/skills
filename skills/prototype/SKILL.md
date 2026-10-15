@@ -69,10 +69,10 @@ The Spec is the handover. Real code gets built from it later, by `/implement`.
 
 ## Serving a larger effort
 
-A `/wayfinder` prototype ticket, a `/grilling` session reaching for a demo mid-design, or a `/grill-with-docs` or `/refine` session once its frontier is empty, invokes `/prototype` as part of a larger effort. Write no Spec. The parent names the folder.
+A `/wayfinder` prototype ticket, a `/grilling` session reaching for a demo mid-design, or a `/grill-with-docs` session once its frontier is empty, invokes `/prototype` as part of a larger effort. Write no Spec. The parent names the folder.
 
 - **Already in a worktree** (wayfinder, grilling mid-design): hand over, write the folder in this tree, stop. Leave the worktree and its branch to the effort that opened them.
-- **Not in a worktree** (`/grill-with-docs`, `/refine`): follow steps 1–5 with step 5.3 left out — the folder is `.agents/prototypes/<slug>/`, and the parent's `/to-spec` names it.
+- **Not in a worktree** (`/grill-with-docs`): follow steps 1–5 with step 5.3 left out — the folder is `.agents/prototypes/<slug>/`, and the parent's `/to-spec` names it.
 
 ## Worktree waived
 

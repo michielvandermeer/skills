@@ -15,7 +15,7 @@ Two vocabularies shape exploration and design:
 - **Architecture** comes from the `/codebase-design` skill — **module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**, and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Run it, and use those words exactly while you hunt friction and shape a deepening: where a sentence reaches for a looser word, the precise one is always available.
 - **Domain** comes from `CONTEXT.md`, which gives names to good seams. If the glossary defines "Order", a candidate concerns the Order intake module.
 
-The report a person reads is a different surface: it sits under `/plain-language`, with one exception named in step 3.
+The report a person reads is a different surface: it sits under `/technical-writing`, with one exception named in step 3.
 
 ADRs in `docs/adr/` record decisions this skill takes as settled.
 
@@ -51,7 +51,7 @@ Shortlist the candidates, then dispatch a second `skills:explorer` sub-agent sco
 - **What the affected code does**, in domain terms — scoped to the functionality the architectural problem sits inside, not a tour of the surrounding area.
 - **What triggers it** — the *shapes* of the entry points rather than an enumeration of call sites. Where the code has no user-facing surface, name the real consumer: another module, a scheduled run, a CLI invocation.
 
-Read from the code, never inferred from file or module names, and held to **Plain language** — pitched at a colleague who knows the product but not this corner of it, so `CONTEXT.md` terms go undefined and area mechanics unassumed.
+Read from the code, never inferred from file or module names, and held to **Technical writing** — pitched at a colleague who knows the product but not this corner of it, so `CONTEXT.md` terms go undefined and area mechanics unassumed.
 
 Where the pass cannot establish what the code does, the candidate stays and the card says so: nobody being able to tell what a module does is the strongest evidence of the friction this skill exists to find, and the Problem line makes exactly that argument.
 
@@ -63,7 +63,7 @@ Determine a timestamp, and write two files into `.agents/architecture-reviews/<t
 
 In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
 
-Run the `/plain-language` skill before writing either file. That skill is the bar for every human-facing sentence in both files: Title, What this does, What triggers it, Problem, Solution, Wins, Top recommendation, ADR callouts, and diagram labels that carry a claim. Files stay paths. The sole exception: `/codebase-design` terms may appear bare — module, interface, implementation, depth, deep, shallow, seam, adapter, leverage, locality — when they are the natural claim. Leave a clear plain sentence in plain words; denser glossary form is not a consistency goal. Spell each code mechanism in words a cold reader already holds ("read the set, change it, write it back"), not a report-only nickname, acronym, or private type/method name.
+Run the `/technical-writing` skill before writing either file. That skill is the bar for every human-facing sentence in both files: Title, What this does, What triggers it, Problem, Solution, Wins, Top recommendation, ADR callouts, and diagram labels that carry a claim. Files stay paths. The sole exception: `/codebase-design` terms may appear bare — module, interface, implementation, depth, deep, shallow, seam, adapter, leverage, locality — when they are the natural claim. Leave a clear plain sentence in plain words; denser glossary form is not a consistency goal. Spell each code mechanism in words a cold reader already holds ("read the set, change it, write it back"), not a report-only nickname, acronym, or private type/method name.
 
 A review is read with a team who work on different parts of the system, so a card lands with people who have never opened the code it describes. Use as many sentences as the claim needs; one is fine when one is enough.
 
@@ -91,11 +91,11 @@ The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via C
 
 The report stops at candidates: each one says what would change and why it helps.
 
-Done when both files are written, every candidate has a card carrying all parts plus an ADR callout where one applies, and every human-facing sentence holds the plainness bar above.
+Done when both files are written, every candidate has a card carrying all parts plus an ADR callout where one applies, and every human-facing sentence holds the `/technical-writing` bar above.
 
 ### 4. Close
 
-Run `/plain-language` before any sentence in this step a person will read.
+Run `/technical-writing` before any sentence in this step a person will read.
 
 For each candidate, decide whether it is **Buildable**: `/implement` could start from the card without another design session. The test is the card, not the strength badge. A dispute that it is Buildable is itself evidence it needs grilling: list it as not Buildable.
 

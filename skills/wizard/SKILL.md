@@ -18,7 +18,7 @@ Work out every manual step the person must take and every value that gets captur
 - For setup: `.env`, `.env.example`, `.env.*`, `README`, `docker-compose*`, framework config, and `.github/workflows/*` (every `secrets.*` / `vars.*` reference is a value the Wizard must produce).
 - For a migration or transition: the current state, the target state, and the irreversible actions between them.
 
-Then show the user the ordered list of Stages and the values each produces, at the bar the `/plain-language` skill sets, and confirm: they may add, drop, or reorder.
+Then show the user the ordered list of Stages and the values each produces, at the bar the `/technical-writing` skill sets, and confirm: they may add, drop, or reorder.
 
 **Done when:** every Stage is named in order, and for each captured value you know (a) where the person gets it, (b) where it is written (`.env`, a GitHub secret, both, or nowhere; some Stages are pure actions), and (c) whether it is secret (hidden entry) or public.
 
@@ -44,6 +44,6 @@ Hold the bar the template sets: open the URL before asking for its value, use `a
 
 Trace statically; do not run the Wizard end to end yourself — it opens browsers and blocks on human input.
 
-Tell the user how to run it, at the bar the `/plain-language` skill sets. A key pasted into chat while scoping still enters the session, like any other pasted text. If this is a repeatable setup path, commit the script and link it from the README so the next person runs the script instead of asking an agent.
+Tell the user how to run it, at the bar the `/technical-writing` skill sets. A key pasted into chat while scoping still enters the session, like any other pasted text. If this is a repeatable setup path, commit the script and link it from the README so the next person runs the script instead of asking an agent.
 
 **Done when:** the script is executable, the static trace holds, and the person has the command to run it.

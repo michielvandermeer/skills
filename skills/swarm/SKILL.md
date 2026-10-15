@@ -46,7 +46,7 @@ Return one consolidated in-chat report with the table, issue one-liners, gaps or
 
 ## Models
 
-Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it.
+Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup models` writes it.
 
 - swarm workers: `opus`
 

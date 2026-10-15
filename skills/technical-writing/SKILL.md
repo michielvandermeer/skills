@@ -1,6 +1,6 @@
 ---
 name: technical-writing
-description: "Layered technical-writing standard: Diátaxis structure, Google developer style sentences, STE instruction rules, Global English syntax. Use for /technical-writing or when writing or reviewing docs, RFCs, readmes, PR descriptions, or commit messages."
+description: "Layered technical-writing standard, and the house standard for every sentence a person reads: Diátaxis structure, Google developer style sentences, STE instruction rules, Global English syntax. Use for /technical-writing, when writing or reviewing docs, RFCs, readmes, PR descriptions, or commit messages, when writing a report, review, interview round, or Tracker document a person will read, or when another skill needs the writing bar."
 ---
 
 # Technical writing
@@ -16,6 +16,22 @@ Three rules sit above the layers:
 The codebase is the word list. Write the real symbol, file, flag, or command name, not a synonym or a description of it.
 
 Don't invent jargon. Use the words a developer would say out loud: "move", "delete", "a budget that only decreases", not "evacuate", "ratchet", or "endgame". A named pattern is fine when the doc says what it means the first time. Propose a new offender and its replacement as an addition to `unslop`'s abstract-metaphor rule in your reply, with the diff. Don't edit that skill.
+
+## Write for a developer new to this repo
+
+Every sentence a skill puts in front of a person follows this skill: a reply, an interview round, a report, a review, a Tracker document. The reader is a developer new to this codebase. They know software. They do not know this repo, and they cannot look up a word that exists only inside a skill. This skill changes the wording only. A grilling session asks the same questions at the same depth, and a review reports the same findings.
+
+Treat each word by where it comes from:
+
+- **The project's own terms**, whatever `CONTEXT.md` defines, stand bare. That file is the reader's dictionary.
+- **A skill's own terms** get a gloss the first time they appear in a session: the plain words in parentheses, once. After that, the term stands alone. "The frontier (the questions I can ask now) is empty."
+- **A definition site** spends whatever words precision needs. A definition site is text whose job is to fix the meaning of a term: a `CONTEXT.md` entry, a glossary heading, or an ADR passage that coins a name. Careful words paid once make the short term safe everywhere else.
+
+A durable document travels further than the session that wrote it. People read an Issue in the Tracker without the session, and someone reads a Spec cold weeks later. So a durable document spends the plain words instead of a gloss: "what we do not know yet", not "fog". Where a template fixes a section name, keep the name and gloss it once underneath.
+
+A Tracker document (an Issue, a Map, or a Spec) has a second reader, the **Product reader**. The Product reader knows the product but not its code, as a QA tester does. The part that says what is wrong and what changes is theirs. That part names only what this reader meets on the product (screens, controls, commands they type, messages) and the terms `CONTEXT.md` defines. Files, functions, classes, and internal parts go in the technical part, which keeps the developer reader. The Product reader's part is a Spec's Problem Statement, Solution, How to Check It, and User Stories, a `needs-` Issue's Motivation and Goal, and a Map's Destination.
+
+Text that only an agent reads stays outside this skill: a Step, a handoff, a brief for a sub-agent. Skill source follows `/writing-for-agents` instead.
 
 ## Vary the rhythm
 

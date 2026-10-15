@@ -4,7 +4,7 @@ Each layout below predates a decision that changed where documents live. All of 
 
 ## A flat refinement
 
-A flat refinement predates [ADR-0008](../../docs/adr/0008-session-output-gets-a-folder.md), which gave a multi-file session its own folder. `/refine` writes nothing under `.agents/refinements/` ([ADR-0039](../../docs/adr/0039-refine-ends-in-a-spec.md)), so a flat refinement converts straight to an Issue, as an Idea, instead of first becoming a folder:
+A flat refinement predates [ADR-0008](../../docs/adr/0008-session-output-gets-a-folder.md), which gave a multi-file session its own folder. No skill writes under `.agents/refinements/` any more, so a flat refinement converts straight to an Issue, as an Idea, instead of first becoming a folder:
 
 - `.agents/refinements/<slug>.md` → `.agents/issues/<slug>.md`
 - `.agents/refinements/<slug>.html` is deleted.

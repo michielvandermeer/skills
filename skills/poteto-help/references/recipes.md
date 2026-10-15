@@ -15,7 +15,7 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 
 - Bug: `/poteto-mode <symptom>. repro first, then fix and verify.`
 - Bug in an app: `/poteto-mode repro this with /verify. if it repros on main, fix it and show me a video as proof.`
-- Bug with a cheap test: `/poteto-mode repro <bug> first. if there's a cheap test path, /tdd it. then fix and rerun.`
+- Bug with a cheap test: `/poteto-mode repro <bug> first. if there's a cheap test path, write the failing test first. then fix and rerun.`
 - Feature: `/poteto-mode add <behavior>. <current output> stays byte-identical. verify both.`
 - Refactor: `/poteto-mode move <code> into one module, zero behavior change. record the current output first and prove it's unchanged after.`
 - Perf: `/poteto-mode <operation> takes <time> on <fixture>. trace it, fix the measured cause, show me before and after.`
@@ -43,5 +43,5 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 - `/show-me-your-work catch me up on what you did last night.` Read its Attention section first.
 - `/poteto-mode full autopilot on this queue. each item is independent.`
 - `/poteto-mode autopilot these changes but stack them, don't ship. i'll land the stack.`
-- `/reflect capture what we learned so the next run doesn't repeat it.` Approve only edits that change a future decision.
+- `/retro` after the run, so the next run doesn't repeat its mistakes. It applies the fixes that will recur to files this repo owns, and lists the rest.
 - `/bro` restates the last reply in plain words.

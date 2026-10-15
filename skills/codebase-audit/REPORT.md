@@ -2,7 +2,7 @@
 
 Write one file: `.agents/codebase-audits/<timestamp>/report.md`.
 
-Every section below is always present. Human-facing sentences hold the `/plain-language` bar. Paths stay paths. IDs stay IDs.
+Every section below is always present. Human-facing sentences hold the `/technical-writing` bar. Paths stay paths. IDs stay IDs.
 
 ## What we checked
 

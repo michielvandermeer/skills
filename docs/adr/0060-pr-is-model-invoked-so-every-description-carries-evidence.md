@@ -6,9 +6,9 @@ A description holds three sections: a small picture of the change, before-and-af
 
 ## Considered Options
 
-- **No skill.** Rejected: `/plain-language` alone gives a description no evidence and no merge risk, and those are what a reviewer needs.
+- **No skill.** Rejected: `/technical-writing` alone gives a description no evidence and no merge risk, and those are what a reviewer needs.
 - **A user-invoked `/pr`.** Rejected: it fires only when someone remembers it, which is the case `/wizard` is model-invoked to avoid ([ADR-0044](0044-wizard-is-model-invoked.md)).
-- **Copying upstream as it is.** Rejected: it reads a `GLOSSARY.md` that this plugin calls `CONTEXT.md`. Its "S-tier" and "A-tier" ranking of evidence accepts output nobody re-ran. Its "keep prose brief" falls below the plain-language bar ([ADR-0009](0009-plain-language-for-output-not-source.md)).
+- **Copying upstream as it is.** Rejected: it reads a `GLOSSARY.md` that this plugin calls `CONTEXT.md`. Its "S-tier" and "A-tier" ranking of evidence accepts output nobody re-ran. Its "keep prose brief" falls below the `/technical-writing` bar ([ADR-0009](0009-technical-writing-for-output-not-source.md)).
 - **Committing screenshots to the branch.** Rejected: the image would stay in the repo's history for good.
 - **A hard Merge risk stops an implement run from pushing.** Rejected: a delegate's judgement would decide whether the push happens. A repo where a push deploys already turns the push off ([ADR-0028](0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Elsewhere the hard part, such as running a migration, happens later and under the user's control.
 

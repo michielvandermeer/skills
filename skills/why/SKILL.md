@@ -98,7 +98,7 @@ After Sources Consulted, if the user's `why` question is a precursor to changing
 
 ## Models
 
-Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it.
+Role defaults. A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup models` writes it.
 
 - why investigators: `opus`
 - why synthesizer: `opus`

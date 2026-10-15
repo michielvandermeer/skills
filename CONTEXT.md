@@ -22,10 +22,6 @@ _Avoid_: baseline, preset, issue-tracker template
 One piece of work in the repo's **Tracker**, from a first rough thought to a finished **Spec**, carrying exactly one status: `needs-triage` (nobody has triaged it), `needs-info` (waiting on the reporter), `needs-grilling` (a person must decide the solution), `needs-human` (waiting on a secret or a manual test), `wayfinding` (it is a **Map**), or `ready-for-agent` / `ready-for-human` (it carries a Spec, for an agent or a person to build). A `needs-` status means it waits on something; a `ready-for-` status means it carries a Spec. Moving from one stage to the next updates the same Issue; finished or rejected work is closed. `/triage` may also give it a `bug` or `enhancement` category.
 _Avoid_: Idea, ticket, card, work item, PRD
 
-**Scope**:
-What a `/refine` session determines: what is part of this project and what is not.
-_Avoid_: work items, backlog, requirements
-
 **Buildable**:
 A proposed change whose Solution is clear enough that `/implement` can start without a further grilling session. `/triage` and `/improve-codebase-architecture` write a Spec only when the change is Buildable.
 _Avoid_: ready, agent-ready, clear solution
@@ -121,16 +117,16 @@ _Avoid_: style guide, conventions, coding-standards.md
 
 ### Communication
 
-**Plain language**:
-Writing pitched at a reader who does not know this repo, in the sense of ISO 24495-1:2023. The standard every piece of text a skill puts in front of a person is held to.
-_Avoid_: simple English, simplified language, readability
+**Technical writing**:
+Writing pitched at a developer who does not know this repo, to the bar the `/technical-writing` skill sets. The standard every piece of text a skill puts in front of a person is held to.
+_Avoid_: plain language, simple English, readability
 
 **Product reader**:
-Someone who knows the product but not its code — a QA tester, a product owner. The reader of the part of a **Tracker** document that says what is wrong and what changes: a **Spec**'s problem, solution, **Hand checks**, and user stories, a `needs-` **Issue**'s motivation and goal, a **Map**'s Destination. That part names only what this reader sees on the product, in words `CONTEXT.md` defines; the rest of the document keeps the developer reader of **Plain language**.
+Someone who knows the product but not its code — a QA tester, a product owner. The reader of the part of a **Tracker** document that says what is wrong and what changes: a **Spec**'s problem, solution, **Hand checks**, and user stories, a `needs-` **Issue**'s motivation and goal, a **Map**'s Destination. That part names only what this reader sees on the product, in words `CONTEXT.md` defines; the rest of the document keeps the developer reader of **Technical writing**.
 _Avoid_: QA reader, business reader, non-technical reader, end user
 
 **Definition site**:
-Text whose job is to fix the meaning of a term — a `CONTEXT.md` entry, a glossary heading, an ADR passage that coins a name. The one place precision outranks **Plain language**, because careful words paid once are what make the shorthand safe to use everywhere else.
+Text whose job is to fix the meaning of a term — a `CONTEXT.md` entry, a glossary heading, an ADR passage that coins a name. The one place precision outranks the short, everyday words of **Technical writing**, because careful words paid once are what make the shorthand safe to use everywhere else.
 _Avoid_: definition block, glossary entry
 
 **Gloss**:
@@ -203,7 +199,7 @@ _Avoid_: in-scope file, workspace file
 
 **Retrospective**:
 Suggestions for the agent's environment after a session. **High-priority** suggestions for **Owned files** are applied without asking; everything else appears only in the summary, including suggestions for files this repository does not own. A **Named session skill** starts one when it finishes; you can also type `/retro`.
-_Avoid_: postmortem, wrap-up, retro as a meeting
+_Avoid_: postmortem, wrap-up, retro as a meeting, reflection
 
 **Named session skill**:
 A skill that starts a **Retrospective** when it finishes, unless another Named session skill started it. Most are typed by the user and cannot be loaded by the agent; `/hillclimb` also starts one when the agent loaded it.

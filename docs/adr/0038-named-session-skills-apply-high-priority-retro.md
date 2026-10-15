@@ -1,6 +1,6 @@
 # Named session skills start a retrospective that applies high-priority changes
 
-A **Named session skill** starts a **Retrospective** when it finishes. The list is `/implement`, `/implement-yolo`, `/grill-with-docs`, `/triage`, `/wayfinder`, `/refine`, `/codebase-audit`, `/improve-codebase-architecture`, `/brainstorm`, `/doctor`, and `/hillclimb`. You can also type `/retro`; that path is the same apply-and-summarise work. The command is `/retro`, not `/retrospective`, so the name matches the word people already type.
+A **Named session skill** starts a **Retrospective** when it finishes. The list is `/implement`, `/implement-yolo`, `/grill-with-docs`, `/triage`, `/wayfinder`, `/codebase-audit`, `/improve-codebase-architecture`, `/brainstorm`, `/doctor`, and `/hillclimb`. You can also type `/retro`; that path is the same apply-and-summarise work. The command is `/retro`, not `/retrospective`, so the name matches the word people already type.
 
 **High-priority** suggestions are applied without asking. That includes a judgement-call coding standard and a new check when the pain will recur every turn or every session and this session demonstrated it. A new check that would fail on the current branch still applies. The rest stay in the chat summary. Where the edits land is [ADR-0040](0040-retro-writes-only-owned-files.md). What the retrospective looks at, including global agent files, is [ADR-0022](0022-retrospective-includes-global-agent-files.md). Repo edits are one commit after the skill's own work — after land for `/implement`.
 

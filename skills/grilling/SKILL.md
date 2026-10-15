@@ -114,7 +114,7 @@ Before round 1, read every **Grilling profile** in `.agents/refs/profiles/`: min
 
 `Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating, one line where one line does it.
 
-A round is read at speed, often late in a long day of them. Run the `/plain-language` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
+A round is read at speed, often late in a long day of them. Run the `/technical-writing` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
 
 ## Done
 

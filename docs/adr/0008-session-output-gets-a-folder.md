@@ -7,5 +7,5 @@ The rule covers the documents the repo keeps outside its Tracker. References are
 ## Consequences
 
 - Filenames inside a folder are the skill's own vocabulary, not a shared one. `/improve-codebase-architecture` writes `report.*`.
-- `/doctor` moves flat architecture reviews into folders as a mechanical directory move. `/refine` writes no Refinement ([ADR-0039](0039-refine-ends-in-a-spec.md)), so `/doctor` turns an old flat or foldered Refinement into an Issue instead.
+- `/doctor` moves flat architecture reviews into folders as a mechanical directory move. No skill writes a Refinement any more, so `/doctor` turns an old flat or foldered Refinement into an Issue instead.
 - A future skill that grows a second output file moves to a folder rather than adding a second flat sibling.

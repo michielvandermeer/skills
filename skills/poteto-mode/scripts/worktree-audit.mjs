@@ -20,7 +20,7 @@ import { basename, dirname, join } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
-import { candidates, rethrowUnlessRemoved } from "../../reflect/scripts/find-transcript.mjs";
+import { candidates, rethrowUnlessRemoved } from "../../retro/scripts/find-transcript.mjs";
 
 const known = (value) => ({ known: true, value });
 const UNKNOWN = Object.freeze({ known: false });

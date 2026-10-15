@@ -75,4 +75,4 @@ If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](
 
 When the decision on the table already has an ADR, follow [Rewriting an ADR in place](./ADR-FORMAT.md#rewriting-an-adr-in-place).
 
-An ADR argues, and a glossary entry defines. Run the `/plain-language` skill for the argument. Where either document fixes the meaning of a term, spend whatever words precision needs — that is a definition site, and it is the one place plainness gives way.
+An ADR argues, and a glossary entry defines. Run the `/technical-writing` skill for the argument. Where either document fixes the meaning of a term, spend whatever words precision needs — that is a definition site, and it is the one place short, everyday words give way.

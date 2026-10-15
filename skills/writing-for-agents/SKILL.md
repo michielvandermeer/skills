@@ -7,7 +7,7 @@ Reference for writing any document an agent consumes — a skill, an `AGENTS.md`
 
 When the document you're writing is a skill, read [`SKILL-MECHANICS.md`](SKILL-MECHANICS.md) for frontmatter, invocation choice, and router skills.
 
-A leading word earns its density in the source, which only the agent reads. What a skill puts in front of a **person** runs at the bar the `/plain-language` skill sets — dense source, plain output.
+A leading word earns its density in the source, which only the agent reads. What a skill puts in front of a **person** runs at the bar the `/technical-writing` skill sets — dense source, plain output.
 
 ## Context pointers
 

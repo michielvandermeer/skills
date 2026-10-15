@@ -257,7 +257,7 @@ def cmd_doctor(a):
         context = (plugin_dir / "hooks/session-start-context.md").read_text(encoding="utf-8").strip()
         outputs = [(e.get("stdout") or "").replace("\r\n", "\n").strip() for e in events
                    if e.get("subtype") == "hook_response" and e.get("hook_event") == "SessionStart"]
-        sheet = sh(["sh", str(plugin_dir / "skills/setup-pstack/scripts/read-sheet.sh"), str(CONFIG / "pstack-models.md")],
+        sheet = sh(["sh", str(plugin_dir / "skills/setup/scripts/read-sheet.sh"), str(CONFIG / "pstack-models.md")],
                    check=False)
         if "session hook: off" in sheet.splitlines():
             print("[ok] SessionStart hook is off: pstack-models.md says session hook: off")

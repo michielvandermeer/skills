@@ -20,7 +20,7 @@ Continue until every identifiable subsystem has been reviewed and the report pas
 
 ### 1. Coverage contract
 
-Determine a timestamp. Create the report from [REPORT.md](REPORT.md). Run `/plain-language` before any sentence a person will read there. Read `CONTEXT.md` first so subsystem names use the project's terms.
+Determine a timestamp. Create the report from [REPORT.md](REPORT.md). Run `/technical-writing` before any sentence a person will read there. Read `CONTEXT.md` first so subsystem names use the project's terms.
 
 Inspect the repository. Inventory every identifiable subsystem — frontend, backend, shared infrastructure, platform bridges, generated-contract ownership, test and tooling — wherever each is material.
 

@@ -27,7 +27,7 @@ Each feature file has an H1, one paragraph on the user-visible behaviour, and fo
 
 ## Features
 
-- [Setup](setup.md) — writes and commits the Tracker ref. Driven end to end on 2026-10-15.
+- [Setup](setup.md) — writes and commits the Tracker ref, and writes pstack's model sheet. Driven end to end on 2026-10-15.
 - [Code review](code-review.md) — two reviewers, Standards and Spec, nothing written.
 - [Grill with docs](grill-with-docs.md) — rounds, glossary and ADRs, a Spec on a confirmed read-back.
 - [Implement yolo](implement-yolo.md) — a poteto-mode run on the current branch, landed as one commit.

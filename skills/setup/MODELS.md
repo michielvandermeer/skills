@@ -1,11 +1,6 @@
----
-name: setup-pstack
-description: Configure which models pstack uses per role. Detects available models and writes the override sheet. Use for /setup-pstack, "configure pstack models", changing pstack's model choices, or turning the SessionStart hook on or off.
----
+# Model sheet
 
-# Setup pstack
-
-Write the per-role model override sheet, `<config>/pstack-models.md`. Each pstack skill names a default model inline; the override sheet adapts those defaults to the models you actually have access to.
+The Models part of `/setup`. Write the per-role model override sheet, `<config>/pstack-models.md`. Each pstack skill names a default model inline; the override sheet adapts those defaults to the models you actually have access to.
 
 Claude Code has no auto-applied "rules" mechanism like Cursor's `.mdc`. The Claude Code config directory is `$CLAUDE_CONFIG_DIR` when that variable is set and `~/.claude` otherwise. This skill calls it `<config>`. Inclusion is explicit: the user adds a line to `<config>/CLAUDE.md` (or their project `CLAUDE.md`) such as:
 
@@ -58,13 +53,11 @@ how explorer: opus
 how explainer: opus
 why investigators: opus
 why synthesizer: opus
-reflect tooling: opus
-reflect judgment, divergent, synthesizer: opus
-arena runners: opus, fable, sonnet, haiku
-arena cross-judge pool: opus, fable, sonnet, haiku
+arena runners: opus, haiku
+arena cross-judge pool: opus, haiku
 swarm workers: opus
-architect runners: opus, fable, sonnet, haiku
-interrogate reviewers: opus, fable, sonnet, haiku
+architect runners: opus, haiku
+interrogate reviewers: opus, haiku
 
 default effort: session
 session hook: on
@@ -76,16 +69,12 @@ On Claude Code, if `<config>/CLAUDE.md` does not already include `<config>/pstac
 
 ### 8. Confirm
 
-Tell the user where the override was written, how its model rows load, and whether the plugin hook is on. Re-running this skill updates the override sheet.
-
-### 9. Offer a verification skill (optional)
-
-Check whether the project has a way to drive the real app for proof (a project `verify` or `verify-*` skill, or an existing harness). If not, offer once: "want a project-local verification skill, so agents can drive the app the way a user does and prove changes work? I can generate one with /create-verification-skill." On yes, invoke [`/create-verification-skill`](../create-verification-skill/SKILL.md). On no, move on without pushing.
+Tell the user where the override was written, how its model rows load, and whether the plugin hook is on. Re-running `/setup models` updates the override sheet.
 
 ## Models
 
 - Available Claude models: `opus`, `fable`, `sonnet`, `haiku`
-- Default panel: `opus`, `fable`, `sonnet`, `haiku`
+- Default panel: `opus`, `haiku`
 - Reasoning effort levels: `low`, `medium`, `high`, `xhigh`, `max`
 - Default reasoning effort: `session`
 - Single-role default: `opus`

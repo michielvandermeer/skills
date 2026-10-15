@@ -1,6 +1,9 @@
 ---
 name: ketchup
-description: "Catch the user up on everything in this chat since their last message, in plain words. Give each action item an executive summary with enough context to make the call. Use for /ketchup."
+description: "Catch up on everything in this chat since your last message, with a summary for each action item."
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 # Ketchup

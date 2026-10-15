@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 The Driving session is the reviewer.
 
-Run `/plain-language` before every message the user reads.
+Run `/technical-writing` before every message the user reads.
 
 ## 1. Pin the Spec
 

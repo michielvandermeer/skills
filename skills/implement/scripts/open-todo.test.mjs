@@ -94,7 +94,7 @@ test("steps are the playbook's own words, one line each, sub-bullets and indente
     "- [ ] 3. Plan the fix from the trace. If it crosses a function boundary, `architect` first. Delegate implementation to a subagent using your configured perf-issue model (default in poteto-mode's Models section). Review the diff. Capture a post-fix trace. Apply the **sequence-verifiable-units** principle skill, verifying each attempt before trying the next. " + ONE_WRITER,
   ]);
   const bug = lines(todo("bug-fix"));
-  assert.ok(bug.includes("- [ ] 5. Stage the commits so the failing repro lands before the fix in git history. See the **tdd** skill for the failing-test-first cadence when the bug has a cheap local test path. Skip it when the test would be expensive, integration-heavy, or unclear. This is the canonical **sequence-verifiable-units** principle skill, the failing test first and the fix on top."));
+  assert.ok(bug.includes("- [ ] 5. Stage the commits so the failing repro lands before the fix in git history. When the bug has a cheap local test path, write the failing test first. Skip the test when it would be expensive, integration-heavy, or unclear. This is the canonical **sequence-verifiable-units** principle skill, the failing test first and the fix on top."));
 });
 
 test("the ## Playbook section holds the playbook's prose outside its steps, verbatim", () => {

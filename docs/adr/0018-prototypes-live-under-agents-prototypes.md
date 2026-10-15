@@ -7,6 +7,6 @@ Keeping the playable files on the `prototype/<slug>` branch was rejected: the ho
 ## Consequences
 
 - A later reader can open the folder a Spec points at and click through again.
-- `/to-spec` names `.agents/prototypes/<slug>/`. Decision-rich snippets (a reducer, a machine) may still be inlined; the folder is the playable record. `/refine` names the same path ([ADR-0039](0039-refine-ends-in-a-spec.md)).
+- `/to-spec` names `.agents/prototypes/<slug>/`. Decision-rich snippets (a reducer, a machine) may still be inlined; the folder is the playable record.
 - A `/prototype` that serves a larger effort writes the folder and writes no Spec of its own.
 - A verdict that kills the idea writes no folder and no Spec.

@@ -1,6 +1,9 @@
 ---
 name: thermos
-description: "Launch both thermo-nuclear review subagents in parallel, then synthesize their findings. Use for thermos, double thermo review, or combined bug/security and code-quality branch audits."
+description: "Run both thermo-nuclear reviews in parallel and synthesize their findings."
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 # Thermos

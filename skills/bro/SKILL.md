@@ -1,6 +1,9 @@
 ---
 name: bro
-description: Restate the last message in plain human language, with no jargon. Use for /bro or when asked to say it plainly.
+description: "Restate the last message in plain words, with no jargon."
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 Restate your last message. Stop using jargon and speak coherently. State it more simply and concisely, like one human talking to another.

@@ -4,7 +4,7 @@ pstack comes into this plugin as a one-way copy of [pstack-claude](https://githu
 
 The import never undoes an edit. `tools/pstack-import-manifest.txt` records the git blob id of every file the import wrote, and a rerun stops before it overwrites or deletes a file whose content has changed since, naming each one. `--force` writes over them, for a deliberate re-import whose diff the maintainer reads to carry each edit forward. A file that this repo tracks and no import wrote is never written over, even with `--force`.
 
-This repo owns some files outright, and the import never writes them: `hooks/hooks.json`, `hooks/session-start.sh`, `hooks/session-start-context.md`, `skills/setup-pstack/SKILL.md`, `skills/setup-pstack/scripts/read-sheet.sh`, `skills/poteto-help/SKILL.md`, and `NOTICE.md`. Each began as upstream's file. The `OWNED` list in the import is the source for all but `NOTICE.md`, which the import never had.
+This repo owns some files outright, and the import never writes them: `hooks/hooks.json`, `hooks/session-start.sh`, `hooks/session-start-context.md`, `skills/setup/MODELS.md`, `skills/setup/scripts/read-sheet.sh`, `skills/poteto-help/SKILL.md`, `skills/technical-writing/SKILL.md`, `skills/retro/scripts/find-transcript.mjs`, and `NOTICE.md`. Each began as upstream's file. Upstream's `setup-pstack` skill became the Models part of `/setup`, `/technical-writing` became the standard for every sentence a person reads ([ADR-0009](0009-technical-writing-for-output-not-source.md)), and `reflect`'s transcript finder moved to `/retro` when `reflect` was dropped. The `OWNED` map in the import, from each upstream path to where this repo keeps the file, is the source for all but `NOTICE.md`, which the import never had.
 
 ## Considered Options
 

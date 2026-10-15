@@ -112,7 +112,7 @@ Commit anything still uncommitted. Then, in order:
 
 ### 8. Report
 
-Run `/plain-language`, then report:
+Run `/technical-writing`, then report:
 
 - the number and its target, the baseline and the final value against `<base>`, and the change in percent;
 - how many Attempts were kept and how many reverted;

@@ -1,6 +1,9 @@
 ---
 name: what-did-i-get-done
-description: Summarize authored commits over a user-specified time period into a concise update
+description: "Summarize your authored commits over a time period into a concise update."
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 # What did I get done
