@@ -121,7 +121,7 @@ The implement commands read an Issue and claim it before they start, so other ru
 
 To stop runs from pushing, add a line to your repo's `AGENTS.md` or `CLAUDE.md` saying implement runs do not push. Do this when a push to your branch deploys, or when you want to push yourself. If someone else pushed to your branch during the run, the run tells you, and the work waits on your machine for you to pull and push.
 
-Everything else stays in the repo, whichever Tracker you use: the run directory of a run in progress, Prototypes, Attempt logs, architecture reviews, codebase audits, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
+Everything else stays in the repo, whichever Tracker you use: Prototypes, Attempt logs, architecture reviews, codebase audits, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. The run directory of an implement run sits in the checkout too, under `.agents/runs/`, but git ignores it, so it never lands. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
 
 ## Repository layout
 
