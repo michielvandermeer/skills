@@ -2,7 +2,7 @@
 
 Each skill you type and each plugin agent sets `model:` and `effort:` in its own header, so a run starts at the setting its work needs and not at your session's most expensive one. Three parallel implement runs on Opus at xhigh burned about 16% of a weekly limit in five hours. Nothing is pinned above `high`.
 
-- **Skills you type**, the ones marked `disable-model-invocation: true` except `/review-spec`, plus the two implement commands, which a `/goal` can also start ([ADR-0067](0067-the-implement-commands-are-model-invoked-so-a-goal-can-start-them.md)): Opus at high for the interview and design skills (`/grill-with-docs`, `/brainstorm`, `/improve-codebase-architecture`, `/wayfinder`) and for `/implement` and `/implement-yolo`, whose Driving session owns the design and verification judgement of a poteto-mode run ([ADR-0069](0069-an-implement-run-is-a-poteto-mode-playbook.md)); Sonnet at high for the rest.
+- **Skills you type**, the ones marked `disable-model-invocation: true` except `/review-spec`, plus the two implement commands, which a `/goal` can also start ([ADR-0067](0067-the-implement-commands-are-model-invoked-so-a-goal-can-start-them.md)): Opus at high for the interview and design skills (`/grill-with-docs`, `/brainstorm`, `/wayfinder`) and for `/implement` and `/implement-yolo`, whose Driving session owns the design and verification judgement of a poteto-mode run ([ADR-0069](0069-an-implement-run-is-a-poteto-mode-playbook.md)); Sonnet at high for the rest.
 - **Agents** are pinned as follows:
 
   | Agent | Model | Effort |

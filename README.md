@@ -121,7 +121,7 @@ The implement commands read an Issue and claim it before they start, so other ru
 
 To stop runs from pushing, add a line to your repo's `AGENTS.md` or `CLAUDE.md` saying implement runs do not push. Do this when a push to your branch deploys, or when you want to push yourself. If someone else pushed to your branch during the run, the run tells you, and the work waits on your machine for you to pull and push.
 
-Everything else stays in the repo, whichever Tracker you use: Prototypes, architecture reviews, codebase audits, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. The run directory of an implement run sits in the checkout too, under `.agents/runs/`, but git ignores it, so it never lands. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
+Everything else stays in the repo, whichever Tracker you use: Prototypes, codebase audits, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. The run directory of an implement run sits in the checkout too, under `.agents/runs/`, but git ignores it, so it never lands. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
 
 ## Repository layout
 
@@ -159,8 +159,8 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 
 **Skills you type.** Only the skills that no other skill loads pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
 
-- Opus at high: `/grill-with-docs`, `/brainstorm`, `/improve-codebase-architecture`, `/wayfinder`, `/implement`, `/implement-yolo`.
-- Sonnet at high: `/triage`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/learn-habits`, `/setup`, and the pstack skills you type: `/automate-me`, `/babysit`, `/bro`, `/correct`, `/ketchup`, `/make-pr-easy-to-review`, `/maintain-verification-skill`, `/poteto-help`, `/what-did-i-get-done`.
+- Opus at high: `/grill-with-docs`, `/brainstorm`, `/wayfinder`, `/implement`, `/implement-yolo`.
+- Sonnet at high: `/triage`, `/codebase-audit`, `/doctor`, `/explain`, `/learn-habits`, `/setup`, and the pstack skills you type: `/automate-me`, `/babysit`, `/bro`, `/correct`, `/ketchup`, `/maintain-verification-skill`, `/poteto-help`, `/pr`, `/what-did-i-get-done`.
 
 **Sub-agents.**
 
@@ -186,12 +186,9 @@ Everything else runs on the setting of the skill that starts it: the `/codebase-
 | `explain` | Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
-| `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `implement` | Implement an Issue's Spec, or a description, as a pstack poteto-mode run in its own worktree: the matching playbook, Hillclimb included for a number to push toward a target, design before code, a verifier that wrote none of the code, an adversarial review, then one commit landed on your branch. |
 | `implement-yolo` | The same run on this checkout and this branch. No worktree, no new branch, no merge. |
-| `improve-codebase-architecture` | Scan for deepening opportunities, report them, then file the ones you pick as Issues — as Specs when they are clear enough to build. |
 | `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Type it to rebuild your profile from past sessions; no grilling session runs it for you. |
-| `pr` | Shape a pull request description: a small picture of the change, before-and-after evidence, and how risky it is to merge. Loads on its own whenever the agent writes one. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
@@ -221,8 +218,6 @@ pstack's files are this repo's own, to edit like any other ([ADR-0070](docs/adr/
 ## Credits
 
 These skills are derived from and inspired by [**Matt Pocock's skills**](https://github.com/mattpocock/skills). Many thanks to Matt for the original work.
-
-The pictures `pr` draws come from Dex Horthy's [`show-me`](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md) skill at HumanLayer, by way of Matt's `pr`.
 
 [pstack](#pstack) is Lauren Tan's (poteto) [pstack](https://github.com/cursor/plugins/tree/main/pstack), with skills from Cursor's cursor-team-kit and thermos plugins, as ported to Claude Code by Michael Denyer in [pstack-claude](https://github.com/michael-denyer/pstack-claude). Many thanks to both.
 

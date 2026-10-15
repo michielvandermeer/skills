@@ -23,12 +23,8 @@ One piece of work in the repo's **Tracker**, from a first rough thought to a fin
 _Avoid_: Idea, ticket, card, work item, PRD
 
 **Buildable**:
-A proposed change whose Solution is clear enough that `/implement` can start without a further grilling session. `/triage` and `/improve-codebase-architecture` write a Spec only when the change is Buildable.
+A proposed change whose Solution is clear enough that `/implement` can start without a further grilling session. `/triage` writes a Spec only when the change is Buildable.
 _Avoid_: ready, agent-ready, clear solution
-
-**Architecture review**:
-The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/` (`.agents/architecture-reviews/<context>/<timestamp>/` in a multi-context repo), holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system; after the report, the session says which candidates are Buildable, then picked candidates become Issues in `needs-grilling`, or Specs when Buildable.
-_Avoid_: codebase audit, audit, tech-debt report, architecture report
 
 **Codebase audit**:
 The output of a `/codebase-audit` run at `.agents/codebase-audits/<timestamp>/` (`.agents/codebase-audits/<context>/<timestamp>/` in a multi-context repo), holding `report.md` — a coverage-complete, read-only inventory of every identifiable subsystem, each with organizing-model recommendations or an explicit skip.
@@ -217,10 +213,6 @@ _Avoid_: spec checker, spec reviewer, linter
 
 **Fixer**:
 A sub-agent the Driving session sends to fix what a review or a build found. In an implement run it is the `Fix:` delegate, a fresh `skills:poteto-agent` with consolidated scope (the original brief, every later directive, the prior report, and the branch), one per fix round, for an Act-on finding of `interrogate`, a NOT VERIFIED item from the **Verifier**, or a red post-rebase check; its description starts with `Fix:`, and it never resumes the delegate whose work it fixes.
-
-**Merge risk**:
-How hard a change is to undo once it lands, and what it would affect if it went wrong. It says whether reverting the change's commits restores the old behaviour, and when it does not, what stays changed after the revert, such as data written, a migration run, or a release published, and names who or what would notice if the change went wrong. The closing section of every pull request description `/pr` shapes.
-_Avoid_: merge danger, one-way door, two-way door
 
 **Base branch**:
 The branch the session was on when an implement command started, read again on a resume. The run branches from it, is reviewed and verified against it, and lands back on it. It is the repository's default branch only when the session started there.

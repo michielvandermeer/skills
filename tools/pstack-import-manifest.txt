@@ -1,7 +1,7 @@
 ca2bba771cd39dbef6acf96b52481133983451f3  LICENSE-cursor-team-kit
 3ebb69c2234f26ce81fa7fb3c67d783f9228bf25  LICENSE-pstack
 ca2bba771cd39dbef6acf96b52481133983451f3  LICENSE-thermos
-f5ff616fe8075243d1f67e521e1880590c4c516d  NOTICE-pstack.md
+920fc6a901cc91049c41ea14f193f484acac258d  NOTICE-pstack.md
 209e3704dfa75022060c936bd3f3362fa3bbe254  agents/comment-sicko.md
 dafa7fd0fd9ceb26cb6679470b0aedb0a1d14422  agents/effort-high.md
 bb76008f5b5758d90b151733a9b9c185922cec05  agents/effort-low.md
@@ -43,7 +43,6 @@ ef7bff3d77c35a0af2a9947187ccee15465657f4  skills/interrogate/references/reviewer
 8dab195ab840554bfe5e74e9b5ca0d9edbe9b496  skills/interrogate/references/rubric.md
 b9c298cdad4d59352b6118d41c631e79767a0e1e  skills/ketchup/SKILL.md
 3d4ae63ada6bf311e2a5339a7cb91c4106824088  skills/maintain-verification-skill/SKILL.md
-5454164479bf50b1df471c825dc90552dc58db5f  skills/make-pr-easy-to-review/SKILL.md
 ec1a94c43544ea23e2128f87cbb33f6ed75174de  skills/no-comments/SKILL.md
 6b72b2e6081fdb78a3261bd77cf7334596d1ee20  skills/poteto-help/references/prompting.md
 5c468c46621885fe3c273b09f2d2592cfa703b4f  skills/poteto-help/references/recipes.md
@@ -98,6 +97,7 @@ c0ad27c4611006893cd7b7293481ac0e9b440544  skills/poteto-mode/scripts/watch-pr/sh
 d708d5fc0628e0fcdc47a3e88485fe60cc4c2dc5  skills/poteto-mode/scripts/watch-pr/types.ts
 99807d577c3b006cfe6ee9e149cf2914bfd4afd6  skills/poteto-mode/scripts/watch-pr/watch-pr
 7d195320e3c9f1e3e1155560b0d7cb9677827f72  skills/poteto-mode/scripts/worktree-audit.mjs
+b67585565db5bd5775b849d341ca2d139c145418  skills/pr/SKILL.md
 78ca084cf711365494195e7112d47b73ad14cbfe  skills/principle-attack-the-premise/SKILL.md
 de0c0f4196f64adc73a1e16f4b6d9cc9780c0529  skills/principle-boundary-discipline/SKILL.md
 122e306e9102cd45d373504b19508506f4758ecf  skills/principle-build-the-lever/SKILL.md

@@ -30,7 +30,9 @@ NOTICE = "NOTICE-pstack.md"
 UPSTREAM_URL = "https://github.com/michael-denyer/pstack-claude"
 PLUGIN = "plugins/pstack/"
 
-COPY = {"skills/": "skills/", "agents/": "agents/", "effort-agents/": "agents/"}
+# More specific prefixes first: dest_of takes the first that matches.
+COPY = {"skills/make-pr-easy-to-review/": "skills/pr/", "skills/": "skills/", "agents/": "agents/",
+        "effort-agents/": "agents/"}
 LICENSES = {"LICENSE": "LICENSE-pstack", "LICENSE-cursor-team-kit": "LICENSE-cursor-team-kit",
             "LICENSE-thermos": "LICENSE-thermos"}
 # Upstream path: where this repo keeps its own version.
@@ -97,10 +99,10 @@ TYPED = {
     "correct": "Find the mistakes agents keep repeating in this repo and make each one impossible, architecture first "
                "and docs last.",
     "ketchup": "Catch up on everything in this chat since your last message, with a summary for each action item.",
-    "make-pr-easy-to-review": "Prepare a PR for review: clean noisy history, improve the description, and add "
-                              "reviewer guidance, without changing behavior.",
     "maintain-verification-skill": "Keep a project's verification skill and feature map honest, with at most one PR "
                                    "of proven corrections.",
+    "pr": "Prepare a PR for review: clean noisy history, improve the description, and add reviewer guidance, "
+          "without changing behavior.",
     "what-did-i-get-done": "Summarize your authored commits over a time period into a concise update.",
 }
 
@@ -166,6 +168,8 @@ RULES = [
     Rule("panels: families of the Opus and Haiku seats", {"skills/interrogate/SKILL.md": 1, "skills/arena/SKILL.md": 1},
          "such as Opus, Fable, or Sonnet.", "such as Opus or Haiku.", False),
     Rule("poteto-mode: Opus wherever Fable was the default", {"skills/poteto-mode/SKILL.md": 4}, "`fable`", "`opus`", False),
+    Rule("make-pr-easy-to-review is /pr", {"skills/pr/SKILL.md": 1}, "name: make-pr-easy-to-review", "name: pr",
+         False),
     Rule("typed skills: user-invoked, pinned to Sonnet at high", {f"skills/{s}/SKILL.md": 1 for s in TYPED},
          r"\A(---\n(?:(?!---\n).*\n)*?description: .*\n)",
          r"\1disable-model-invocation: true\nmodel: sonnet\neffort: high\n", True),

@@ -1,76 +1,62 @@
 ---
 name: pr
-description: Pull request descriptions. Use when writing the description of a pull request or merge request.
+description: "Prepare a PR for review: clean noisy history, improve the description, and add reviewer guidance, without changing behavior."
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
-# Pull request description
+# Make PR Easy to Review
 
-A description shows a reviewer what changed, that it works, and how risky it is to merge, in three sections, in this order:
+Prepare a PR so a reviewer can quickly understand the intent, important files, and risk. The default goal is reviewability without behavior changes.
 
-```markdown
-## What changes
+## Workflow
 
-<the smallest picture that makes the change clear, with the sentence it supports>
+1. Resolve the target PR from the user-provided URL or current branch.
+2. Inspect commits, diff size, changed paths, generated files, and PR description.
+3. Identify reviewability issues: noisy commits, stale description, unrelated changes, mixed mechanical and logic changes, missing tests, or unclear reviewer entry points.
+4. Propose a plan before rewriting history or force-pushing.
+5. Apply safe improvements, then verify the tree or diff still matches the intended code.
 
-## Evidence
+## History Cleanup
 
-<the one fact the change is safe because of, naming what breaks if it is false>
+Only rewrite history when the user asks for it or agrees to the plan. Before rewriting:
 
-**Before:** <output, screenshot, or one sentence>
-**After:** <output or screenshot>
-
-## Merge risk
-
-**Undo:** <easy — reverting the commits restores the old behaviour | hard — what stays changed after a revert>
-**Affects:** <who or what would notice if it went wrong>
-
-<the Issue's closing reference>
+```bash
+gh pr view <PR> --json title,headRefName,baseRefName,state,commits
+git fetch origin <headRefName> <baseRefName>
+ORIGINAL_TREE=$(git rev-parse origin/<headRefName>^{tree})
 ```
 
-Its reader is a reviewer who was never in the session. Write it at the bar the `/technical-writing` skill sets: the repo's `CONTEXT.md` terms stand as they are, and this plugin's own words — Verifier, Run directory, unit — stay out. When the work came from an Issue, end with the closing reference the repo's Tracker ref (`.agents/refs/tracker.md`) gives; a ref that gives none gets the Issue's reference on its own line.
+Good commit groupings usually follow dependency order:
 
-Write the description to a file outside the repo and pass it with `--body-file` to `gh pr create` or `gh pr edit`, or the host's equivalent.
+1. Schema/storage or generated API definitions.
+2. Core logic.
+3. Wiring and integration.
+4. UI or surface behavior.
+5. Tests.
 
-## What changes
+After rewriting, verify content identity:
 
-Pick the smallest view that makes the point. One is usual and several is fine:
+```bash
+echo "Original tree: $ORIGINAL_TREE"
+echo "Current tree:  $(git rev-parse HEAD^{tree})"
+git diff origin/<headRefName> --stat
+```
 
-- Logic or an algorithm: pseudocode.
-- Runtime control flow: a call tree.
-- UI structure: a component tree, with the state and module boundaries that matter.
-- File responsibility or a broad refactor: a shallow file tree, one comment per folder.
-- Interaction or data flow between parts: a Mermaid sequence diagram.
-- A change inside a shape that already exists: a `diff` of that shape — component tree, file tree, call tree, or control flow — rather than of the code:
+Do not push if the tree changed unintentionally.
 
-  ```diff
-   submitForm
-     createSession
-       persistPrompt
-  +    expandSkillMention
-       launchAgent
-  ```
+## Reviewer Guidance
 
-- Code that is mostly new, or whose order matters: the whole block.
+When code behavior should stay untouched, prefer PR description and review notes:
 
-Keep only the calls, files, props, and states the point needs, and put each picture next to the sentence it supports.
+- Add a TL;DR that matches the actual diff.
+- Separate core files from generated or mechanical files.
+- Call out risky behavior changes, migration order, rollout plan, and test coverage.
+- Link issue trackers, dashboards, or design docs when they explain intent.
 
-## Evidence
+## Guardrails
 
-Open with the one fact the change is safe because of, naming what breaks if it is false. Then show the check that proves it:
-
-- **After**: output from a run on the exact code being pushed. When the code changed since the check last ran, run it again.
-- **Before**: the same check on the target branch, in a throwaway worktree, when it can fail there. Otherwise one sentence on what happened before.
-
-A visual change shows a screenshot, or a short recording when the change is an interaction, taken by driving the app through the repo's `verify` skill when it has one, else the `run` skill. Save it outside the repo, reference it in the description by that path, and upload it with `--attach '<path>#<alt text>'`, which swaps the path for the uploaded link (`gh` 2.99 and later, on GitHub.com). Where the host's tool cannot attach — GitHub Enterprise Server, GitLab, an older `gh` — leave `<!-- add <path> here -->` in its place and tell the user which file to add.
-
-A change to no code that runs, such as a docs edit, says in one line that it needs no evidence. A check you could not run is named with the reason, in place of its output: every line of output in the description comes from a run you saw.
-
-After an implement run in this session, its report quotes the Verifier's evidence from the code that landed. Use it: the after half comes from the report unless the code changed since.
-
-## Merge risk
-
-**Undo** is easy when reverting the commits restores the old behaviour, and hard when something stays changed after the revert — data written, a migration run, a file format or API others already read, a release published. A hard Undo names what stays changed.
-
-**Affects** names who or what would notice if the change went wrong: the users of a screen, the callers of an API, a nightly job, the layout on a phone.
-
-After an implement run, judge Undo and Affects from the landing commit's diff.
+- Never hide meaningful behavior changes inside "cleanup".
+- Do not bypass hooks unless the user explicitly asks.
+- If the PR is too large to make reviewable with notes, recommend splitting instead of polishing around the problem.

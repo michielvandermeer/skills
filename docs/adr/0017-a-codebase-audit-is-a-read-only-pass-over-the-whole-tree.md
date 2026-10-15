@@ -1,6 +1,6 @@
-# Codebase audits are not architecture reviews
+# A codebase audit is a read-only pass over the whole tree
 
-`/improve-codebase-architecture` hunts deepening opportunities and writes an Architecture review, which ends by filing Issues ([ADR-0035](0035-architecture-reviews-end-in-issues.md)). A whole-tree, read-only pass for organizing-model simplifications is a second question, so it gets its own skill and document type — a **Codebase audit** at `.agents/codebase-audits/<timestamp>/`. Folding it into architecture reviews would mix the deletion test with the invalid-states test.
+`/codebase-audit` looks for simplifications of the organizing model in every subsystem, and writes a **Codebase audit** at `.agents/codebase-audits/<timestamp>/`. It changes no other file, so the tree stays still while it is audited, and the person reading the report picks what to build.
 
 ## Considered Options
 

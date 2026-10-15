@@ -41,7 +41,7 @@ python .claude/skills/verify/verify.py turn <run> "/skills:setup local"
 python .claude/skills/verify/verify.py turn <run> "yes"
 ```
 
-One `turn` is one user message. The first starts the session; each later one resumes it, so a skill that asks a question, shows a draft, or runs grilling rounds is driven by answering in the next turn. Answer as the user would — the question asked, nothing more — so the skill's own steps decide what happens. A skill that is model-invoked is reached by asking in plain words ("write the PR description for this branch") rather than by its slash name; the summary then shows it under `skills invoked by the model`.
+One `turn` is one user message. The first starts the session; each later one resumes it, so a skill that asks a question, shows a draft, or runs grilling rounds is driven by answering in the next turn. Answer as the user would — the question asked, nothing more — so the skill's own steps decide what happens. A skill that is model-invoked is reached by asking in plain words ("grill me on this plan") rather than by its slash name; the summary then shows it under `skills invoked by the model`.
 
 Every turn prints a summary and the scratch repo's git state:
 

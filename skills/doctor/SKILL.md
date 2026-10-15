@@ -30,7 +30,6 @@ When a root `CONTEXT-MAP.md` exists, read [MULTI-CONTEXT.md](MULTI-CONTEXT.md) b
 | ADR | `docs/adr/<NNNN>-<slug>.md`, or a context's own `docs/adr/` in a multi-context repo |
 | Coding standards (also contribution guidelines) | `.agents/refs/<slug>.md` |
 | Grilling profile | `.agents/refs/profiles/<name>.md` |
-| Architecture review | `.agents/architecture-reviews/<timestamp>/` — `report.md` and `report.html` |
 | Codebase audit | `.agents/codebase-audits/<timestamp>/report.md` |
 | Prototype | `.agents/prototypes/<slug>/` |
 
@@ -38,7 +37,7 @@ In a multi-context repo, every location above except ADR, Coding standards, and 
 
 ### Mechanical moves
 
-Read [LEGACY-MOVES.md](LEGACY-MOVES.md) for the old layouts whose destination follows from the source path alone — a `.scratch/` tracker, flat session output that should be a folder, a flat refinement, an app-first layout. Relocate the whole tree; don't read these file by file.
+Read [LEGACY-MOVES.md](LEGACY-MOVES.md) for the old layouts whose destination follows from the source path alone — a `.scratch/` tracker, a flat refinement, an app-first layout. Relocate the whole tree; don't read these file by file.
 
 ### Classify everything else by content shape
 
@@ -52,7 +51,6 @@ Classify each remaining document by what it actually contains. Filename and curr
 - **Issue**: a `Category:` line and a `Status:` line near the top.
 - **Decision ticket**: a `Type:` line and a `## Question` section.
 - **Map**: a file named `map.md` with `## Destination` and `## Decisions so far` sections.
-- **Architecture review**: matches the report shape from `/improve-codebase-architecture` — cards with What this does/Files/Problem/Solution/Wins/Before-After diagram/Recommendation strength, a Top recommendation section. A review written before the current card contract says `Benefits` where this one says `Wins`, and carries no `What this does` at all. Usually a `.md`/`.html` pair sharing a timestamp.
 - **Codebase audit**: matches the report shape from `/codebase-audit` — a coverage-contract table of subsystems with ownership boundaries and queued/recommend/skip status, recommendations with evidence/scope/risk/validation, explicit skips, and a priority ranking. Usually a `report.md` in a timestamp folder.
 
 Prototypes get no content shape: a Prototype has no marker file and is plain app code or HTML, so a content match would risk moving real code. A Prototype moves only as the `prototype/` folder of an old refinement (below).

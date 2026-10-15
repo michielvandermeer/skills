@@ -15,7 +15,7 @@ The input is the problem in plain words, or a reference to an Issue still too lo
 
 Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-The run writes Issues and nothing else. The next session stays one document per typed run, as [ADR-0035](../../docs/adr/0035-architecture-reviews-end-in-issues.md) sets for architecture reviews: step 7 names the command that continues each Issue, and the user types it.
+The run writes Issues and nothing else. The next session stays one document per typed run: step 7 names the command that continues each Issue, and the user types it.
 
 Run the `/technical-writing` skill before the first message and hold its bar for the opening, every card, and the closing pick. Every Issue holds its durable-document bar. The briefs you send helper agents are for agents and sit outside that bar.
 
