@@ -200,12 +200,10 @@ def report(base, cand, claim, names):
 
 
 def roles_of(rows):
-    """The roles a CSV carries, from its cost_<role> columns in column order; each side names its own."""
     return [key[len("cost_"):] for key in rows[0] if key.startswith("cost_") and key != "cost_usd"]
 
 
 def cost(row, col):
-    """A cost cell as a number; a cell that is not one fails instead of counting as zero."""
     value = num(row[col])
     if value is None:
         raise ValueError(f"{col} is {row[col]!r} on run {row['run_id']}, not a number")

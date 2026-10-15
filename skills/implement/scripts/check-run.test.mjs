@@ -1,4 +1,3 @@
-// node --test skills/implement/scripts/
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
@@ -16,8 +15,6 @@ const GATE_ROWS = TRAIL + ROW("design gate") + ROW("review gate") + ROW("verific
 const VERDICT = INTERROGATE_HEADINGS.map((heading) => `### ${heading}\n\ntext\n`).join("\n");
 const ARCHITECT_SKIP = "- [x] 2. `architect` for parallel design exploration. Its candidates write under the Run directory, never the worktree (`/implement` step 5, One writer).";
 
-// A Run directory at <root>/.agents/runs/<slug>/ holding the files given, todo.md built from open-todo's output by
-// `edit`, which gets the generated text and returns the text to write.
 function runDir({ playbook = "feature", landing = "worktree", start = "", edit = (text) => text, files = {} } = {}) {
   const root = mkdtempSync(join(tmpdir(), "check-run-"));
   const dir = join(root, ".agents/runs/slug");
@@ -30,15 +27,13 @@ function runDir({ playbook = "feature", landing = "worktree", start = "", edit =
   return dir;
 }
 
-// Every item above ## Landing ticked, the landing items left open.
-const ticked = (text) => text
+const tickedAboveLanding = (text) => text
   .replaceAll("- [ ] ", "- [x] ")
   .replace(/^(## Landing[\s\S]*)$/m, (section) => section.replaceAll("- [x] ", "- [ ] "));
 
-// A Feature run that may land: ticked, the architect step skipped, every gate with its trail row and evidence.
 function landed(overrides = {}) {
   return runDir({
-    edit: (text) => ticked(text).replace(ARCHITECT_SKIP, `${ARCHITECT_SKIP}\n  skip: the Spec fixes the shape`),
+    edit: (text) => tickedAboveLanding(text).replace(ARCHITECT_SKIP, `${ARCHITECT_SKIP}\n  skip: the Spec fixes the shape`),
     files: { "trail.tsv": GATE_ROWS, "evidence/interrogate.md": VERDICT },
     ...overrides,
   });
@@ -49,7 +44,6 @@ function run(dir) {
   return { status: result.status, stdout: result.stdout.trim(), stderr: result.stderr.trim() };
 }
 
-// The 1-based line a todo.md text holds `needle` on.
 const lineOf = (text, needle) => text.slice(0, text.indexOf(needle)).split("\n").length;
 
 function clean(...dirs) {
@@ -150,7 +144,7 @@ test("a checked Review gate needs evidence/interrogate.md with interrogate's sev
 });
 
 test("a Bug fix with its Design gate checked needs evidence/repro-red.txt", () => {
-  const edit = (text) => ticked(text).replace(/^(- \[x\] 3\. Plan the fix\..*)$/m, "$1\n  skip: the fix stays inside one function, so no architect");
+  const edit = (text) => tickedAboveLanding(text).replace(/^(- \[x\] 3\. Plan the fix\..*)$/m, "$1\n  skip: the fix stays inside one function, so no architect");
   const dir = runDir({ playbook: "bug-fix", edit, files: { "trail.tsv": GATE_ROWS, "evidence/interrogate.md": VERDICT } });
   assert.deepEqual(checkRun(dir).problems, ["Design gate is checked on a Bug fix but evidence/repro-red.txt is missing or empty"]);
   writeFileSync(join(dir, "evidence/repro-red.txt"), "AssertionError: 'release-notes' != 'release-2-notes'\nFAILED (failures=1)\n");
@@ -159,11 +153,11 @@ test("a Bug fix with its Design gate checked needs evidence/repro-red.txt", () =
 });
 
 test("a checked Design gate needs design.md unless an architect step carries a skip note", () => {
-  const feature = landed({ edit: ticked });
+  const feature = landed({ edit: tickedAboveLanding });
   assert.deepEqual(checkRun(feature).problems, ["Design gate is checked but design.md is missing and no architect step carries a skip note: step 2"]);
   writeFileSync(join(feature, "design.md"), "# Design\n");
   assert.deepEqual(checkRun(feature).problems, []);
-  const bug = runDir({ playbook: "bug-fix", edit: ticked, files: { "trail.tsv": GATE_ROWS, "evidence/interrogate.md": VERDICT, "evidence/repro-red.txt": "red\n" } });
+  const bug = runDir({ playbook: "bug-fix", edit: tickedAboveLanding, files: { "trail.tsv": GATE_ROWS, "evidence/interrogate.md": VERDICT, "evidence/repro-red.txt": "red\n" } });
   assert.deepEqual(checkRun(bug).problems, ["Design gate is checked but design.md is missing and no architect step carries a skip note: step 3"], "step 2's bare mention of architect is not an architect step");
   clean(feature, bug);
 });

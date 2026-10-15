@@ -17,7 +17,9 @@ import metrics  # noqa: E402
 import run  # noqa: E402
 import score  # noqa: E402
 
-POTETO_AGENT_COST = 0.016278  # the fixture builder (sonnet, 16260 µ$) plus its fix round (an unpriced model, 18 µ$)
+BUILDER_COST = 0.016260
+FIX_ROUND_COST = 0.000018
+POTETO_AGENT_COST = BUILDER_COST + FIX_ROUND_COST
 
 
 class GhGuardTests(unittest.TestCase):
@@ -109,7 +111,7 @@ class MetricsTests(unittest.TestCase):
     def test_roles_come_from_the_subagent_meta(self):
         roles = self.m["by_role"]
         self.assertEqual(sorted(roles), ["interrogate", "main", "poteto-agent", "verifier"])
-        self.assertEqual(roles["poteto-agent"]["agents"], 2)  # the builder and the fix round
+        self.assertEqual(roles["poteto-agent"]["agents"], 2)
         self.assertAlmostEqual(roles["poteto-agent"]["cost_usd"], POTETO_AGENT_COST, places=6)
         self.assertAlmostEqual(roles["interrogate"]["cost_usd"], 0.011125, places=6)
         self.assertEqual(roles["main"]["calls"], 2)

@@ -14,7 +14,6 @@ export function bundledPlaybook(stem, bundled = BUNDLED) {
   return !/[\\/]/.test(stem) && existsSync(file) ? readFileSync(file, "utf8") : null;
 }
 
-// A project playbook: its frontmatter fields, its anchored changes, and the lines that fail the grammar.
 export function readProjectPlaybook(file, label = file) {
   const text = readFileSync(file, "utf8").replace(/^﻿/, "").replaceAll("\r\n", "\n");
   const front = text.match(/^---\n([\s\S]*?)\n---\n/)?.[1] ?? "";

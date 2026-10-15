@@ -1,8 +1,4 @@
 #!/usr/bin/env node
-// Writes an /implement run's todo.md to stdout: the routed playbook's steps verbatim, the consuming repo's project
-// playbooks and then the implement Overlay applied at their anchors, the three gates, the landing items, and the
-// playbook's prose outside its steps under `## Playbook`.
-// Usage: node open-todo.mjs <playbook> --root <consuming repo> --landing worktree|in-place [--start <sha>] [--done "<run item>"]...
 import { existsSync, readdirSync, realpathSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
@@ -44,9 +40,6 @@ export const LANDING_ITEMS = {
 
 const item = (text) => ({ text: flat(text).trim(), done: false, children: [] });
 
-// The numbered steps of a bundled playbook, and its prose outside them. A step runs to the next step or the next
-// unindented line; an indented `- ` bullet or `1. ` line under it is an item of its own, any other indented line is
-// more of the step's text. The prose is every other line but the heading, verbatim, with blank runs collapsed.
 export function parseSteps(text) {
   const lines = text.replace(/^﻿/, "").split(/\r?\n/);
   const title = lines.find((line) => HEADING.test(line))?.replace(HEADING, "").trim() ?? "";
@@ -91,8 +84,6 @@ const APPLY = {
   In: ({ entry }, text) => { entry.text = `${entry.text} ${text}`; },
 };
 
-// Applies one project playbook's changes to the routed playbook's items. Returns the problems, one per change that
-// anchors on a step this route should have but the todo no longer does, or on text no extended playbook has.
 export function applyChanges(items, playbook, routed, bundled = BUNDLED) {
   const problems = [];
   if (!playbook.extends.includes(routed)) return problems;
@@ -120,7 +111,6 @@ export function stemOf(name) {
   return name.trim().toLowerCase().replace(/\s+/g, "-");
 }
 
-// { text, problems }: the todo.md text, or the problems that stop it from being written.
 export function generate({ playbook, root, landing, start = "", done = [], implement = IMPLEMENT, bundled = BUNDLED }) {
   const routed = stemOf(playbook);
   const overlay = readProjectPlaybook(join(implement, ".agents/playbooks/implement.md"), ".agents/playbooks/implement.md");

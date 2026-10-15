@@ -11,7 +11,7 @@
 // - a checked gate with no trail.tsv row whose phase is the gate's name in lowercase;
 // - a checked Review gate without evidence/interrogate.md holding interrogate's seven headings;
 // - a checked Design gate on a Bug fix without evidence/repro-red.txt;
-// - a checked Design gate with design.md missing while an `architect` step has no note.
+// - a checked Design gate with design.md missing while no `architect` step carries a note.
 import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import process from "node:process";
@@ -26,9 +26,6 @@ export const INTERROGATE_HEADINGS = ["Intent", "Reviewers", "Act On", "Consider"
 const SKIPPABLE_LANDING = /^(Push|Retro) \(/;
 const ARCHITECT = /`architect`|\*\*architect\*\*/;
 
-// { header, checklist, landing, playbook, problems, blocked }: the header fields, the items above `## Landing` and the
-// items under it, the `## Playbook` text (null when the section is missing), the lines outside the grammar, and every
-// line holding `BLOCKED:`. An item is { at, indent, done, text, note }, note being the kind of the note under it or null.
 export function parseTodo(text) {
   const todo = { header: {}, checklist: [], landing: [], playbook: null, problems: [], blocked: [] };
   const playbookLines = [];
@@ -88,17 +85,19 @@ function trailPhases(runDir) {
   return new Set(text.split(/\r?\n/).slice(1).map((row) => row.split("\t")[1]?.trim().toLowerCase()).filter(Boolean));
 }
 
-// The step, gate, landing, and `## Playbook` lines that differ from a fresh open-todo.mjs run. The checklist may start
-// with any number of run items; the lines after them must be the generated ones.
-function fingerprint(todo, root) {
+function firstGeneratedIndexAfterRunItems(checklist, generatedChecklist) {
+  const found = checklist.findIndex((item) => shape(item) === shape(generatedChecklist[0]));
+  return found >= 0 ? found : checklist.length - generatedChecklist.length;
+}
+
+function linesDifferingFromGenerated(todo, root) {
   const { playbook, landing, start = "" } = todo.header;
   if (!playbook || !landing) return [`todo.md needs a Playbook: and a Landing: header line to compare against open-todo.mjs`];
   const expected = generate({ playbook, root, landing, start, done: [] });
   if (expected.problems.length > 0) return expected.problems.map((problem) => `open-todo.mjs: ${problem}`);
   const generated = parseTodo(expected.text);
   const problems = [];
-  const found = todo.checklist.findIndex((item) => shape(item) === shape(generated.checklist[0]));
-  const first = found >= 0 ? found : todo.checklist.length - generated.checklist.length;
+  const first = firstGeneratedIndexAfterRunItems(todo.checklist, generated.checklist);
   if (first < 0) {
     problems.push(`todo.md has ${todo.checklist.length} checklist lines where open-todo.mjs generates ${generated.checklist.length} after the run items`);
   } else {
@@ -130,7 +129,7 @@ const RULES = [
   ({ todo }) => todo.checklist.filter((item) => isGate(item) && item.note).map((item) => `a ${item.note} note under a gate, which cannot be skipped: ${item.text}`),
   ({ todo }) => todo.landing.filter((item) => item.note && !SKIPPABLE_LANDING.test(item.text))
     .map((item) => `a ${item.note} note under a landing item only push and retro may carry: ${item.text}`),
-  ({ todo, root }) => fingerprint(todo, root),
+  ({ todo, root }) => linesDifferingFromGenerated(todo, root),
   ({ todo, runDir }) => {
     const checked = todo.checklist.filter((item) => isGate(item) && item.done);
     if (checked.length === 0) return [];
@@ -160,19 +159,17 @@ const RULES = [
   },
 ];
 
-// { found, problems, items }: whether <runDir> holds a todo.md to read, every failure of the run, and the count of
-// checklist items read.
 export function checkRun(runDir) {
   runDir = resolve(runDir);
   const todoPath = join(runDir, "todo.md");
-  if (!statSync(runDir, { throwIfNoEntry: false })?.isDirectory()) return { found: false, problems: [`${runDir} is not a directory`], items: 0 };
+  if (!statSync(runDir, { throwIfNoEntry: false })?.isDirectory()) return { usageError: `${runDir} is not a directory`, problems: [], items: 0 };
   const text = read(todoPath);
-  if (text === null) return { found: false, problems: [`${todoPath} is missing`], items: 0 };
+  if (text === null) return { usageError: `${todoPath} is missing`, problems: [], items: 0 };
   if (basename(dirname(runDir)) !== "runs" || basename(dirname(dirname(runDir))) !== ".agents") {
-    return { found: false, problems: [`${runDir} is not <repository root>/.agents/runs/<slug>, so open-todo.mjs has no root to generate from`], items: 0 };
+    return { usageError: `${runDir} is not <repository root>/.agents/runs/<slug>, so open-todo.mjs has no root to generate from`, problems: [], items: 0 };
   }
   const run = { todo: parseTodo(text), runDir, root: dirname(dirname(dirname(runDir))) };
-  return { found: true, problems: RULES.flatMap((rule) => rule(run)), items: run.todo.checklist.length };
+  return { usageError: null, problems: RULES.flatMap((rule) => rule(run)), items: run.todo.checklist.length };
 }
 
 // node leaves argv[1] unresolved and may set it to a non-file (`node -e ... arg`).
@@ -191,10 +188,14 @@ if (invokedDirectly()) {
     console.error("usage: check-run.mjs <run directory>");
     process.exit(2);
   }
-  const { found, problems, items } = checkRun(runDir);
+  const { usageError, problems, items } = checkRun(runDir);
+  if (usageError) {
+    console.error(usageError);
+    process.exit(2);
+  }
   if (problems.length > 0) {
     console.error(problems.join("\n"));
-    process.exit(found ? 1 : 2);
+    process.exit(1);
   }
   console.log(`${resolve(runDir)}: every item above ## Landing is done or skipped (${items} items), every line matches open-todo.mjs, and each checked gate has its evidence.`);
 }

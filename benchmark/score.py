@@ -1,8 +1,3 @@
-"""Quality scoring of one finished run, from the worktree it left and the run's own records.
-
-Checks: it landed, the Spec's build and tests pass and actually ran, the diff
-is the size of the real landing commit, no test asserts exact HTML or content text, no guard tripped.
-A run that did not do the work is invalid: compare.py counts it and leaves it out of every median."""
 import json
 import re
 import subprocess

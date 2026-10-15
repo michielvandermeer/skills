@@ -20,8 +20,7 @@ PRICES = {
     "haiku": (1.0, 5.0, 1.25, 2.0, 0.10),
 }
 ROLES = ["main", "poteto-agent", "verifier", "interrogate", "arena", "architect"]
-# A run from before the poteto-mode flow dispatched these agent types; they stay so a baseline run is still attributed.
-OLD_ROLES = ("implementer", "checker", "prover", "planner", "fixer", "reviewer")
+PRE_POTETO_ROLES = ("implementer", "checker", "prover", "planner", "fixer", "reviewer")
 PREFIXES = {"investigate:": "poteto-agent", "build:": "poteto-agent", "fix:": "poteto-agent", "verify:": "verifier", "design:": "architect"}
 TEST_RE = re.compile(r"\b(dotnet\s+test|run-tests\.mjs|bun\s+(run\s+)?test|vitest|npm\s+(run\s+)?test|pytest|cargo\s+test|go\s+test)\b")
 
@@ -40,7 +39,6 @@ def call_cost(model, call):
 
 
 def role_of(agent_type, description=""):
-    """The role an implement run dispatched, from the subagent's type and the description the driving session gave it."""
     kind = (agent_type or "unknown").split(":")[-1]
     text = description.lower().strip()
     for prefix, role in PREFIXES.items():
@@ -48,7 +46,7 @@ def role_of(agent_type, description=""):
             return role
     if kind.startswith("poteto-agent"):
         return "poteto-agent"
-    if kind in OLD_ROLES:
+    if kind in PRE_POTETO_ROLES:
         return kind
     if "reviewer" in text or "interrogate" in text:
         return "interrogate"

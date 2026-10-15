@@ -10,8 +10,7 @@ from pathlib import Path
 import metrics
 
 HERE = Path(__file__).resolve().parent
-# The old roles keep their own columns, so a baseline run from before the poteto-mode flow is attributed by role.
-ROLE_COLUMNS = metrics.ROLES + list(metrics.OLD_ROLES) + ["other"]
+ROLE_COLUMNS = metrics.ROLES + list(metrics.PRE_POTETO_ROLES) + ["other"]
 COLUMNS = (
     ["run_id", "skills_sha", "spec", "index", "model", "effort", "spec_hash", "claim", "started",
      "valid", "invalid_reasons", "flags", "failed",
