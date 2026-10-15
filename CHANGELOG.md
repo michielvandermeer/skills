@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-15: Implement Steps follow a Workflow
+Each Step of `/implement`, `/implement-oneshot`, and `/implement-yolo` now runs as a feature, a bug fix, a refactor, a speed-up, or a visual match, and works the way that kind of change needs: a bug fix starts from a check that shows the bug, a refactor from a test that pins today's behaviour, a speed-up from a measurement, and a visual match from screenshots of the screen as it is. The commit a run lands names a bug's root cause and a speed-up's before and after numbers. Before, every Step ran as a feature, so a bug fix could land with a test that passed even without the fix, and a speed-up could land with no measurement at all.
+
 ## 2026-10-14: Goals can start implement runs
 A `/goal` session can now start `/implement`, `/implement-oneshot`, and `/implement-yolo` when its goal names one. Before, these commands ran only when you typed them, so a goal that asked for one could never run it. A plain request to build something still does not start a run.
 
