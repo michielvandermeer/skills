@@ -112,7 +112,9 @@ def session_loads(transcript):
 
 def summarize(events, plugin_dir, transcript=None):
     init = next((e for e in events if e.get("type") == "system" and e.get("subtype") == "init"), None)
-    result = next((e for e in reversed(events) if e.get("type") == "result"), None)
+    # Each wake-up for a background agent's report ends in its own result event, counting only itself.
+    results = [e for e in events if e.get("type") == "result"]
+    result = results[-1] if results else None
     skills, agents, plugin_reads, denied = [], [], [], []
     for e in events:
         if e.get("type") != "assistant":
@@ -128,8 +130,9 @@ def summarize(events, plugin_dir, transcript=None):
                               f" — {i.get('description', '')}")
             elif c.get("name") == "Read" and norm(i.get("file_path", "")).startswith(norm(plugin_dir)):
                 plugin_reads.append(os.path.relpath(i["file_path"], plugin_dir))
-    for d in (result or {}).get("permission_denials") or []:
+    for d in (d for r in results for d in r.get("permission_denials") or []):
         denied.append(f"{d.get('tool_name')}: {json.dumps(d.get('tool_input'))[:200]}")
+    denied = list(dict.fromkeys(denied))
     commands, bases = session_loads(transcript)
     foreign = [b for b in bases if not norm(b).startswith(norm(plugin_dir))]
     lines = [f"plugin: {plugin_check(init, plugin_dir)}",
@@ -142,8 +145,10 @@ def summarize(events, plugin_dir, transcript=None):
              f"agents dispatched this turn: {len(agents)}", *[f"  - {a}" for a in agents],
              f"denied tool calls: {denied or 'none'}"]
     if result:
-        lines += [f"result: {result.get('subtype')} is_error={result.get('is_error')} turns={result.get('num_turns')} "
-                  f"cost=${result.get('total_cost_usd', 0):.2f} wall={result.get('duration_ms', 0) // 1000}s",
+        turns = sum(r.get("num_turns") or 0 for r in results)
+        wall = sum(r.get("duration_ms") or 0 for r in results) // 1000
+        lines += [f"result: {result.get('subtype')} is_error={any(r.get('is_error') for r in results)} turns={turns} "
+                  f"cost=${result.get('total_cost_usd', 0):.2f} wall={wall}s over {len(results)} result events",
                   "", "--- final message ---", result.get("result") or ""]
     else:
         lines.append("result: NONE (crashed, killed, or timed out)")
@@ -270,7 +275,8 @@ def cmd_new(a):
     run_id = f"{stamp}-{a.name}"
     run_dir = RUNS / run_id
     run_dir.mkdir(parents=True)
-    scratch = Path(tempfile.gettempdir()) / f"{SCRATCH_PREFIX}{run_id}"
+    # resolve() spells out a Windows 8.3 name such as MICHIE~1; EnterWorktree refuses a worktree under the short form
+    scratch = Path(tempfile.gettempdir()).resolve() / f"{SCRATCH_PREFIX}{run_id}"
     if a.from_repo:
         sh(["git", "clone", "--quiet", "--no-hardlinks", str(Path(a.from_repo).resolve()), str(scratch)])
         sh(["git", "remote", "remove", "origin"], scratch)
