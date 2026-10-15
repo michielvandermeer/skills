@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-15: pstack now ships inside this plugin
+The plugin now includes pstack, Lauren Tan's (poteto) way of working with agents, with `/skills:poteto-mode`, its playbooks and principles, and a SessionStart hook that routes multi-file, design, and debugging work through it. Before, pstack came only as a separate plugin, so if you installed it, uninstall it with `/plugin uninstall pstack@pstack-claude`. With both installed, every pstack skill loads twice and two SessionStart hooks run.
+
 ## 2026-10-14: Goals can start implement runs
 A `/goal` session can now start `/implement`, `/implement-oneshot`, and `/implement-yolo` when its goal names one. Before, these commands ran only when you typed them, so a goal that asked for one could never run it. A plain request to build something still does not start a run.
 
