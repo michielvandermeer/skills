@@ -9,7 +9,7 @@ Each ADR keeps a number of its own within its folder. A session can work from a 
 ## Considered Options
 
 - ADRs that are never edited, where a newer ADR marks the older one superseded. This is the usual practice, and it is rejected. A reader has to walk the whole chain to learn what holds now, and partial replacements are easy to miss when a newer ADR states them only in its body. Every session that reads the ADRs pays for the chain in context.
-- Rewriting an ADR when its Spec lands instead of at Spec time. Rejected: three implement skills would each take on a new duty. The sessions that read ADRs while a Spec waits are usually planning the next change, so the planned decision is the one they need.
+- Rewriting an ADR when its Spec lands instead of at Spec time. Rejected: the implement commands would each take on a new duty. The sessions that read ADRs while a Spec waits are usually planning the next change, so the planned decision is the one they need.
 - `/doctor` reports every mismatch between an ADR and the code and leaves the ADR as written, treating the code as the thing that is wrong. Rejected: most mismatches are decisions that moved on without anyone rewriting the ADR, so the ADRs stay stale and every later session reads a decision that no longer holds.
 - The code always wins, and `/doctor` rewrites every contradicted ADR to match it. Rejected: a real bug, such as an error message leaking to a user against an ADR that forbids it, would be recorded as a decision.
 - `/doctor` asks the user about each mismatch. Rejected: `/doctor` runs from start to finish without asking, and its diff and report already show every judgement it made.

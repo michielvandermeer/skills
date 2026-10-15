@@ -59,7 +59,7 @@ When `<folder>/log.md` exists, read it whole and reuse the script beside it. Oth
 
 Hold the script to MEASURE.md: its contract, then its sensitivity check, run now even on a reused script. A script that cannot tell a slow case from a fast one gets a revised workload or number; when no revision separates them, **halt**.
 
-Record the baseline: check what else is running, build `<before>`, and measure it alone with at least 3 runs. Run the agreed tests once in the run worktree. Write this Hillclimb's section at the top of the log — the agreed start, the deadline (start plus the time limit), the baseline, and the tests that already fail. An already-failing test is noted and blocks nothing ([ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md)). Commit `<folder>` as `hillclimb(<slug>): start`.
+Record the baseline: check what else is running, build `<before>`, and measure it alone with at least 3 runs. Run the agreed tests once in the run worktree. Write this Hillclimb's section at the top of the log — the agreed start, the deadline (start plus the time limit), the baseline, and the tests that already fail. An already-failing test is noted and blocks nothing ([ADR-0029](../../docs/adr/0029-test-failures-are-measured-against-the-base-branch.md)). Commit `<folder>` as `hillclimb(<slug>): start`.
 
 ### 4. Profile
 
@@ -126,7 +126,7 @@ Run `/retro` — unless another Named session skill started this Hillclimb; that
 
 ### 10. Push
 
-Run `/implement`'s [push](../implement/SKILL.md#the-push). Read only that section of that file. A line in `AGENTS.md` or `CLAUDE.md` saying implement runs do not push turns this push off too.
+Run `/implement`'s [push](../implement/LANDING.md#the-push). Read only that section of that file. A line in `AGENTS.md` or `CLAUDE.md` saying implement runs do not push turns this push off too.
 
 ## The Attempt log
 

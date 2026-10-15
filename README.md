@@ -121,7 +121,7 @@ The implement commands read an Issue and claim it before they start, so other ru
 
 To stop runs from pushing, add a line to your repo's `AGENTS.md` or `CLAUDE.md` saying implement runs do not push. Do this when a push to your branch deploys, or when you want to push yourself. If someone else pushed to your branch during the run, the run tells you, and the work waits on your machine for you to pull and push.
 
-Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, Attempt logs, architecture reviews, codebase audits, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
+Everything else stays in the repo, whichever Tracker you use: the run directory of a run in progress, Prototypes, Attempt logs, architecture reviews, codebase audits, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
 
 ## Repository layout
 
@@ -131,21 +131,18 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 │   ├── plugin.json        # plugin manifest (name, metadata)
 │   └── marketplace.json   # marketplace catalog (this repo is its own marketplace)
 ├── agents/                # sub-agents the skills dispatch, one markdown file each
-│   ├── checker.md
 │   ├── climber.md
 │   ├── explorer.md
-│   ├── implementer.md
-│   ├── planner.md
-│   ├── prover.md
+│   ├── poteto-agent.md    # pstack's delegate, which the implement commands dispatch
 │   ├── researcher.md
 │   ├── reviewer.md
-│   └── validator.md
+│   ├── validator.md
+│   └── ...                # pstack's other agents
 ├── docs/adr/              # architecture decision records
 ├── hooks/                 # pstack's SessionStart hook
 ├── skills/                # one directory per skill, each with a SKILL.md
 │   ├── code-review/
-│   ├── implement/
-│   ├── implement-oneshot/
+│   ├── implement/         # SKILL.md, LANDING.md, the overlay, and scripts/check-run.mjs
 │   ├── implement-yolo/
 │   └── ...
 ├── tools/import_pstack.py # imports pstack from pstack-claude
@@ -157,7 +154,7 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 └── README.md
 ```
 
-The `skills/` and `agents/` directories and `hooks/hooks.json` are discovered automatically by the plugin loader — no manifest fields are required. Agents register under a scoped name, so `agents/implementer.md` is dispatched as `skills:implementer`.
+The `skills/` and `agents/` directories and `hooks/hooks.json` are discovered automatically by the plugin loader — no manifest fields are required. Agents register under a scoped name, so `agents/reviewer.md` is dispatched as `skills:reviewer`.
 
 ## Model and effort pins
 
@@ -165,17 +162,18 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 
 **Skills you type.** Only the skills that no other skill loads pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
 
-- Opus at high: `/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/refine`, `/wayfinder`.
-- Sonnet at high: `/triage`, `/implement`, `/implement-oneshot`, `/implement-yolo`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`.
+- Opus at high: `/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/refine`, `/wayfinder`, `/implement`, `/implement-yolo`.
+- Sonnet at high: `/triage`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`.
 
 **Sub-agents.**
 
-- Sonnet at high: `skills:implementer`, `skills:planner`.
-- Sonnet at medium: `skills:checker`, `skills:prover`, `skills:climber`, `skills:validator`, `skills:researcher`.
+- Sonnet at medium: `skills:climber`, `skills:validator`, `skills:researcher`.
 - Haiku at high: `skills:explorer`.
-- Opus at high: `skills:reviewer`, the two `/code-review` reviewers. The Checker runs its per-Step review in one reviewer on Sonnet at high instead.
+- Opus at high: `skills:reviewer`, the two `/code-review` reviewers.
 
-Everything else runs on the setting of the skill that starts it: the fixers, the `/improve-data-structures` pass, and the `/codebase-design` and `/brainstorm` fan-outs.
+**Implement delegates.** An implement run dispatches pstack's `skills:poteto-agent` for every code-writing delegate and for the verifier, and runs pstack's `how`, `architect`, and `interrogate` skills. Each of those roles takes its model from `~/.claude/pstack-models.md`, the sheet `/skills:setup-pstack` writes, so the cost of a run is set in one place you already own.
+
+Everything else runs on the setting of the skill that starts it: a Hillclimb's fixers and the `/codebase-design` and `/brainstorm` fan-outs.
 
 > **Your environment can override a pin.** When `CLAUDE_CODE_EFFORT_LEVEL` is set, it beats every effort pin. Your session's settings and `/effort` do not.
 
@@ -196,9 +194,8 @@ Everything else runs on the setting of the skill that starts it: the fixers, the
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `hillclimb` | Push one measured number — test-suite time, build time, memory, bundle size — toward a target, trying one change at a time and keeping only what measurably helps. Loads on its own when you ask for something to be made faster, smaller, or cheaper. |
-| `implement` | Implement an Issue's Spec, or a description, by slicing it into steps and running each one in its own sub-agent. |
-| `implement-oneshot` | Implement an Issue's Spec, or a description, as a single step, skipping the Planner. Still checks, reviews, and improves data structures after. |
-| `implement-yolo` | Implement an Issue's Spec, or a description, as a single step on this checkout and this branch. No worktree, no new branch, no merge. |
+| `implement` | Implement an Issue's Spec, or a description, as a pstack poteto-mode run in its own worktree: the matching playbook, design before code, a verifier that wrote none of the code, an adversarial review, then one commit landed on your branch. |
+| `implement-yolo` | The same run on this checkout and this branch. No worktree, no new branch, no merge. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then file the ones you pick as Issues — as Specs when they are clear enough to build. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Type it to rebuild your profile from past sessions; no grilling session runs it for you. |

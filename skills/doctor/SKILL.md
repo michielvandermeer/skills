@@ -18,7 +18,7 @@ Check for that ref first: only a repo with none gets its old local work converte
 
 Run this pass first, so an Issue converted from an old document is also visible to the Implemented Issues pass below.
 
-Find every Markdown and near-Markdown (`.html`) document in the project, skipping `.git/`, `node_modules/`, `vendor/`, build output, `.agents/steps/`, `.agents/worktrees/`, the Tracker ref and any old `issue-tracker.md` or `triage-labels.md`, and anything already sitting in its canonical location. Work only on the checkout you're running in — never touch another worktree or branch.
+Find every Markdown and near-Markdown (`.html`) document in the project, skipping `.git/`, `node_modules/`, `vendor/`, build output, `.agents/runs/`, `.agents/worktrees/`, the Tracker ref and any old `issue-tracker.md` or `triage-labels.md`, and anything already sitting in its canonical location. Work only on the checkout you're running in — never touch another worktree or branch.
 
 When a root `CONTEXT-MAP.md` exists, read [MULTI-CONTEXT.md](MULTI-CONTEXT.md) before moving anything: it decides which `docs/adr/` an ADR goes to, and which context subfolder every other document goes to.
 

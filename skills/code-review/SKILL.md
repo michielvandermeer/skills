@@ -24,7 +24,7 @@ Before going further, confirm the fixed point resolves (`git rev-parse <fixed-po
 
 Look for the originating spec, in this order:
 
-1. An Issue reference or a Spec path passed in. Inside an implement run the caller passes the path of the run's Spec copy, `.agents/steps/<slug>/spec.md`.
+1. An Issue reference or a Spec path passed in. Inside an implement run the caller passes the path of the run's Spec copy, `.agents/runs/<slug>/spec.md`.
 2. The Issue under discussion.
 3. The Issue the run slug in the current branch's name points to, as the Tracker ref says.
 4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
