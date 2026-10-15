@@ -141,8 +141,8 @@ test("a repo playbook that replaced an overlay anchor fails with the anchor name
 });
 
 test("an anchor no extended playbook has, and a route the overlay does not extend, fail", () => {
-  const root = repoWithPlaybook("stale.md", "---\nextends: feature\nwhen: Stale.\n---\n\n- **In** \"Run the Planner.\" Slice it first.\n");
-  assert.deepEqual(generate({ playbook: "feature", root, landing: "worktree" }).problems, ['.agents/playbooks/stale.md: "Run the Planner." is not in any playbook it extends']);
+  const root = repoWithPlaybook("stale.md", "---\nextends: feature\nwhen: Stale.\n---\n\n- **In** \"Run the slicer.\" Slice it first.\n");
+  assert.deepEqual(generate({ playbook: "feature", root, landing: "worktree" }).problems, ['.agents/playbooks/stale.md: "Run the slicer." is not in any playbook it extends']);
   assert.deepEqual(generate({ playbook: "hillclimb", root: emptyRepo(), landing: "worktree" }).problems, ["hillclimb: the Overlay does not extend it; /implement routes only to feature, bug-fix, refactoring, perf-issue, visual-parity"]);
   assert.deepEqual(generate({ playbook: "feature", root: emptyRepo(), landing: "in-place" }).problems, ["--landing in-place needs --start <sha>"]);
 });
