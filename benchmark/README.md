@@ -81,7 +81,6 @@ The report states the claim, then one of **cheaper**, **costlier**, **no measura
 - `tests_ok` is strict: a test that also fails on the base counts against the run, on both sides alike.
 - No browser pass: the target's Playwright MCP is off on both sides.
 - Your own `~/.claude` settings and other installed plugins are part of the configuration; keep them the same for both sides.
-- `/implement-yolo` has no benchmark mode.
 - Paths in a Windows worktree run long; the runner sets `core.longpaths`.
 
 ## Files

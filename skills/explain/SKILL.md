@@ -1,10 +1,10 @@
 ---
 name: explain
 description: Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits.
+argument-hint: "[topic] [as a diagram | page | video]"
 disable-model-invocation: true
 model: sonnet
 effort: high
-argument-hint: "[topic] [as a diagram | page | video]"
 ---
 
 # Explain

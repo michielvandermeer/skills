@@ -1,6 +1,9 @@
 ---
 name: to-spec
 description: Turn the current conversation into a Spec and write it onto its Issue in the repo's Tracker — no interview, just synthesis of what you've already discussed.
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 This skill takes the current conversation context and codebase understanding and produces a spec (you may know this document as a PRD). Do NOT interview the user — just synthesize what you already know. A decision the conversation did not settle is not yours to close: ask it as one `/grilling` round, then continue.
@@ -21,7 +24,7 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 Draft the Spec using the template below in a new temporary file in the OS temp directory. On a local Markdown Tracker the Issue file itself is the draft: file it at this step when the Issue is new, and write the whole of step 5's update into it. Run the `/plain-language` skill first: a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar. Problem Statement, Solution, How to Check It, and User Stories are the **Product reader**'s — someone who knows the product but not its code, such as a QA tester. There, "the user" is the person who uses the part of the product the change touches, and the sections name only what that person meets on the product and terms `CONTEXT.md` defines. Every file, function, class, and internal part goes in Implementation Decisions. In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
 
-4. Dispatch a fresh **Validator** (`skills:validator`, `agents/validator.md` at the plugin root) with the draft's path. That path is the whole prompt. The Validator is pinned to Sonnet at medium effort ([ADR-0052](../../docs/adr/0052-a-fresh-validator-checks-a-new-spec.md)). A host without that agent type dispatches `general-purpose` with the same prompt.
+4. Dispatch a fresh **Validator** (`skills:validator`, `agents/validator.md` at the plugin root) with two absolute paths: the draft, and [validate-spec/SKILL.md](../validate-spec/SKILL.md). Those paths are the whole prompt. The Validator is pinned to Sonnet at medium effort ([ADR-0052](../../docs/adr/0052-a-fresh-validator-checks-a-new-spec.md)). A host without that agent type dispatches `general-purpose` with the same prompt.
 
 Wait for it.
 
@@ -31,7 +34,7 @@ Any other result ends the session before step 5. Tell the user the check did not
 
 5. Write the draft the Validator left to the Spec's Issue in one update: rewrite its body with the draft, set its status to `ready-for-agent` — `ready-for-human` when a person builds it — and, when the caller names an Issue that must land first, link it as blocked by that Issue. A new Issue is filed with a title naming the change and that body, status, and link. On a local Markdown Tracker the draft already holds this update.
 
-Then commit the files this session created or changed — glossary and ADR edits, the prototype folder, and on a local Markdown Tracker the Issue files — staged by name, on the branch you are on, without asking. A commit that writes an ADR names the Issue's reference in its message. Leave every other working-tree change alone; another session may own it. When `/refine` is the caller, leave the commit to `/refine`. When `/wayfinder` is the caller, leave the commit to `/wayfinder`, which makes one commit for every Spec it cut.
+Then commit the files this session created or changed — glossary and ADR edits, the prototype folder, and on a local Markdown Tracker the Issue files — staged by name, on the branch you are on, without asking. A commit that writes an ADR names the Issue's reference in its message. Leave every other working-tree change alone; another session may own it. When `/wayfinder` is the caller, leave the commit to `/wayfinder`, which makes one commit for every Spec it cut.
 
 <spec-template>
 

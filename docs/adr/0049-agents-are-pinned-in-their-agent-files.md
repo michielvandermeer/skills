@@ -2,7 +2,7 @@
 
 Each skill you type and each plugin agent sets `model:` and `effort:` in its own header, so a run starts at the setting its work needs and not at your session's most expensive one. Three parallel implement runs on Opus at xhigh burned about 16% of a weekly limit in five hours. Nothing is pinned above `high`.
 
-- **Skills you type**, the ones marked `disable-model-invocation: true` except `/review-spec`, plus the two implement commands, which a `/goal` can also start ([ADR-0067](0067-the-implement-commands-are-model-invoked-so-a-goal-can-start-them.md)): Opus at high for the interview and design skills (`/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/refine`, `/wayfinder`), Sonnet at high for the rest.
+- **Skills you type**, the ones marked `disable-model-invocation: true`, plus `/implement`, which a `/goal` can also start ([ADR-0067](0067-implement-is-model-invoked-so-a-goal-can-start-it.md)): Opus at high for the interview and design skills (`/grill-with-docs`, `/brainstorm`, `/wayfinder`), Sonnet at high for the rest.
 - **Agents** are pinned as follows:
 
   | Agent | Model | Effort |
@@ -12,9 +12,9 @@ Each skill you type and each plugin agent sets `model:` and `effort:` in its own
   | Explorer | Haiku | high |
   | Reviewer | Opus | high |
 
-- **Everything else** runs on the setting of the skill that starts it: a Hillclimb's Fixers and the `/brainstorm` and `/codebase-design` fan-outs.
+- **Everything else** runs on the setting of the skill that starts it: a Hillclimb's Fixers and the `/brainstorm` fan-out.
 
-A skill's pin lasts for the rest of the turn. A skill that another skill loads would swap its caller's model, so only skills that no other skill loads are pinned. `/review-spec` stays on the session because [ADR-0036](0036-review-spec-uses-the-session-model.md) says you choose its model by opening the session.
+A skill's pin lasts for the rest of the turn, so a model-invoked skill that other skills load carries none: it would swap its caller's model. A user-invoked skill that other skills need is followed by path ([ADR-0074](0074-skills-that-other-skills-start-are-user-invoked.md)), which skips its pin, so it is pinned for when you type it.
 
 The Reviewer is Opus because review is the one stage where a stronger model than the author's pays for itself.
 

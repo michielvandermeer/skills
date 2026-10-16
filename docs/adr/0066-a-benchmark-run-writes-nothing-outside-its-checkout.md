@@ -15,5 +15,4 @@ The skill is not the only guard. The runner also rejects pushes in the worktree,
 ## Consequences
 
 - Both skills commits under comparison must contain benchmark mode; the runner refuses a checkout that lacks `SKILLS_BENCHMARK` in `skills/implement/SKILL.md`.
-- `/implement-yolo` has no benchmark mode and is not benchmarked.
 - A new outward write in `/implement` or its agents gets a `bench-log` branch in the same change.

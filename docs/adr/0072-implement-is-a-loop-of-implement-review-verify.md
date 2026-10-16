@@ -1,6 +1,6 @@
 # `/implement` is a loop of implement, review, and verify
 
-Both implement commands run one loop over the whole Spec: an **Implementer** makes the change, `/code-review` judges it on the Standards axis alone — the repo's Coding standards and the **Design principles** — and a **Verifier** checks it does what the Spec asks, by reading the Spec against the diff, running the build and the whole test suite, and running the Spec's **Hand checks**. A Review or Verify finding sends the run back to a fresh Implementer with those findings, for at most three **Iterations**; the third that still fails halts the run. The run lands when one Iteration passes both.
+`/implement` runs one loop over the whole Spec: an **Implementer** makes the change, `/code-review` judges it on the Standards axis alone — the repo's Coding standards and the **Design principles** — and a **Verifier** checks it does what the Spec asks, by reading the Spec against the diff, running the build and the whole test suite, and running the Spec's **Hand checks**. A Review or Verify finding sends the run back to a fresh Implementer with those findings, for at most three **Iterations**; the third that still fails halts the run. The run lands when one Iteration passes both.
 
 The loop closes: every fix is reviewed and verified again before the run lands, so no finding lands unchecked. Review lives in one place and verification in one place, each with one agent and one report, so there is nothing for several agents to keep in step.
 

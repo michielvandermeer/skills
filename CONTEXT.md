@@ -22,33 +22,13 @@ _Avoid_: baseline, preset, issue-tracker template
 One piece of work in the repo's **Tracker**, from a first rough thought to a finished **Spec**, carrying exactly one status: `needs-triage` (nobody has triaged it), `needs-info` (waiting on the reporter), `needs-grilling` (a person must decide the solution), `needs-human` (waiting on a secret or a manual test), `wayfinding` (it is a **Map**), or `ready-for-agent` / `ready-for-human` (it carries a Spec, for an agent or a person to build). A `needs-` status means it waits on something; a `ready-for-` status means it carries a Spec. Moving from one stage to the next updates the same Issue; finished or rejected work is closed. `/triage` may also give it a `bug` or `enhancement` category.
 _Avoid_: Idea, ticket, card, work item, PRD
 
-**Scope**:
-What a `/refine` session determines: what is part of this project and what is not.
-_Avoid_: work items, backlog, requirements
-
 **Buildable**:
-A proposed change whose Solution is clear enough that `/implement` can start without a further grilling session. `/triage` and `/improve-codebase-architecture` write a Spec only when the change is Buildable.
+A proposed change whose Solution is clear enough that `/implement` can start without a further grilling session. `/triage` writes a Spec only when the change is Buildable.
 _Avoid_: ready, agent-ready, clear solution
-
-**Architecture review**:
-The output of an `/improve-codebase-architecture` run at `.agents/architecture-reviews/<timestamp>/` (`.agents/architecture-reviews/<context>/<timestamp>/` in a multi-context repo), holding `report.md` and the `report.html` rendered from it — deepening candidates, each carrying what the functionality it touches does. Read with a team who work on different parts of the system; after the report, the session says which candidates are Buildable, then picked candidates become Issues in `needs-grilling`, or Specs when Buildable.
-_Avoid_: codebase audit, audit, tech-debt report, architecture report
-
-**Codebase audit**:
-The output of a `/codebase-audit` run at `.agents/codebase-audits/<timestamp>/` (`.agents/codebase-audits/<context>/<timestamp>/` in a multi-context repo), holding `report.md` — a coverage-complete, read-only inventory of every identifiable subsystem, each with organizing-model recommendations or an explicit skip.
-_Avoid_: architecture review, tech-debt report, DSA audit
 
 **Prototype**:
 Throwaway code built to answer one design question — whether a state model holds up once pushed through real cases, or what a screen should look like. A **Spec** points at `.agents/prototypes/<slug>/`, or `.agents/prototypes/<context>/<slug>/` in a multi-context repo.
 _Avoid_: spike, POC, demo, mockup
-
-**Wizard**:
-A bash script that walks a person, stage by stage, through a manual procedure only they can perform. The `/wizard` skill generates it; the person runs it.
-_Avoid_: setup script, HITL loop, installer, walkthrough
-
-**Stage**:
-One focused task in a Wizard, typically one screen.
-_Avoid_: Step, prompt
 
 **Hillclimb**:
 One effort to push one measured number in one direction by trying changes one at a time and keeping each only when the measurement shows it helped and the tests still pass. It starts once the number, its target, a minimum number of **Attempts**, and any time limit are agreed, works in its own worktree, and ends by landing on the **Base branch**. Hillclimbs on the same number share one folder at `.agents/hillclimbs/<slug>/` (`.agents/hillclimbs/<context>/<slug>/` in a multi-context repo).
@@ -63,7 +43,7 @@ The record of every **Attempt** on one measured number, in that number's **Hillc
 _Avoid_: decision log (that is an ADR), decision.tsv, experiment log
 
 **Spec**:
-The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, **Hand checks**, user stories, implementation and testing decisions — replacing whatever the Issue said before. Its problem, solution, Hand checks, and user stories are written for the **Product reader**; the rest is written for a developer new to the repo. The input to `/implement` and `/implement-yolo`, held to the **Planning principles** so one run can build it with no one to ask. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
+The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, **Hand checks**, user stories, implementation and testing decisions — replacing whatever the Issue said before. Its problem, solution, Hand checks, and user stories are written for the **Product reader**; the rest is written for a developer new to the repo. The input to `/implement`, held to the **Planning principles** so one run can build it with no one to ask. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
 **ADR**:
@@ -224,7 +204,7 @@ One pass of an implement run's loop over the whole Spec: Implement, then Review,
 _Avoid_: round (a grilling term), cycle, attempt (a Hillclimb term)
 
 **Implementer**:
-The sub-agent (`skills:implementer`) that does the Implement part of an **Iteration**, under both implement commands. On the first Iteration it makes the whole change the Spec asks for; on each later one it fixes every Verify finding it was handed, and fixes or declines each Review finding, with a reason for each decline. It builds what it touched, runs the tests closest to its change, commits, and returns a fixed four-line report. A fresh one is dispatched each Iteration.
+The sub-agent (`skills:implementer`) that does the Implement part of an **Iteration**, under `/implement`. On the first Iteration it makes the whole change the Spec asks for; on each later one it fixes every Verify finding it was handed, and fixes or declines each Review finding, with a reason for each decline. It builds what it touched, runs the tests closest to its change, commits, and returns a fixed four-line report. A fresh one is dispatched each Iteration.
 _Avoid_: Step agent, coder, worker
 
 **Verifier**:
@@ -255,7 +235,7 @@ _Avoid_: process principles, spec rules
 A `general-purpose` sub-agent a **Hillclimb**'s Driving session sends, at its own model and effort, to fix what its final review found: a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh. An implement run has no Fixer: the next **Iteration**'s **Implementer** fixes what the last one's Review or Verify found.
 
 **Base branch**:
-The branch the session was on when an implement command started, read again on a resume. The run branches from it, is reviewed and verified against it, and lands back on it. It is the repository's default branch only when the session started there.
+The branch the session was on when `/implement` started, read again on a resume. The run branches from it, is reviewed and verified against it, and lands back on it. It is the repository's default branch only when the session started there.
 _Avoid_: master, main, default branch, trunk
 
 **Landing commit**:

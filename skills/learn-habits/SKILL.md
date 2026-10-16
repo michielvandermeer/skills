@@ -1,8 +1,10 @@
 ---
 name: learn-habits
-description: Learn a person's grilling Habits into their Grilling profile. Use when the user wants their profile rebuilt from past sessions.
+description: Rebuild a person's Grilling profile from the Habits in their past grilling sessions.
 argument-hint: "[window, such as past month or last 50]"
 disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 A **Grilling profile** holds one person's **Habits** in this repo, at `.agents/refs/profiles/<name>.md`, so grilling can predict which option each person would pick. It learns only from that person's grilling sessions in this repo; the same person may choose differently elsewhere. See [ADR-0063](../../docs/adr/0063-grilling-profiles-live-in-the-repo-per-person.md).

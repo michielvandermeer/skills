@@ -23,7 +23,7 @@ The run pushes the base branch as it stands, to the branch it tracks. A branch w
 - **`/setup` asking whether a push deploys.** Rejected: repos already set up never run `/setup` again, and it would start writing rules into `AGENTS.md`.
 - **Fetching, rebasing, re-testing and pushing again after a refusal.** Rejected: by then the run's worktree and Spec copy are gone, so the Verifier cannot re-run, and a rebase conflict would land in the user's own checkout.
 - **Catching up with the remote before landing, inside the existing retry loop.** Rejected: the run would pull into the user's branch for them and could still lose a last-second race. A refusal needs someone else pushing to the same branch during the run, and runs on one machine already queue behind each other on the local branch.
-- **Skipping a branch with no remote copy.** Rejected: a run on a fresh feature branch, common under `/implement-yolo`, would never push.
+- **Skipping a branch with no remote copy.** Rejected: a run on a fresh feature branch would never push.
 - **Skipping the push when the branch was already ahead of the remote.** Rejected: git cannot push the run's commits without the commits underneath them, and the run was tested with those commits underneath.
 - **Pushing the run's branch in another repository too.** Rejected: that branch has landed nowhere, and the user still decides what becomes of it.
 - **One push, after `/retro`.** Rejected: the CI run it starts is named after `/retro`'s commit whenever `/retro` made one.
@@ -33,7 +33,7 @@ The run pushes the base branch as it stands, to the branch it tracks. A branch w
 ## Consequences
 
 - The Implementer names files in another repository by absolute path.
-- Both implement commands push once the landing commit is on the base branch, then run `/retro`, then push again when `/retro` made a commit. A workflow without a path filter runs twice for such a run.
+- `/implement` pushes once the landing commit is on the base branch, then run `/retro`, then push again when `/retro` made a commit. A workflow without a path filter runs twice for such a run.
 - The run's last lines name the landing commit and say what each push sent and where, or why it pushed nothing.
 - On GitHub, a pushed run closes its Issue only when the base branch is the default branch, because GitHub acts only on commits that reach it.
 - The claim stays when the run halts or lands. A later run by the same user carries on past it; closing the Issue, or the user, clears it.

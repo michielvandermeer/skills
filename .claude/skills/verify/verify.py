@@ -334,6 +334,7 @@ def cmd_cleanup(a):
 
 
 def main(argv=None):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
     d = sub.add_parser("doctor", help="read-only checks, plus one cheap live session unless --offline")

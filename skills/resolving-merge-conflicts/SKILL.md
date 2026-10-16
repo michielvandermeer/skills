@@ -1,6 +1,9 @@
 ---
 name: resolving-merge-conflicts
 description: "Resolve an in-progress git merge or rebase conflict."
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 1. **See the current state** of the merge or rebase. Check git status, git history, and the conflicting files.

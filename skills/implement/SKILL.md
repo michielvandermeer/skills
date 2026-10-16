@@ -6,7 +6,7 @@ model: sonnet
 effort: high
 ---
 
-You are the **driving session**: you orchestrate, sub-agents implement, review, and verify. You hold each sub-agent's short report, the findings that go back to the next Iteration, and any deviations — that is the whole of your context, and it is what lets a Spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
+You are the **driving session**: you orchestrate, sub-agents implement, review, and verify. You hold each sub-agent's short report, the findings that go back to the next Iteration, and any deviations — that is the whole of your context, and it is what lets the run land inside one session. So you hand paths, and the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
 The run is a loop over the whole Spec, at most three **Iterations** ([ADR-0072](../../docs/adr/0072-implement-is-a-loop-of-implement-review-verify.md)):
 
@@ -113,7 +113,7 @@ Carry every deviations line that is not `none`, verbatim, into later dispatches 
 
 Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
-1. From the worktree, still on the branch: hold `git merge-base HEAD <base>` as `<fork>` and `git rev-parse <base>` as `<onto>`, then `git rebase <onto>`. A conflict is `/resolving-merge-conflicts` (the branch lives here, so only the worktree can rebase it). Later items build on `<onto>`: other sessions can land on `<base>` while this run works, and a commit built on the moved `<base>` would undo what they landed.
+1. From the worktree, still on the branch: hold `git merge-base HEAD <base>` as `<fork>` and `git rev-parse <base>` as `<onto>`, then `git rebase <onto>`. A conflict: read and follow [`/resolving-merge-conflicts`](../resolving-merge-conflicts/SKILL.md) (the branch lives here, so only the worktree can rebase it). Later items build on `<onto>`: other sessions can land on `<base>` while this run works, and a commit built on the moved `<base>` would undo what they landed.
    - When the rebase replayed the branch onto commits `<base>` gained during the run, the last Verify no longer covers the code that lands: dispatch the Verifier again, as step 2 says. `passed` goes on. `failed` starts the next Iteration at Implement, and the run comes back here when that Iteration passes. When the run already reached Iteration 3, `failed` **halts** it.
    - Skip that Verify when no build, test, or Hand check reads anything `<base>` gained: every path `git diff --name-only <fork> <onto>` lists is Markdown or sits under `.agents/` — another run's ADR, its glossary edit, its retro edit to `.agents/refs/tracker.md` — and no project file, build script, test, or app the Run recipe launches reads that file. The last Verify then still holds. Any other path, or any doubt about one, and the Verify runs. A skip goes in the final report: the range `<fork>..<onto>` you compared, and why none of its files is read.
 2. Still in the worktree: delete the whole `.agents/runs/<slug>/` directory, the Spec and `<scratch>` with it, and commit the deletion. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Then build [the landing commit](#the-landing-commit) from that tree, on top of `<onto>`, leaving the branch where it is: `git commit-tree HEAD^{tree} -p <onto> -F -`, with the message on stdin. Hold the hash it prints as `<landing>`.
@@ -128,7 +128,7 @@ Run [the push](#the-push).
 
 ### 5. Retrospective
 
-Run `/retro` only when the run had a deviations line that was not `none`, a retried or halted agent, or a second Iteration; otherwise the final report says retro was skipped as nothing went wrong. When it committed and step 4's push went out, run [the push](#the-push) again.
+Read and follow [`/retro`](../retro/SKILL.md) only when the run had a deviations line that was not `none`, a retried or halted agent, or a second Iteration; otherwise the final report says retro was skipped as nothing went wrong. When it committed and step 4's push went out, run [the push](#the-push) again.
 
 ## The landing commit
 

@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: Verifies one Iteration of an /implement or /implement-yolo run — checks the change against the Spec, runs the build and the whole test suite, and runs the Spec's Hand checks. Dispatched explicitly by those skills — it works to a contract decided before it starts, so it is not a general coding agent.
+description: Verifies one Iteration of an /implement run — checks the change against the Spec, runs the build and the whole test suite, and runs the Spec's Hand checks. Dispatched explicitly by /implement — it works to a contract decided before it starts, so it is not a general coding agent.
 model: sonnet
 effort: high
 ---

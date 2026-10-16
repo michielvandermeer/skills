@@ -16,11 +16,9 @@ Run scratch lives inside the run's working tree, in a folder whose own `.gitigno
 
 Before a skill edit coins a term, grep `skills/` and `CONTEXT.md` for it. A skill may already use the words in another sense that never reached the glossary: "context folder" meant the folder holding a `CONTEXT.md` in `skills/implement/RUN-RECIPE.md` when a new path level nearly took the same name. A coined term gets its `CONTEXT.md` entry in the same commit.
 
-## Sibling implement commands
+## Copied implement passages
 
-`/implement` and `/implement-yolo` differ only in worktree ([ADR-0054](../../docs/adr/0054-the-implement-commands-differ-only-in-worktree.md)). `/implement-yolo` reads the loop from `/implement`, but spells out its own in-flight detection, resume, and cleanup. An edit to one of those greps the other `SKILL.md` for the same passage and changes both in the same commit. `c981138` taught `/implement-yolo` that a bare branch `<slug>` is a run in flight and left `/implement` resetting over it.
-
-`/hillclimb` copies their worktree entry, run scratch, and landing passages. An edit to one of those greps `skills/hillclimb/SKILL.md` too and changes its copy in the same commit, whether or not a Hillclimb has hit the problem yet. `b6cdf22` and `2a305be` fixed the scratch folder and the `cd … &&` advice in the implement commands only, and the user filed #21 to bring `/hillclimb` along.
+`/hillclimb` copies `/implement`'s worktree entry, run scratch, and landing passages. An edit to one of those greps `skills/hillclimb/SKILL.md` too and changes its copy in the same commit, whether or not a Hillclimb has hit the problem yet. `b6cdf22` and `2a305be` fixed the scratch folder and the `cd … &&` advice in the implement commands only, and the user filed #21 to bring `/hillclimb` along.
 
 ## Moved passages
 
@@ -28,7 +26,7 @@ An edit that moves, merges, or deletes a passage lists each duty the old passage
 
 ## Loading other skills
 
-A skill's step never starts a user-invoked skill (`disable-model-invocation: true` in its frontmatter): no skill can reach one. The step tells the user to run it instead. `/diagnosing-bugs` once handed off to `/improve-codebase-architecture` this way, and the hand-off could never fire. The same goes for the implement commands, though they are model-invoked: their pin would swap the calling skill's model ([ADR-0067](../../docs/adr/0067-the-implement-commands-are-model-invoked-so-a-goal-can-start-them.md)).
+A skill's step reaches a user-invoked skill (`disable-model-invocation: true` in its frontmatter) by path, as `skills/writing-for-agents/SKILL-MECHANICS.md` says ([ADR-0074](../../docs/adr/0074-skills-that-other-skills-start-are-user-invoked.md)). A hand-off between two since-deleted skills, from `/diagnosing-bugs` to `/improve-codebase-architecture`, named the bare `/name` and never fired. A step that ends where `/implement` or a typed session skill such as `/grill-with-docs` would start tells the user to run it: those stay one run the user starts ([ADR-0067](../../docs/adr/0067-implement-is-model-invoked-so-a-goal-can-start-it.md)).
 
 ## Hosts
 

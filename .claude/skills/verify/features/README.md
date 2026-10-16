@@ -30,7 +30,7 @@ Each feature file has an H1, one paragraph on the user-visible behaviour, and fo
 - [Setup](setup.md) — writes and commits the Tracker ref. Driven end to end on 2026-10-15.
 - [Code review](code-review.md) — two reviewers, Standards and Spec, nothing written.
 - [Grill with docs](grill-with-docs.md) — rounds, glossary and ADRs, a Spec on a confirmed read-back.
-- [Implement yolo](implement-yolo.md) — the implement loop on the current branch, landed as one commit.
+- [Implement](implement.md) — the implement loop in a worktree, landed on the starting branch as one commit.
 - [Model invocation](model-invocation.md) — whether a description fires on a plain request.
 
-Not yet mapped: the other 29 skills, and the implement worktree path.
+Not yet mapped: the other 18 skills.

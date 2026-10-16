@@ -1,6 +1,6 @@
 ---
 name: implementer
-description: Implements a Spec, or fixes what the last review or verify found, for one Iteration of an /implement or /implement-yolo run. Dispatched explicitly by those skills — it works to a contract decided before it starts, so it is not a general coding agent.
+description: Implements a Spec, or fixes what the last review or verify found, for one Iteration of an /implement run. Dispatched explicitly by /implement — it works to a contract decided before it starts, so it is not a general coding agent.
 model: sonnet
 effort: high
 ---

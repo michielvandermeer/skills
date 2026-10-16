@@ -14,5 +14,5 @@ The session that writes the Specs ([ADR-0048](0048-a-fresh-session-writes-a-wayf
 ## Consequences
 
 - The Destination names the whole change the effort's Specs will cover.
-- A Spec that must wait for another has its Issue linked as blocked by that Spec's Issue. `/implement` and `/implement-yolo` stop before they start anything while the blocker is open, unless the base branch already holds the blocker's closing reference.
+- A Spec that must wait for another has its Issue linked as blocked by that Spec's Issue. `/implement` stops before it starts anything while the blocker is open, unless the base branch already holds the blocker's closing reference.
 - The Map's own Issue becomes the first Spec, and each further Spec is a new Issue that names the Map's Issue. The Specs are the record. A Map whose tickets are all resolved would otherwise look like a destination still to write, and a later session would write the Specs again.

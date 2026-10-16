@@ -117,11 +117,11 @@ An Issue has exactly one status at a time:
 
 A first rough thought and the Spec it grows into are the same Issue. When the Spec is written, it replaces the Issue's text. The earlier text stays in the Tracker's history (git, for the local Tracker), and comments stay as they are. Finished work is closed as done; work you decide against is closed as not planned.
 
-The implement commands read an Issue and claim it before they start, so other runs leave it alone. On GitHub and Jira, claiming assigns the Issue to you, and a run stops on an Issue that is assigned to someone else. The claim is the only thing they write to the Tracker. A run lands on your branch as one commit named after the work, and then pushes your branch. That commit closes the Issue when your Tracker can do that from a commit, such as `Closes #42` on GitHub. Otherwise the final report names the Issue for you to close. When the run's retrospective then changes a file, the run pushes a second time.
+`/implement` reads an Issue and claims it before it starts, so other runs leave it alone. On GitHub and Jira, claiming assigns the Issue to you, and a run stops on an Issue that is assigned to someone else. The claim is the only thing it writes to the Tracker. A run lands on your branch as one commit named after the work, and then pushes your branch. That commit closes the Issue when your Tracker can do that from a commit, such as `Closes #42` on GitHub. Otherwise the final report names the Issue for you to close. When the run's retrospective then changes a file, the run pushes a second time.
 
 To stop runs from pushing, add a line to your repo's `AGENTS.md` or `CLAUDE.md` saying implement runs do not push. Do this when a push to your branch deploys, or when you want to push yourself. If someone else pushed to your branch during the run, the run tells you, and the work waits on your machine for you to pull and push.
 
-Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, Attempt logs, architecture reviews, codebase audits, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
+Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, Attempt logs, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
 
 ## Repository layout
 
@@ -142,7 +142,6 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 ├── skills/                # one directory per skill, each with a SKILL.md
 │   ├── code-review/
 │   ├── implement/
-│   ├── implement-yolo/
 │   └── ...
 ├── CONTEXT.md             # the vocabulary these skills share
 ├── LICENSE
@@ -155,10 +154,10 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 
 These skills pin the model and effort they run on, so parallel runs do not all inherit your session's most expensive setting. Nothing is pinned above `high`. A pin lives in a skill's or agent's header, so it is the same in every repo and there is no per-repo setting. [ADR-0049](docs/adr/0049-agents-are-pinned-in-their-agent-files.md) records why.
 
-**Skills you type.** Only the skills that no other skill loads pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
+**Skills you type.** A pin applies when you type the skill. When another skill reads and follows it, the caller's model stays.
 
-- Opus at high: `/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/refine`, `/wayfinder`.
-- Sonnet at high: `/triage`, `/implement`, `/implement-yolo`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`.
+- Opus at high: `/grill-with-docs`, `/brainstorm`, `/wayfinder`.
+- Sonnet at high: `/triage`, `/implement`, `/doctor`, `/explain`, `/setup`, `/learn-habits`, `/to-spec`, `/validate-spec`, `/retro`, `/resolving-merge-conflicts`.
 
 **Sub-agents.**
 
@@ -167,7 +166,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 - Haiku at high: `skills:explorer`.
 - Opus at high: `skills:reviewer`, the `/code-review` reviewers.
 
-Everything else runs on the setting of the skill that starts it: a Hillclimb's fixers, and the `/codebase-design` and `/brainstorm` fan-outs.
+Everything else runs on the setting of the skill that starts it: a Hillclimb's fixers, and the `/brainstorm` fan-out.
 
 > **Your environment can override a pin.** When `CLAUDE_CODE_EFFORT_LEVEL` is set, it beats every effort pin. Your session's settings and `/effort` do not.
 
@@ -177,36 +176,25 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 |-------|-------------|
 | `brainstorm` | Explore a vague problem as very different Directions, side by side, and file the ones you keep as Issues. |
 | `code-review` | Review changes since a fixed point along two axes — Standards, with the design principles, and Spec — in parallel sub-agents. |
-| `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
-| `codebase-design` | Shared vocabulary for designing deep modules. |
-| `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
 | `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, and brings every ADR to state the decision in force. Once `/setup` has run, it leaves Issues alone. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
 | `explain` | Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
-| `grill-me` | A relentless round-by-round interview to sharpen a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
-| `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `hillclimb` | Push one measured number — test-suite time, build time, memory, bundle size — toward a target, trying one change at a time and keeping only what measurably helps. Loads on its own when you ask for something to be made faster, smaller, or cheaper. |
 | `implement` | Implement an Issue's Spec, or a description, in a loop: implement, review against the coding standards and design principles, verify against the Spec — up to three times — then land it as one commit. |
-| `implement-yolo` | The same loop as `implement`, on this checkout and this branch. No worktree, no new branch, no merge. |
-| `improve-codebase-architecture` | Scan for deepening opportunities, report them, then file the ones you pick as Issues — as Specs when they are clear enough to build. |
-| `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Type it to rebuild your profile from past sessions; no grilling session runs it for you. |
 | `plain-language` | The house standard for every sentence a person reads, in the sense of ISO 24495-1:2023. |
 | `pr` | Shape a pull request description: a small picture of the change, before-and-after evidence, and how risky it is to merge. Loads on its own whenever the agent writes one. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
-| `refine` | Take any Issue through grilling, an optional Prototype, and a Spec. The Spec becomes the Issue's text, and its opening sections are the plain-language summary. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
-| `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. |
+| `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. `/implement` and `/hillclimb` use it when a rebase conflicts. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
-| `review-spec` | Re-evaluate a Spec's Solution on this session's model and write the edits you approve. |
 | `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. |
-| `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. |
+| `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. `/triage`, `/grill-with-docs`, `/wayfinder`, and `/prototype` end with it. |
 | `triage` | Sort incoming reports, or the Issues nobody has triaged yet, into Specs and parked Issues, one Issue per distinct problem, and close what won't be done. |
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
 | `wayfinder` | Plan a huge chunk of work as a map — an Issue whose child tickets are decisions — and resolve them one at a time until its Specs can be written. |
-| `wizard` | Generate an interactive bash wizard that walks a person through steps only they can perform. |
 | `writing-for-agents` | Reference for writing any document an agent consumes — skills, AGENTS.md, CLAUDE.md. |
 
 ## Credits

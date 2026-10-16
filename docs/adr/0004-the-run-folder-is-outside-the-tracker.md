@@ -15,4 +15,4 @@ The folder is *ephemeral* in a way Issues are not. The run commits the Spec copy
 - `/code-review` treats `.agents/runs/` as run bookkeeping, not code under review.
 - The scratch folder holds a `.gitignore` of `*`, so no commit sweeps in a throwaway script or screenshot.
 - On the local Tracker, a repo mid-run can hold the run folder beside a Map's Decision tickets under `.agents/`. They are told apart by directory, so anything new that scans `.agents/` must pick its root deliberately.
-- A halted run leaves the folder on its branch, and both implement commands resume from it ([ADR-0054](0054-the-implement-commands-differ-only-in-worktree.md)). Nothing surfaces it to the user unprompted.
+- A halted run leaves the folder on its branch, and `/implement` resumes from it. Nothing surfaces it to the user unprompted.

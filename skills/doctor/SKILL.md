@@ -30,8 +30,6 @@ When a root `CONTEXT-MAP.md` exists, read [MULTI-CONTEXT.md](MULTI-CONTEXT.md) b
 | ADR | `docs/adr/<NNNN>-<slug>.md`, or a context's own `docs/adr/` in a multi-context repo |
 | Coding standards (also contribution guidelines) | `.agents/refs/<slug>.md` |
 | Grilling profile | `.agents/refs/profiles/<name>.md` |
-| Architecture review | `.agents/architecture-reviews/<timestamp>/` — `report.md` and `report.html` |
-| Codebase audit | `.agents/codebase-audits/<timestamp>/report.md` |
 | Prototype | `.agents/prototypes/<slug>/` |
 
 In a multi-context repo, every location above except ADR, Coding standards, and Grilling profile gains a context subfolder after its kind folder, as [MULTI-CONTEXT.md](MULTI-CONTEXT.md) sets out. Specs, Ideas, and refinements have no location of their own: each converts to an Issue — see below.
@@ -48,12 +46,10 @@ Classify each remaining document by what it actually contains. Filename and curr
 - **Idea**: has sections like Motivation, Goal, Decisions (locked), Out of scope, Open questions — the shape `/validate-spec` checks on an Issue in `needs-grilling`. Looser and earlier-stage than a Spec; no implementation detail.
 - **ADR**: the shape in [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) — a short title plus 1-3 sentences of context/decision/why, with or without a `status:` line, optionally Considered Options or Consequences. Usually sequentially numbered. The ADR pass below strips any status line once the ADR lands.
 - **Coding standards**: documents how code should be written or how the repo/team works, contribution guidelines included. Common filenames: `CODING_STANDARDS.md`, `CONTRIBUTING.md`, `STYLEGUIDE.md`.
-- **Old refinement**: the legacy `/refine` shape — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — or an older variant: Introduction, Use cases, Scope, Notes, and older still a Technical details section. Functional throughout, with no implementation decisions and no `Status:` line. It is a source only, and it converts to an Issue (below).
+- **Old refinement**: the legacy refinement shape — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — or an older variant: Introduction, Use cases, Scope, Notes, and older still a Technical details section. Functional throughout, with no implementation decisions and no `Status:` line. It is a source only, and it converts to an Issue (below).
 - **Issue**: a `Category:` line and a `Status:` line near the top.
 - **Decision ticket**: a `Type:` line and a `## Question` section.
 - **Map**: a file named `map.md` with `## Destination` and `## Decisions so far` sections.
-- **Architecture review**: matches the report shape from `/improve-codebase-architecture` — cards with What this does/Files/Problem/Solution/Wins/Before-After diagram/Recommendation strength, a Top recommendation section. A review written before the current card contract says `Benefits` where this one says `Wins`, and carries no `What this does` at all. Usually a `.md`/`.html` pair sharing a timestamp.
-- **Codebase audit**: matches the report shape from `/codebase-audit` — a coverage-contract table of subsystems with ownership boundaries and queued/recommend/skip status, recommendations with evidence/scope/risk/validation, explicit skips, and a priority ranking. Usually a `report.md` in a timestamp folder.
 
 Prototypes get no content shape: a Prototype has no marker file and is plain app code or HTML, so a content match would risk moving real code. A Prototype moves only as the `prototype/` folder of an old refinement (below).
 
@@ -165,4 +161,4 @@ Done when every old path and bare filename greps clean across the repo, and ever
 
 Close with what moved and where, what stayed and why (unclassified, collision, no effort folder, a status the local Tracker lacks, the repo's Tracker ref), which Issues you closed as done, and what you renumbered, Folded, rewrote, and deleted among the ADRs, with the evidence for each ADR changed because of the code — the reader's way of knowing what to look at in the diff. List each `ADR-NNNN` you could not attribute to one of a duplicate's ADRs, with where it appears. When the Tracker ref kept documents in place, suggest `/setup`, which offers to move local work into the Tracker. List every bug the code check found, with its evidence and a suggestion to take it to `/triage`. Run the `/plain-language` skill for the report.
 
-Done when every move, every document left where it was, every Issue you closed, every ADR you renumbered, Folded, rewrote, or deleted, every `ADR-NNNN` you could not attribute, and every bug appears in the report. Then run `/retro`.
+Done when every move, every document left where it was, every Issue you closed, every ADR you renumbered, Folded, rewrote, or deleted, every `ADR-NNNN` you could not attribute, and every bug appears in the report. Then read and follow [`/retro`](../retro/SKILL.md).
