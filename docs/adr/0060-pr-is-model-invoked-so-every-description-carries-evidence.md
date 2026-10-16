@@ -6,15 +6,15 @@ A description holds three sections: a small picture of the change, before-and-af
 
 ## Considered Options
 
-- **No skill.** Rejected: `/plain-language` alone gives a description no evidence and no merge risk, and those are what a reviewer needs.
-- **A user-invoked `/pr`.** Rejected: it fires only when someone remembers it, which is the case `/wizard` is model-invoked to avoid ([ADR-0044](0044-wizard-is-model-invoked.md)).
-- **Copying upstream as it is.** Rejected: it reads a `GLOSSARY.md` that this plugin calls `CONTEXT.md`. Its "S-tier" and "A-tier" ranking of evidence competes with the Proof ladder and accepts output nobody re-ran. Its "keep prose brief" falls below the plain-language bar ([ADR-0009](0009-plain-language-for-output-not-source.md)).
+- **No skill.** Rejected: `/technical-writing` alone gives a description no evidence and no merge risk, and those are what a reviewer needs.
+- **A user-invoked `/pr`.** Rejected: it fires only when someone remembers it, and nobody types `/pr` before asking for a pull request.
+- **Copying upstream as it is.** Rejected: it reads a `GLOSSARY.md` that this plugin calls `CONTEXT.md`. Its "S-tier" and "A-tier" ranking of evidence accepts output nobody re-ran. Its "keep prose brief" puts brevity above clarity, the reverse of the writing bar ([ADR-0009](0009-skill-output-follows-technical-writing.md)).
 - **Committing screenshots to the branch.** Rejected: the image would stay in the repo's history for good.
-- **A hard Merge risk stops an implement run from pushing.** Rejected: a Step agent's judgement would decide whether the push happens. A repo where a push deploys already turns the push off ([ADR-0028](0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Elsewhere the hard part, such as running a migration, happens later and under the user's control.
+- **A hard Merge risk stops an implement run from pushing.** Rejected: an Implementer's judgement would decide whether the push happens. A repo where a push deploys already turns the push off ([ADR-0028](0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Elsewhere the hard part, such as running a migration, happens later and under the user's control.
 
 ## Consequences
 
 - The description stays one line and names only when to load the skill.
 - `pr` stays off the Named session skill list ([ADR-0038](0038-named-session-skills-apply-high-priority-retro.md)).
-- Every implement Step records a Merge risk beside its Safety fact. The Checker corrects it, and the final report lists it with each Step's Safety fact and Proof. A description written after a run starts from those lines.
-- `pr` shapes the description only. The implement commands still never open a pull request.
+- `/pr` works out Merge risk from the diff itself. An implement run records none.
+- `pr` shapes the description only. `/implement` still never opens a pull request.

@@ -1,6 +1,6 @@
 """Quality scoring of one finished run, from the worktree it left and the run's own records.
 
-Checks: it landed, the Spec's build and tests pass and actually ran, the Prover's Proof held, the diff
+Checks: it landed, the Spec's build and tests pass and actually ran, the verifier passed, the diff
 is the size of the real landing commit, no test asserts exact HTML or content text, no guard tripped.
 A run that did not do the work is invalid: compare.py counts it and leaves it out of every median."""
 import json
@@ -8,7 +8,7 @@ import re
 import subprocess
 from pathlib import Path
 
-BOOKKEEPING = (".agents/steps/", ".agents/proof/", ".agents/worktrees/")
+BOOKKEEPING = (".agents/runs/", ".agents/worktrees/")
 TEST_FILE_RE = re.compile(r"(^|/)(tests?|__tests__)/|\.(test|spec)\.[jt]sx?$|Tests?\.cs$", re.I)
 ASSERT_RE = re.compile(r"\b(Assert\.\w+|Should\w*|Contain\w*|Equal\w*|Matches|expect\(|toBe\w*|toEqual|toContain\w*|toHave\w+|\.Be\()")
 MARKUP_RES = [
@@ -63,7 +63,7 @@ def judge(meta, spec, s, m):
     elif meta.get("exit_code") not in (0, None) or meta.get("result_is_error"):
         reasons.append(f"claude failed (exit {meta.get('exit_code')})")
     if meta.get("plugin_verified") is False:
-        reasons.append("the skills under test were not the plugin that loaded")
+        reasons.append("the skills under test were not the only plugin that loaded")
     if meta.get("plugin_verified") is None:
         flags.append("plugin source unverified")
     if s["landed"] is None:
@@ -148,7 +148,7 @@ def score_run(run_dir, meta, spec, m, run_checks=True, timeout=3600):
     log = run_dir / "bench.log"
     text = log.read_text(encoding="utf-8") if log.exists() else ""
     s["blocked_writes"], s["noop_writes"] = text.count(" BLOCKED "), text.count(" NOOP ")
-    s["proof"] = m["prover_status"] or "skipped"
+    s["verify"] = m["verifier_status"] or "skipped"
     s["valid"], s["invalid_reasons"], s["flags"] = judge(meta, spec, s, m)
     (run_dir / "score.json").write_text(json.dumps(s, indent=2), encoding="utf-8")
     return s

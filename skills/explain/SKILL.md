@@ -1,29 +1,30 @@
 ---
 name: explain
-description: Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits.
+description: Explain anything as a written walkthrough, a diagram in the chat, an HTML page, or a narrated video, picking the format that fits.
+argument-hint: "[topic] [as a walkthrough | diagram | page | video]"
 disable-model-invocation: true
 model: sonnet
 effort: high
-argument-hint: "[topic] [as a diagram | page | video]"
 ---
 
 # Explain
 
-Answer with something to look at instead of prose. What you make is an **Explanation**, in one of three **formats**, each richer and slower than the last:
+What you make is an **Explanation**, in one of four **formats**, each richer and slower than the last:
 
+- **Walkthrough**: written sections in the chat, at the level a senior engineer needs to start working in the code. Fits "how does X work" about part of a codebase: its flow, where things live, and what is surprising.
 - **Diagram** — box-drawing characters in the chat. Fits one structure or flow that fits on a screen.
 - **Page** — one self-contained HTML file. Fits a topic with several parts to explore, real graphics, or controls to play with.
 - **Video** — a narrated 3Blue1Brown-style MP4. Fits an idea that unfolds over time, such as an algorithm running step by step.
 
 The topic is anything: part of this repo, a branch's changes, an ADR, or an outside idea. With no topic, explain the last thing discussed in the session. With nothing to go on, ask what to explain and wait.
 
-Run the `/plain-language` skill before writing anything a person reads — the confirmation, labels, page text, narration — and hold its bar throughout. Write for a developer who does not know the topic yet, unless the request names another reader.
+Run the `/technical-writing` skill before writing anything a person reads — the confirmation, labels, page text, narration — and hold its bar throughout. Write for a developer who does not know the topic yet, unless the request names another reader.
 
 ## Process
 
 ### 1. Gather the facts
 
-- **Repo topic** — dispatch a `skills:explorer` with named questions about the code the topic touches. Carry its report, never the files. Every box, arrow, and claim traces to a file it names.
+- **Repo topic**: dispatch `skills:explorer` agents, briefed as [EXPLORE.md](EXPLORE.md) says. A topic inside one module gets one explorer. A topic that spans several modules or services gets two to four, all in one message, each on its own angle of the topic, such as the entry points, the data, or one service. Carry their reports, never the files. Where two reports disagree, read the code they cite and settle it. Every box, arrow, and claim traces to a file a report names.
 - **Outside idea** — well-known material comes from your own knowledge. Check anything recent, niche, or numeric against primary sources on the web.
 
 Keep the sources as you go: files for a repo topic, links for anything looked up.
@@ -40,6 +41,7 @@ Done when the user named the format or confirmed it.
 
 ### 3. Build
 
+- **Walkthrough**: in the chat, under these headings, dropping any that has nothing to say. **Overview**: what it is, what it does, and why it exists, in one or two paragraphs. **Key concepts**: the types, services, or ideas the rest needs, one line each. **How it works**: the flow from what starts it to what it produces, in prose that names the functions and files, with one diagram when parts talk to each other. **Where things live**: the files and folders someone would open first. **Gotchas**: what surprises, what history explains, and what the explorers could not settle. List the sources under it. The run ends here.
 - **Diagram** — in a code block in the chat, at most 80 columns wide, every box labelled in the topic's own words. List the sources under it. The run ends here.
 - **Page** — follow [PAGE.md](PAGE.md).
 - **Video** — follow [VIDEO.md](VIDEO.md).

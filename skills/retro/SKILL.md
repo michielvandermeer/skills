@@ -2,13 +2,16 @@
 name: retro
 description: Look at a finished session, apply high-priority changes this repository owns, and summarise the rest.
 argument-hint: "[session]"
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
-A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, then summarises. `/code-review` and `/improve-data-structures` still review the product diff; `/retro` reads it only to find **Corrections**.
+A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, then summarises. `/code-review` still reviews the product diff; `/retro` reads it only to find **Corrections**.
 
 Apply and present only when the skill the user typed — or, when they typed none, the outermost skill the agent loaded — is this `/retro` or has reached its own done condition.
 
-Run `/writing-for-agents` for where each kind of change belongs, and `/plain-language` before the summary.
+Run `/writing-for-agents` for where each kind of change belongs, and `/technical-writing` before the summary.
 
 The argument names a session, or is empty for the current one.
 
@@ -22,7 +25,7 @@ The session's code changes are the commits the session log records for the curre
 
 ## Corrections
 
-A **Correction** is a change to old code where the session also shows the old code was wrong: the user said so, a bug was being fixed, a test failed, or a review flagged it. An edit to an existing **Run recipe** is a Correction too: an agent edits one only when it steered the agent wrong. Who wrote the old code, a person or an agent, does not matter.
+A **Correction** is a change to old code where the session also shows the old code was wrong: the user said so, a bug was being fixed, a test failed, or a review flagged it. An edit to an existing **Verify skill** is a Correction too: an agent edits one only when it steered the agent wrong. Who wrote the old code, a person or an agent, does not matter.
 
 Old code is a line the session's diff removed or changed that was committed before the session's first commit, or was already in `HEAD` when the session made no commits. `git blame` on the pre-change version names that commit. A change that follows a changed requirement is new work.
 
@@ -30,7 +33,7 @@ Code the session itself wrote stays with the session's own review loop, however 
 
 A *lesson* is a Correction whose fix points to a pattern future code could repeat. Route each Correction to the first outcome that fits:
 
-- a Run recipe edit → a command in that recipe's `## Check` section when a command could have caught what steered the agent wrong, else record nothing — the edit already holds the lesson;
+- a Verify skill edit → a check in that skill's Doctor section when a check could have caught what steered the agent wrong, else record nothing — the edit already holds the lesson;
 - a mistake a check could catch → **Automated checks**;
 - the old code broke a rule the Coding standards already hold → the reviewer-missed-a-mistake bar;
 - a one-off fact, such as a wrong constant → record nothing;

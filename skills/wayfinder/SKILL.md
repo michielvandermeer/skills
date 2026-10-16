@@ -28,7 +28,7 @@ The territory earns a place on the map only where it gives the way context. An i
 
 Every map and ticket has a **name** — its title in the Tracker. In everything the human reads — narration, the map's Decisions-so-far — refer to it by that name, never by its bare reference. A wall of bare numbers is illegible; names read at a glance. The reference and link don't vanish — a name wraps its link — but they ride *inside* the name, never stand in for it.
 
-Everything the human reads also runs at the bar the `/plain-language` skill sets. A map outlives the session that drew it, and its later readers cannot look up a word only this skill defines. The **Not yet specified** heading is that rule already applied.
+Everything the human reads also runs at the bar the `/technical-writing` skill sets. A map outlives the session that drew it, and its later readers cannot look up a word only this skill defines. The **Not yet specified** heading is that rule already applied.
 
 ## The Map
 
@@ -55,7 +55,7 @@ The whole map at low resolution, loaded once per session. Open tickets are **not
 
 <!-- the index — one line per resolved ticket: enough to judge relevance, then zoom the link for the detail the ticket holds -->
 
-- [<resolved ticket title>](link) — <one-line gist of the answer>
+- [<resolved ticket title>](link): <one-line gist of the answer>
 
 ## Not yet specified
 
@@ -157,7 +157,7 @@ User invokes with a map — its reference, or its name among the Issues in `wayf
 4. Record the resolution: **resolve** the ticket with its answer, which appends its **context pointer** to the map's Decisions-so-far.
 5. Add newly-surfaced tickets and graduate any fog the answer has made specifiable (**group** grilling per [Grilling tickets](#grilling-tickets), then create-then-wire), clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. For each new `research` ticket, [claim-then-fire](#tickets) its `/research` subagent now. If the answer reveals a ticket — this one or another — sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, rewrite those tickets or close them as not planned.
 
-Then run `/retro`. When no tickets remain, the way is clear: end on one last line, after the retro summary, telling the user to run `/wayfinder <map>` in a fresh session to write the Specs. The Specs need every resolved ticket loaded, and this session holds one ([ADR-0048](../../docs/adr/0048-a-fresh-session-writes-a-wayfinder-maps-specs.md)).
+Then read and follow [`/retro`](../retro/SKILL.md). When no tickets remain, the way is clear: end on one last line, after the retro summary, telling the user to run `/wayfinder <map>` in a fresh session to write the Specs. The Specs need every resolved ticket loaded, and this session holds one ([ADR-0048](../../docs/adr/0048-a-fresh-session-writes-a-wayfinder-maps-specs.md)).
 
 The user may run unblocked tickets in parallel, so expect other sessions to be changing the map and its tickets concurrently: rewrite the map's body from a fresh read.
 
@@ -166,8 +166,8 @@ The user may run unblocked tickets in parallel, so expect other sessions to be c
 A session reaches this only when it starts on a map with no tickets remaining.
 
 1. **Zoom every resolved ticket.** Read the map and every resolved ticket in full, answer included, with the prototypes and research findings they link. `/to-spec` synthesises from the conversation, so the decisions have to be in it.
-2. **Cut.** Each Spec is a change that lands green and is worth shipping on its own. Size is the reason to look for a cut; landing alone is where it goes. A change with no such cut stays one Spec. A Spec may wait on another landing first.
+2. **Cut.** Each Spec is a change that lands green, is worth shipping on its own, and fits one `/implement` run ([Fit one run](../to-spec/PRINCIPLES.md#fit-one-run)). Size is the reason to look for a cut; landing alone is where it goes. A cut that lands green only through bridge code follows [Converge on the end state](../to-spec/PRINCIPLES.md#converge-on-the-end-state). A change with no such cut stays one Spec. A Spec may wait on another landing first.
 3. **Propose the cut** to the user: one line per Spec — what it covers, and which Spec it waits on. Write nothing until they confirm; an objection redraws the cut.
-4. **One `/to-spec` per Spec**, scoped to that Spec's part alone, prerequisites first, naming each prerequisite's Issue so `/to-spec` links the Spec as blocked by it. The first Spec rewrites the map's own Issue; each later one is filed as a new Issue whose Further Notes name the map's Issue. The Specs are the record: a map left in `wayfinding` with every ticket resolved would read as a destination still to write.
+4. **One [`/to-spec`](../to-spec/SKILL.md) per Spec**, read and followed, scoped to that Spec's part alone, prerequisites first, naming each prerequisite's Issue so `/to-spec` links the Spec as blocked by it. The first Spec rewrites the map's own Issue; each later one is filed as a new Issue whose Further Notes name the map's Issue. The Specs are the record: a map left in `wayfinding` with every ticket resolved would read as a destination still to write.
 5. **Commit** every file those runs created or changed, with whatever else the Tracker ref puts in the commit that turns a map into its first Spec, staged by name, in one commit.
-6. Run `/retro`.
+6. Read and follow [`/retro`](../retro/SKILL.md).

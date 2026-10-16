@@ -18,6 +18,7 @@ Finding *facts* is your job, never mine — and it is a sub-agent's job, never y
 - Scope needs no facts from the code, so round 1 may go out while explorers run when it asks only scope.
 - Before a declaration or question that changes what a page lets a person do — drops, adds, or restricts a field, control, or action — the explorer's questions include that page's markup: the controls it renders, not only what the code behind it stores or accepts. A report that covers only the code behind the page leaves that declaration unsettled.
 - A report that lands after a round is posted waits silently for the next round.
+- Before a declaration or question that changes code that looks deliberate, such as a guard, a limit, a workaround, or an odd special case, with nothing read so far saying why it is there, run the `/why` skill on that code. Its Preserve, Change, Avoid, and Risk lists settle facts, and a reason it could not find is a question for me.
 - A fact only I hold — who the contracting party is, what a price should be — is a question, with a line saying why you could not find it.
 
 A question with one defensible answer is a fact too. Reason it out and state it as a **declaration**. Reserve **questions** for genuine *decisions*, on two tests: would a different answer visibly change what gets built, and would a reasonable owner of this codebase pick the other option? An option you cannot write a cost for, or one the codebase already settles by precedent, is not an option, and the question is a declaration. When both answers land in the same place, pick one and move on without mentioning it.
@@ -41,11 +42,11 @@ The size of the change sets where you start, and most sessions are one change to
 
 - When my request already draws the scope, restate it as a declaration and offer nothing smaller.
 - When the request is open-ended, the scope question is round 1 on its own, because every other question hangs off its answer.
-- When the session starts from a written brief — an Issue, an Architecture review — D1 is your reading of it in your own words, including what you took from it as settled. Where the brief reads two ways that change what gets built, that is Q1, and the rest of the round waits.
+- When the session starts from a written brief, such as an Issue, D1 is your reading of it in your own words, including what you took from it as settled. Where the brief reads two ways that change what gets built, that is Q1, and the rest of the round waits.
 
-Once scope is settled, ride what already exists and aim for the smallest change that does the work — an edge case the existing code already handles is a declaration, and so is an obvious refactor on the way. The smallest change is the default recommendation, not a position: when I choose a wider option than you recommended, or say the architecture is the point, recommend at that width for the rest of the session. A branch we cut as out of scope but still want is filed as an Issue in `needs-grilling`, with the sections `/validate-spec` checks on a `needs-grilling` Issue, and named in a declaration.
+Once scope is settled, ride what already exists and aim for the smallest change that does the work — an edge case the existing code already handles is a declaration, and so is an obvious refactor on the way. When the design names a change, recommend by the **Planning principles** in [to-spec/PRINCIPLES.md](../to-spec/PRINCIPLES.md), which the Spec will be held to. Where the smallest build would leave the person a worse experience than a wider one, that is a question. The smallest change is the default recommendation, not a position: when I choose a wider option than you recommended, or say the architecture is the point, recommend at that width for the rest of the session. A branch we cut as out of scope but still want is filed as an Issue in `needs-grilling`, with the sections `/validate-spec` checks on a `needs-grilling` Issue, and named in a declaration.
 
-A question about what a screen should look like is a `/prototype` question. Settle scope and behaviour, then run `/prototype` on it and carry its verdict back as declarations; copy, placement, and format wait for the prototype when one is coming.
+A question about what a screen should look like is a `/prototype` question, and so is a design with no precedent in the codebase. Settle scope and behaviour, then run `/prototype` on it and carry its verdict back as declarations; copy, placement, and format wait for the prototype when one is coming.
 
 Testing is a question only when testing is itself the subject; elsewhere, a declaration.
 
@@ -68,10 +69,10 @@ Q1. **Does an expired export stay downloadable?**
 
 An export is a file we generate on request and keep for a while. This decides what someone sees when they open the link after that window closes.
 
-- a. Deleted on expiry — storage stays flat, and someone who bookmarked the link gets a bare 404. ← recommended
-- b. Kept and marked expired — the link still resolves and can say why, at the cost of unbounded growth.
+- a. Deleted on expiry. Storage stays flat, and someone who bookmarked the link gets a bare 404. ← recommended
+- b. Kept and marked expired. The link still resolves and can say why, at the cost of unbounded growth.
 
-*My recommendation: a* — the bookmarked-link case is rare enough to answer with a generic message.
+*My recommendation: a*, because the bookmarked-link case is rare enough to answer with a generic message.
 
 Q2. **What should we call the window an export stays valid for?**
 
@@ -94,10 +95,10 @@ Q3. **Does a deleted export leave a record?**
 
 The download page lists past exports. This decides whether an expired one still appears there.
 
-- a. No — the list shows only what can be downloaded, so an expired export vanishes without trace. ← recommended
-- b. Yes, marked expired — the history stays complete, at the cost of a list that grows without bound.
+- a. No. The list shows only what can be downloaded, so an expired export vanishes without trace. ← recommended
+- b. Yes, marked expired. The history stays complete, at the cost of a list that grows without bound.
 
-*My recommendation: a* — nobody has asked for export history.
+*My recommendation: a*, because nobody has asked for export history.
 
 ### Declarations
 
@@ -114,7 +115,7 @@ Before round 1, read every **Grilling profile** in `.agents/refs/profiles/`: min
 
 `Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating, one line where one line does it.
 
-A round is read at speed, often late in a long day of them. Run the `/plain-language` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
+A round is read at speed, often late in a long day of them. Run the `/technical-writing` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
 
 ## Done
 

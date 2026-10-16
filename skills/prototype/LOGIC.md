@@ -30,13 +30,13 @@ The right shape depends on the question:
 - **A small set of pure functions** over a plain data type. Good when there's no implicit current state — just transformations.
 - **A class or module with a clear method surface** when the logic genuinely owns ongoing internal state.
 
-Pick whichever shape best fits the question being asked, *not* whichever is easiest to wire to a page. Keep it pure: no DOM, no `document`, no button handlers reaching inside it. The page calls into it; nothing flows the other direction. Purity is what lets the module lift into the Spec: the page around it cannot.
+Pick whichever shape best fits the question being asked, *not* whichever is easiest to wire to a page. When the codebase has no precedent for the model, build two or three competing models side by side in the same file, behind a switch, so the person compares them on the same cases. Keep it pure: no DOM, no `document`, no button handlers reaching inside it. The page calls into it; nothing flows the other direction. Purity is what lets the module lift into the Spec: the page around it cannot.
 
 ### 3. Build the shareable HTML file
 
 One file, plain HTML/CSS/JS — no framework, no bundler, no server, everything inline so it opens by double-click and survives being emailed around. Write it in the folder the [SKILL](SKILL.md) names. Anyone should be able to run it by opening it.
 
-Write it for a non-developer. Every label is in **domain language**, not code — buttons and state read like the business, not the reducer. Explain in plain words what's happening. Run the `/plain-language` skill before writing labels a person will read.
+Write it for a non-developer. Every label is in **domain language**, not code — buttons and state read like the business, not the reducer. Explain in plain words what's happening. Run the `/technical-writing` skill before writing labels a person will read.
 
 Lay it out with a clean hierarchy, top to bottom:
 

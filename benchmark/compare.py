@@ -15,7 +15,7 @@ from math import comb
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROLES = ["main", "planner", "implementer", "checker", "reviewer", "prover", "fixer", "other"]
+ROLES = ["main", "implementer", "reviewer", "verifier", "planner", "other"]
 METRICS = [("cost_usd", "List-price cost per run (USD)", "{:.2f}"), ("tokens_total", "Tokens per run (millions)", None),
            ("subagents", "Subagents per run", "{:.0f}"), ("wall_s", "Wall time per run (minutes)", None),
            ("max_context", "Largest context in any call (thousand tokens)", None)]
@@ -83,6 +83,13 @@ def spans(values, fmt, scale=1):
     return f"{fmt.format(statistics.median(values))} [{fmt.format(min(values))}-{fmt.format(max(values))}]"
 
 
+def verify_status(row):
+    """The verifier's last status. A CSV from before the verifier has the Prover's "proof" column, where "held" was the pass."""
+    if "verify" in row:
+        return row["verify"]
+    return "passed" if row.get("proof") == "held" else row.get("proof")
+
+
 def by_spec(rows, key):
     out = {}
     for r in rows:
@@ -97,7 +104,7 @@ def quality(rows):
     return {"runs": len(rows), "valid": len(valid), "invalid": len(rows) - len(valid),
             "failed": sum(is_true(r["failed"]) for r in rows),
             "build": count(lambda r: is_true(r["build_ok"])), "tests": count(lambda r: is_true(r["tests_ok"])),
-            "proof": count(lambda r: r["proof"] in ("held", "skipped")),
+            "verify": count(lambda r: verify_status(r) == "passed"),
             "forbidden": count(lambda r: (num(r["forbidden_html"]) or 0) + (num(r["forbidden_text"]) or 0) > 0),
             "guard_trips": count(lambda r: (num(r["blocked_writes"]) or 0) > 0),
             "api_errors": sum(num(r["api_errors"]) or 0 for r in rows),
@@ -106,7 +113,7 @@ def quality(rows):
 
 def regressions(qb, qc):
     found = []
-    for key, label in (("build", "build passed"), ("tests", "tests passed"), ("proof", "Prover's Proof held")):
+    for key, label in (("build", "build passed"), ("tests", "tests passed"), ("verify", "Verifier passed")):
         if qb["valid"] and qc["valid"] and qc[key] / qc["valid"] < qb[key] / qb["valid"]:
             found.append(f"{label} on {qc[key]} of {qc['valid']} valid candidate runs, against {qb[key]} of {qb['valid']} baseline runs")
     if qb["valid"] and qc["valid"] and qc["forbidden"] / qc["valid"] > qb["forbidden"] / qb["valid"]:
@@ -189,7 +196,7 @@ def report(base, cand, claim, names):
                     out[-1] += "  " + decide(vb, vc)[0]
     out += ["", "Quality (valid runs unless noted)", f"{'':34} {'baseline':>10} {'candidate':>10}"]
     for label, key in (("runs", "runs"), ("did not do the work (invalid)", "invalid"), ("failed (claude error or timeout)", "failed"),
-                       ("valid", "valid"), ("build passed", "build"), ("tests passed", "tests"), ("Proof held or not needed", "proof"),
+                       ("valid", "valid"), ("build passed", "build"), ("tests passed", "tests"), ("Verifier passed", "verify"),
                        ("tests asserting markup or text", "forbidden"), ("guard trips", "guard_trips"),
                        ("API errors", "api_errors"), ("diff size vs landing commit (median)", "diff_ratio")):
         out.append(f"{label:34} {qb[key]:>10} {qc[key]:>10}")

@@ -1,5 +1,41 @@
 # Changelog
 
+## 2026-10-16: Review opinions no longer loop
+`/implement` now sends a change back for another round only when the review finds a broken coding rule or a real defect, such as a crash or a wrong result, or when verification fails. Design suggestions are fixed if another round runs anyway, and otherwise listed in the final report. Before, every review comment started a full extra round, so a small fix could take three rounds and cost half again as much as before the loop.
+
+## 2026-10-16: Agents work in the run worktree
+`/implement` and `/hillclimb` agents now work in the run's worktree even when the session itself could not move into it, as happens on Windows. Before, they could start in your main checkout, so the verifier checked the base branch instead of the change and passed it unseen.
+
+## 2026-10-16: Choose agent models per repo
+Run `/setup models` to pick the model and effort each of the plugin's sub-agents runs at in your repo, such as running the explorer on Sonnet instead of Haiku. The choices are saved in `.agents/refs/models.md` in the repo, not in your global Claude settings, and the first `/setup` creates that file with the current defaults. Skills you type keep the models they always used.
+
+## 2026-10-16: Implement plans steps again
+`/implement` again starts by slicing the Spec into steps that each fit one agent, then builds them in order before it reviews and verifies the whole change. A small Spec is one step, so the extra cost is one short planning agent, about five percent of a run. A large Spec no longer has to fit in one agent's context, and its landing commit lists the steps.
+
+## 2026-10-16: Setup verify replaces the Run recipe
+Run `/setup verify` to give your repo a verify skill that launches the app, drives each feature the way a user would, and keeps the evidence, proven with one full run before it is committed. Run it again later and it checks every feature against the code and the running app and fixes what drifted. `/implement` now checks a change on the running app through that skill, and a repo without one gets those checks skipped with a hint to run `/setup verify`.
+
+## 2026-10-16: Why, and walkthroughs in explain
+Ask why some code works the way it does and `/why` traces the reason through git history, pull requests, Issues, and any connected tools, citing each claim and saying how well it is supported. `/triage` and `/grilling` run it before changing code that looks deliberate. `/explain` can now answer as a written walkthrough of how part of the code works.
+
+## 2026-10-16: What did I get done
+Type `/what-did-i-get-done` with a period, such as `yesterday` or `last week`, for a short status update of your work in the repo. It reads your commits, the pull requests you opened, merged, or reviewed, and the Issues you filed, closed, or moved, and names any source it could not read.
+
+## 2026-10-16: Specs start from a sharpened task
+Before it writes a Spec, `/to-spec` now asks how an expert would approach the task, what you are really after, and which constraints serve that, an idea taken from pstack's `/sharpen`. Every Spec now needs at least one check whose answer comes from outside the change, such as expected values worked out by hand, and the Validator reports a Spec that has none.
+
+## 2026-10-16: Technical writing replaces plain language
+`/technical-writing` replaces `/plain-language` as the standard for everything a skill writes for a person, with sentence rules and a catalogue of AI-sounding phrases to cut, both adapted from pstack. Text you read from the skills no longer carries em dashes or semicolons, and a colon only introduces a list or an example. A free-form document such as a README now takes one type: tutorial, how-to, reference, or explanation.
+
+## 2026-10-16: Eleven unused skills removed
+`/grill-me`, `/refine`, `/improve-data-structures`, `/codebase-audit`, `/review-spec`, `/handoff`, `/wizard`, `/implement-yolo`, `/diagnosing-bugs`, `/codebase-design` and `/improve-codebase-architecture` are gone; use `/grilling` or `/grill-with-docs` in place of `/grill-me` and `/refine`, and `/implement` in place of `/implement-yolo`. `/to-spec`, `/validate-spec`, `/retro` and `/resolving-merge-conflicts` now run only when you type them or when another skill such as `/triage` or `/implement` reaches its step. Before, the agent could start any of them on its own from a plain request.
+
+## 2026-10-16: Specs follow nine planning principles
+Every Spec from `/triage`, `/grill-with-docs`, `/wayfinder` or `/to-spec` is now checked against nine planning principles. For example: leave the implementer nothing to ask, fit one `/implement` run, measure any number the Spec relies on, and name the test that fails today. `/grilling` recommends options by the same list, and `/triage` now looks for earlier failed fixes, measures a number a report claims, and puts its reproduction in the Spec as the first test.
+
+## 2026-10-16: Implement runs as one loop
+`/implement` and `/implement-yolo` now run one loop over the whole Spec. An implementer builds it, a review checks it against your coding standards and a set of design principles, and a verifier checks it against the Spec, the full test suite and its Hand checks; a finding from either sends it back, up to three times. Before, a Planner sliced the Spec into steps that each had their own checker, review findings were fixed once with nobody checking the fixes, and `/implement-oneshot`, Safety facts, Proofs and the data-structures pass were separate pieces that are now gone.
+
 ## 2026-10-14: Goals can start implement runs
 A `/goal` session can now start `/implement`, `/implement-oneshot`, and `/implement-yolo` when its goal names one. Before, these commands ran only when you typed them, so a goal that asked for one could never run it. A plain request to build something still does not start a run.
 

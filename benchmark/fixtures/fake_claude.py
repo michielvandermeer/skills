@@ -18,7 +18,7 @@ git = lambda *a: subprocess.run(["git", "-c", "user.name=fake", "-c", "user.emai
 Path("a.txt").write_text("one\ntwo\nthree\n")
 git("add", ".")
 git("commit", "-q", "-m", f"Change a (#{issue})")
-subprocess.run([shutil.which("bench-log"), "step 6: git push origin main:main"])
+subprocess.run([shutil.which("bench-log"), "step 4: git push origin main:main"])
 subprocess.run([shutil.which("gh"), "issue", "close", issue], capture_output=True)
 git("push", "origin", "HEAD")
 git("push", os.environ["FAKE_PUSH_TARGET"], "HEAD:refs/heads/leak")

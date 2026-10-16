@@ -13,7 +13,7 @@ A full pass is **specs x runs x 2** real `/implement` runs. With the four Specs 
 You need `claude` (logged in), `git`, `gh` (reads only), `dotnet`, `bun`, and Docker for the integration tests the scorer runs. Python 3 only, standard library; PyYAML is used when present.
 
 1. **Both commits carry benchmark mode.** The baseline is a commit that has [benchmark mode](../docs/adr/0066-a-benchmark-run-writes-nothing-outside-its-checkout.md); the candidate is that commit plus your change, committed locally. The runner refuses a commit without `SKILLS_BENCHMARK` in `skills/implement/SKILL.md`. Nothing is pushed: the runner loads each commit as a plugin with `--plugin-dir`, not the installed plugin.
-2. **Write the claim** in the words you would ship, such as "Pinning the Prover to Haiku cuts the cost of an /implement run by 5% or more with the same quality."
+2. **Write the claim** in the words you would ship, such as "Pinning the Verifier to Haiku cuts the cost of an /implement run by 5% or more with the same quality."
 3. **Plan, then run:**
    ```
    python benchmark/run.py --baseline <ref> --candidate <ref> --model sonnet --effort high \
@@ -28,24 +28,24 @@ Runs go in order baseline, candidate, baseline, candidate, one at a time, Spec b
 
 ## What a run does
 
-Per run: a throwaway worktree of the target repo at the Spec's base, on its own branch (so `/implement` lands there and nowhere else), then `claude -p '/implement #N'` with `--plugin-dir` set to a worktree of the skills commit, `--permission-mode bypassPermissions`, and a fixed `--model` and `--effort`. The scorer then builds and tests the result, and the runner deletes the worktree and every branch.
+Per run: a throwaway worktree of the target repo at the Spec's base, on its own branch (so `/implement` lands there and nowhere else), then `claude -p '/implement #N'` with `--plugin-dir` set to a worktree of the skills commit, every other plugin the user or the target repo enables turned off with `--settings`, `--permission-mode bypassPermissions`, and a fixed `--model` and `--effort`. The scorer then builds and tests the result, and the runner deletes the worktree and every branch.
 
 It writes nothing outside the checkout, in layers:
 
 | Outward write | In the skill | Guard |
 |---|---|---|
 | Claim of the Issue (step 1, `gh issue edit --add-assignee`) | benchmark mode runs `bench-log` instead | `gh` shim refuses writes; `Bash(gh issue edit *)` denied |
-| Push (steps 6 and 7) | benchmark mode runs `bench-log` instead | `pre-push` hook, `pushurl` set to nothing, `Bash(git push *)` denied |
+| Push (steps 5 and 6) | benchmark mode runs `bench-log` instead | `pre-push` hook, `pushurl` set to nothing, `Bash(git push *)` denied |
 | Comment, close, label, PR, release | no step does them | `gh` shim, tool deny rules |
 | Production Postgres and Stripe MCP servers (the target's `.mcp.json`) | no step uses them | `--strict-mcp-config` with an empty config |
-| Agents | none of `implementer`, `checker`, `prover`, `planner` holds a write, so none is edited; the skill adds one line to every sub-agent prompt | the same guards |
+| Agents | none of `planner`, `implementer`, `reviewer`, `verifier` holds a write, so none is edited; the skill adds one line to every sub-agent prompt | the same guards |
 
 Every refusal is logged to `bench.log` as `BLOCKED`, and the scorer counts them: a run that tripped a guard did not follow benchmark mode. The `gh` shim lets read commands through (`issue view`, `api` without a write method or fields, `search`) so the run can read its Issue.
 
 ## What it measures
 
-- **Tokens and cost** (`metrics.py`): input, cache-write (5-minute and 1-hour), cache-read and output tokens from the main transcript and every subagent transcript, deduplicated by message id and request id, split by model and by role, with the subagent count, wall time, largest context and cost at list prices. A model it has no price for is priced as Sonnet and flagged.
-- **Quality** (`score.py`): the Spec's build and tests pass (`specs.yaml` lists the commands); the Prover's Proof held; the diff size against the real landing commit; tests that assert exact markup (tags, class names, attributes) or exact content text, found by a pattern scan of the added test lines, which is a heuristic and lists its hits in `score.json`; errors, guard trips and failed runs.
+- **Tokens and cost** (`metrics.py`): input, cache-write (5-minute and 1-hour), cache-read and output tokens from the main transcript and every subagent transcript, deduplicated by message id and request id, split by model and by role (main session, `planner`, `implementer`, `reviewer`, `verifier`; any other agent counts as `other`), with the subagent count, wall time, largest context and cost at list prices. A model it has no price for is priced as Sonnet and flagged.
+- **Quality** (`score.py`): the Spec's build and tests pass (`specs.yaml` lists the commands); the Verifier's last report says `status: passed` (`skipped` when no Verifier ran); the diff size against the real landing commit; tests that assert exact markup (tags, class names, attributes) or exact content text, found by a pattern scan of the added test lines, which is a heuristic and lists its hits in `score.json`; errors, guard trips and failed runs.
 - **Did the work happen?** A run is **invalid** when it timed out or claude failed, no commit landed, no subagent ran, no test command appears in the transcript, the Spec's tests ran no tests, or the skills under test were not the plugin that loaded. Invalid runs are counted in the report and left out of every median.
 
 ## The verdict
@@ -56,7 +56,7 @@ The report states the claim, then one of **cheaper**, **costlier**, **no measura
 - A gap no bigger than the run-to-run spread (the larger range of the two sides) is **no measurable difference**. A bigger gap needs an exact rank-sum p below 0.05, else **inconclusive**.
 - **Inconclusive** also when the two sides' build and tests were not scored, the Issue changed between runs (its hash is recorded), or no Spec has a valid run on both sides. Mismatched model or effort is refused with no table.
 - The limiter is the role that dominates cost. A saving bigger than that role's share is called out as probably measuring something else.
-- Quality regressions are listed under the verdict: build, tests or Proof passing less often, more tests asserting markup or text, more invalid runs, more API errors, a median diff size outside 0.67 to 1.5 times the baseline's.
+- Quality regressions are listed under the verdict: build, tests or the Verifier passing less often, more tests asserting markup or text, more invalid runs, more API errors, a median diff size outside 0.67 to 1.5 times the baseline's.
 
 ## Mapping to the benchmark checklist
 
@@ -68,7 +68,7 @@ The report states the claim, then one of **cheaper**, **costlier**, **no measura
 | 1. Why not double? | the Limiter line names the role and its share |
 | 2. Was it tuned? | one `--model`/`--effort` for both sides, the plugin loaded from the checkout under test and verified from the init event, mismatches refused |
 | 3. Did it break limits? | the saving is checked against the dominant role's share |
-| 4. Did it error? | API errors, tool errors, failed runs, guard trips, build, tests, Proof, counted per side |
+| 4. Did it error? | API errors, tool errors, failed runs, guard trips, build, tests, Verifier, counted per side |
 | 5. Does it reproduce? | `--runs 5` alternating, median and range, exact rank-sum test |
 | 6. Does it matter? | cost of a whole pass over the Specs, and each role's share |
 | 7. Did it even happen? | landed commit, tests that ran, subagents; invalid runs flagged and excluded |
@@ -81,7 +81,6 @@ The report states the claim, then one of **cheaper**, **costlier**, **no measura
 - `tests_ok` is strict: a test that also fails on the base counts against the run, on both sides alike.
 - No browser pass: the target's Playwright MCP is off on both sides.
 - Your own `~/.claude` settings and other installed plugins are part of the configuration; keep them the same for both sides.
-- `/implement-oneshot` and `/implement-yolo` have no benchmark mode.
 - Paths in a Windows worktree run long; the runner sets `core.longpaths`.
 
 ## Files

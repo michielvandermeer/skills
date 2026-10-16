@@ -1,6 +1,9 @@
 ---
 name: validate-spec
 description: Validate an Issue, a Spec, a plan, or the current conversation against this repo's own template rules and the current codebase — fix stale references and contradictions in place, flag real decisions as open questions.
+disable-model-invocation: true
+model: sonnet
+effort: high
 ---
 
 # Validate Spec
@@ -41,6 +44,8 @@ Go section by section through the doc, checking every applicable item below agai
 
 - **Width** — Spec only. Search the code for how it already does each job an Implementation Decision takes on. A decision that builds a new mechanism where the code already does the same job another way, without saying why that way falls short, is a question. So is a decision that guards against a failure without naming the failure and how it realistically happens. Both stay questions: how wide a Spec builds is a decision.
 
+- **Principles** — Spec only. Apply each of the **Planning principles** in [to-spec/PRINCIPLES.md](../to-spec/PRINCIPLES.md) whose "In a Spec" signs the Spec shows. Each miss is a question: meeting it changes what gets built, or needs a person to split, prototype, or decide.
+
 - **Testing shape** — Testing Decisions describe external behavior, not markup or implementation structure.
 
 - **Completeness** — every Problem Statement claim is addressed by the Solution; every Solution element has at least one User Story and one Hand check, unless How to Check It says nothing changes for a person; anything adjacent the doc doesn't cover is named in Out of Scope, not left implicit.
@@ -49,6 +54,6 @@ Go section by section through the doc, checking every applicable item below agai
 
 ### 4. Report
 
-Under 200 words, at the bar the `/plain-language` skill sets: what you corrected, and what's still open as a question.
+Under 200 words, at the bar the `/technical-writing` skill sets: what you corrected, and what's still open as a question.
 
 Done when every checklist item has been checked against every section it applies to, and every finding is either corrected in place or listed as an open question — none silently dropped.

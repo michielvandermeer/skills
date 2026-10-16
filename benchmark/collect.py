@@ -17,7 +17,7 @@ COLUMNS = (
      "cost_usd", "tokens_total", "input", "cache_write", "cache_read", "output", "calls", "subagents",
      "wall_s", "max_context", "api_errors", "tool_errors"]
     + [f"cost_{r}" for r in ROLE_COLUMNS] + [f"tokens_{r}" for r in ROLE_COLUMNS]
-    + ["landed", "landing_lines", "diff_ratio", "build_ok", "tests_ok", "tests_run", "proof",
+    + ["landed", "landing_lines", "diff_ratio", "build_ok", "tests_ok", "tests_run", "verify",
        "forbidden_html", "forbidden_text", "blocked_writes", "noop_writes", "checks_done"]
 )
 

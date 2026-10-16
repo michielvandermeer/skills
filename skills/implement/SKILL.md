@@ -1,18 +1,24 @@
 ---
 name: implement
-description: "Implement a spec by slicing it into steps and running each one in its own sub-agent. Use only when the user or a /goal names /implement."
+description: "Implement a spec by slicing it into steps, then a loop of implement, review, and verify, each in its own sub-agent. Use only when the user or a /goal names /implement."
 argument-hint: "Which Issue to implement, or what to build?"
 model: sonnet
 effort: high
 ---
 
-You are the **driving session**: you orchestrate, sub-agents implement. You hold the step index, the Step agent's and the Checker's three-line reports per step, any deviations, and the review findings for as long as step 4 takes to hand them on — that is the whole of your context, and it is what lets a spec of any size run to landed inside one session. So you hand paths, and the sub-agent that needs a document reads it; your own reads before step 5 are step 1's read of the Issue, step 3's two structural checks, and the `git rev-parse` that finds the Checker's fixed point, and nothing more. While a sub-agent runs, waiting is the work.
+You are the **driving session**: you orchestrate, sub-agents plan, implement, review, and verify. You hold the Step index, each sub-agent's short report, the findings that go back to the next Iteration, and any deviations — that is the whole of your context, and it is what lets a Spec of any size land inside one session. So you hand paths, and the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
-Steps run one at a time, in `NN` order, in one checkout — the run worktree, or this checkout when the worktree is waived. Step agents are `skills:implementer` (`agents/implementer.md` at the plugin root), and the **Checker** that finishes each Step is `skills:checker` (`agents/checker.md` at the plugin root); both are pinned in their agent files to Sonnet, the Step agent at high effort and the Checker at medium, because their scope was decided before they started ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)). So is the **Prover** that re-runs every Proof before the run lands, `skills:prover` (`agents/prover.md` at the plugin root), at medium effort. The **Planner** is `skills:planner` (`agents/planner.md` at the plugin root), pinned to Sonnet at high effort. The fixer, the data-structures pass, and the Proof fixer are `general-purpose` and run at your own model and effort, which inside this skill is the skill's own pin; the data-structures pass is dispatched at medium effort. See [ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md), [ADR-0045](../../docs/adr/0045-implement-runs-steps-one-at-a-time.md), and [ADR-0043](../../docs/adr/0043-planner-is-a-named-plugin-agent.md).
+A **Planner** first slices the Spec into **Steps**, each small enough for one fresh agent; most Specs are one Step. Then the run is a loop over the whole Spec, at most three **Iterations** ([ADR-0072](../../docs/adr/0072-implement-plans-steps-then-loops-implement-review-verify.md)):
+
+1. **Implement** — on Iteration 1, a fresh `skills:implementer` builds each Step in order; on a later one, a single fresh Implementer fixes what the last Iteration found.
+2. **Review** — `/code-review` judges the diff on its Standards axis: the repo's Coding standards and the design principles. A **Hard violation** sends the run back to 1; a **Judgement call** waits for the next Implementer, or the final report. From Iteration 2 on, Review reads only that Iteration's fix.
+3. **Verify** — a fresh `skills:verifier` checks the change does what the Spec asks: the Spec read against the diff, the build and the whole test suite, and the Spec's Hand checks. A finding sends the run back to 1.
+
+The run lands when one Iteration passes both Review and Verify. The Planner, the Implementer, and the Verifier are pinned in their agent files (`agents/planner.md`, `agents/implementer.md`, `agents/verifier.md` at the plugin root) to Sonnet at high effort, because the Spec was decided before they started; the Reviewer `/code-review` starts is pinned to Opus at high ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)).
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-No Step pushes, publishes, or changes a live system; a Step that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and [the push](#the-push) of `<base>` once it has landed. The closing reference its landing commit carries is how the Tracker learns the work is done. Under [benchmark mode](#benchmark-mode) it reaches outside zero times. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
+No sub-agent pushes, publishes, or changes a live system; work that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and [the push](#the-push) of `<base>` once it has landed. The closing reference its landing commit carries is how the Tracker learns the work is done. Under [benchmark mode](#benchmark-mode) it reaches outside zero times. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
 
 ## Process
 
@@ -20,141 +26,138 @@ No Step pushes, publishes, or changes a live system; a Step that needs that **ha
 
 Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, claim, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-The argument is an Issue reference — normally an Issue in `ready-for-agent` — or a description of the change, which touches no Tracker; an issue outside this repo's Tracker is read as a description. Read the Issue. Derive `<slug>`: the Issue's run slug as the Tracker ref gives it, otherwise a kebab-case slug from the description.
+The argument is an Issue reference — normally an Issue in `ready-for-agent` — or a description of the change, which touches no Tracker; an issue outside this repo's Tracker is read as a description. A description is the Spec: it gets no interview, and the user who wants one runs `/grill-with-docs` first. Read the Issue. Derive `<slug>`: the Issue's run slug as the Tracker ref gives it, otherwise a kebab-case slug from the description.
 
 When this session already drives the run for `<slug>` and a sub-agent it dispatched for that run has not reported yet, this invocation is a repeat and the run is still going: say so, and keep waiting for that report. A repeat claims, resets, and dispatches nothing ([ADR-0064](../../docs/adr/0064-a-repeated-implement-command-waits-for-its-run.md)).
 
-`<base>` is the **base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is reviewed and measured green against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). If it is empty, **halt** — HEAD is detached. The main checkout's working tree is the user's and stays as you found it until step 5.
+`<base>` is the **base branch**: `git branch --show-current` in the original directory when this command starts, read again on a resume. The run branches from it, is reviewed and verified against it, and lands back on it ([ADR-0055](../../docs/adr/0055-a-run-lands-on-the-branch-it-started-from.md)). If it is empty, **halt** — HEAD is detached. The main checkout's working tree is the user's and stays as you found it until step 4.
 
 An Issue blocked by another Issue waits on it: while the blocker is open, stop before anything else and say it lands first — unless `<base>` already holds the blocker's closing reference, found as the Tracker ref says ([ADR-0047](../../docs/adr/0047-a-wayfinder-map-ends-in-one-or-more-specs.md)).
 
 Then claim the Issue as the Tracker ref says. When the ref says another user holds it, stop and name them. A ref that gives no claim for Issues skips this.
 
-Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). A prior run is **in flight** when that run worktree exists, when branch `<slug>` exists, or when any linked worktree contains `.agents/steps/<slug>/`.
+Find worktrees with `git worktree list` (or the host's equivalent). The **run worktree** is the one whose branch is `<slug>` (or the name a host tool recorded). A prior run is **in flight** when that run worktree exists, when branch `<slug>` exists, or when any linked worktree contains `.agents/runs/<slug>/`.
 
 - **In flight** → a run worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
   - Put the session's working directory on the run worktree's path. When the branch exists without a worktree, `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>` first (ensure `.agents/worktrees/` is ignored; prefer a local ignore when the repo uses one).
-  - `git reset --hard && git clean -fd` drops whatever a halted Step left behind. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
-  - When `.agents/steps/<slug>/` holds Step files (`[0-9][0-9]-*.md`), the Steps are already planned: skip step 2 and resume at the lowest-numbered Step whose `Status:` is not `done` — at its Checker when it reads `built`, at its Step agent when it reads `pending` — or at step 4 when every Step reads `done`. A steps directory with no Step files is a fresh plan — continue at step 2.
+  - `git reset --hard && git clean -fd` drops whatever a halted sub-agent left behind. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
+  - When `.agents/runs/<slug>/` holds Step files (`[0-9][0-9]-*.md`), the Steps are already planned: skip step 2 and resume Iteration 1 of step 3 at the lowest-numbered Step whose `Status:` is not `done`, or at its Review when every Step reads `done`. With no Step files, continue at step 2. The branch's commits are the work so far; the Implementer builds on them.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git reset --hard <base>` so the run starts from the `<base>` you actually have — the new branch has no commits of its own yet:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
   - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
 
-The session must work *inside* the run worktree for the rest of the run — creating a worktree alone is not enough. Run every command from there as a **plain** command: every argument spelled out, and files written with the host's file tools. A host that isolates the session in its worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it. Scope every search to the worktree, and name it in every sub-agent prompt as the only directory the agent works in, adding the plain-command rule for a `general-purpose` agent. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it and begin every command with `cd <that path> &&`. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
+The session must work *inside* the run worktree for the rest of the run — creating a worktree alone is not enough. Run every command from there as a **plain** command: every argument spelled out, and files written with the host's file tools. A host that isolates the session in its worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it. Scope every search to the worktree, and name it in every sub-agent prompt as the only directory the agent works in. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it and begin every command with `cd <that path> &&`. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
 
-Before leaving this step, when the argument is an Issue and `.agents/steps/<slug>/spec.md` is missing, write the Issue's title, as an H1, and its body to that file — nothing else. From here on **the Spec** is that copy: every sub-agent reads it, a resume reads it rather than the Issue, and step 2 commits it with the Step files.
+Before leaving this step, when `.agents/runs/<slug>/spec.md` is missing, write **the Spec** to it — the Issue's title as an H1 and its body, or the description as the argument gave it — and nothing else, then commit it as `spec: <slug>`. The commit keeps it through a resume's reset. From here on every sub-agent reads that copy, and a resume reads it rather than the Issue.
 
-### 2. Plan the steps
+`<scratch>` is `.agents/runs/<slug>/scratch/`, by absolute path: the Verifier's throwaway scripts, screenshots, and transcripts. Create it when it is missing, with a `.gitignore` inside that holds `*`, so no commit sweeps it in. The land deletes it with the run folder; a halt leaves it.
 
-Dispatch a `skills:planner`. Give it the Spec's path (or the argument text), `<slug>`, and the absolute path to [STEPS.md](STEPS.md) in this skill's directory — those three and nothing else. It reads the slicing rules itself, writes one file per Step to `.agents/steps/<slug>/`, and commits them with the Spec in one commit before returning, so the resets in steps 1 and 3 cannot delete the Spec or a Step not yet done ([ADR-0030](../../docs/adr/0030-planner-commits-the-step-files.md)). When `git status` still shows that directory afterwards, commit it yourself as `plan: <slug>`. A host without that agent type dispatches `general-purpose` with the same prompt.
+### 2. Plan the Steps
 
-It returns the index and nothing else: one line per step, `NN | title | one-line deliverable`.
+Dispatch a `skills:planner`. Give it the Spec's path, `<slug>`, and the absolute path to [STEPS.md](STEPS.md) in this skill's directory — those three and nothing else. It reads the slicing rules itself, writes one Step file per Step to `.agents/runs/<slug>/`, and commits them before returning, so the resets later in the run cannot delete a Step not yet built. When `git status` still shows Step files afterwards, commit them yourself as `plan: <slug>`.
 
-The plan succeeded when that reply is the index and `.agents/steps/<slug>/` holds Step files. Otherwise **halt** — the Planner failed, returned no steps, left no Step files in the directory, or replied with something other than the index. Do not dispatch another agent to write or commit the files; the dirty-directory commit above is the only Driving-session write for this step.
+It returns the index and nothing else: one line per Step, `NN | title | one-line deliverable`. Tell the user how many Steps it planned, with their titles.
 
-### 3. Run each step in `NN` order
+The plan succeeded when that reply is the index and `.agents/runs/<slug>/` holds Step files. Otherwise the Planner gets the retry in [The limit](#the-limit), and a second failure **halts** the run. The commit above is your only write in this step: the Step files are the Planner's to write.
 
-`<proof>` is the run's Proof folder: `.agents/proof/<slug>/` in the run's working tree, by absolute path. It sits inside because a host that isolates the session in its worktree refuses writes outside it ([ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)). Before the first dispatch, create it when it is missing, with a `.gitignore` inside that holds `*`, so git ignores the folder and no commit sweeps it in.
+### 3. Loop
 
-Dispatch a fresh `skills:implementer` per step, with a prompt made of paths and section names — it reads what is behind them:
+Run Iterations, numbered from 1, until one passes both Review and Verify. Each Iteration is the three parts below, in order.
 
-- the spec, and its own step file — whose `## Footprint` names the files, symbols and projects the work lands in
-- an instruction to read, before starting, the `## Outcome` of each step on its step file's `Depends on:` line — none for `Depends on: none`, and every lower-numbered step's when the line is missing
+#### Implement
+
+On Iteration 1, run each Step in `NN` order, skipping a Step whose `Status:` already reads `done`; its Implement is done when every Step file, `.agents/runs/<slug>/[0-9][0-9]-*.md`, reads `Status: done`. On a later Iteration, run one Implementer for the findings, with no Step file.
+
+Hold `git rev-parse HEAD` as `<start>` before the Iteration's first dispatch. For each dispatch, hold `git rev-parse HEAD` as `<before>`, then dispatch a fresh `skills:implementer` with a prompt of paths and section names — it reads what is behind them:
+
+- the Spec, and `<base>`, the branch its tests are measured against
+- on Iteration 1: its own Step file, and an instruction to read the `## Outcome` of every lower-numbered Step file before starting
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
 - the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
-- the spec's Testing Decisions section, which governs what it tests, and the testing documents it names
-- an instruction to read the Coding standards and those testing documents by section: list the headings first (`grep -n '^#'` on the file), then read only the sections that apply to the code the Step touches, never the whole file
-- the Proof rules, [PROOF.md](PROOF.md) in this skill's directory by absolute path, and `<proof>`
-- `<base>`, the branch its tests are measured against
-- the deviations reported by earlier steps, verbatim, when there are any
-- its Step number and the total, and the report format below
+- the design principles, [PRINCIPLES.md](../code-review/PRINCIPLES.md) in the `code-review` skill's directory by absolute path — the Review judges the diff by them and by the Coding standards
+- the Spec's Testing Decisions section, when it has one, which governs what it tests, and the testing documents it names
+- from Iteration 2 on: every Hard violation and Verify finding the last Iteration reported, and every Judgement call held, verbatim; and every finding an earlier Iteration declined, with its reason
+- the deviations reported so far, verbatim, when there are any
+- its Iteration number and the limit of three, on Iteration 1 its Step number and the total, and the report format below
 
-Tell it how far to trust its map: its footprint is a guess — where the code disagrees, the code wins, and the drift goes in its `## Outcome` so the steps that depend on it inherit the correction.
+Require of it: **its build and the tests closest to its change passing before it finishes**, and its work committed. The whole suite is the Verifier's to run. On Iteration 1, it builds every project on its Footprint's `Projects:` line, appends a short `## Outcome` to its Step file (what it built, where the code differed from the Footprint, and what a later Step needs to know), sets that file's `Status:` to `done`, and commits the file with its code. From Iteration 2 on, it fixes every Verify finding, and fixes each Review finding or declines it on its `declined:` line with the reason. A Review finding that contradicts the Spec is declined: the Spec wins.
 
-Require of it: **its build and the tests closest to its change passing before it finishes**, then its `## Outcome` — Safety fact, Proof, and Merge risk included — appended to its Step file, that file's `Status:` set to `built`, and its code and Step file committed together in one commit.
-
-- It builds every project on its footprint's `Projects:` line, and the whole suite on the last Step.
-- The tests closest to its change are the ones it wrote or changed and the ones covering the code it changed, filtered as narrowly as the test runner allows. The full set of those projects' tests is the Checker's to run, once, after its fixes ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md)).
-- Its tests are measured against `<base>` ([ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md)): a failure that also fails on `<base>` at the merge-base goes on the deviations line and does not block landing; every other failure is red until fixed.
-
-Its entire response is three lines:
+Its entire response is four lines:
 
 ```
 status: done | blocked
-built: <one sentence on what now works>
+built: <one sentence on what now works, or what it fixed>
+declined: <each Review finding left as it is, with why — or "none">
 deviations: <what contradicts the Spec or changes a later Step, or "none">
 ```
 
-A fact a successor needs goes in `## Outcome`; the successor reads it there.
+Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and `git status` is clean, or every finding it was handed is on its `declined:` line and HEAD has not moved. On Iteration 1, `grep '^Status:'` on its Step file also reads `done`. That is the whole check; read the diff only when it fails. Tell the user `Step <NN>/<total> — <title>: done` after each Step passes it.
 
-Then **check the step structurally** — `grep '^Status:'` on the Step file reads `built`, and `git log -1` shows a new commit. That is the whole check; open the Step file only when it fails.
+#### Review
 
-Once that check passes, resolve the parent of the Step's commit with `git rev-parse HEAD~1`, then dispatch a fresh `skills:checker` for the same step. Its prompt is paths and section names too:
+**Run `/code-review` yourself** on the Standards axis alone. The fixed point is `<base>` on Iteration 1, so the first Review reads the whole change. From Iteration 2 on it is `<start>`, so a later Review reads only that Iteration's fix; when HEAD has not moved from `<start>` because every finding was declined, it is `<base>` again, and the Review judges the declines alone. Tell it:
 
-- the spec, and the step file
-- that SHA, as the fixed point of its review
-- `CONTEXT.md` and any ADR covering the area, the Coding standards, the spec's Testing Decisions section, PROOF.md, `<proof>`, and `<base>`, found as above
-- the same instruction to read the Coding standards and the testing documents by section
-- the deviations reported by earlier steps and by this step's agent, verbatim, when there are any
-- its Step number and the total, and the same three-line report format
+- that `.agents/runs/<slug>/` is run bookkeeping, not code under review
+- that only agents read its report
+- every finding declined so far with its reason: a declined finding is raised again only when the reason does not hold, and the report says why
+- from Iteration 2 on, every finding the last Implementer was handed, to judge as fixed or declined, with the fix itself judged against the standards
 
-The Step's one full test run, re-running the Proof, and driving the app through the Run recipe when the Step needs rung 4 are the Checker's, with the rest of its work as `agents/checker.md` lays it out. A step is **Green** only on the Checker's own test run and Proof re-run ([ADR-0051](../../docs/adr/0051-a-fresh-checker-finishes-each-step.md), [ADR-0053](../../docs/adr/0053-green-needs-a-proof.md)).
+Hold the Standards report; weigh it on the report alone. `/code-review` opens each finding with `Hard violation:` or `Judgement call:`. Hold its Judgement calls with any held from earlier Iterations until the next Implementer is handed them.
 
-Then **check the Checker structurally** — `grep '^Status:'` on the Step file reads `done`. Step 4's review covers the rest.
+Review passes when the report has no Hard violation. Tell the user `Iteration <N>/3 — review: passed`, with `(<j> judgement calls)` after it when there are any, or `Iteration <N>/3 — review: <h> hard violations, <j> judgement calls`, then go on without waiting: a passed Review goes to Verify; a Hard violation starts the next Iteration at Implement, with Verify skipped.
 
-Report one line to the user after that check — `Step <NN>/<total> — <title>: done` — plus each report's deviations line when it is not `none`, and carry both reports' deviations verbatim into later dispatches.
+#### Verify
 
-A `blocked` report, a failed structural check, or any result that is not the three-line report — a question, a progress note, a pause to wait on a background run — earns exactly one retry, for the Step agent and the Checker alike. When the host can resume the same agent, resume it once with one line: the step is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd`, then re-dispatch the same agent for the same step, appending a test or environment failure in its own words, or that the previous run returned something other than the report and the gap is still its to close. The Step agent's commit survives that reset, so a re-dispatched Checker starts from it. The failure is the failed agent's to diagnose. A second failure **halts** the run.
+Dispatch a fresh `skills:verifier` with a prompt of paths: the Spec, `<base>`, the Spec's Testing Decisions section when it has one, `<scratch>`, and the report format below.
 
-Done when every Step file, `.agents/steps/<slug>/[0-9][0-9]-*.md`, reads `Status: done`.
+```
+status: passed | failed | blocked
+deviations: <failures red on <base> too, tests that passed only on a re-run, Hand checks skipped with what they need — or "none">
+findings:
+- <one line per Spec requirement missing, partial, or wrong; scope the Spec did not ask for; a red test; a Hand check that failed twice — or "none">
+```
 
-### 4. Review and improve
+Tell the user `Iteration <N>/3 — verify: passed`, or `Iteration <N>/3 — verify: <count> findings`. `passed` goes to step 4. `failed` starts the next Iteration at Implement.
 
-**Run `/code-review` yourself**, with `<base>` as the fixed point. Pass the Spec path, or that there is no Spec when the run started from a one-liner, and tell both axes that `.agents/steps/<slug>/` is run bookkeeping — its Outcomes are evidence, not code under review. Hold what its two axes report, weighed on the reports alone.
+#### The limit
 
-Give the user a short paragraph per axis in your own words. That summary replaces the verbatim presentation `/code-review` asks its caller for. Then keep going without waiting; the run lands unattended.
+An Iteration 3 that ends on a Hard violation or a Verify finding **halts** the run, and the halt report quotes those findings. Judgement calls alone never halt a run.
 
-Two sub-agents follow, in this order, each reporting in the same three lines and subject to the same retry-then-halt rule, each on its own retry. Hand each the Spec path (or that there is none), the Coding standards from step 3 — they bind every line it commits, comments and tests included — and that leftover choices are theirs to close from the findings, the Spec, and the code. Hand each the instruction to read the Coding standards and the testing documents by section, as step 3 words it, and to run every build or test command with the tool's quiet flags and its output bounded to failures plus the summary — `--nologo -v q` for dotnet, piped through `tail -n 60` or grepped for failures and the summary line, a failure re-run narrower with `--filter`, never the whole log into context; a pipe still counts as a plain command:
+A `blocked` report, a failed structural check, or any result that is not the report — a question, a progress note, a pause to wait on a background run — earns exactly one retry, for the Planner, each Implementer, and the Verifier alike, and the retry is not a new Iteration. When the host can resume the same agent, resume it once with one line: the work is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd`, then re-dispatch the same agent with the same prompt, appending a test or environment failure in its own words, or that the previous run returned something other than the report. Commits it made survive that reset. A second failure **halts** the run.
 
-1. The fixer fixes every finding of both axes, which you paste into its prompt as the reviewers wrote them. It fixes the Spec axis's first, because a Spec fix can remove code that a Standards finding points at, and skips a Standards finding whose code is gone, naming that finding on its deviations line. Where a finding and the Spec disagree, the Spec wins and the finding is left, named on the deviations line. When both axes report no finding, skip the fixer and tell the user so.
-2. The data-structures pass runs `/improve-data-structures` and applies what it finds, or skips it. Dispatch it with `effort: medium` on its Agent call, and skip it when `git diff --shortstat <base>...HEAD` shows 120 changed lines or fewer, since a small diff leaves nothing to restructure.
+Carry every deviations line that is not `none`, verbatim, into later dispatches and the final report.
 
-Retry-then-halt, and the Prover's pass in step 5, are the whole check on their work.
-
-Each leaves the projects it touched green and commits its own work. A schema, migration, or ADR change either makes goes to the user as a deviations line before you continue.
-
-### 5. Land the branch
+### 4. Land the branch
 
 Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remaining command runs where its branch is checked out, and that constraint fixes the order. `<branch>` is `<slug>`, or the name you recorded when a host tool chose another:
 
-1. From the worktree, still on the branch: hold `git merge-base HEAD <base>` as `<fork>` and `git rev-parse <base>` as `<onto>`, then `git rebase <onto>`. A conflict is `/resolving-merge-conflicts` (the branch lives here, so only the worktree can rebase it). Later items build on `<onto>`: other sessions can land on `<base>` while this run tests and proves, and a commit built on the moved `<base>` would undo what they landed.
-   - When the rebase replayed the branch onto commits `<base>` gained during the run, green is not known any more: build and run the projects on every Step's `Projects:` line — the whole suite when the last Step ran it — before going on. Before any fixer dispatch, re-run each failing project once, yourself. A failure that passes on the re-run is a flaky test and does not block landing: its test name goes on the deviations line and into the final report, the same way a failure `<base>` already has does under [ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md). A failure that fails again is red and gets one fixer dispatch under the retry-then-halt rule, and its commit lands before the fast-forward ([ADR-0046](../../docs/adr/0046-a-flaky-post-rebase-failure-is-not-a-fixer-dispatch.md)).
-   - Skip that build and test run when no build or test reads anything `<base>` gained: every path `git diff --name-only <fork> <onto>` lists is Markdown or sits under `.agents/` — another run's ADR, its glossary edit, its retro edit to `.agents/refs/tracker.md` — and no project file, build script, or test names that file or pulls in Markdown by a wildcard. Green then still holds. Any other path — code, a project or build file, test data, config a test reads — or any doubt about one, and the build and test run goes ahead. A skip goes in the final report: the range `<fork>..<onto>` you compared, and why none of its files is read by a build or test.
-2. Still in the worktree: run [the Prover's pass](#the-provers-pass).
-3. Still in the worktree: hold `grep -hE '^(Safety fact|Proof|Merge risk):' .agents/steps/<slug>/[0-9][0-9]-*.md` for the final report, then delete the whole `.agents/steps/<slug>/` directory and the Spec with it, and commit the deletion. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Then build [the landing commit](#the-landing-commit) from that tree, on top of `<onto>`, leaving the branch where it is: `git commit-tree HEAD^{tree} -p <onto> -F -`, with the message on stdin. Hold the hash it prints as `<landing>`.
-4. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-5. From the original directory, on `<base>`: `git merge --ff-only <landing>`. (`<base>` lives here, so only the original directory can fast-forward it.) `<landing>`'s parent is `<onto>`, so this is a fast-forward only while `<base>` is still `<onto>`. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — the branch is deleted, and `<proof>` is deleted. Delete the branch with `git branch -D <branch>` once `git diff --quiet <branch> <base>` succeeds: its commits never reach `<base>`, so `-d` refuses it, and the empty diff shows `<base>` holds all of its work. When the diff is not empty, keep the branch and name it in the final report. When the merge errors, `<base>` moved: re-enter the worktree, drop the deletion commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Step files come back for the Prover — then go through 1 to 4 again and retry this merge.
+1. From the worktree, still on the branch: hold `git merge-base HEAD <base>` as `<fork>` and `git rev-parse <base>` as `<onto>`, then `git rebase <onto>`. A conflict: read and follow [`/resolving-merge-conflicts`](../resolving-merge-conflicts/SKILL.md) (the branch lives here, so only the worktree can rebase it). Later items build on `<onto>`: other sessions can land on `<base>` while this run works, and a commit built on the moved `<base>` would undo what they landed.
+   - When the rebase replayed the branch onto commits `<base>` gained during the run, the last Verify no longer covers the code that lands: dispatch the Verifier again, as step 3 says. `passed` goes on. `failed` starts the next Iteration at Implement, and the run comes back here when that Iteration passes. When the run already reached Iteration 3, `failed` **halts** it.
+   - Skip that Verify when no build, test, or Hand check reads anything `<base>` gained: every path `git diff --name-only <fork> <onto>` lists is Markdown or sits under `.agents/` — another run's ADR, its glossary edit, its retro edit to `.agents/refs/tracker.md` — and no project file, build script, test, or app the Verify skill launches reads that file. The last Verify then still holds. Any other path, or any doubt about one, and the Verify runs. A skip goes in the final report: the range `<fork>..<onto>` you compared, and why none of its files is read.
+2. Still in the worktree: delete the whole `.agents/runs/<slug>/` directory, the Spec, the Step files, and `<scratch>` with it, and commit the deletion. The Prototype folder the Spec points at stays ([ADR-0018](../../docs/adr/0018-prototypes-live-under-agents-prototypes.md)). Then build [the landing commit](#the-landing-commit) from that tree, on top of `<onto>`, leaving the branch where it is: `git commit-tree HEAD^{tree} -p <onto> -F -`, with the message on stdin. Hold the hash it prints as `<landing>`.
+3. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
+4. From the original directory, on `<base>`: `git merge --ff-only <landing>`. (`<base>` lives here, so only the original directory can fast-forward it.) `<landing>`'s parent is `<onto>`, so this is a fast-forward only while `<base>` is still `<onto>`. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and the branch is deleted. Delete the branch with `git branch -D <branch>` once `git diff --quiet <branch> <base>` succeeds: its commits never reach `<base>`, so `-d` refuses it, and the empty diff shows `<base>` holds all of its work. When the diff is not empty, keep the branch and name it in the final report. When the merge errors, `<base>` moved: re-enter the worktree, drop the deletion commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Spec comes back for the Verifier — then go through 1 to 3 again and retry this merge.
 
-The final report lists each Step's `Safety fact:`, `Proof:`, and `Merge risk:` lines as step 3 held them, and says the Prover re-ran every Proof and ran every Hand check on the code that lands. It names each Proof or Hand check that passed only on its re-run, each Hand check the Prover skipped and what it needs, each Proof the Proof fixer restored, updated, or retired, and each Hand check it made pass.
+The final report says how many Steps the Planner made and how many Iterations the run took, quotes every `declined:` line that was not `none` and every deviations line, lists every Judgement call still held, which lands unfixed, and names each Hand check the Verifier skipped and what it needs.
 
-### 6. Push
+### 5. Push
 
 Run [the push](#the-push).
 
-### 7. Retrospective
+### 6. Retrospective
 
-Run `/retro` only when the run had a deviations line that was not `none`, a retried or halted agent, a fixer dispatch, or a Prover failure; otherwise the final report says retro was skipped as nothing went wrong. When it committed and step 6's push went out, run [the push](#the-push) again.
+Read and follow [`/retro`](../retro/SKILL.md) only when the run had a deviations line that was not `none`, a retried or halted agent, or a second Iteration; otherwise the final report says retro was skipped as nothing went wrong. When it committed and step 5's push went out, run [the push](#the-push) again.
 
 ## The landing commit
 
-The landing commit is the one commit the run leaves on `<base>`: the run's whole change, without the Step files ([ADR-0062](../../docs/adr/0062-an-implement-run-lands-as-one-commit.md)). Write its message before the Spec is deleted:
+The landing commit is the one commit the run leaves on `<base>`: the run's whole change, without the run folder ([ADR-0062](../../docs/adr/0062-an-implement-run-lands-as-one-commit.md)). Write its message before the Spec and the Step files are deleted:
 
 - **Subject**: what the change does, ending with the Issue's reference — `Roles are given from the Person (#104)`. Write it from the Spec, not from the Issue's title, which often names the problem. Follow the commit style the repo's `AGENTS.md`, `CLAUDE.md`, or Coding standards document, when they document one. A run from a description has no reference.
 - **Body**: each Step's title from the index, one per line, when the run had more than one Step. Then the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the final report names the Issue for the user to close.
 
 ## The push
 
-The push sends `<base>` from the original directory: in step 6, once the landing commit is on it, so the CI run it starts carries the landing commit's subject; and in step 7, when `/retro` committed ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip both when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
+The push sends `<base>` from the original directory: in step 5, once the landing commit is on it, so the CI run it starts carries the landing commit's subject; and in step 6, when `/retro` committed ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip both when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
 
 - `<base>` tracks a remote branch: `git push <remote> <base>:<branch>`, with `<remote>` from `git config branch.<base>.remote` and `<branch>` from `git config branch.<base>.merge`.
 - `<base>` tracks nothing: `git push -u origin <base>`. A repo with no `origin` skips the push.
@@ -167,44 +170,18 @@ The run's last lines name the landing commit, then say what each push sent and t
 
 The `benchmark/` runner measures what a run costs. It exports `SKILLS_BENCHMARK=1` and `SKILLS_BENCHMARK_LOG` and names `SKILLS_BENCHMARK=1` in the session's system prompt, so the mode is on when your system prompt says so and costs no call to find out. Without that line, skip this section ([ADR-0066](../../docs/adr/0066-a-benchmark-run-writes-nothing-outside-its-checkout.md)).
 
-In benchmark mode every outward write is a **no-op**: the claim in step 1 and the push in steps 6 and 7 each run `bench-log "<step>: <the command it would have run>"` instead, and the run goes on as though that write succeeded. Tracker reads stay. Every sub-agent prompt, `general-purpose` ones included, gets one more line: this is a benchmark run, so a `gh` write or a `git push` is a `bench-log` line. The final report says each push was a no-op.
-
-## The Prover's pass
-
-A fresh **Prover** re-runs every Step's Proof and runs the Spec's **Hand checks** on the code that lands, after the fixer, the data-structures pass, and the rebase have changed it ([ADR-0058](../../docs/adr/0058-a-prover-re-proves-the-code-that-lands.md)). Skip the pass when `grep -h '^Safety fact:'` over the Step files shows only lines that read `none` or `retired`, and the run has no Spec or its `## How to Check It` lists no Hand check.
-
-Skip it too when step 5 comes back here after `<base>` moved, a Prover already held in this land, and every rebase since then skipped its build and test run under step 5, item 1. A Proof can read what no build or test reads, so also check each path those rebases compared: no Step's `Proof:` line or script in `<proof>` names it, and no app a rung-4 Proof or Hand check launches reads it. Any doubt about one, and the pass runs. The Prover that held still stands for the code that lands. Its deviations line goes in the final report, with each range `<fork>..<onto>` it now covers.
-
-Otherwise dispatch a `skills:prover` with a prompt of paths: the Step files, the Spec (or that there is none), PROOF.md, `<proof>`, the working directory, and this report format:
-
-```
-status: held | failed | blocked
-failed: <each Step whose Proof failed twice, and each Hand check that failed twice, by number, with one line on what the re-run showed — or "none">
-deviations: <each Step whose Proof passed only on its re-run, and each Hand check that did, by number; each Hand check skipped, with what it needs — or "none">
-```
-
-- **`held`**: carry its deviations line into the final report and go on.
-- **`failed`**: dispatch one **Proof fixer**. Hand it the Spec path (or that there is none), the Step files, PROOF.md, `<proof>`, `<base>`, the Coding standards from step 3, and the `failed:` line verbatim. For each failed Proof it does exactly one of three things, and names which on its deviations line:
-  - restores the Safety fact in the code;
-  - updates a Proof that only went stale — its `Proof:` line, or its script in `<proof>` — when the fact still holds;
-  - leaves the code as it is when the Spec asked a later Step to change that behaviour, and retires the fact as PROOF.md lays out.
-
-  For each failed Hand check, it changes the code until the product does what the check says.
-
-  It leaves the projects it touched green, commits its work, and reports in the same three lines as the fixer. Then dispatch a fresh Prover the same way. A second `failed` **halts** the run.
-
-The Prover and the Proof fixer each fall under step 3's retry-then-halt rule, each on its own retry.
+In benchmark mode every outward write is a **no-op**: the claim in step 1 and the push in steps 5 and 6 each run `bench-log "<step>: <the command it would have run>"` instead, and the run goes on as though that write succeeded. Tracker reads stay. Every sub-agent prompt gets one more line: this is a benchmark run, so a `gh` write or a `git push` is a `bench-log` line. The final report says each push was a no-op.
 
 ## Worktree waived
 
-Steps live at `.agents/steps/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 5 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, run the Prover's pass and make the deletion commit and `<landing>` there, check out `<base>` yourself, then fast-forward to `<landing>`. That merge is done when it succeeds, the branch is deleted as step 5 says, and `<proof>` is deleted. When it errors, `<base>` moved: check out the branch, drop the deletion commit as step 5 says, go through items 1 to 3 of step 5 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/steps/<slug>/` in this checkout.
+The run folder lives at `.agents/runs/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 4 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, make the deletion commit and `<landing>` there, check out `<base>` yourself, then fast-forward to `<landing>`. That merge is done when it succeeds and the branch is deleted as step 3 says. When it errors, `<base>` moved: check out the branch, drop the deletion commit as step 4 says, go through items 1 and 2 of step 4 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/runs/<slug>/` in this checkout.
 
 ## Work in another repository
 
-The worktree, the review diff, the land, and the push cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Step that did it and never pushed; the final report names the repository, the branch, and what sits on it.
+The worktree, the review diff, the land, and the push cover this repository only. Work a Spec puts in another repository goes on a branch named `<slug>` there, committed by the Implementer that did it and never pushed; the final report names the repository, the branch, and what sits on it.
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, `<proof>`, the branch, and the run worktree exactly as they are — the completed Steps are committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: for a Planner failure, that the Planner failed and why, and what a re-invoke will do; for a Step, its number, its title, and why it did not finish. Quote a test or environment failure. For a result that was not the report, say the agent did not finish.
+A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, and the run worktree exactly as they are — the work is committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: that the Planner failed and why; or the Iteration, the part — Implement, Review, or Verify — with the Step's number and title on Iteration 1's Implement, and why it did not finish. Quote a test or environment failure, and the findings an Iteration 3 left. For a result that was not the report, say the agent did not finish.
 
-Re-invoking `/implement` with the same argument picks the run back up — a steps directory with no Step files runs the Planner again; Step files already on disk resume where step 1 says.
+Re-invoking `/implement` with the same argument picks the run back up where step 1 says, with three Iterations again: at the Planner when no Step file exists, otherwise in Iteration 1.

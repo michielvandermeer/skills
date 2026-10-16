@@ -1,5 +1,6 @@
 """Tests for the benchmark tooling, on synthetic data only: python benchmark/test_benchmark.py"""
 import csv
+import json
 import os
 import subprocess
 import sys
@@ -74,9 +75,9 @@ class GuardProcessTests(unittest.TestCase):
         self.assertIn("BLOCKED git push origin", log)
 
     def test_bench_log_appends_a_noop_line(self):
-        code, log = self.run_guard("log", "step 6: git push origin master:master")
+        code, log = self.run_guard("log", "step 4: git push origin master:master")
         self.assertEqual(code, 0)
-        self.assertIn("NOOP step 6: git push origin master:master", log)
+        self.assertIn("NOOP step 4: git push origin master:master", log)
 
     def test_install_writes_shims_hook_and_env(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -106,17 +107,28 @@ class MetricsTests(unittest.TestCase):
 
     def test_roles_come_from_the_subagent_meta(self):
         roles = self.m["by_role"]
-        self.assertEqual(sorted(roles), ["fixer", "implementer", "main", "prover", "reviewer"])
+        self.assertEqual(sorted(roles), ["general-purpose", "implementer", "main", "reviewer", "verifier"])
+        self.assertNotIn("general-purpose", metrics.ROLES)  # collect.py files it under "other"
         self.assertAlmostEqual(roles["implementer"]["cost_usd"], 0.01626, places=6)
         self.assertEqual(roles["main"]["calls"], 2)
         self.assertEqual(self.m["subagents"], 4)
+
+    def test_a_prover_that_held_counts_as_a_passed_verify(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            sub = Path(tmp) / "s" / "subagents"
+            sub.mkdir(parents=True)
+            (sub / "agent-p.meta.json").write_text('{"agentType": "skills:prover"}', encoding="utf-8")
+            line = {"type": "assistant", "timestamp": "2026-10-16T10:00:00Z",
+                    "message": {"model": "<synthetic>", "content": [{"type": "text", "text": "status: held\nfailed: none"}]}}
+            (sub / "agent-p.jsonl").write_text(json.dumps(line) + "\n", encoding="utf-8")
+            self.assertEqual(metrics.extract(Path(tmp))["verifier_status"], "passed")
 
     def test_context_wall_time_and_checks(self):
         self.assertEqual(self.m["max_context"], 6020)
         self.assertEqual(self.m["wall_s"], 330.0)
         self.assertEqual(self.m["tool_errors"], 1)
         self.assertEqual(self.m["test_commands"], 1)
-        self.assertEqual(self.m["prover_status"], "held")
+        self.assertEqual(self.m["verifier_status"], "passed")
 
 
 DIFF = """\
@@ -163,7 +175,7 @@ class ScoreTests(unittest.TestCase):
         for over, text in (({"exit_code": 1}, "claude failed"), ({"timed_out": True}, "timed out"),
                            ({"landed": False}, "no commit landed"), ({"subagents": 0}, "no subagent"),
                            ({"test_commands": 0}, "no test command"), ({"tests_run": 0}, "ran no tests"),
-                           ({"plugin_verified": False}, "not the plugin")):
+                           ({"plugin_verified": False}, "not the only plugin")):
             valid, reasons, _ = self.judged(**over)
             self.assertFalse(valid, over)
             self.assertIn(text, " ".join(reasons))
@@ -185,17 +197,17 @@ class ScoreTests(unittest.TestCase):
             git("add", "."), git("commit", "-q", "-m", "base")
             base = git("rev-parse", "HEAD")
             (repo / "a.txt").write_text("one\ntwo\nthree\n")
-            (repo / ".agents" / "steps").mkdir(parents=True)
-            (repo / ".agents" / "steps" / "01.md").write_text("step\n" * 50)
+            (repo / ".agents" / "runs" / "add-lines").mkdir(parents=True)
+            (repo / ".agents" / "runs" / "add-lines" / "notes.md").write_text("note\n" * 50)
             git("add", "."), git("commit", "-q", "-m", "Add lines (#7)")
-            (run / "bench.log").write_text("2026-01-01T00:00:00 NOOP step 6: git push\n")
+            (run / "bench.log").write_text("2026-01-01T00:00:00 NOOP step 4: git push\n")
             ok = f'"{sys.executable}" -c "print(\'Passed!  - Failed: 0, Passed: 2, Skipped: 0, Total: 2\')"'
             spec = {"base": base, "issue": 7, "landing_lines": 4, "build": [ok], "tests": [ok]}
             meta = {"worktree": str(repo), "exit_code": 0, "plugin_verified": True}
-            m = {"subagents": 3, "test_commands": 2, "unpriced_models": [], "prover_status": "held"}
+            m = {"subagents": 3, "test_commands": 2, "unpriced_models": [], "verifier_status": "passed"}
             s = score.score_run(run, meta, spec, m)
             self.assertEqual((s["landed"], s["commits"], s["landing_lines"], s["diff_ratio"]), (True, 1, 2, 0.5))
-            self.assertEqual((s["build_ok"], s["tests_ok"], s["tests_run"], s["noop_writes"], s["proof"]), (True, True, 2, 1, "held"))
+            self.assertEqual((s["build_ok"], s["tests_ok"], s["tests_run"], s["noop_writes"], s["verify"]), (True, True, 2, 1, "passed"))
             self.assertTrue(s["valid"], s["invalid_reasons"])
 
 
@@ -210,10 +222,10 @@ def make_rows(base_costs, cand_costs, **cand_over):
              "valid": "True", "invalid_reasons": "", "flags": "", "failed": "False", "cost_usd": str(cost),
              "tokens_total": str(cost * 1e5), "subagents": "6", "wall_s": "600", "max_context": "90000",
              "api_errors": "0", "tool_errors": "3", "landed": "True", "diff_ratio": "1.0", "build_ok": "True",
-             "tests_ok": "True", "tests_run": "5", "proof": "held", "forbidden_html": "0", "forbidden_text": "0",
+             "tests_ok": "True", "tests_run": "5", "verify": "passed", "forbidden_html": "0", "forbidden_text": "0",
              "blocked_writes": "0", "noop_writes": "2", "checks_done": "True"}
         r.update({f"cost_{role}": str(cost * share) for role, share in
-                  zip(compare.ROLES, (0.1, 0.05, 0.5, 0.2, 0.1, 0.02, 0.02, 0.01))})
+                  zip(compare.ROLES, (0.1, 0.5, 0.2, 0.15, 0.0, 0.05))})
         r.update(over)
         return r
 
@@ -304,6 +316,22 @@ class CompareTests(unittest.TestCase):
         self.assertIn("with quality regressions", text)
         self.assertIn("tests passed on 3 of 5 valid candidate runs, against 5 of 5", text)
 
+    def test_a_failed_verifier_is_a_quality_regression(self):
+        base, cand = make_rows({"a": self.A_BASE}, {"a": self.A_CAND})
+        for r in cand[:2]:
+            r["verify"] = "failed"
+        cand[2]["verify"] = "skipped"
+        text, _ = self.text(base, cand)
+        self.assertIn("Verifier passed on 2 of 5 valid candidate runs, against 5 of 5", text)
+
+    def test_an_old_csv_with_a_proof_column_still_compares(self):
+        base, cand = make_rows({"a": self.A_BASE}, {"a": self.A_CAND})
+        for r in cand:  # held was the Prover's pass, so it reads as the verifier's
+            r["proof"] = r.pop("verify").replace("passed", "held")
+        text, verdict = self.text(base, cand)
+        self.assertEqual(verdict, "cheaper")
+        self.assertIn("Quality regressions: none flagged.", text)
+
     def test_a_saving_past_the_biggest_role_share_is_called_out(self):
         text, _ = self.text(*make_rows({"a": [10, 10.5, 11, 10.2, 10.8]}, {"a": [3, 3.2, 3.1, 3.4, 3.3]}))
         self.assertIn("something else is being measured", text)
@@ -312,9 +340,10 @@ class CompareTests(unittest.TestCase):
 class RunnerTests(unittest.TestCase):
     def test_argv_pins_settings_and_ends_with_the_variadic_flag(self):
         settings = run.Settings("sonnet", "high", "claim", claude_cmd=["claude"])
-        argv = run.build_argv(settings, {"issue": 394}, "/skills", "sid", "/mcp.json")
+        argv = run.build_argv(settings, {"issue": 394}, "/skills", "sid", "/mcp.json", "/settings.json")
         self.assertEqual(argv[:3], ["claude", "-p", "/implement #394"])
-        for pair in (["--model", "sonnet"], ["--effort", "high"], ["--plugin-dir", "/skills"], ["--session-id", "sid"]):
+        for pair in (["--model", "sonnet"], ["--effort", "high"], ["--plugin-dir", "/skills"], ["--session-id", "sid"],
+                     ["--settings", "/settings.json"]):
             self.assertEqual(argv[argv.index(pair[0]) + 1], pair[1])
         self.assertIn("--strict-mcp-config", argv)
         self.assertEqual(argv[argv.index("--disallowedTools") + 1:], guards.DENIED_TOOLS)
@@ -324,8 +353,24 @@ class RunnerTests(unittest.TestCase):
         self.assertTrue(run.plugin_verified(init, "/a/skills"))
         self.assertFalse(run.plugin_verified(init, "/b/skills"))
         self.assertIsNone(run.plugin_verified({}, "/a/skills"))
-        both = {"plugins": [{"name": "skills", "path": "/a/skills"}, {"name": "skills", "path": "/installed"}]}
-        self.assertIsNone(run.plugin_verified(both, "/a/skills"))
+        both = {"plugins": [{"name": "skills", "path": "/a/skills"}, {"name": "pstack", "path": "/installed"}]}
+        self.assertFalse(run.plugin_verified(both, "/a/skills"))
+        builtin = {"plugins": [{"name": "skills", "path": "/a/skills"}, {"name": "cc-plugin-telemetry", "path": "builtin"}]}
+        self.assertTrue(run.plugin_verified(builtin, "/a/skills"))
+
+    def test_every_plugin_the_user_or_target_enables_is_turned_off(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            (tmp / "cfg").mkdir(), (tmp / "w" / ".claude").mkdir(parents=True)
+            (tmp / "cfg" / "settings.json").write_text('{"enabledPlugins": {"pstack@p": true, "skills@m": true}}', encoding="utf-8")
+            (tmp / "w" / ".claude" / "settings.json").write_text('{"enabledPlugins": {"tool@t": true}}', encoding="utf-8")
+            old = os.environ.get("CLAUDE_CONFIG_DIR")
+            os.environ["CLAUDE_CONFIG_DIR"] = str(tmp / "cfg")
+            try:
+                off = run.other_plugins_off(tmp / "w")
+            finally:
+                os.environ.pop("CLAUDE_CONFIG_DIR") if old is None else os.environ.__setitem__("CLAUDE_CONFIG_DIR", old)
+            self.assertEqual(off, {"enabledPlugins": {"pstack@p": False, "skills@m": False, "tool@t": False}})
 
     def test_a_spec_with_a_todo_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
