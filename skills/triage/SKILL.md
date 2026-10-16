@@ -38,11 +38,13 @@ Read the seed text for this problem. If this updates an existing Issue, read it 
 
 Search for an existing implementation of the requested behaviour by domain concept (not just the request's wording). Record where you looked. Found → skip verify, apply **not filed**.
 
+For a bug, search the Tracker and the git log for earlier fixes of the same problem. Two or more that failed → [Attack the premise](../to-spec/PRINCIPLES.md#attack-the-premise) before choosing a fix.
+
 Done: the problem is already implemented, or you have enough of the code to verify and classify.
 
 ### Verify
 
-For a bug, reproduce it from the reporter's steps. Outcome: confirmed (with code path), failed, or insufficient detail (`needs-info`). Confirmed verification strengthens the Spec.
+For a bug, reproduce it from the reporter's steps. Outcome: confirmed (with code path), failed, or insufficient detail (`needs-info`). A confirmed reproduction goes into the Spec as the test that fails on today's code. A report that claims a number — slower, bigger, costlier — is confirmed by measuring it, per [Explain the number](../to-spec/PRINCIPLES.md#explain-the-number).
 
 Done: a verify outcome is recorded.
 

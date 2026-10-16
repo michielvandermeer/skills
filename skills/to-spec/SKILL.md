@@ -9,7 +9,9 @@ This skill takes the current conversation context and codebase understanding and
 
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
 
-2. Choose the smallest change that does the work, riding what the code already does ([ADR-0065](../../docs/adr/0065-a-spec-takes-the-smallest-change-that-does-the-job.md)). This binds every implementation choice you make yourself. A choice a person settled keeps its width: their answer in a grilling round, a declaration that stood through its round, or a line the Issue or brief states outright. A choice you reasoned out earlier in this conversation — during `/triage`, say — is yours, and this rule binds it. Where the Issue proposes several remedies, take the smallest that does the work. A decision that builds a new mechanism where the code already does the same job another way says why that way falls short. A decision that guards against a failure names that failure and how it realistically happens; a failure nobody can describe that way buys no width.
+2. Choose the smallest change that does the work, riding what the code already does ([ADR-0065](../../docs/adr/0065-a-spec-takes-the-smallest-change-that-does-the-job.md)). This binds every implementation choice you make yourself. A choice a person settled keeps its width: their answer in a grilling round, a declaration that stood through its round, or a line the Issue or brief states outright. A choice you reasoned out earlier in this conversation — during `/triage`, say — is yours, and this rule binds it. Where the Issue proposes several remedies, take the smallest that does the work. A decision that builds a new mechanism where the code already does the same job another way says why that way falls short. A decision that guards against a failure names that failure and how it realistically happens; a failure nobody can describe that way buys no width. Width governs how the change is built; what the person meets follows [Experience first](PRINCIPLES.md#experience-first).
+
+Hold the Spec to the **Planning principles** in [PRINCIPLES.md](PRINCIPLES.md). Where one asks for work this conversation has not done, such as a baseline measured or a premise checked, do it before drafting. Where one needs a person, such as a prototype or a split, draft without it; the Validator reports the gap.
 
 Then sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
 
@@ -86,6 +88,7 @@ Exception: a prototype folder at `.agents/prototypes/<slug>/` is named, not inli
 A list of testing decisions that were made. Include:
 
 - A description of what makes a good test (only test external behavior, not implementation details)
+- For a bug, the test that fails on today's code
 - Which modules will be tested
 - Prior art for the tests (i.e. similar types of tests in the codebase)
 

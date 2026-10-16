@@ -63,7 +63,7 @@ The record of every **Attempt** on one measured number, in that number's **Hillc
 _Avoid_: decision log (that is an ADR), decision.tsv, experiment log
 
 **Spec**:
-The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, **Hand checks**, user stories, implementation and testing decisions — replacing whatever the Issue said before. Its problem, solution, Hand checks, and user stories are written for the **Product reader**; the rest is written for a developer new to the repo. The input to `/implement`, `/implement-oneshot`, and `/implement-yolo`. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
+The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, **Hand checks**, user stories, implementation and testing decisions — replacing whatever the Issue said before. Its problem, solution, Hand checks, and user stories are written for the **Product reader**; the rest is written for a developer new to the repo. The input to `/implement` and `/implement-yolo`, held to the **Planning principles** so one run can build it with no one to ask. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
 **ADR**:
@@ -246,6 +246,10 @@ _Avoid_: review agent, critic, review bot
 **Design principles**:
 The fixed set of judgement calls in `skills/code-review/PRINCIPLES.md` — boundary discipline, type system discipline, idempotent operations, and the rest — that the Standards axis of `/code-review` applies on top of a repo's **Coding standards**, even when a repo documents nothing. A documented repo standard always wins over a principle. The **Implementer** reads them before it writes code.
 _Avoid_: smell baseline, best practices
+
+**Planning principles**:
+The fixed set of judgement calls in `skills/to-spec/PRINCIPLES.md` — leave the implementer nothing to ask, fit one run, experience first, explain the number, and the rest — that a **Spec** is held to. `/grilling` recommends by them, `/to-spec` writes to them, and the **Validator** reports a miss as an open question. Distinct from the **Design principles**, which judge code.
+_Avoid_: process principles, spec rules
 
 **Fixer**:
 A `general-purpose` sub-agent a **Hillclimb**'s Driving session sends, at its own model and effort, to fix what its final review found: a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh. An implement run has no Fixer: the next **Iteration**'s **Implementer** fixes what the last one's Review or Verify found.
