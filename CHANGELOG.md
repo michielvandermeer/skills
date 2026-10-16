@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Specs start from a sharpened task
+Before it writes a Spec, `/to-spec` now asks how an expert would approach the task, what you are really after, and which constraints serve that, an idea taken from pstack's `/sharpen`. Every Spec now needs at least one check whose answer comes from outside the change, such as expected values worked out by hand, and the Validator reports a Spec that has none.
+
 ## 2026-10-16: Technical writing replaces plain language
 `/technical-writing` replaces `/plain-language` as the standard for everything a skill writes for a person, with sentence rules and a catalogue of AI-sounding phrases to cut, both adapted from pstack. Text you read from the skills no longer carries em dashes or semicolons, and a colon only introduces a list or an example. A free-form document such as a README now takes one type: tutorial, how-to, reference, or explanation.
 
