@@ -8,6 +8,7 @@
 - `setup-update` reads an existing ref, shows its settings, and asks what should change.
 - `setup-move` offers to move old local work (`.agents/issues/`, `.agents/ideas/`, `.agents/specs/`) into the new Tracker.
 - `setup-github` and `setup-jira` fill in their template's settings and, on GitHub, create labels.
+- `setup-verify` writes the repo's Verify skill at `.claude/skills/verify/`, proves it with one drive, and commits it. Run again, it is the upkeep pass.
 
 ## How to get to it (user POV)
 
@@ -27,6 +28,7 @@ Preconditions:
 - **Proof.** `scratch-02.txt` shows exactly one new commit touching only `.agents/refs/tracker.md`, and a clean status. The file matches the template line for line: `diff <(tr -d '\r' < <scratch>/.agents/refs/tracker.md) <(tr -d '\r' < skills/setup/LOCAL.md)` prints nothing.
 - **No argument.** In a fresh run, `turn <run> "/skills:setup"`. With no remote, the skill suggests local Markdown and asks to confirm before drafting.
 - **Update.** In the run above, before cleanup, `turn <run> "/skills:setup"` again. The skill shows the existing ref's settings and asks what should change.
+- **Verify skill.** In a fresh run, commit a small command-line script, then `turn <run> "/skills:setup verify"`, answering any question in later turns. The scratch repo ends with one commit adding `.claude/skills/verify/SKILL.md` (frontmatter `name: verify`, no `disable-model-invocation`), `features/README.md`, and one file per feature with the four H2s. The final message names the evidence path of the proving drive, and that path exists after cleanup.
 
 ## Gotchas
 

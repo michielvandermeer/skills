@@ -9,7 +9,7 @@ Review judges how the code is written; Verify judges whether it does what was as
 ## Considered Options
 
 - **Keep the Planner and loop per Step.** Rejected: slicing paid off only on Specs too large for one agent, and it brought Footprints, Outcomes, Depends-on lines, and a resume per Step. A Spec too large for one Implementer is a Spec to split into several Issues.
-- **Keep the Proof ladder and Safety fact inside Verify.** Rejected: the Spec's Hand checks and the whole suite already say what must hold, and a Safety fact per change was a second spec the agents wrote for themselves. The Run recipe stays, because a Hand check on a running surface needs it.
+- **Keep the Proof ladder and Safety fact inside Verify.** Rejected: the Spec's Hand checks and the whole suite already say what must hold, and a Safety fact per change was a second spec the agents wrote for themselves. A Hand check on a running surface drives the app through the repo's Verify skill ([ADR-0075](0075-setup-verify-writes-the-verify-skill-the-verifier-drives.md)).
 - **Run Verify even when Review found something.** Rejected: the Implementer's fixes would change the code Verify just checked, so the next Iteration's Verify repeats the work.
 - **Review and Verify in one agent.** Rejected: one context then judges both, and a strong finding on one axis crowds out the other.
 - **A Fixer after Review, separate from the Implementer.** Rejected: a fresh Implementer each Iteration is that Fixer, under the same contract, so one agent file covers both.

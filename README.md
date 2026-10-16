@@ -103,6 +103,8 @@ Setting `DISABLE_AUTOUPDATER` turns off plugin auto-updates along with Claude Co
 
 Each piece of work is one **Issue**, kept in your repo's **Tracker**. Out of the box, the Tracker is a folder of Markdown files in the repo itself, `.agents/issues/`. To use GitHub Issues or Jira instead, or another system you describe, run `/setup`. It writes `.agents/refs/tracker.md`, which tells the skills how to work with your Tracker. That file belongs to your repo, so you can edit it.
 
+To let `/implement` check a change on the running app, run `/setup verify`. It writes `.claude/skills/verify/`, a skill in your repo that launches the app, drives each feature the way a user would, and captures evidence, and it proves the skill works before committing it. Run it again later to bring the skill up to date with the app.
+
 An Issue has exactly one status at a time:
 
 | Status | What it means |
@@ -189,7 +191,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. `/implement` and `/hillclimb` use it when a rebase conflicts. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
-| `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. |
+| `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. `/setup verify` writes, or brings up to date, the repo's verify skill, which drives the app the way a user does. |
 | `technical-writing` | The house standard for every sentence a person reads: document type, sentence rules, and the AI tells to cut. |
 | `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. `/triage`, `/grill-with-docs`, `/wayfinder`, and `/prototype` end with it. |
 | `triage` | Sort incoming reports, or the Issues nobody has triaged yet, into Specs and parked Issues, one Issue per distinct problem, and close what won't be done. |
@@ -205,7 +207,7 @@ These skills are derived from and inspired by [**Matt Pocock's skills**](https:/
 
 The pictures `pr` draws come from Dex Horthy's [`show-me`](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md) skill at HumanLayer, by way of Matt's `pr`.
 
-`hillclimb` and its measurement rules adapt the Hillclimb playbook and the `benchmark-checklist` skill from Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT). From the same plugin, `technical-writing` adapts its `technical-writing` and `unslop` skills, `what-did-i-get-done` extends its skill of that name to pull requests and Issues, `why` condenses its `why` skill, `explain`'s walkthrough format and explorer briefs come from its `how` skill, and the design principles in `code-review` and the planning principles in `to-spec` condense its principles.
+`hillclimb` and its measurement rules adapt the Hillclimb playbook and the `benchmark-checklist` skill from Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT). From the same plugin, `technical-writing` adapts its `technical-writing` and `unslop` skills, `what-did-i-get-done` extends its skill of that name to pull requests and Issues, `why` condenses its `why` skill, `setup verify` merges its `create-verification-skill` and `maintain-verification-skill`, `explain`'s walkthrough format and explorer briefs come from its `how` skill, and the design principles in `code-review` and the planning principles in `to-spec` condense its principles.
 
 ## License
 

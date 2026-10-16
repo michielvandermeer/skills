@@ -1,7 +1,7 @@
 ---
 name: setup
-description: Set up or update the repo's Tracker ref — where its Issues live and how the skills work with them.
-argument-hint: "[local | github | jira | other]"
+description: Set up or update the repo's Tracker ref, where its Issues live, or its Verify skill, which drives the app the way a user does.
+argument-hint: "[local | github | jira | other | verify]"
 disable-model-invocation: true
 model: sonnet
 effort: high
@@ -12,6 +12,8 @@ effort: high
 Write or update `.agents/refs/tracker.md`, the **Tracker ref**: the repo's own description of its **Tracker** and of how each operation the skills name is carried out there. The plugin ships one **Tracker template** per system — [LOCAL.md](LOCAL.md), [GITHUB.md](GITHUB.md), [JIRA.md](JIRA.md). The copy this skill writes is the repo's own to edit; the skills follow it as written, and later changes to a template do not reach it.
 
 Everything the user reads runs at the `/technical-writing` bar.
+
+With the argument `verify`, follow [VERIFY.md](VERIFY.md) in place of the steps below.
 
 ## 1. Read what is there
 

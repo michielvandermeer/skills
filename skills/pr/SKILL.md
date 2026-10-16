@@ -61,7 +61,7 @@ Open with the one fact the change is safe because of, naming what breaks if it i
 - **After**: output from a run on the exact code being pushed. When the code changed since the check last ran, run it again.
 - **Before**: the same check on the target branch, in a throwaway worktree, when it can fail there. Otherwise one sentence on what happened before.
 
-A visual change shows a screenshot, or a short recording when the change is an interaction, taken by driving the app the way the repo's Run recipe says when it has one. Save it outside the repo, reference it in the description by that path, and upload it with `--attach '<path>#<alt text>'`, which swaps the path for the uploaded link (`gh` 2.99 and later, on GitHub.com). Where the host's tool cannot attach — GitHub Enterprise Server, GitLab, an older `gh` — leave `<!-- add <path> here -->` in its place and tell the user which file to add.
+A visual change shows a screenshot, or a short recording when the change is an interaction, taken by driving the app the way the repo's Verify skill (`.claude/skills/verify/`) says when it has one. Save it outside the repo, reference it in the description by that path, and upload it with `--attach '<path>#<alt text>'`, which swaps the path for the uploaded link (`gh` 2.99 and later, on GitHub.com). Where the host's tool cannot attach — GitHub Enterprise Server, GitLab, an older `gh` — leave `<!-- add <path> here -->` in its place and tell the user which file to add.
 
 A change to no code that runs, such as a docs edit, says in one line that it needs no evidence. A check you could not run is named with the reason, in place of its output: every line of output in the description comes from a run you saw.
 

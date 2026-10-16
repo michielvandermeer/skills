@@ -194,7 +194,7 @@ A **Retrospective** suggestion whose pain will recur every turn or every session
 _Avoid_: mechanical-only, severity
 
 **Correction**:
-A change a session made to code, or to a **Run recipe**, that existed before that session started, where the session also shows the old code was wrong — the user said so, a bug was being fixed, a test failed, or a review flagged it. Code written earlier in the same session is not a Correction, however soon it was fixed; neither is a change that follows a changed requirement. Who wrote the old code, a person or an agent, does not matter. A **Retrospective** turns a Correction into a Coding standards rule only when the fix points to a pattern future code could repeat.
+A change a session made to code, or to a **Verify skill**, that existed before that session started, where the session also shows the old code was wrong — the user said so, a bug was being fixed, a test failed, or a review flagged it. Code written earlier in the same session is not a Correction, however soon it was fixed; neither is a change that follows a changed requirement. Who wrote the old code, a person or an agent, does not matter. A **Retrospective** turns a Correction into a Coding standards rule only when the fix points to a pattern future code could repeat.
 _Avoid_: fix, bugfix, regression
 
 ### Execution
@@ -208,7 +208,7 @@ The sub-agent (`skills:implementer`) that does the Implement part of an **Iterat
 _Avoid_: Step agent, coder, worker
 
 **Verifier**:
-The sub-agent (`skills:verifier`) that does the Verify part of an **Iteration**: it reads the Spec against the diff, builds and runs the whole test suite, and runs the Spec's **Hand checks**, driving the app through the **Run recipe** when the change alters a running surface. It changes no code — the Run recipe is the one file it may write — and reports `passed`, or the findings that send the run back to Implement. The land dispatches a fresh one when a rebase brought in code the last one did not check.
+The sub-agent (`skills:verifier`) that does the Verify part of an **Iteration**: it reads the Spec against the diff, builds and runs the whole test suite, and runs the Spec's **Hand checks**, driving the app through the **Verify skill** when the change alters a running surface. It changes no code, and corrects the Verify skill only where the skill steered it wrong. It reports `passed`, or the findings that send the run back to Implement. The land dispatches a fresh one when a rebase brought in code the last one did not check.
 _Avoid_: Checker, Prover, tester, QA agent
 
 **Climber**:
@@ -247,7 +247,7 @@ Zero failures in the **Verifier**'s run of the whole test suite, measured agains
 _Avoid_: passing, all tests pass, mostly green
 
 **Deviation**:
-Anything an **Implementer** or **Verifier** reports that the Driving session carries forward without acting on: a contradiction with the Spec, a failure left red because the Base branch already fails it, a flaky test, a Hand check skipped for what it needs, or a **Run recipe** written or corrected.
+Anything an **Implementer** or **Verifier** reports that the Driving session carries forward without acting on: a contradiction with the Spec, a failure left red because the Base branch already fails it, a flaky test, a Hand check skipped for what it needs, a missing **Verify skill** among them, or a Verify skill corrected.
 
 **Spec-bound dispatch**:
 A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled: the **Implementer** and the **Verifier** run on Sonnet. Its opposite carries design or review judgement: the **Reviewer** is pinned to the model and effort that judgement needs, while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
@@ -261,6 +261,6 @@ _Avoid_: merge danger, one-way door, two-way door
 The state of an `/implement` run the `benchmark/` runner starts to measure what it costs: `SKILLS_BENCHMARK=1`, named in the session's system prompt. The claim and every push become no-ops that write one line to a log, and every other part of the run goes as it does in production. Compared with what the run does, it changes only whether the run reaches outside the checkout.
 _Avoid_: dry run, test mode, simulation
 
-**Run recipe**:
-The record, kept in the consuming repo, of how to launch its app, tell that it is ready, drive it, see the result, and clean up afterwards — runnable from a plain shell command on any host. It lives at `.agents/refs/run-recipe.md`; in a repo with a `CONTEXT-MAP.md`, each context with a running surface keeps its own under that context's folder. Written by the first **Verifier** that has to drive the app, and edited only when it steers an agent wrong.
-_Avoid_: verify recipe, run skill, smoke script, test plan
+**Verify skill**:
+The project skill at `.claude/skills/verify/` in the consuming repo that drives its app the way a user does: launch, doctor, drive, evidence, and cleanup, with a feature map holding one recipe per user-facing feature. Named `verify`, so it replaces Claude Code's bundled `/verify`. In a repo with a `CONTEXT-MAP.md`, each context with a running surface keeps its own under that context's folder. Written and kept current by `/setup verify`; a **Verifier** corrects it only where it steered it wrong.
+_Avoid_: run recipe, verification skill, driver skill, control skill, smoke script

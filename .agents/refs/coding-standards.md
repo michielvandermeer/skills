@@ -14,7 +14,7 @@ Run scratch lives inside the run's working tree, in a folder whose own `.gitigno
 
 ## Coined terms
 
-Before a skill edit coins a term, grep `skills/` and `CONTEXT.md` for it. A skill may already use the words in another sense that never reached the glossary: "context folder" meant the folder holding a `CONTEXT.md` in `skills/implement/RUN-RECIPE.md` when a new path level nearly took the same name. A coined term gets its `CONTEXT.md` entry in the same commit.
+Before a skill edit coins a term, grep `skills/` and `CONTEXT.md` for it. A skill may already use the words in another sense that never reached the glossary: "context folder" meant the folder holding a `CONTEXT.md` in a since-deleted `skills/implement/RUN-RECIPE.md` when a new path level nearly took the same name. A coined term gets its `CONTEXT.md` entry in the same commit.
 
 ## Copied implement passages
 
