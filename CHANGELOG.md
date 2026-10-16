@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Implement runs as one loop
+`/implement` and `/implement-yolo` now run one loop over the whole Spec. An implementer builds it, a review checks it against your coding standards and a set of design principles, and a verifier checks it against the Spec, the full test suite and its Hand checks; a finding from either sends it back, up to three times. Before, a Planner sliced the Spec into steps that each had their own checker, review findings were fixed once with nobody checking the fixes, and `/implement-oneshot`, Safety facts, Proofs and the data-structures pass were separate pieces that are now gone.
+
 ## 2026-10-14: Goals can start implement runs
 A `/goal` session can now start `/implement`, `/implement-oneshot`, and `/implement-yolo` when its goal names one. Before, these commands ran only when you typed them, so a goal that asked for one could never run it. A plain request to build something still does not start a run.
 
