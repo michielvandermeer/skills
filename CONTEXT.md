@@ -118,7 +118,7 @@ The plain-words introduction a skill gives its own vocabulary the first time tha
 _Avoid_: definition, footnote, explainer, aside
 
 **Explanation**:
-What an `/explain` run makes instead of prose: a diagram drawn with text characters in the chat, or a self-contained HTML page or narrated video in a temp folder outside any repo. Distinct from an **Explainer**, the opening sentences of a grilling **Question**.
+What an `/explain` run makes: a written walkthrough or a diagram drawn with text characters in the chat, or a self-contained HTML page or narrated video in a temp folder outside any repo. Distinct from an **Explainer**, the opening sentences of a grilling **Question**.
 _Avoid_: explainer, explainer video, visual
 
 ### Sessions

@@ -38,7 +38,7 @@ Read the seed text for this problem. If this updates an existing Issue, read it 
 
 Search for an existing implementation of the requested behaviour by domain concept (not just the request's wording). Record where you looked. Found → skip verify, apply **not filed**.
 
-For a bug, search the Tracker and the git log for earlier fixes of the same problem. Two or more that failed → [Attack the premise](../to-spec/PRINCIPLES.md#attack-the-premise) before choosing a fix.
+For a bug, search the Tracker and the git log for earlier fixes of the same problem. Two or more that failed → [Attack the premise](../to-spec/PRINCIPLES.md#attack-the-premise) before choosing a fix. When an earlier fix exists, or the bug sits in code that looks deliberate, such as a guard, a limit, or a workaround, run the `/why` skill on that code before choosing a fix, and carry its Preserve, Change, Avoid, and Risk lists into the Spec.
 
 Done: the problem is already implemented, or you have enough of the code to verify and classify.
 

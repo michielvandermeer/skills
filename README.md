@@ -178,7 +178,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `code-review` | Review changes since a fixed point along two axes — Standards, with the design principles, and Spec — in parallel sub-agents. |
 | `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, and brings every ADR to state the decision in force. Once `/setup` has run, it leaves Issues alone. |
 | `domain-modeling` | Build and sharpen a project's domain model. |
-| `explain` | Explain anything as a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
+| `explain` | Explain anything as a written walkthrough, a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `hillclimb` | Push one measured number — test-suite time, build time, memory, bundle size — toward a target, trying one change at a time and keeping only what measurably helps. Loads on its own when you ask for something to be made faster, smaller, or cheaper. |
@@ -196,6 +196,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
 | `wayfinder` | Plan a huge chunk of work as a map — an Issue whose child tickets are decisions — and resolve them one at a time until its Specs can be written. |
 | `what-did-i-get-done` | Summarise what you got done over a period, from your commits, pull requests, and Issues in this repo. |
+| `why` | Trace why code is the way it is, from its history, pull requests, Issues, and connected tools, with what the record says kept apart from what is inferred. Loads on its own when you ask why something works the way it does. |
 | `writing-for-agents` | Reference for writing any document an agent consumes — skills, AGENTS.md, CLAUDE.md. |
 
 ## Credits
@@ -204,7 +205,7 @@ These skills are derived from and inspired by [**Matt Pocock's skills**](https:/
 
 The pictures `pr` draws come from Dex Horthy's [`show-me`](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md) skill at HumanLayer, by way of Matt's `pr`.
 
-`hillclimb` and its measurement rules adapt the Hillclimb playbook and the `benchmark-checklist` skill from Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT). From the same plugin, `technical-writing` adapts its `technical-writing` and `unslop` skills, `what-did-i-get-done` extends its skill of that name to pull requests and Issues, and the design principles in `code-review` and the planning principles in `to-spec` condense its principles.
+`hillclimb` and its measurement rules adapt the Hillclimb playbook and the `benchmark-checklist` skill from Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT). From the same plugin, `technical-writing` adapts its `technical-writing` and `unslop` skills, `what-did-i-get-done` extends its skill of that name to pull requests and Issues, `why` condenses its `why` skill, `explain`'s walkthrough format and explorer briefs come from its `how` skill, and the design principles in `code-review` and the planning principles in `to-spec` condense its principles.
 
 ## License
 

@@ -12,4 +12,4 @@
 
 - A caller that follows a skill by path keeps its own model. The skill's `model:` pin applies only when a person types it ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)).
 - `/to-spec` hands the Validator `/validate-spec`'s absolute path, because an agent file has no folder to resolve a relative link from.
-- A skill that starts from a plain request that never names it stays model-invoked, such as `/grilling`, `/prototype`, `/code-review`, and `pr`. So does `/implement`, which a `/goal` starts ([ADR-0067](0067-implement-is-model-invoked-so-a-goal-can-start-it.md)).
+- A skill that starts from a plain request that never names it stays model-invoked, such as `/grilling`, `/prototype`, `/code-review`, `pr`, and `/why`, which a "why does this work this way" question starts and which `/triage` and `/grilling` also run. So does `/implement`, which a `/goal` starts ([ADR-0067](0067-implement-is-model-invoked-so-a-goal-can-start-it.md)).
