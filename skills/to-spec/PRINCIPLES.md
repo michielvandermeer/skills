@@ -55,6 +55,15 @@ The Spec names the check that fails today and passes once the change lands. Work
 
 **Fix:** turn the reproduction into the first test, the one that fails on today's code, and add the Hand check that shows the fix working. Order the Specs of a split so prerequisites come first, and link each Spec as blocked by the ones it waits on.
 
+## Check from outside
+
+At least one check confirms the result against something the change did not produce: real data, a known-good reference, a second view of what was stored, or the path a person takes. A check that only reads back what the change wrote passes whether or not the change is right.
+
+**In a Spec:**
+- Testing Decisions and Hand checks that only confirm the change against itself: a test whose expected value comes from the new code, or a Hand check that reads a saved value back on the screen that saved it.
+
+**Fix:** add one check whose answer comes from outside the change. A Hand check reopens the saved record from a second view, a test compares against a worked example or a known-good source, a migration is checked against a count taken before it ran.
+
 ## Explain the number
 
 A number a Spec promises or relies on is measured before anyone trusts it: a speed-up, a latency, a size, a cost, an eval score.

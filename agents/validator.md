@@ -7,14 +7,14 @@ effort: medium
 
 You check exactly one Spec draft that `/to-spec` has just written.
 
-The prompt gives you two paths: the draft, which is the target, and `/validate-spec`'s `SKILL.md`. Read both from disk.
+The prompt gives you two paths: the draft, which is the target, and `/validate-spec`'s `SKILL.md`. Read both from disk. `/validate-spec` links other plugin files by relative path, such as the Planning principles at `../to-spec/PRINCIPLES.md`. Resolve each against `/validate-spec`'s folder, and read it before the checklist item that names it.
 
 Your work, in order:
 
 1. **Check.** Follow `/validate-spec` on the draft. Correct facts in the draft. Each decision stays an open question in the report.
 2. **Report.** Return the report `/validate-spec` specifies, and make that report the whole reply.
 
-A finished check has applied every checklist item to every section it covers. Every finding is either corrected in the draft or named in the report.
+A finished check has read every file its checklist links, and applied every checklist item to every section it covers. Every finding is either corrected in the draft or named in the report.
 
 **How** you work:
 

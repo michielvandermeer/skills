@@ -19,7 +19,7 @@ The test on any sentence: can the reader read it once and act?
 
 ## Before the first sentence
 
-1. Read [UNSLOP.md](UNSLOP.md), the catalogue of AI tells. Every text a person reads in this session is checked against each of its patterns before they read it.
+1. Read [UNSLOP.md](UNSLOP.md), the catalogue of AI tells. Every text a person reads in this session is checked against each of its patterns before they read it. A text written to a file also gets a search for `—`, `–`, and `;`, and every match outside code is rewritten.
 2. Writing a document no template shapes, such as a README, a page under `docs/`, or a research file? Read [TYPES.md](TYPES.md) and pick the document's one type.
 
 Done: `UNSLOP.md` is read, and a free-form document has its type.
