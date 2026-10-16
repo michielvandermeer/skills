@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Choose agent models per repo
+Run `/setup models` to pick the model and effort each of the plugin's sub-agents runs at in your repo, such as running the explorer on Sonnet instead of Haiku. The choices are saved in `.agents/refs/models.md` in the repo, not in your global Claude settings, and the first `/setup` creates that file with the current defaults. Skills you type keep the models they always used.
+
 ## 2026-10-16: Implement plans steps again
 `/implement` again starts by slicing the Spec into steps that each fit one agent, then builds them in order before it reviews and verifies the whole change. A small Spec is one step, so the extra cost is one short planning agent, about five percent of a run. A large Spec no longer has to fit in one agent's context, and its landing commit lists the steps.
 
