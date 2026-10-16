@@ -79,19 +79,15 @@ Merging the ADRs that record one decision at different times into a single ADR t
 _Avoid_: squash, consolidate, supersede
 
 **Hand check**:
-One check in a **Spec**'s How to Check It section: what a person does on the running product, and what they should see, written so a QA tester can follow it by hand. The **Prover** runs every Hand check too, at the end of an implement run, on the code that lands. A Spec where nothing changes for a person has none, and says so.
-_Avoid_: acceptance check, acceptance criterion (that is a Step's own list), test case, manual test, QA script
+One check in a **Spec**'s How to Check It section: what a person does on the running product, and what they should see, written so a QA tester can follow it by hand. The **Verifier** runs every Hand check too, in each **Iteration** of an implement run. A Spec where nothing changes for a person has none, and says so.
+_Avoid_: acceptance check, acceptance criterion, test case, manual test, QA script
 
 **Unstated claim**:
 A claim a Spec treats as settled that it never states as a decision and that the code does not establish as fact.
 _Avoid_: assumption
 
-**Step**:
-One implementation slice of a Spec, at `.agents/steps/<run-slug>/<NN>-<slug>.md`. A tracer bullet: a narrow but complete path through every layer, sized to one fresh agent context, verifiable on its own. Its `Status:` reads `pending` until its Step agent sets `built`, then `done` once its Checker finishes it. A run with no Planner — `/implement-oneshot` or `/implement-yolo` — has exactly one Step, the whole Spec, with no Footprint. Steps exist only for the duration of a run and are deleted when it lands.
-_Avoid_: ticket, task, chunk, phase
-
 **Decision ticket** (everyday: **ticket**):
-A child of a **Map** in the **Tracker** whose resolution is a decision — not a slice of a build to execute. The unit of claim and resolution. Distinct from a Step, which delivers code and decides nothing.
+A child of a **Map** in the **Tracker** whose resolution is a decision — not a slice of a build to execute. The unit of claim and resolution. Distinct from a Spec, which an implement run builds.
 _Avoid_: investigation ticket, implementation ticket
 
 **Claimed**:
@@ -120,7 +116,7 @@ The folder that stands where a context's name would in a work document's path, i
 _Avoid_: shared, global, cross-app
 
 **Coding standards**:
-A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say. Distinct from `/code-review`'s smell baseline, which applies even when a repo documents nothing.
+A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say. Distinct from the **Design principles**, which apply even when a repo documents nothing.
 _Avoid_: style guide, conventions, coding-standards.md
 
 ### Communication
@@ -223,21 +219,17 @@ _Avoid_: fix, bugfix, regression
 
 ### Execution
 
-**Planner**:
-The sub-agent (`skills:planner`) that reads a Spec, walks the code only until every Step's Footprint can be filled, and writes the Step files — each with that Footprint and the earlier Steps whose Outcomes it needs, numbered in dependency order. It closes leftover behaviour the Spec did not name, commits the files in one commit, and returns only a compact index to the Driving session — never the Step bodies.
-_Avoid_: Plan, Plan agent, host Plan
+**Iteration**:
+One pass of an implement run's loop over the whole Spec: Implement, then Review, then Verify. A Review finding ends the Iteration before Verify; a Verify finding ends it after. The next Iteration starts at Implement with those findings. A run lands when one Iteration passes both, and halts when its third does not.
+_Avoid_: round (a grilling term), cycle, attempt (a Hillclimb term)
 
-**Step agent**:
-The sub-agent (`skills:implementer`) that implements exactly one Step, in the run's working tree, after the Step before it is done — under all three implement commands. Reads the Outcomes of the earlier Steps its Step depends on, closes any gap in the Spec or Step from the code and existing patterns, builds its Footprint's projects and leaves the tests closest to its change passing — never the Footprint's full set of tests, which only the **Checker** runs — records its **Safety fact** and **Proof** in its Outcome, commits, and returns a fixed three-line report. The **Checker** finishes the Step from there.
-_Avoid_: Oneshot agent, implementer
+**Implementer**:
+The sub-agent (`skills:implementer`) that does the Implement part of an **Iteration**, under both implement commands. On the first Iteration it makes the whole change the Spec asks for; on each later one it fixes every Verify finding it was handed, and fixes or declines each Review finding, with a reason for each decline. It builds what it touched, runs the tests closest to its change, commits, and returns a fixed four-line report. A fresh one is dispatched each Iteration.
+_Avoid_: Step agent, coder, worker
 
-**Checker**:
-The sub-agent (`skills:checker`) that finishes a Step once its Step agent has committed it. It re-runs the Step's **Proof**, raising it to the rung **Green** requires when it falls short, reviews the Step's commit on both axes, fixes every finding, then runs the tests of the Footprint's projects — the only agent that runs them in full for that Step — until the Step is **Green**, and puts its fixes and the status flip in a new commit. It starts from the Step file and the Step's diff, not from the Step agent's context, and it is what marks the Step done.
-_Avoid_: verifier, step reviewer, finisher
-
-**Prover**:
-The sub-agent (`skills:prover`) that re-runs every Step's **Proof** once more at the end of an implement run, on the code that lands: after the final review's fixers and, in a command that rebases, after the rebase. It wrote none of those Proofs and changes nothing. It works from each Step's `Safety fact:` and `Proof:` lines and the Proof folder, launches the app once for every rung-4 Proof, runs the Spec's **Hand checks** in the same session, and reports which Proofs and Hand checks held. A Proof or Hand check that fails it goes to a **Proof fixer**, and a fresh Prover then re-runs every Proof the fixer did not retire. It checks the run as a whole, so a Step's **Green** does not wait on it.
-_Avoid_: final checker, end-of-run checker, re-prover, verifier
+**Verifier**:
+The sub-agent (`skills:verifier`) that does the Verify part of an **Iteration**: it reads the Spec against the diff, builds and runs the whole test suite, and runs the Spec's **Hand checks**, driving the app through the **Run recipe** when the change alters a running surface. It changes no code — the Run recipe is the one file it may write — and reports `passed`, or the findings that send the run back to Implement. The land dispatches a fresh one when a rebase brought in code the last one did not check.
+_Avoid_: Checker, Prover, tester, QA agent
 
 **Climber**:
 The sub-agent (`skills:climber`) that writes one **Attempt** of a **Hillclimb**. It gets one idea, changes the code in the Hillclimb's worktree, builds, runs the tests nearest its change, and leaves the change uncommitted. The Driving session measures it and keeps or reverts it, so the Climber never judges its own change.
@@ -248,64 +240,43 @@ The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just drafte
 _Avoid_: spec checker, spec reviewer, linter
 
 **Reviewer**:
-The sub-agent (`skills:reviewer`, pinned to Opus) that `/code-review` dispatches once per axis — Standards and Spec — in parallel, each starting fresh, or once carrying both axes when the caller asks for one. A Checker's per-Step review runs one Sonnet Reviewer carrying both axes; the implement commands' final review runs the two on the pin. It reads the changes since the fixed point and reports findings; it fixes nothing, so a **Fixer** does that.
+The sub-agent (`skills:reviewer`, pinned to Opus) that `/code-review` dispatches once per axis — Standards and Spec — in parallel, each starting fresh, or for one axis alone when the caller names it. An implement run's Review is the Standards axis alone. It reads the changes since the fixed point and reports findings; it fixes nothing.
 _Avoid_: review agent, critic, review bot
 
-**Fixer**:
-A `general-purpose` sub-agent the Driving session sends, at its own model and effort, to fix what a review or a build found. The final review of `/implement` sends one fixer with both axes' findings, the Spec axis's first. The final review of the oneshot and yolo commands, and of a **Hillclimb**, sends a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh, so no single fixer carries both axes. A red post-rebase build at land gets one fixer too. So does a Proof or **Hand check** that fails the **Prover**'s pass: that **Proof fixer** restores the Safety fact, updates a Proof that only went stale, or, when the Spec asked a later Step to change that behaviour, leaves the code alone and records a Deviation.
+**Design principles**:
+The fixed set of judgement calls in `skills/code-review/PRINCIPLES.md` — boundary discipline, type system discipline, idempotent operations, and the rest — that the Standards axis of `/code-review` applies on top of a repo's **Coding standards**, even when a repo documents nothing. A documented repo standard always wins over a principle. The **Implementer** reads them before it writes code.
+_Avoid_: smell baseline, best practices
 
-**Footprint**:
-The section of a Step file naming where that Step's work lands — the files it is expected to touch, the symbols inside them that matter, and the projects that must be green when it finishes. Written by the Planner from the codebase walk it does anyway, and read by the Step agent as a starting point rather than a contract: where the code and the Footprint disagree the code wins, and the Step agent records the drift in its Outcome. Its list of projects also fixes how much test suite the Checker runs for that Step.
-_Avoid_: entry map, landing, touch list, blast radius — the last is a property of a Wide refactor, not of a Step
+**Fixer**:
+A `general-purpose` sub-agent a **Hillclimb**'s Driving session sends, at its own model and effort, to fix what its final review found: a **Spec fixer** with the Spec axis's findings, then a **Standards fixer** with the Standards axis's findings, each starting fresh. An implement run has no Fixer: the next **Iteration**'s **Implementer** fixes what the last one's Review or Verify found.
 
 **Base branch**:
-The branch the session was on when an implement command started, read again on a resume. The run branches from it, is reviewed and measured Green against it, and lands back on it. It is the repository's default branch only when the session started there.
+The branch the session was on when an implement command started, read again on a resume. The run branches from it, is reviewed and verified against it, and lands back on it. It is the repository's default branch only when the session started there.
 _Avoid_: master, main, default branch, trunk
 
 **Landing commit**:
-The one commit an implement run leaves on the **Base branch** when it lands: the whole run's change, named after what it does, carrying the Issue's closing reference. It replaces every commit the run made along the way — plan, Step, Checker, fixer — so none of those stays on the Base branch, and it holds no Step files. A **Retrospective**'s commit, when there is one, follows it as a commit of its own.
+The one commit an implement run leaves on the **Base branch** when it lands: the whole run's change, named after what it does, carrying the Issue's closing reference. It replaces every commit the run made along the way — the Spec copy and each Iteration's — so none of those stays on the Base branch, and it holds no run folder. A **Retrospective**'s commit, when there is one, follows it as a commit of its own.
 _Avoid_: squash commit, land commit, cleanup commit, merge commit
 
 **Green**:
-Zero failures, in the Checker's own run, in the projects a Step's Footprint names, or in the whole suite for the last Step or a Step with no Footprint, plus a **Proof** of its **Safety fact** that the Checker re-ran — at rung 3 of the **Proof ladder**, or rung 4 when the change alters a running surface; a change to no code that runs needs none — measured against the **Base branch**: a failure that also fails on the Base branch at the merge-base is a Deviation to report, not the run's to fix, and does not block landing.
+Zero failures in the **Verifier**'s run of the whole test suite, measured against the **Base branch**: a failure that also fails on the Base branch at the merge-base is a Deviation to report, not the run's to fix, and does not block landing. A test that passes on the Verifier's one re-run is a flake, reported the same way.
 _Avoid_: passing, all tests pass, mostly green
 
-**Outcome**:
-The section a Step agent appends to its own Step file, recording what it built and where its Footprint proved wrong; the Checker adds to it when a fix changes something a later Step needs. The channel by which a Step informs the later Steps that depend on it, bypassing the Driving session's context entirely.
-
 **Deviation**:
-Anything a Step agent or Checker did that contradicts the Spec or changes what a later Step must do, any failure it left red because the Base branch already fails it, any post-rebase failure that passed on the Driving session's re-run, and any Safety fact a later Step changed on purpose, as the Spec asked, so that its Proof no longer holds. The one piece of a run's detail the Driving session does carry forward.
+Anything an **Implementer** or **Verifier** reports that the Driving session carries forward without acting on: a contradiction with the Spec, a failure left red because the Base branch already fails it, a flaky test, a Hand check skipped for what it needs, or a **Run recipe** written or corrected.
 
 **Spec-bound dispatch**:
-A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a Step, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled. Its opposite carries design or review judgement: the **Planner** and the **Reviewer** are pinned to the model and effort that judgement needs, which a caller overrides where its review needs less (a Checker's per-Step review passes Sonnet), while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
+A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled: the **Implementer** and the **Verifier** run on Sonnet. Its opposite carries design or review judgement: the **Reviewer** is pinned to the model and effort that judgement needs, while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
 _Avoid_: cheap agent, worker, low-tier agent
 
-**Tracer bullet**:
-A vertical slice that cuts a narrow but complete path through every layer (schema, API, UI, tests), rather than a horizontal slice of one layer. The shape every Step takes.
-
-**Wide refactor**:
-One mechanical change whose blast radius fans across the codebase, so a single edit breaks call sites everywhere and no tracer bullet can land green. Sequenced as expand–contract instead of sliced vertically.
-
-**Safety fact**:
-The one fact a change is safe because of, stated so that it names what breaks if the fact is false. "It compiles" names nothing that breaks, so it is not a Safety fact. Recorded in an Outcome together with its rung on the **Proof ladder** and its **Proof**.
-_Avoid_: safety claim, invariant, assumption
-
 **Merge risk**:
-How hard a change is to undo once it lands, and what it would affect if it went wrong. It says whether reverting the change's commits restores the old behaviour — and when it does not, what stays changed after the revert, such as data written, a migration run, or a release published — and names who or what would notice if the change went wrong. Recorded in an Outcome beside the **Safety fact**, and the closing section of every pull request description `/pr` shapes.
+How hard a change is to undo once it lands, and what it would affect if it went wrong. It says whether reverting the change's commits restores the old behaviour — and when it does not, what stays changed after the revert, such as data written, a migration run, or a release published — and names who or what would notice if the change went wrong. The closing section of every pull request description `/pr` shapes; `/pr` works it out from the diff.
 _Avoid_: merge danger, one-way door, two-way door
-
-**Proof**:
-The evidence for a **Safety fact** that a fresh agent re-ran and saw for itself: the command run, its exit code and an excerpt of its output, or a screenshot or transcript saved for the run. Output an agent quotes without that fresh re-run is not Proof.
-_Avoid_: evidence, verification, test result
-
-**Proof ladder**:
-The scale that ranks how strongly a **Proof** shows its **Safety fact** holds, in four rungs: (1) stated, or read in the code, which is not Proof at all; (2) the existing tests pass; (3) a test or throwaway script calls the real code on the risky path and would fail if the fact were false; (4) reproduced in the running app through the **Run recipe**.
-_Avoid_: evidence rung, confidence level, verification level
 
 **Benchmark mode**:
 The state of an `/implement` run the `benchmark/` runner starts to measure what it costs: `SKILLS_BENCHMARK=1`, named in the session's system prompt. The claim and every push become no-ops that write one line to a log, and every other part of the run goes as it does in production. Compared with what the run does, it changes only whether the run reaches outside the checkout.
 _Avoid_: dry run, test mode, simulation
 
 **Run recipe**:
-The record, kept in the consuming repo, of how to launch its app, tell that it is ready, drive it, keep evidence from it, and clean up afterwards — runnable from a plain shell command on any host. It lives at `.agents/refs/run-recipe.md`; in a repo with a `CONTEXT-MAP.md`, each context with a running surface keeps its own under that context's folder. Written by the first agent that has to drive the app, and edited only when it steers an agent wrong.
+The record, kept in the consuming repo, of how to launch its app, tell that it is ready, drive it, see the result, and clean up afterwards — runnable from a plain shell command on any host. It lives at `.agents/refs/run-recipe.md`; in a repo with a `CONTEXT-MAP.md`, each context with a running surface keeps its own under that context's folder. Written by the first **Verifier** that has to drive the app, and edited only when it steers an agent wrong.
 _Avoid_: verify recipe, run skill, smoke script, test plan

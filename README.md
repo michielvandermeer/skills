@@ -131,20 +131,17 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 │   ├── plugin.json        # plugin manifest (name, metadata)
 │   └── marketplace.json   # marketplace catalog (this repo is its own marketplace)
 ├── agents/                # sub-agents the skills dispatch, one markdown file each
-│   ├── checker.md
 │   ├── climber.md
 │   ├── explorer.md
 │   ├── implementer.md
-│   ├── planner.md
-│   ├── prover.md
 │   ├── researcher.md
 │   ├── reviewer.md
-│   └── validator.md
+│   ├── validator.md
+│   └── verifier.md
 ├── docs/adr/              # architecture decision records
 ├── skills/                # one directory per skill, each with a SKILL.md
 │   ├── code-review/
 │   ├── implement/
-│   ├── implement-oneshot/
 │   ├── implement-yolo/
 │   └── ...
 ├── CONTEXT.md             # the vocabulary these skills share
@@ -161,16 +158,16 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 **Skills you type.** Only the skills that no other skill loads pin their own model, because a loaded skill would swap its caller's model for the rest of the turn. `/review-spec` is left out, because you choose its model by opening the session ([ADR-0036](docs/adr/0036-review-spec-uses-the-session-model.md)).
 
 - Opus at high: `/grill-with-docs`, `/grill-me`, `/brainstorm`, `/improve-codebase-architecture`, `/refine`, `/wayfinder`.
-- Sonnet at high: `/triage`, `/implement`, `/implement-oneshot`, `/implement-yolo`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`.
+- Sonnet at high: `/triage`, `/implement`, `/implement-yolo`, `/codebase-audit`, `/doctor`, `/explain`, `/handoff`, `/setup`.
 
 **Sub-agents.**
 
-- Sonnet at high: `skills:implementer`, `skills:planner`.
-- Sonnet at medium: `skills:checker`, `skills:prover`, `skills:climber`, `skills:validator`, `skills:researcher`.
+- Sonnet at high: `skills:implementer`, `skills:verifier`.
+- Sonnet at medium: `skills:climber`, `skills:validator`, `skills:researcher`.
 - Haiku at high: `skills:explorer`.
-- Opus at high: `skills:reviewer`, the two `/code-review` reviewers. The Checker runs its per-Step review in one reviewer on Sonnet at high instead.
+- Opus at high: `skills:reviewer`, the `/code-review` reviewers.
 
-Everything else runs on the setting of the skill that starts it: the fixers, the `/improve-data-structures` pass, and the `/codebase-design` and `/brainstorm` fan-outs.
+Everything else runs on the setting of the skill that starts it: a Hillclimb's fixers, and the `/codebase-design` and `/brainstorm` fan-outs.
 
 > **Your environment can override a pin.** When `CLAUDE_CODE_EFFORT_LEVEL` is set, it beats every effort pin. Your session's settings and `/effort` do not.
 
@@ -179,7 +176,7 @@ Everything else runs on the setting of the skill that starts it: the fixers, the
 | Skill | Description |
 |-------|-------------|
 | `brainstorm` | Explore a vague problem as very different Directions, side by side, and file the ones you keep as Issues. |
-| `code-review` | Review changes since a fixed point along two axes — Standards and Spec — in parallel sub-agents. |
+| `code-review` | Review changes since a fixed point along two axes — Standards, with the design principles, and Spec — in parallel sub-agents. |
 | `codebase-audit` | Audit the whole codebase for simpler data structures and organizing models. Read-only. |
 | `codebase-design` | Shared vocabulary for designing deep modules. |
 | `diagnosing-bugs` | Diagnosis loop for hard bugs and performance regressions. |
@@ -191,9 +188,8 @@ Everything else runs on the setting of the skill that starts it: the fixers, the
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `handoff` | Compact the current conversation into a handoff document for another agent. |
 | `hillclimb` | Push one measured number — test-suite time, build time, memory, bundle size — toward a target, trying one change at a time and keeping only what measurably helps. Loads on its own when you ask for something to be made faster, smaller, or cheaper. |
-| `implement` | Implement an Issue's Spec, or a description, by slicing it into steps and running each one in its own sub-agent. |
-| `implement-oneshot` | Implement an Issue's Spec, or a description, as a single step, skipping the Planner. Still checks, reviews, and improves data structures after. |
-| `implement-yolo` | Implement an Issue's Spec, or a description, as a single step on this checkout and this branch. No worktree, no new branch, no merge. |
+| `implement` | Implement an Issue's Spec, or a description, in a loop: implement, review against the coding standards and design principles, verify against the Spec — up to three times — then land it as one commit. |
+| `implement-yolo` | The same loop as `implement`, on this checkout and this branch. No worktree, no new branch, no merge. |
 | `improve-codebase-architecture` | Scan for deepening opportunities, report them, then file the ones you pick as Issues — as Specs when they are clear enough to build. |
 | `improve-data-structures` | Review recent work for data structures that would materially simplify the code. |
 | `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Type it to rebuild your profile from past sessions; no grilling session runs it for you. |

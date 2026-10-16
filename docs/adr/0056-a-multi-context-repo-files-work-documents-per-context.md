@@ -12,6 +12,6 @@ The kind folder comes first so that every skill keeps the root path it already n
 
 ## Consequences
 
-- Steps, worktrees, and `.agents/refs/` take no context subfolder. A new slug must not already exist in another context subfolder of the same kind, so a lookup by slug finds one document and a Step folder keyed on a run's slug stays unique.
+- Run folders, worktrees, and `.agents/refs/` take no context subfolder. A new slug must not already exist in another context subfolder of the same kind, so a lookup by slug finds one document and a run folder keyed on a run's slug stays unique.
 - A skill that cannot tell the context asks; `/doctor`, which never asks, uses `common`.
 - `/doctor` moves a multi-context repo's root-level work documents, and an app-first `.agents/<app>/<kind>/` layout, into this shape.

@@ -18,5 +18,5 @@ The cost buys two things a file cannot. The rule reaches the agent even from a s
 
 - A durable document spends plain words rather than a gloss, because it travels. An Issue is read in the Tracker by people who were never in the session, and a Spec is read weeks later by someone who was never in the room. Where a template fixes a section name, the name stays and carries its gloss underneath.
 - An architecture review may use `/codebase-design` terms bare — module, interface, seam, and the rest of that vocabulary — when they are the natural claim. The report otherwise stays at this bar, so the review can name the structure it is judging.
-- Text written for a sub-agent is unchanged — a Step, a handoff.
+- Text written for a sub-agent is unchanged — a sub-agent prompt, a handoff.
 - One check applies the bar: `/validate-spec`'s Product reader item, on the four sections of a Spec that are the Product reader's. Specs that QA could not follow showed the bar being ignored there, and the Validator already reads every new Spec, so the check costs little. Nothing else checks output against the bar: a checking pass on every round and every document would degrade into a rubber stamp.

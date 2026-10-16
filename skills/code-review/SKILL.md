@@ -24,7 +24,7 @@ Before going further, confirm the fixed point resolves (`git rev-parse <fixed-po
 
 Look for the originating spec, in this order:
 
-1. An Issue reference or a Spec path passed in. Inside an implement run the caller passes the path of the run's Spec copy, `.agents/steps/<slug>/spec.md`.
+1. An Issue reference or a Spec path passed in. Inside an implement run the caller passes the path of the run's Spec copy, `.agents/runs/<slug>/spec.md`.
 2. The Issue under discussion.
 3. The Issue the run slug in the current branch's name points to, as the Tracker ref says.
 4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
@@ -35,37 +35,23 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 Anything in the repo that documents how code should be written. Check `.agents/refs/` first — the canonical spot for these — but also pick up root-level docs like `CODING_STANDARDS.md` or `CONTRIBUTING.md` if the repo has them there instead.
 
-On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below — a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
+On top of whatever the repo documents, the Standards axis always carries the **design principles** in [PRINCIPLES.md](PRINCIPLES.md) in this skill's directory, which apply even when a repo documents nothing. Two rules bind them:
 
-- **The repo overrides.** A documented repo standard always wins; where it endorses something the baseline would flag, suppress the smell.
-- **Always a judgement call.** Each smell is a labelled heuristic ("possible Feature Envy"), never a hard violation — and, like any standard here, skip anything tooling already enforces.
-
-Each smell reads *what it is* → *how to fix*; match it against the diff:
-
-- **Mysterious Name** — a function, variable, or type whose name doesn't reveal what it does or holds. → rename it; if no honest name comes, the design's murky.
-- **Duplicated Code** — the same logic shape appears in more than one hunk or file in the change. → extract the shared shape, call it from both.
-- **Feature Envy** — a method that reaches into another object's data more than its own. → move the method onto the data it envies.
-- **Data Clumps** — the same few fields or params keep travelling together (a type wanting to be born). → bundle them into one type, pass that.
-- **Primitive Obsession** — a primitive or string standing in for a domain concept that deserves its own type. → give the concept its own small type.
-- **Repeated Switches** — the same `switch`/`if`-cascade on the same type recurs across the change. → replace with polymorphism, or one map both sites share.
-- **Shotgun Surgery** — one logical change forces scattered edits across many files in the diff. → gather what changes together into one module.
-- **Divergent Change** — one file or module is edited for several unrelated reasons. → split so each module changes for one reason.
-- **Speculative Generality** — abstraction, parameters, or hooks added for needs the spec doesn't have. → delete it; inline back until a real need shows.
-- **Message Chains** — long `a.b().c().d()` navigation the caller shouldn't depend on. → hide the walk behind one method on the first object.
-- **Middle Man** — a class or function that mostly just delegates onward. → cut it, call the real target direct.
-- **Refused Bequest** — a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
+- **The repo overrides.** A documented repo standard always wins; where it endorses something a principle would flag, suppress the finding.
+- **Always a judgement call.** Each principle is a labelled heuristic ("possible Boundary discipline breach"), never a hard violation — and, like any standard here, skip anything tooling already enforces.
 
 ### 4. Spawn the reviewers
 
-Spawn the two axes in parallel as `skills:reviewer` (`agents/reviewer.md` at the plugin root), which is pinned to Opus at high effort ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)). A caller that names another model and effort for the reviewers has them passed as `model` and `effort` on each Agent call, which override the pin. A caller that asks for **one reviewer** spawns a single `skills:reviewer` whose prompt carries both briefs below and asks it to report under `## Standards` and `## Spec`, findings kept separate per axis. A host without that agent type dispatches `general-purpose` with the same prompt.
+Spawn the two axes in parallel as `skills:reviewer` (`agents/reviewer.md` at the plugin root), which is pinned to Opus at high effort ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)). A caller that names another model and effort for the reviewers has them passed as `model` and `effort` on each Agent call, which override the pin. A caller that names **one axis** spawns only that axis's reviewer, and the report carries only that axis. A host without that agent type dispatches `general-purpose` with the same prompt.
 
 Both briefs end with the same instruction: "Run the `/plain-language` skill and write your findings to its bar. Your entire report is one message." You present their reports nearly verbatim, so the plainness has to come from them. The parent keeps only the last message.
 
 **Standards sub-agent prompt** — include:
 
 - The full diff command and commit list.
-- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full — the sub-agent has no other access to it.
-- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
+- The list of standards-source files you found in step 3, and the absolute path of PRINCIPLES.md, with the instruction to list the headings of each first (`grep -n '^#'`) and read the sections that bear on the diff.
+- Findings the caller says were declined before, each with its reason, when the caller hands any: raise one again only when its reason does not hold, and say why.
+- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any place the diff goes against a design principle: name the principle and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but principle findings are always judgement calls, and a documented repo standard overrides a principle. Skip anything tooling enforces. Under 400 words."
 
 **Spec sub-agent prompt** — include:
 
@@ -77,7 +63,7 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 
 ### 5. Aggregate
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned; a single reviewer's one report already carries both headings. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
+Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned; a caller that named one axis gets only that heading. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
 
 End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
 

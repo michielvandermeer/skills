@@ -4,7 +4,7 @@ description: Look at a finished session, apply high-priority changes this reposi
 argument-hint: "[session]"
 ---
 
-A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, then summarises. `/code-review` and `/improve-data-structures` still review the product diff; `/retro` reads it only to find **Corrections**.
+A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, then summarises. `/code-review` still reviews the product diff; `/retro` reads it only to find **Corrections**.
 
 Apply and present only when the skill the user typed — or, when they typed none, the outermost skill the agent loaded — is this `/retro` or has reached its own done condition.
 

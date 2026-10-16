@@ -27,7 +27,7 @@ A description shows a reviewer what changed, that it works, and how risky it is 
 <the Issue's closing reference>
 ```
 
-Its reader is a reviewer who was never in the session. Write it at the bar the `/plain-language` skill sets: the repo's `CONTEXT.md` terms stand as they are, and this plugin's own words — Safety fact, Proof, rung, Step — stay out. When the work came from an Issue, end with the closing reference the repo's Tracker ref (`.agents/refs/tracker.md`) gives; a ref that gives none gets the Issue's reference on its own line.
+Its reader is a reviewer who was never in the session. Write it at the bar the `/plain-language` skill sets: the repo's `CONTEXT.md` terms stand as they are, and this plugin's own words — Iteration, Verifier, run folder — stay out. When the work came from an Issue, end with the closing reference the repo's Tracker ref (`.agents/refs/tracker.md`) gives; a ref that gives none gets the Issue's reference on its own line.
 
 Write the description to a file outside the repo and pass it with `--body-file` to `gh pr create` or `gh pr edit`, or the host's equivalent.
 
@@ -65,7 +65,7 @@ A visual change shows a screenshot, or a short recording when the change is an i
 
 A change to no code that runs, such as a docs edit, says in one line that it needs no evidence. A check you could not run is named with the reason, in place of its output: every line of output in the description comes from a run you saw.
 
-After an implement run in this session, its final report gives each Step's fact, check, and merge risk. Use them: the Prover re-ran every check on the code that landed, so the after half comes from the report unless the code changed since.
+After an implement run in this session, its final report names the Hand checks the Verifier ran on the code that landed. Use them as the after half unless the code changed since. The safety fact and Merge risk are yours to work out from the diff.
 
 ## Merge risk
 
@@ -73,4 +73,3 @@ After an implement run in this session, its final report gives each Step's fact,
 
 **Affects** names who or what would notice if the change went wrong: the users of a screen, the callers of an API, a nightly job, the layout on a phone.
 
-After an implement run, the description's Undo is the hardest among its Steps, and its Affects covers every Step's.

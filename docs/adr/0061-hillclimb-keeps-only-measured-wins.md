@@ -2,7 +2,7 @@
 
 The plugin carries `/hillclimb`, adapted from the Hillclimb playbook in Lauren Tan's pstack. It runs a long effort to push one measured number in one direction, such as how long a test suite takes. It tries one change at a time and keeps a change only when the measurement shows it helped and the tests still pass.
 
-The need came back four times in six weeks, all on the `mvdmio-suite` test suite. Each time, the method was carried by hand. Two efforts ran under `/goal` with a long prompt, and the second prompt lost words when it was pasted. An agent memory file held what had been tried, kept, and disproven, and a handoff prompt carried it to the next session. The fourth effort went through a Spec. But an implement run builds Steps it planned up front, and it has no way to try a change, measure it, and throw it away. Three of the four efforts were open-ended, so nobody could name their changes in advance.
+The need came back four times in six weeks, all on the `mvdmio-suite` test suite. Each time, the method was carried by hand. Two efforts ran under `/goal` with a long prompt, and the second prompt lost words when it was pasted. An agent memory file held what had been tried, kept, and disproven, and a handoff prompt carried it to the next session. The fourth effort went through a Spec. But an implement run builds what its Spec named up front, and it has no way to try a change, measure it, and throw it away. Three of the four efforts were open-ended, so nobody could name their changes in advance.
 
 The shape follows from what those efforts learned:
 
@@ -21,10 +21,10 @@ The shape follows from what those efforts learned:
 - **The log outside the repo, as pstack keeps it, or in agent memory.** Rejected: the next effort cannot find it, and agent memory belongs to one host while this plugin also runs on Grok.
 - **The log as comments on the Issue.** Rejected: an effort started from a plain request has no Issue, and a hundred comments are hard to scan.
 - **The driving session writes every change, as both `/goal` rounds did.** Rejected: hours of diffs and logs pile into one context, and the agent that wrote a change would judge it.
-- **Attempts side by side, each in its own worktree, as pstack and the first effort did.** Rejected: side-by-side runs on one machine measure each other's load. [ADR-0045](0045-implement-runs-steps-one-at-a-time.md) rejected parallel worktrees for Steps on other grounds too.
+- **Attempts side by side, each in its own worktree, as pstack and the first effort did.** Rejected: side-by-side runs on one machine measure each other's load, and some hosts confine a worktree session so it cannot open a worktree inside it.
 - **Stopping with the branch for the user to land, or opening a pull request.** Rejected: an unattended effort leaves its worktree and branch behind, and the implement commands never open a pull request.
 - **The driving session reads each diff before measuring it, as pstack does.** Rejected: every diff would fill the context the Climber keeps small. One review of the whole branch before landing does the same job.
-- **A Safety fact and a Prover for each kept Attempt.** Rejected: the measurement and the tests are the evidence, and the driving session ran both itself rather than the Climber.
+- **A Verifier for each kept Attempt.** Rejected: the measurement and the tests are the evidence, and the driving session ran both itself rather than the Climber.
 - **User-invoked only.** Rejected: the first effort began as a plain request, and the agent could not have reached a user-only skill.
 
 ## Consequences

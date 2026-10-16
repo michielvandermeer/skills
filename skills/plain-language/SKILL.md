@@ -38,4 +38,4 @@ A document in the Tracker — an Issue, a Map, a Spec — is also read by the **
 
 ## Where the bar stops
 
-Text written for a sub-agent stays as it is — a Step, a handoff. Agents do not tire, and a document read only by one carries no reader to protect.
+Text written for a sub-agent stays as it is — a sub-agent prompt, a handoff. Agents do not tire, and a document read only by one carries no reader to protect.

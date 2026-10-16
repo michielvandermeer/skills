@@ -1,6 +1,6 @@
 # The implement commands are model-invoked so a goal can start them
 
-`/implement`, `/implement-oneshot`, and `/implement-yolo` are model-invoked. A `/goal` session works toward its condition without the user typing, so it can start a skill only through the Skill tool, and the host refuses that call for a user-invoked skill. A goal that names an implement command could therefore never run it. Each description fires only when the user or a `/goal` names that command, so a plain request to build something still does not start a run.
+`/implement` and `/implement-yolo` are model-invoked. A `/goal` session works toward its condition without the user typing, so it can start a skill only through the Skill tool, and the host refuses that call for a user-invoked skill. A goal that names an implement command could therefore never run it. Each description fires only when the user or a `/goal` names that command, so a plain request to build something still does not start a run.
 
 ## Considered Options
 

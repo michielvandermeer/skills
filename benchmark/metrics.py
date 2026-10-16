@@ -19,9 +19,9 @@ PRICES = {
     "sonnet": (3.0, 15.0, 3.75, 6.0, 0.30),
     "haiku": (1.0, 5.0, 1.25, 2.0, 0.10),
 }
-ROLES = ["main", "planner", "implementer", "checker", "reviewer", "prover", "fixer"]
+ROLES = ["main", "implementer", "reviewer", "verifier"]
 TEST_RE = re.compile(r"\b(dotnet\s+test|run-tests\.mjs|bun\s+(run\s+)?test|vitest|npm\s+(run\s+)?test|pytest|cargo\s+test|go\s+test)\b")
-PROVER_STATUS_RE = re.compile(r"^\s*status:\s*(held|failed|blocked)\b", re.I | re.M)
+VERIFIER_STATUS_RE = re.compile(r"^\s*status:\s*(passed|failed|blocked)\b", re.I | re.M)
 
 
 def family(model):
@@ -37,11 +37,8 @@ def call_cost(model, call):
     return sum(n * p for n, p in zip(amounts, prices)) / 1e6
 
 
-def role_of(agent_type, description=""):
-    role = (agent_type or "unknown").split(":")[-1]
-    if role == "general-purpose" and "fix" in description.lower():
-        return "fixer"
-    return role
+def role_of(agent_type):
+    return (agent_type or "unknown").split(":")[-1]
 
 
 def _lines(path):
@@ -73,11 +70,11 @@ def extract(directory):
     for p in sorted(directory.glob("*/subagents/agent-*.jsonl")):
         meta_path = p.with_suffix(".meta.json")
         meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
-        files.append((p, role_of(meta.get("agentType"), meta.get("description", "")), p.stem))
+        files.append((p, role_of(meta.get("agentType")), p.stem))
 
     calls, times = {}, []
-    out = {"api_errors": 0, "tool_errors": 0, "test_commands": 0, "bad_lines": 0, "prover_status": None}
-    prover_last = (0.0, None)
+    out = {"api_errors": 0, "tool_errors": 0, "test_commands": 0, "bad_lines": 0, "verifier_status": None}
+    verifier_last = (0.0, None)
     for path, role, agent in files:
         last_text, last_ts = "", 0.0
         for o in _lines(path):
@@ -104,11 +101,11 @@ def extract(directory):
                 if block.get("type") == "tool_use" and block.get("name") in ("Bash", "PowerShell"):
                     if TEST_RE.search(str(block.get("input", {}).get("command", ""))):
                         out["test_commands"] += 1
-        if role == "prover":
-            m = PROVER_STATUS_RE.findall(last_text)
-            if m and last_ts >= prover_last[0]:
-                prover_last = (last_ts, m[-1].lower())
-    out["prover_status"] = prover_last[1]
+        if role == "verifier":  # one verifier per Iteration; the last report is the run's status
+            m = VERIFIER_STATUS_RE.findall(last_text)
+            if m and last_ts >= verifier_last[0]:
+                verifier_last = (last_ts, m[-1].lower())
+    out["verifier_status"] = verifier_last[1]
     return _summarise(out, calls.values(), files, times)
 
 

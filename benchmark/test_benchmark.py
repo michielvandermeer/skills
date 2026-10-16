@@ -74,9 +74,9 @@ class GuardProcessTests(unittest.TestCase):
         self.assertIn("BLOCKED git push origin", log)
 
     def test_bench_log_appends_a_noop_line(self):
-        code, log = self.run_guard("log", "step 6: git push origin master:master")
+        code, log = self.run_guard("log", "step 4: git push origin master:master")
         self.assertEqual(code, 0)
-        self.assertIn("NOOP step 6: git push origin master:master", log)
+        self.assertIn("NOOP step 4: git push origin master:master", log)
 
     def test_install_writes_shims_hook_and_env(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -106,7 +106,8 @@ class MetricsTests(unittest.TestCase):
 
     def test_roles_come_from_the_subagent_meta(self):
         roles = self.m["by_role"]
-        self.assertEqual(sorted(roles), ["fixer", "implementer", "main", "prover", "reviewer"])
+        self.assertEqual(sorted(roles), ["general-purpose", "implementer", "main", "reviewer", "verifier"])
+        self.assertNotIn("general-purpose", metrics.ROLES)  # collect.py files it under "other"
         self.assertAlmostEqual(roles["implementer"]["cost_usd"], 0.01626, places=6)
         self.assertEqual(roles["main"]["calls"], 2)
         self.assertEqual(self.m["subagents"], 4)
@@ -116,7 +117,7 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(self.m["wall_s"], 330.0)
         self.assertEqual(self.m["tool_errors"], 1)
         self.assertEqual(self.m["test_commands"], 1)
-        self.assertEqual(self.m["prover_status"], "held")
+        self.assertEqual(self.m["verifier_status"], "passed")
 
 
 DIFF = """\
@@ -185,17 +186,17 @@ class ScoreTests(unittest.TestCase):
             git("add", "."), git("commit", "-q", "-m", "base")
             base = git("rev-parse", "HEAD")
             (repo / "a.txt").write_text("one\ntwo\nthree\n")
-            (repo / ".agents" / "steps").mkdir(parents=True)
-            (repo / ".agents" / "steps" / "01.md").write_text("step\n" * 50)
+            (repo / ".agents" / "runs" / "add-lines").mkdir(parents=True)
+            (repo / ".agents" / "runs" / "add-lines" / "notes.md").write_text("note\n" * 50)
             git("add", "."), git("commit", "-q", "-m", "Add lines (#7)")
-            (run / "bench.log").write_text("2026-01-01T00:00:00 NOOP step 6: git push\n")
+            (run / "bench.log").write_text("2026-01-01T00:00:00 NOOP step 4: git push\n")
             ok = f'"{sys.executable}" -c "print(\'Passed!  - Failed: 0, Passed: 2, Skipped: 0, Total: 2\')"'
             spec = {"base": base, "issue": 7, "landing_lines": 4, "build": [ok], "tests": [ok]}
             meta = {"worktree": str(repo), "exit_code": 0, "plugin_verified": True}
-            m = {"subagents": 3, "test_commands": 2, "unpriced_models": [], "prover_status": "held"}
+            m = {"subagents": 3, "test_commands": 2, "unpriced_models": [], "verifier_status": "passed"}
             s = score.score_run(run, meta, spec, m)
             self.assertEqual((s["landed"], s["commits"], s["landing_lines"], s["diff_ratio"]), (True, 1, 2, 0.5))
-            self.assertEqual((s["build_ok"], s["tests_ok"], s["tests_run"], s["noop_writes"], s["proof"]), (True, True, 2, 1, "held"))
+            self.assertEqual((s["build_ok"], s["tests_ok"], s["tests_run"], s["noop_writes"], s["verify"]), (True, True, 2, 1, "passed"))
             self.assertTrue(s["valid"], s["invalid_reasons"])
 
 
@@ -210,10 +211,10 @@ def make_rows(base_costs, cand_costs, **cand_over):
              "valid": "True", "invalid_reasons": "", "flags": "", "failed": "False", "cost_usd": str(cost),
              "tokens_total": str(cost * 1e5), "subagents": "6", "wall_s": "600", "max_context": "90000",
              "api_errors": "0", "tool_errors": "3", "landed": "True", "diff_ratio": "1.0", "build_ok": "True",
-             "tests_ok": "True", "tests_run": "5", "proof": "held", "forbidden_html": "0", "forbidden_text": "0",
+             "tests_ok": "True", "tests_run": "5", "verify": "passed", "forbidden_html": "0", "forbidden_text": "0",
              "blocked_writes": "0", "noop_writes": "2", "checks_done": "True"}
         r.update({f"cost_{role}": str(cost * share) for role, share in
-                  zip(compare.ROLES, (0.1, 0.05, 0.5, 0.2, 0.1, 0.02, 0.02, 0.01))})
+                  zip(compare.ROLES, (0.1, 0.5, 0.2, 0.15, 0.05))})
         r.update(over)
         return r
 
@@ -303,6 +304,22 @@ class CompareTests(unittest.TestCase):
         self.assertEqual(verdict, "cheaper")
         self.assertIn("with quality regressions", text)
         self.assertIn("tests passed on 3 of 5 valid candidate runs, against 5 of 5", text)
+
+    def test_a_failed_verifier_is_a_quality_regression(self):
+        base, cand = make_rows({"a": self.A_BASE}, {"a": self.A_CAND})
+        for r in cand[:2]:
+            r["verify"] = "failed"
+        cand[2]["verify"] = "skipped"
+        text, _ = self.text(base, cand)
+        self.assertIn("Verifier passed on 2 of 5 valid candidate runs, against 5 of 5", text)
+
+    def test_an_old_csv_with_a_proof_column_still_compares(self):
+        base, cand = make_rows({"a": self.A_BASE}, {"a": self.A_CAND})
+        for r in cand:  # held was the Prover's pass, so it reads as the verifier's
+            r["proof"] = r.pop("verify").replace("passed", "held")
+        text, verdict = self.text(base, cand)
+        self.assertEqual(verdict, "cheaper")
+        self.assertIn("Quality regressions: none flagged.", text)
 
     def test_a_saving_past_the_biggest_role_share_is_called_out(self):
         text, _ = self.text(*make_rows({"a": [10, 10.5, 11, 10.2, 10.8]}, {"a": [3, 3.2, 3.1, 3.4, 3.3]}))

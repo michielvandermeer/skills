@@ -5,7 +5,7 @@ Every implement command works against the **base branch**: the branch the origin
 ## Considered Options
 
 - **The repository's default branch, unless the prompt names another.** Rejected: the user already chose a branch by checking it out, and a run that leaves it surprises them.
-- **Recording the base branch in the Step files at the start.** Rejected: the Planner and the oneshot Step file would carry a field only the land reads. A resume reads the branch the user is on now, which is what they want it to land on.
+- **Recording the base branch in the run folder at the start.** Rejected: the Spec copy would carry a field only the land reads. A resume reads the branch the user is on now, which is what they want it to land on.
 
 ## Consequences
 
