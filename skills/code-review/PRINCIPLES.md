@@ -1,6 +1,6 @@
 # Design principles
 
-These principles describe how code should be shaped. Each is a judgement call, never a hard violation. A documented repo standard always wins over a principle. Skip anything a linter, formatter, or type checker already enforces, and name the principle when you cite it, as in "possible Boundary discipline: ...".
+These principles describe how code should be shaped. A finding under one is a judgement call, and a hard violation only when it names a wrong result, a crash, or lost data. A documented repo standard always wins over a principle. Skip anything a linter, formatter, or type checker already enforces, and name the principle when you cite it, as in "possible Boundary discipline: ...".
 
 ## Boundary discipline
 

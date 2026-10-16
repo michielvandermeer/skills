@@ -11,7 +11,7 @@ You are the **driving session**: you orchestrate, sub-agents plan, implement, re
 A **Planner** first slices the Spec into **Steps**, each small enough for one fresh agent; most Specs are one Step. Then the run is a loop over the whole Spec, at most three **Iterations** ([ADR-0072](../../docs/adr/0072-implement-plans-steps-then-loops-implement-review-verify.md)):
 
 1. **Implement** — on Iteration 1, a fresh `skills:implementer` builds each Step in order; on a later one, a single fresh Implementer fixes what the last Iteration found.
-2. **Review** — `/code-review` judges the diff on its Standards axis: the repo's Coding standards and the design principles. A finding sends the run back to 1.
+2. **Review** — `/code-review` judges the diff on its Standards axis: the repo's Coding standards and the design principles. A **Hard violation** sends the run back to 1; a **Judgement call** waits for the next Implementer, or the final report. From Iteration 2 on, Review reads only that Iteration's fix.
 3. **Verify** — a fresh `skills:verifier` checks the change does what the Spec asks: the Spec read against the diff, the build and the whole test suite, and the Spec's Hand checks. A finding sends the run back to 1.
 
 The run lands when one Iteration passes both Review and Verify. The Planner, the Implementer, and the Verifier are pinned in their agent files (`agents/planner.md`, `agents/implementer.md`, `agents/verifier.md` at the plugin root) to Sonnet at high effort, because the Spec was decided before they started; the Reviewer `/code-review` starts is pinned to Opus at high ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)).
@@ -68,7 +68,7 @@ Run Iterations, numbered from 1, until one passes both Review and Verify. Each I
 
 On Iteration 1, run each Step in `NN` order, skipping a Step whose `Status:` already reads `done`; its Implement is done when every Step file, `.agents/runs/<slug>/[0-9][0-9]-*.md`, reads `Status: done`. On a later Iteration, run one Implementer for the findings, with no Step file.
 
-For each dispatch, hold `git rev-parse HEAD` as `<before>`, then dispatch a fresh `skills:implementer` with a prompt of paths and section names — it reads what is behind them:
+Hold `git rev-parse HEAD` as `<start>` before the Iteration's first dispatch. For each dispatch, hold `git rev-parse HEAD` as `<before>`, then dispatch a fresh `skills:implementer` with a prompt of paths and section names — it reads what is behind them:
 
 - the Spec, and `<base>`, the branch its tests are measured against
 - on Iteration 1: its own Step file, and an instruction to read the `## Outcome` of every lower-numbered Step file before starting
@@ -76,7 +76,7 @@ For each dispatch, hold `git rev-parse HEAD` as `<before>`, then dispatch a fres
 - the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
 - the design principles, [PRINCIPLES.md](../code-review/PRINCIPLES.md) in the `code-review` skill's directory by absolute path — the Review judges the diff by them and by the Coding standards
 - the Spec's Testing Decisions section, when it has one, which governs what it tests, and the testing documents it names
-- from Iteration 2 on: every finding the last Review or Verify reported, verbatim, and every finding an earlier Iteration declined, with its reason
+- from Iteration 2 on: every Hard violation and Verify finding the last Iteration reported, and every Judgement call held, verbatim; and every finding an earlier Iteration declined, with its reason
 - the deviations reported so far, verbatim, when there are any
 - its Iteration number and the limit of three, on Iteration 1 its Step number and the total, and the report format below
 
@@ -95,9 +95,16 @@ Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and
 
 #### Review
 
-**Run `/code-review` yourself** on the Standards axis alone, with `<base>` as the fixed point. Tell it that `.agents/runs/<slug>/` is run bookkeeping, not code under review, and hand it every finding declined so far with its reason: a declined finding is raised again only when the reason does not hold, and the report says why. Hold the Standards report; weigh it on the report alone.
+**Run `/code-review` yourself** on the Standards axis alone. The fixed point is `<base>` on Iteration 1, so the first Review reads the whole change. From Iteration 2 on it is `<start>`, so a later Review reads only that Iteration's fix; when HEAD has not moved from `<start>` because every finding was declined, it is `<base>` again, and the Review judges the declines alone. Tell it:
 
-Review passes when the report has no finding. Tell the user `Iteration <N>/3 — review: passed`, or `Iteration <N>/3 — review: <count> findings`, then go on without waiting: a passed Review goes to Verify; findings start the next Iteration at Implement, with Verify skipped.
+- that `.agents/runs/<slug>/` is run bookkeeping, not code under review
+- that only agents read its report
+- every finding declined so far with its reason: a declined finding is raised again only when the reason does not hold, and the report says why
+- from Iteration 2 on, every finding the last Implementer was handed, to judge as fixed or declined, with the fix itself judged against the standards
+
+Hold the Standards report; weigh it on the report alone. `/code-review` opens each finding with `Hard violation:` or `Judgement call:`. Hold its Judgement calls with any held from earlier Iterations until the next Implementer is handed them.
+
+Review passes when the report has no Hard violation. Tell the user `Iteration <N>/3 — review: passed`, with `(<j> judgement calls)` after it when there are any, or `Iteration <N>/3 — review: <h> hard violations, <j> judgement calls`, then go on without waiting: a passed Review goes to Verify; a Hard violation starts the next Iteration at Implement, with Verify skipped.
 
 #### Verify
 
@@ -114,7 +121,7 @@ Tell the user `Iteration <N>/3 — verify: passed`, or `Iteration <N>/3 — veri
 
 #### The limit
 
-An Iteration that ends in findings when it is Iteration 3 **halts** the run, and the halt report quotes those findings.
+An Iteration 3 that ends on a Hard violation or a Verify finding **halts** the run, and the halt report quotes those findings. Judgement calls alone never halt a run.
 
 A `blocked` report, a failed structural check, or any result that is not the report — a question, a progress note, a pause to wait on a background run — earns exactly one retry, for the Planner, each Implementer, and the Verifier alike, and the retry is not a new Iteration. When the host can resume the same agent, resume it once with one line: the work is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd`, then re-dispatch the same agent with the same prompt, appending a test or environment failure in its own words, or that the previous run returned something other than the report. Commits it made survive that reset. A second failure **halts** the run.
 
@@ -131,7 +138,7 @@ Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remai
 3. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 4. From the original directory, on `<base>`: `git merge --ff-only <landing>`. (`<base>` lives here, so only the original directory can fast-forward it.) `<landing>`'s parent is `<onto>`, so this is a fast-forward only while `<base>` is still `<onto>`. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and the branch is deleted. Delete the branch with `git branch -D <branch>` once `git diff --quiet <branch> <base>` succeeds: its commits never reach `<base>`, so `-d` refuses it, and the empty diff shows `<base>` holds all of its work. When the diff is not empty, keep the branch and name it in the final report. When the merge errors, `<base>` moved: re-enter the worktree, drop the deletion commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Spec comes back for the Verifier — then go through 1 to 3 again and retry this merge.
 
-The final report says how many Steps the Planner made and how many Iterations the run took, quotes every `declined:` line that was not `none` and every deviations line, and names each Hand check the Verifier skipped and what it needs.
+The final report says how many Steps the Planner made and how many Iterations the run took, quotes every `declined:` line that was not `none` and every deviations line, lists every Judgement call still held, which lands unfixed, and names each Hand check the Verifier skipped and what it needs.
 
 ### 5. Push
 

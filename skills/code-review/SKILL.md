@@ -38,20 +38,21 @@ Anything in the repo that documents how code should be written. Check `.agents/r
 On top of whatever the repo documents, the Standards axis always carries the **design principles** in [PRINCIPLES.md](PRINCIPLES.md) in this skill's directory, which apply even when a repo documents nothing. Two rules bind them:
 
 - **The repo overrides.** A documented repo standard always wins; where it endorses something a principle would flag, suppress the finding.
-- **Always a judgement call.** Each principle is a labelled heuristic ("possible Boundary discipline breach"), never a hard violation — and, like any standard here, skip anything tooling already enforces.
+- **A judgement call unless it names a defect.** Each principle is a labelled heuristic ("possible Boundary discipline breach"). Its finding is a hard violation only when it names a wrong result, a crash, or lost data — and, like any standard here, skip anything tooling already enforces.
 
 ### 4. Spawn the reviewers
 
 Spawn the two axes in parallel as `skills:reviewer` (`agents/reviewer.md` at the plugin root), which is pinned to Opus at high effort ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)). A caller that names another model and effort for the reviewers has them passed as `model` and `effort` on each Agent call, which override the pin. A caller that names **one axis** spawns only that axis's reviewer, and the report carries only that axis. A host without that agent type dispatches `general-purpose` with the same prompt.
 
-Both briefs end with the same instruction: "Run the `/technical-writing` skill and write your findings to its bar. Your entire report is one message." You present their reports nearly verbatim, so the plainness has to come from them. The parent keeps only the last message.
+Both briefs end with the same instruction: "Run the `/technical-writing` skill and write your findings to its bar. Your entire report is one message." You present their reports nearly verbatim, so the plainness has to come from them. The parent keeps only the last message. A caller that says only agents read the report, as `/implement` does, gets briefs that end with "Your entire report is one message." alone: no person reads the report, so the bar protects no one.
 
 **Standards sub-agent prompt** — include:
 
 - The full diff command and commit list.
 - The list of standards-source files you found in step 3, and the absolute path of PRINCIPLES.md, with the instruction to list the headings of each first (`grep -n '^#'`) and read the sections that bear on the diff.
 - Findings the caller says were declined before, each with its reason, when the caller hands any: raise one again only when its reason does not hold, and say why.
-- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any place the diff goes against a design principle: name the principle and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but principle findings are always judgement calls, and a documented repo standard overrides a principle. Skip anything tooling enforces. Under 400 words."
+- Findings the caller hands to check, when it hands any, as `/implement` does from its second Iteration: judge each as fixed or declined, and judge the fix itself against the standards.
+- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any place the diff goes against a design principle: name the principle and quote the hunk. Open each finding with `Hard violation:` or `Judgement call:`. A hard violation breaks a rule a documented standard states, or names a defect — a wrong result, a crash, or lost data — whichever principle or rule it falls under. Every other finding is a judgement call, and a documented repo standard overrides a principle. Skip anything tooling enforces. Under 400 words."
 
 **Spec sub-agent prompt** — include:
 

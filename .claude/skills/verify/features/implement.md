@@ -1,13 +1,13 @@
 # Implement
 
-`/skills:implement` implements an Issue in a worktree on branch `<slug>`. A planner slices its Spec into Steps, then a loop of up to three Iterations runs: implementers write and commit it, one per Step on the first Iteration, a Standards reviewer judges it against the coding standards and design principles, and a verifier checks it against the Spec, the test suite, and the Hand checks. A finding sends it back to a fresh implementer. The run lands on the branch it started from as one commit that closes the Issue, then removes its worktree and branch.
+`/skills:implement` implements an Issue in a worktree on branch `<slug>`. A planner slices its Spec into Steps, then a loop of up to three Iterations runs: implementers write and commit it, one per Step on the first Iteration, a Standards reviewer judges it against the coding standards and design principles, and a verifier checks it against the Spec, the test suite, and the Hand checks. A Hard violation or a Verify finding sends it back to a fresh implementer; a Judgement call waits for that implementer, or the final report. From Iteration 2 on, the reviewer reads only that Iteration's fix. The run lands on the branch it started from as one commit that closes the Issue, then removes its worktree and branch.
 
 ## Sub-features
 
 - `implement-land` lands the Issue as exactly one commit on the starting branch and closes the Issue.
 - `implement-plan` runs `skills:planner` once, which commits `plan: <slug>` with one Step file per Step under `.agents/runs/<slug>/`; a small Spec gets one Step.
 - `implement-agents` runs `skills:implementer` once per Step on Iteration 1 and once per later Iteration, one `skills:reviewer` on the Standards axis, and `skills:verifier`, once each per Iteration.
-- `implement-loop` reports a `Step <NN>/<total> — <title>: done` line per Step, then `Iteration <N>/3 — review:` and `— verify:` lines, and the final report says how many Steps and Iterations the run took.
+- `implement-loop` reports a `Step <NN>/<total> — <title>: done` line per Step, then `Iteration <N>/3 — review:` lines (`passed`, or the count of hard violations and judgement calls) and `— verify:` lines, and the final report says how many Steps and Iterations the run took and lists the judgement calls that land unfixed.
 - `implement-cleanup` deletes `.agents/runs/<slug>/`, the worktree, and branch `<slug>` once it has landed.
 - `implement-halt` halts on a detached HEAD or an open blocker and leaves everything in place for a resume.
 - `implement-no-push` skips the push when `git remote` lists nothing.

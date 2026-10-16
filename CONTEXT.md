@@ -216,11 +216,11 @@ The **Planner**'s guess, in a **Step** file, at where that Step's work lands: th
 _Avoid_: scope, file list
 
 **Iteration**:
-One pass of an implement run's loop over the whole Spec: Implement, then Review, then Verify. A Review finding ends the Iteration before Verify; a Verify finding ends it after. The next Iteration starts at Implement with those findings. The first Iteration's Implement builds the **Steps** in order; a later one's fixes the findings. A run lands when one Iteration passes both, and halts when its third does not.
+One pass of an implement run's loop over the whole Spec: Implement, then Review, then Verify. A **Hard violation** from Review ends the Iteration before Verify; a Verify finding ends it after; a **Judgement call** ends nothing. The next Iteration starts at Implement with those findings and any Judgement calls so far. The first Iteration's Implement builds the **Steps** in order; a later one's fixes the findings. The first Iteration's Review reads the whole change; a later one's reads only that Iteration's fix. A run lands when one Iteration passes both, and halts when its third does not.
 _Avoid_: round (a grilling term), cycle, attempt (a Hillclimb term)
 
 **Implementer**:
-The sub-agent (`skills:implementer`) that does the Implement part of an **Iteration**, under `/implement`. On the first Iteration a fresh one builds each **Step**, appends its Outcome to the Step file, and marks it done; on each later Iteration one fresh Implementer fixes every Verify finding it was handed, and fixes or declines each Review finding, with a reason for each decline. It builds what it touched, runs the tests closest to its change, commits, and returns a fixed four-line report.
+The sub-agent (`skills:implementer`) that does the Implement part of an **Iteration**, under `/implement`. On the first Iteration a fresh one builds each **Step**, appends its Outcome to the Step file, and marks it done; on each later Iteration one fresh Implementer fixes every Verify finding it was handed, and fixes or declines each **Hard violation** and **Judgement call**, with a reason for each decline. It builds what it touched, runs the tests closest to its change, commits, and returns a fixed four-line report.
 _Avoid_: Step agent, coder, worker
 
 **Verifier**:
@@ -242,6 +242,14 @@ _Avoid_: review agent, critic, review bot
 **Design principles**:
 The fixed set of judgement calls in `skills/code-review/PRINCIPLES.md` — boundary discipline, type system discipline, idempotent operations, and the rest — that the Standards axis of `/code-review` applies on top of a repo's **Coding standards**, even when a repo documents nothing. A documented repo standard always wins over a principle. The **Implementer** reads them before it writes code.
 _Avoid_: smell baseline, best practices
+
+**Hard violation**:
+A Standards finding that breaks a rule the repo's **Coding standards** write down, or a **Judgement call** that names a defect: a wrong result, a crash, or lost data. In an implement run, a Hard violation is the only Review finding that sends the run into another **Iteration**.
+_Avoid_: blocker, must-fix, error
+
+**Judgement call**:
+A Standards finding that is not a **Hard violation**: every **Design principles** finding that names no defect, and a Coding standards finding the standard itself leaves to judgement. In an implement run it never starts an **Iteration** of its own. It goes to the next Implementer when another Iteration runs anyway, and otherwise into the final report unfixed.
+_Avoid_: nit, suggestion, soft finding, consider
 
 **Planning principles**:
 The fixed set of judgement calls in `skills/to-spec/PRINCIPLES.md` — leave the implementer nothing to ask, fit one run, experience first, explain the number, and the rest — that a **Spec** is held to. `/grilling` recommends by them, `/to-spec` writes to them, and the **Validator** reports a miss as an open question. Distinct from the **Design principles**, which judge code.
