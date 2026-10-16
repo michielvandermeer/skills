@@ -21,7 +21,7 @@ PRICES = {
 }
 ROLES = ["main", "implementer", "reviewer", "verifier", "planner"]
 TEST_RE = re.compile(r"\b(dotnet\s+test|run-tests\.mjs|bun\s+(run\s+)?test|vitest|npm\s+(run\s+)?test|pytest|cargo\s+test|go\s+test)\b")
-VERIFIER_STATUS_RE = re.compile(r"^\s*status:\s*(passed|failed|blocked)\b", re.I | re.M)
+VERIFIER_STATUS_RE = re.compile(r"^\s*status:\s*(passed|held|failed|blocked)\b", re.I | re.M)
 
 
 def family(model):
@@ -101,10 +101,10 @@ def extract(directory):
                 if block.get("type") == "tool_use" and block.get("name") in ("Bash", "PowerShell"):
                     if TEST_RE.search(str(block.get("input", {}).get("command", ""))):
                         out["test_commands"] += 1
-        if role == "verifier":  # one verifier per Iteration; the last report is the run's status
+        if role in ("verifier", "prover"):  # one verifier per Iteration, the last report the run's status; before the verifier, a Prover reported "held" for a pass
             m = VERIFIER_STATUS_RE.findall(last_text)
             if m and last_ts >= verifier_last[0]:
-                verifier_last = (last_ts, m[-1].lower())
+                verifier_last = (last_ts, m[-1].lower().replace("held", "passed"))
     out["verifier_status"] = verifier_last[1]
     return _summarise(out, calls.values(), files, times)
 

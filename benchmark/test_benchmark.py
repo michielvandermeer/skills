@@ -1,5 +1,6 @@
 """Tests for the benchmark tooling, on synthetic data only: python benchmark/test_benchmark.py"""
 import csv
+import json
 import os
 import subprocess
 import sys
@@ -111,6 +112,16 @@ class MetricsTests(unittest.TestCase):
         self.assertAlmostEqual(roles["implementer"]["cost_usd"], 0.01626, places=6)
         self.assertEqual(roles["main"]["calls"], 2)
         self.assertEqual(self.m["subagents"], 4)
+
+    def test_a_prover_that_held_counts_as_a_passed_verify(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            sub = Path(tmp) / "s" / "subagents"
+            sub.mkdir(parents=True)
+            (sub / "agent-p.meta.json").write_text('{"agentType": "skills:prover"}', encoding="utf-8")
+            line = {"type": "assistant", "timestamp": "2026-10-16T10:00:00Z",
+                    "message": {"model": "<synthetic>", "content": [{"type": "text", "text": "status: held\nfailed: none"}]}}
+            (sub / "agent-p.jsonl").write_text(json.dumps(line) + "\n", encoding="utf-8")
+            self.assertEqual(metrics.extract(Path(tmp))["verifier_status"], "passed")
 
     def test_context_wall_time_and_checks(self):
         self.assertEqual(self.m["max_context"], 6020)
