@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Review opinions no longer loop
+`/implement` now sends a change back for another round only when the review finds a broken coding rule or a real defect, such as a crash or a wrong result, or when verification fails. Design suggestions are fixed if another round runs anyway, and otherwise listed in the final report. Before, every review comment started a full extra round, so a small fix could take three rounds and cost half again as much as before the loop.
+
 ## 2026-10-16: Agents work in the run worktree
 `/implement` and `/hillclimb` agents now work in the run's worktree even when the session itself could not move into it, as happens on Windows. Before, they could start in your main checkout, so the verifier checked the base branch instead of the change and passed it unseen.
 
