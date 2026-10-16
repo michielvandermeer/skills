@@ -107,12 +107,24 @@ def _unlock(func, path, _):
     func(path)
 
 
-def build_argv(settings, spec, plugin_dir, session_id, mcp_file):
+def other_plugins_off(worktree):
+    """Settings that turn off every plugin the user or the target repo enables, so only the plugin under test loads."""
+    config = Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude")
+    names = set()
+    for path in (config / "settings.json", worktree / ".claude" / "settings.json", worktree / ".claude" / "settings.local.json"):
+        try:
+            names |= set(json.loads(path.read_text(encoding="utf-8")).get("enabledPlugins") or {})
+        except (OSError, ValueError, AttributeError):
+            pass
+    return {"enabledPlugins": {name: False for name in sorted(names)}}
+
+
+def build_argv(settings, spec, plugin_dir, session_id, mcp_file, settings_file):
     return [*settings.claude_cmd, "-p", f"/implement #{spec['issue']}",
             "--model", settings.model, "--effort", settings.effort,
             "--permission-mode", "bypassPermissions", "--max-budget-usd", str(settings.max_budget),
             "--plugin-dir", str(plugin_dir), "--strict-mcp-config", "--mcp-config", str(mcp_file),
-            "--session-id", session_id, "--output-format", "stream-json", "--verbose",
+            "--settings", str(settings_file), "--session-id", session_id, "--output-format", "stream-json", "--verbose",
             "--append-system-prompt", BENCH_PROMPT,
             "--disallowedTools", *guards.DENIED_TOOLS]  # variadic, so it goes last
 
@@ -139,15 +151,12 @@ def read_stream(path):
 
 
 def plugin_verified(init, plugin_dir):
-    """True when the plugin under test is the one that loaded; None when the stream cannot say."""
-    plugins = [p for p in (init or {}).get("plugins") or [] if isinstance(p, dict) and p.get("path")]
+    """True when the plugin under test is the only one that loaded, built-ins aside; None when the stream cannot say."""
+    plugins = [p for p in (init or {}).get("plugins") or [] if isinstance(p, dict) and p.get("path") and p["path"] != "builtin"]
     if not plugins:
         return None
     norm = lambda p: os.path.normcase(os.path.realpath(p))
-    ours = [p for p in plugins if norm(p["path"]) == norm(plugin_dir)]
-    if not ours:
-        return False
-    return None if sum(p.get("name") == ours[0].get("name") for p in plugins) > 1 else True
+    return len(plugins) == 1 and norm(plugins[0]["path"]) == norm(plugin_dir)
 
 
 def copy_transcripts(session_id, dest):
@@ -178,6 +187,7 @@ def run_one(side, sha, plugin_dir, spec, index, settings):
     reset_clone(clone)
     git(clone, "-c", "core.longpaths=true", "worktree", "add", "-q", "-b", "bench-run", str(worktree), spec["base"])
     (run_dir / "mcp-empty.json").write_text('{"mcpServers": {}}', encoding="utf-8")
+    (run_dir / "settings.json").write_text(json.dumps(other_plugins_off(worktree), indent=2), encoding="utf-8")
     # print mode stops a session 10 minutes after its last turn while a Step agent still runs in the background; 0 waits for it
     env = {**os.environ, **guards.install(run_dir / "guards", run_dir / "bench.log"), "CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS": "0"}
     (run_dir / "bench.log").touch()
@@ -185,7 +195,7 @@ def run_one(side, sha, plugin_dir, spec, index, settings):
             "model": settings.model, "effort": settings.effort, "claim": settings.claim, "spec_hash": spec_hash(spec),
             "base": spec["base"], "worktree": str(worktree), "session_id": session_id, "started": started.isoformat(),
             "load": os.getloadavg()[0] if hasattr(os, "getloadavg") else None, "timed_out": False}
-    argv = build_argv(settings, spec, plugin_dir, session_id, run_dir / "mcp-empty.json")
+    argv = build_argv(settings, spec, plugin_dir, session_id, run_dir / "mcp-empty.json", run_dir / "settings.json")
     try:
         with open(run_dir / "stream.jsonl", "w", encoding="utf-8") as out, open(run_dir / "stderr.log", "w", encoding="utf-8") as err:
             proc = subprocess.Popen(argv, cwd=worktree, env=env, stdout=out, stderr=err, start_new_session=os.name != "nt")

@@ -28,7 +28,7 @@ Runs go in order baseline, candidate, baseline, candidate, one at a time, Spec b
 
 ## What a run does
 
-Per run: a throwaway worktree of the target repo at the Spec's base, on its own branch (so `/implement` lands there and nowhere else), then `claude -p '/implement #N'` with `--plugin-dir` set to a worktree of the skills commit, `--permission-mode bypassPermissions`, and a fixed `--model` and `--effort`. The scorer then builds and tests the result, and the runner deletes the worktree and every branch.
+Per run: a throwaway worktree of the target repo at the Spec's base, on its own branch (so `/implement` lands there and nowhere else), then `claude -p '/implement #N'` with `--plugin-dir` set to a worktree of the skills commit, every other plugin the user or the target repo enables turned off with `--settings`, `--permission-mode bypassPermissions`, and a fixed `--model` and `--effort`. The scorer then builds and tests the result, and the runner deletes the worktree and every branch.
 
 It writes nothing outside the checkout, in layers:
 

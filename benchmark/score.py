@@ -63,7 +63,7 @@ def judge(meta, spec, s, m):
     elif meta.get("exit_code") not in (0, None) or meta.get("result_is_error"):
         reasons.append(f"claude failed (exit {meta.get('exit_code')})")
     if meta.get("plugin_verified") is False:
-        reasons.append("the skills under test were not the plugin that loaded")
+        reasons.append("the skills under test were not the only plugin that loaded")
     if meta.get("plugin_verified") is None:
         flags.append("plugin source unverified")
     if s["landed"] is None:

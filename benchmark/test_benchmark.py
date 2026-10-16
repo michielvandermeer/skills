@@ -164,7 +164,7 @@ class ScoreTests(unittest.TestCase):
         for over, text in (({"exit_code": 1}, "claude failed"), ({"timed_out": True}, "timed out"),
                            ({"landed": False}, "no commit landed"), ({"subagents": 0}, "no subagent"),
                            ({"test_commands": 0}, "no test command"), ({"tests_run": 0}, "ran no tests"),
-                           ({"plugin_verified": False}, "not the plugin")):
+                           ({"plugin_verified": False}, "not the only plugin")):
             valid, reasons, _ = self.judged(**over)
             self.assertFalse(valid, over)
             self.assertIn(text, " ".join(reasons))
@@ -329,9 +329,10 @@ class CompareTests(unittest.TestCase):
 class RunnerTests(unittest.TestCase):
     def test_argv_pins_settings_and_ends_with_the_variadic_flag(self):
         settings = run.Settings("sonnet", "high", "claim", claude_cmd=["claude"])
-        argv = run.build_argv(settings, {"issue": 394}, "/skills", "sid", "/mcp.json")
+        argv = run.build_argv(settings, {"issue": 394}, "/skills", "sid", "/mcp.json", "/settings.json")
         self.assertEqual(argv[:3], ["claude", "-p", "/implement #394"])
-        for pair in (["--model", "sonnet"], ["--effort", "high"], ["--plugin-dir", "/skills"], ["--session-id", "sid"]):
+        for pair in (["--model", "sonnet"], ["--effort", "high"], ["--plugin-dir", "/skills"], ["--session-id", "sid"],
+                     ["--settings", "/settings.json"]):
             self.assertEqual(argv[argv.index(pair[0]) + 1], pair[1])
         self.assertIn("--strict-mcp-config", argv)
         self.assertEqual(argv[argv.index("--disallowedTools") + 1:], guards.DENIED_TOOLS)
@@ -341,8 +342,24 @@ class RunnerTests(unittest.TestCase):
         self.assertTrue(run.plugin_verified(init, "/a/skills"))
         self.assertFalse(run.plugin_verified(init, "/b/skills"))
         self.assertIsNone(run.plugin_verified({}, "/a/skills"))
-        both = {"plugins": [{"name": "skills", "path": "/a/skills"}, {"name": "skills", "path": "/installed"}]}
-        self.assertIsNone(run.plugin_verified(both, "/a/skills"))
+        both = {"plugins": [{"name": "skills", "path": "/a/skills"}, {"name": "pstack", "path": "/installed"}]}
+        self.assertFalse(run.plugin_verified(both, "/a/skills"))
+        builtin = {"plugins": [{"name": "skills", "path": "/a/skills"}, {"name": "cc-plugin-telemetry", "path": "builtin"}]}
+        self.assertTrue(run.plugin_verified(builtin, "/a/skills"))
+
+    def test_every_plugin_the_user_or_target_enables_is_turned_off(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            (tmp / "cfg").mkdir(), (tmp / "w" / ".claude").mkdir(parents=True)
+            (tmp / "cfg" / "settings.json").write_text('{"enabledPlugins": {"pstack@p": true, "skills@m": true}}', encoding="utf-8")
+            (tmp / "w" / ".claude" / "settings.json").write_text('{"enabledPlugins": {"tool@t": true}}', encoding="utf-8")
+            old = os.environ.get("CLAUDE_CONFIG_DIR")
+            os.environ["CLAUDE_CONFIG_DIR"] = str(tmp / "cfg")
+            try:
+                off = run.other_plugins_off(tmp / "w")
+            finally:
+                os.environ.pop("CLAUDE_CONFIG_DIR") if old is None else os.environ.__setitem__("CLAUDE_CONFIG_DIR", old)
+            self.assertEqual(off, {"enabledPlugins": {"pstack@p": False, "skills@m": False, "tool@t": False}})
 
     def test_a_spec_with_a_todo_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
