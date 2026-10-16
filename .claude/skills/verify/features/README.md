@@ -33,4 +33,4 @@ Each feature file has an H1, one paragraph on the user-visible behaviour, and fo
 - [Implement](implement.md) — the implement loop in a worktree, landed on the starting branch as one commit.
 - [Model invocation](model-invocation.md) — whether a description fires on a plain request.
 
-Not yet mapped: the other 18 skills.
+Not yet mapped: the other 19 skills.
