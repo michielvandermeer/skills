@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Why, and walkthroughs in explain
+Ask why some code works the way it does and `/why` traces the reason through git history, pull requests, Issues, and any connected tools, citing each claim and saying how well it is supported. `/triage` and `/grilling` run it before changing code that looks deliberate. `/explain` can now answer as a written walkthrough of how part of the code works.
+
 ## 2026-10-16: What did I get done
 Type `/what-did-i-get-done` with a period, such as `yesterday` or `last week`, for a short status update of your work in the repo. It reads your commits, the pull requests you opened, merged, or reviewed, and the Issues you filed, closed, or moved, and names any source it could not read.
 
