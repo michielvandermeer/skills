@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Technical writing replaces plain language
+`/technical-writing` replaces `/plain-language` as the standard for everything a skill writes for a person, with sentence rules and a catalogue of AI-sounding phrases to cut, both adapted from pstack. Text you read from the skills no longer carries em dashes or semicolons, and a colon only introduces a list or an example. A free-form document such as a README now takes one type: tutorial, how-to, reference, or explanation.
+
 ## 2026-10-16: Eleven unused skills removed
 `/grill-me`, `/refine`, `/improve-data-structures`, `/codebase-audit`, `/review-spec`, `/handoff`, `/wizard`, `/implement-yolo`, `/diagnosing-bugs`, `/codebase-design` and `/improve-codebase-architecture` are gone; use `/grilling` or `/grill-with-docs` in place of `/grill-me` and `/refine`, and `/implement` in place of `/implement-yolo`. `/to-spec`, `/validate-spec`, `/retro` and `/resolving-merge-conflicts` now run only when you type them or when another skill such as `/triage` or `/implement` reaches its step. Before, the agent could start any of them on its own from a plain request.
 
