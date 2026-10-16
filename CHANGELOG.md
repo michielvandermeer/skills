@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Implement plans steps again
+`/implement` again starts by slicing the Spec into steps that each fit one agent, then builds them in order before it reviews and verifies the whole change. A small Spec is one step, so the extra cost is one short planning agent, about five percent of a run. A large Spec no longer has to fit in one agent's context, and its landing commit lists the steps.
+
 ## 2026-10-16: Setup verify replaces the Run recipe
 Run `/setup verify` to give your repo a verify skill that launches the app, drives each feature the way a user would, and keeps the evidence, proven with one full run before it is committed. Run it again later and it checks every feature against the code and the running app and fixes what drifted. `/implement` now checks a change on the running app through that skill, and a repo without one gets those checks skipped with a hint to run `/setup verify`.
 
