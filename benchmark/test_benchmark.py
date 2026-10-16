@@ -214,7 +214,7 @@ def make_rows(base_costs, cand_costs, **cand_over):
              "tests_ok": "True", "tests_run": "5", "verify": "passed", "forbidden_html": "0", "forbidden_text": "0",
              "blocked_writes": "0", "noop_writes": "2", "checks_done": "True"}
         r.update({f"cost_{role}": str(cost * share) for role, share in
-                  zip(compare.ROLES, (0.1, 0.5, 0.2, 0.15, 0.05))})
+                  zip(compare.ROLES, (0.1, 0.5, 0.2, 0.15, 0.0, 0.05))})
         r.update(over)
         return r
 

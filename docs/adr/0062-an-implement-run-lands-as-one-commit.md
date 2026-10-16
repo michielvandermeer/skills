@@ -1,10 +1,10 @@
 # An implement run lands as one commit
 
-`/implement` lands a run on the base branch as one **landing commit**: the run's whole change, named after what it does. Landing every commit a run makes would put all of them on the base branch: the Spec copy, each Iteration's commits, and the commit that deletes the run folder. On 2026-10-08, seven runs in `mvdmio-suite` that landed every commit left between 7 and 18 commits each, and most were named for the run's own bookkeeping. That makes `git log` slow to read for what changed and why.
+`/implement` lands a run on the base branch as one **landing commit**: the run's whole change, named after what it does. Landing every commit a run makes would put all of them on the base branch: the Spec copy, the plan, each Step's and each Iteration's commits, and the commit that deletes the run folder. On 2026-10-08, seven runs in `mvdmio-suite` that landed every commit left between 7 and 18 commits each, and most were named for the run's own bookkeeping. That makes `git log` slow to read for what changed and why.
 
 The run still makes those commits, because a halted run resumes from them ([ADR-0004](0004-the-run-folder-is-outside-the-tracker.md)). They stay on the run's branch. Dropping them loses little. An Iteration's commit is not finished work until Review and Verify pass it. After a rebase, only the newest commit on the branch is verified again. So a `git bisect` that stops inside a run tests code nobody proved green.
 
-The landing commit's subject says what the change does and ends with the Issue's reference. The run writes it from the Spec, because an Issue's title often names the problem instead. The body carries the Issue's closing reference.
+The landing commit's subject says what the change does and ends with the Issue's reference. The run writes it from the Spec, because an Issue's title often names the problem instead. The body lists each Step's title when the run had more than one, then the Issue's closing reference.
 
 ## Considered Options
 

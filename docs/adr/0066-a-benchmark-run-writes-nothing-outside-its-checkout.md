@@ -2,7 +2,7 @@
 
 `/implement` run by the `benchmark/` runner is in **benchmark mode**: the runner exports `SKILLS_BENCHMARK=1` and `SKILLS_BENCHMARK_LOG`, and names the first in the session's system prompt. Every write that would leave the local checkout becomes a no-op that appends one line to the log. A benchmark pass runs the same Spec many times on both sides of a skills change, so a real claim, push, comment, or close would repeat against live Issues and branches.
 
-The run's outward writes are the claim in step 1 and the push in steps 4 and 5. The closing reference in the landing commit reaches the Tracker only through a push. No agent file holds a write: the Implementer and the Verifier halt rather than reach outside, and `/code-review`, `/retro`, and `/resolving-merge-conflicts` write nothing outward. The driving session therefore skips the claim and the pushes, and adds one line to every sub-agent prompt.
+The run's outward writes are the claim in step 1 and the push in steps 5 and 6. The closing reference in the landing commit reaches the Tracker only through a push. No agent file holds a write: the Implementer and the Verifier halt rather than reach outside, and `/code-review`, `/retro`, and `/resolving-merge-conflicts` write nothing outward. The driving session therefore skips the claim and the pushes, and adds one line to every sub-agent prompt.
 
 The skill is not the only guard. The runner also rejects pushes in the worktree, shims `gh` so only reads pass, starts Claude Code with no MCP servers, and denies the write commands as tools. A guard that trips is logged as `BLOCKED`, and the scorer counts it: a run that needed one did not follow benchmark mode.
 

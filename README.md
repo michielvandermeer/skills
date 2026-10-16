@@ -136,6 +136,7 @@ Everything else stays in the repo, whichever Tracker you use: the Steps of a run
 │   ├── climber.md
 │   ├── explorer.md
 │   ├── implementer.md
+│   ├── planner.md
 │   ├── researcher.md
 │   ├── reviewer.md
 │   ├── validator.md
@@ -163,7 +164,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 
 **Sub-agents.**
 
-- Sonnet at high: `skills:implementer`, `skills:verifier`.
+- Sonnet at high: `skills:planner`, `skills:implementer`, `skills:verifier`.
 - Sonnet at medium: `skills:climber`, `skills:validator`, `skills:researcher`.
 - Haiku at high: `skills:explorer`.
 - Opus at high: `skills:reviewer`, the `/code-review` reviewers.
@@ -184,7 +185,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `hillclimb` | Push one measured number — test-suite time, build time, memory, bundle size — toward a target, trying one change at a time and keeping only what measurably helps. Loads on its own when you ask for something to be made faster, smaller, or cheaper. |
-| `implement` | Implement an Issue's Spec, or a description, in a loop: implement, review against the coding standards and design principles, verify against the Spec — up to three times — then land it as one commit. |
+| `implement` | Implement an Issue's Spec, or a description: slice it into steps that each fit one agent, build them, then review against the coding standards and design principles and verify against the Spec, fixing and checking again up to three times, then land it as one commit. |
 | `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Type it to rebuild your profile from past sessions; no grilling session runs it for you. |
 | `pr` | Shape a pull request description: a small picture of the change, before-and-after evidence, and how risky it is to merge. Loads on its own whenever the agent writes one. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |

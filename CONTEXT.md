@@ -199,12 +199,24 @@ _Avoid_: fix, bugfix, regression
 
 ### Execution
 
+**Planner**:
+The sub-agent (`skills:planner`) that starts an implement run: it walks the code, slices the Spec into **Steps** by `skills/implement/STEPS.md`, commits the Step files, and returns a one-line-per-Step index. It writes no code.
+_Avoid_: slicer, architect
+
+**Step**:
+One slice of a Spec that a single fresh **Implementer** builds on an implement run's first **Iteration**, recorded as a file under `.agents/runs/<slug>/` with what to build, a **Footprint**, acceptance criteria, and, once built, an Outcome. Steps run in number order, and each reads the Outcomes of the Steps before it. Most Specs are one Step. Review and Verify judge all Steps together, never one alone.
+_Avoid_: task, ticket, phase, slice
+
+**Footprint**:
+The **Planner**'s guess, in a **Step** file, at where that Step's work lands: the files, the symbols in them, and the projects that must stay green. The **Implementer** starts from it, and where the code disagrees, the code wins and the drift goes in the Step's Outcome.
+_Avoid_: scope, file list
+
 **Iteration**:
-One pass of an implement run's loop over the whole Spec: Implement, then Review, then Verify. A Review finding ends the Iteration before Verify; a Verify finding ends it after. The next Iteration starts at Implement with those findings. A run lands when one Iteration passes both, and halts when its third does not.
+One pass of an implement run's loop over the whole Spec: Implement, then Review, then Verify. A Review finding ends the Iteration before Verify; a Verify finding ends it after. The next Iteration starts at Implement with those findings. The first Iteration's Implement builds the **Steps** in order; a later one's fixes the findings. A run lands when one Iteration passes both, and halts when its third does not.
 _Avoid_: round (a grilling term), cycle, attempt (a Hillclimb term)
 
 **Implementer**:
-The sub-agent (`skills:implementer`) that does the Implement part of an **Iteration**, under `/implement`. On the first Iteration it makes the whole change the Spec asks for; on each later one it fixes every Verify finding it was handed, and fixes or declines each Review finding, with a reason for each decline. It builds what it touched, runs the tests closest to its change, commits, and returns a fixed four-line report. A fresh one is dispatched each Iteration.
+The sub-agent (`skills:implementer`) that does the Implement part of an **Iteration**, under `/implement`. On the first Iteration a fresh one builds each **Step**, appends its Outcome to the Step file, and marks it done; on each later Iteration one fresh Implementer fixes every Verify finding it was handed, and fixes or declines each Review finding, with a reason for each decline. It builds what it touched, runs the tests closest to its change, commits, and returns a fixed four-line report.
 _Avoid_: Step agent, coder, worker
 
 **Verifier**:
@@ -239,7 +251,7 @@ The branch the session was on when `/implement` started, read again on a resume.
 _Avoid_: master, main, default branch, trunk
 
 **Landing commit**:
-The one commit an implement run leaves on the **Base branch** when it lands: the whole run's change, named after what it does, carrying the Issue's closing reference. It replaces every commit the run made along the way — the Spec copy and each Iteration's — so none of those stays on the Base branch, and it holds no run folder. A **Retrospective**'s commit, when there is one, follows it as a commit of its own.
+The one commit an implement run leaves on the **Base branch** when it lands: the whole run's change, named after what it does, carrying the Issue's closing reference. It replaces every commit the run made along the way — the Spec copy, the plan, each **Step**'s, and each Iteration's — so none of those stays on the Base branch, and it holds no run folder. A **Retrospective**'s commit, when there is one, follows it as a commit of its own.
 _Avoid_: squash commit, land commit, cleanup commit, merge commit
 
 **Green**:
@@ -247,10 +259,10 @@ Zero failures in the **Verifier**'s run of the whole test suite, measured agains
 _Avoid_: passing, all tests pass, mostly green
 
 **Deviation**:
-Anything an **Implementer** or **Verifier** reports that the Driving session carries forward without acting on: a contradiction with the Spec, a failure left red because the Base branch already fails it, a flaky test, a Hand check skipped for what it needs, a missing **Verify skill** among them, or a Verify skill corrected.
+Anything an **Implementer** or **Verifier** reports that the Driving session carries forward without acting on: a contradiction with the Spec, a change a later **Step** must know about, a failure left red because the Base branch already fails it, a flaky test, a Hand check skipped for what it needs, a missing **Verify skill** among them, or a Verify skill corrected.
 
 **Spec-bound dispatch**:
-A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled: the **Implementer** and the **Verifier** run on Sonnet. Its opposite carries design or review judgement: the **Reviewer** is pinned to the model and effort that judgement needs, while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
+A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled: the **Planner**, the **Implementer**, and the **Verifier** run on Sonnet. Its opposite carries design or review judgement: the **Reviewer** is pinned to the model and effort that judgement needs, while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
 _Avoid_: cheap agent, worker, low-tier agent
 
 **Merge risk**:

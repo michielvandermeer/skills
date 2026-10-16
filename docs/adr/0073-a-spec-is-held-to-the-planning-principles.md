@@ -1,10 +1,10 @@
 # A Spec is held to the planning principles
 
-A Spec is the whole input to an `/implement` run, and that run has no one to ask ([ADR-0072](0072-implement-is-a-loop-of-implement-review-verify.md)). The judgement calls a good Spec needs are one list, the **Planning principles** in `skills/to-spec/PRINCIPLES.md`: leave the implementer nothing to ask, fit one run, experience first, exhaust the design space, sequence verifiable units, check from outside, explain the number, attack the premise, build the lever, and converge on the end state. Each says when it applies, what it looks like in a Spec, and the fix. `/grilling` recommends options by them, `/to-spec` writes to them, and the Validator applies them as one checklist item. A miss is an open question in the Validator's report, as a width gap is under [ADR-0065](0065-a-spec-takes-the-smallest-change-that-does-the-job.md).
+A Spec is the whole input to an `/implement` run, and that run has no one to ask ([ADR-0072](0072-implement-plans-steps-then-loops-implement-review-verify.md)). The judgement calls a good Spec needs are one list, the **Planning principles** in `skills/to-spec/PRINCIPLES.md`: leave the implementer nothing to ask, fit one run, experience first, exhaust the design space, sequence verifiable units, check from outside, explain the number, attack the premise, build the lever, and converge on the end state. Each says when it applies, what it looks like in a Spec, and the fix. `/grilling` recommends options by them, `/to-spec` writes to them, and the Validator applies them as one checklist item. A miss is an open question in the Validator's report, as a width gap is under [ADR-0065](0065-a-spec-takes-the-smallest-change-that-does-the-job.md).
 
 Before it chooses the change, `/to-spec` sharpens the task, as pstack's `/sharpen` does: how a top expert would approach it, what the person is really after, and which constraints serve that. Check from outside is the part of that pass the Validator can see in the finished Spec.
 
-Since a single Implementer now builds the whole Spec, a Spec that one session cannot read and build is too big. The Validator reports it, and a person splits it or moves the change to `/wayfinder`.
+The Planner slices a Spec into Steps that each fit one session, but the run reviews, verifies, and lands the whole Spec as one change. So a Spec that holds several changes, each of which could ship alone, is too big. The Validator reports it, and a person splits it or moves the change to `/wayfinder`.
 
 ## Considered Options
 

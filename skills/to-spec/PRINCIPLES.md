@@ -1,6 +1,6 @@
 # Planning principles
 
-These principles describe what a Spec must give `/implement`. One Implementer builds the whole Spec in one session, with no person to ask, and a Verifier then checks it. Whatever the Spec leaves open, they fill with a guess. `/grilling` recommends options by these principles, `/to-spec` writes the Spec to meet them, and the Validator checks the draft against them. Each one says when it applies. Name the principle when you cite it, as in "misses Explain the number: ...".
+These principles describe what a Spec must give `/implement`. A Planner slices the Spec into Steps, an Implementer builds each Step in its own session, with no person to ask, and a Verifier then checks the whole change. Whatever the Spec leaves open, they fill with a guess. `/grilling` recommends options by these principles, `/to-spec` writes the Spec to meet them, and the Validator checks the draft against them. Each one says when it applies. Name the principle when you cite it, as in "misses Explain the number: ...".
 
 ## Leave the implementer nothing to ask
 
@@ -15,14 +15,14 @@ Every choice that changes what a person meets is made in the Spec. The run has n
 
 ## Fit one run
 
-A fresh Implementer reads and builds the whole Spec in one session; each later Iteration starts a fresh one to fix findings, up to three in all. The Spec has to fit that first session.
+The Planner slices a large Spec into Steps that each fit one session, but the run still reviews, verifies, and lands the whole Spec as one change, and its findings all go back to a single Implementer. The Spec has to be one change.
 
 **In a Spec:**
 - A Solution made of several features, each of which could ship alone.
-- Implementation Decisions that reach into many unrelated areas, or a sweep over more files than one session can read.
+- Implementation Decisions that reach into many unrelated areas.
 - User Stories that fall into groups with no module in common.
 
-**Fix:** a Spec that one session could not read and build is too big. Splitting it is a person's call: they split it into Specs that each land green, or move the change to `/wayfinder`.
+**Fix:** a Spec that holds several changes is too big. Splitting it is a person's call: they split it into Specs that each land green, or move the change to `/wayfinder`.
 
 ## Experience first
 

@@ -27,7 +27,7 @@ A description shows a reviewer what changed, that it works, and how risky it is 
 <the Issue's closing reference>
 ```
 
-Its reader is a reviewer who was never in the session. Write it at the bar the `/technical-writing` skill sets: the repo's `CONTEXT.md` terms stand as they are, and this plugin's own words — Iteration, Verifier, run folder — stay out. When the work came from an Issue, end with the closing reference the repo's Tracker ref (`.agents/refs/tracker.md`) gives; a ref that gives none gets the Issue's reference on its own line.
+Its reader is a reviewer who was never in the session. Write it at the bar the `/technical-writing` skill sets: the repo's `CONTEXT.md` terms stand as they are, and this plugin's own words — Step, Iteration, Verifier, run folder — stay out. When the work came from an Issue, end with the closing reference the repo's Tracker ref (`.agents/refs/tracker.md`) gives; a ref that gives none gets the Issue's reference on its own line.
 
 Write the description to a file outside the repo and pass it with `--body-file` to `gh pr create` or `gh pr edit`, or the host's equivalent.
 

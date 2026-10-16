@@ -19,7 +19,7 @@ PRICES = {
     "sonnet": (3.0, 15.0, 3.75, 6.0, 0.30),
     "haiku": (1.0, 5.0, 1.25, 2.0, 0.10),
 }
-ROLES = ["main", "implementer", "reviewer", "verifier"]
+ROLES = ["main", "implementer", "reviewer", "verifier", "planner"]
 TEST_RE = re.compile(r"\b(dotnet\s+test|run-tests\.mjs|bun\s+(run\s+)?test|vitest|npm\s+(run\s+)?test|pytest|cargo\s+test|go\s+test)\b")
 VERIFIER_STATUS_RE = re.compile(r"^\s*status:\s*(passed|failed|blocked)\b", re.I | re.M)
 

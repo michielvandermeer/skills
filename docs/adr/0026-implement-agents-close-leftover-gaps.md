@@ -8,4 +8,5 @@ Stopping the run so the user could decide was rejected: they still would not hav
 
 - A result that is a question is a failed dispatch, retried once. A second failure stops the run without quoting the question.
 - Where a Review finding and the Spec disagree, the Spec wins, and the Implementer declines the finding.
-- The Implementer and the Verifier are pinned to Sonnet at `effort: high` ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)).
+- The Planner writes its reading of what the Spec left silent into the Step that needs it, so every Implementer after it shares one reading.
+- The Planner, the Implementer, and the Verifier are pinned to Sonnet at `effort: high` ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)).

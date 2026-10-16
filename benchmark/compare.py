@@ -15,7 +15,7 @@ from math import comb
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROLES = ["main", "implementer", "reviewer", "verifier", "other"]
+ROLES = ["main", "implementer", "reviewer", "verifier", "planner", "other"]
 METRICS = [("cost_usd", "List-price cost per run (USD)", "{:.2f}"), ("tokens_total", "Tokens per run (millions)", None),
            ("subagents", "Subagents per run", "{:.0f}"), ("wall_s", "Wall time per run (minutes)", None),
            ("max_context", "Largest context in any call (thousand tokens)", None)]
