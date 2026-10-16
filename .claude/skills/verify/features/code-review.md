@@ -19,7 +19,7 @@
 
 Preconditions:
 
-- A run whose scratch repo holds a change to review. In a fresh run, write a small source file into the scratch repo and commit it, so `HEAD~1..HEAD` is non-empty. A smell the built-in list names, such as a long parameter list, gives the Standards axis something to find.
+- A run whose scratch repo holds a change to review. In a fresh run, write a small source file into the scratch repo and commit it, so `HEAD~1..HEAD` is non-empty. A miss a design principle names, such as two same-typed parameters that mean different things (`user_id: str, order_id: str`), gives the Standards axis something to find.
 - Optionally, an Issue file at `.agents/issues/<slug>.md` describing what the change should do, for the Spec axis.
 
 - **Review.** Run `verify.py turn <run> "/skills:code-review HEAD~1"`. With no Issue, the skill asks for the Spec. Run `verify.py turn <run> "there is none"`.
