@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Setup verify replaces the Run recipe
+Run `/setup verify` to give your repo a verify skill that launches the app, drives each feature the way a user would, and keeps the evidence, proven with one full run before it is committed. Run it again later and it checks every feature against the code and the running app and fixes what drifted. `/implement` now checks a change on the running app through that skill, and a repo without one gets those checks skipped with a hint to run `/setup verify`.
+
 ## 2026-10-16: Why, and walkthroughs in explain
 Ask why some code works the way it does and `/why` traces the reason through git history, pull requests, Issues, and any connected tools, citing each claim and saying how well it is supported. `/triage` and `/grilling` run it before changing code that looks deliberate. `/explain` can now answer as a written walkthrough of how part of the code works.
 
