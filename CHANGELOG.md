@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Specs follow nine planning principles
+Every Spec from `/triage`, `/grill-with-docs`, `/wayfinder` or `/to-spec` is now checked against nine planning principles. For example: leave the implementer nothing to ask, fit one `/implement` run, measure any number the Spec relies on, and name the test that fails today. `/grilling` recommends options by the same list, and `/triage` now looks for earlier failed fixes, measures a number a report claims, and puts its reproduction in the Spec as the first test.
+
 ## 2026-10-16: Implement runs as one loop
 `/implement` and `/implement-yolo` now run one loop over the whole Spec. An implementer builds it, a review checks it against your coding standards and a set of design principles, and a verifier checks it against the Spec, the full test suite and its Hand checks; a finding from either sends it back, up to three times. Before, a Planner sliced the Spec into steps that each had their own checker, review findings were fixed once with nobody checking the fixes, and `/implement-oneshot`, Safety facts, Proofs and the data-structures pass were separate pieces that are now gone.
 
