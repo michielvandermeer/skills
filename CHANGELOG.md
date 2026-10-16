@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: What did I get done
+Type `/what-did-i-get-done` with a period, such as `yesterday` or `last week`, for a short status update of your work in the repo. It reads your commits, the pull requests you opened, merged, or reviewed, and the Issues you filed, closed, or moved, and names any source it could not read.
+
 ## 2026-10-16: Specs start from a sharpened task
 Before it writes a Spec, `/to-spec` now asks how an expert would approach the task, what you are really after, and which constraints serve that, an idea taken from pstack's `/sharpen`. Every Spec now needs at least one check whose answer comes from outside the change, such as expected values worked out by hand, and the Validator reports a Spec that has none.
 
