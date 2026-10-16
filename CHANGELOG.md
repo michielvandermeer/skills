@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Agents work in the run worktree
+`/implement` and `/hillclimb` agents now work in the run's worktree even when the session itself could not move into it, as happens on Windows. Before, they could start in your main checkout, so the verifier checked the base branch instead of the change and passed it unseen.
+
 ## 2026-10-16: Choose agent models per repo
 Run `/setup models` to pick the model and effort each of the plugin's sub-agents runs at in your repo, such as running the explorer on Sonnet instead of Haiku. The choices are saved in `.agents/refs/models.md` in the repo, not in your global Claude settings, and the first `/setup` creates that file with the current defaults. Skills you type keep the models they always used.
 
