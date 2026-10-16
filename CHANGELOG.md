@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-16: Eleven unused skills removed
+`/grill-me`, `/refine`, `/improve-data-structures`, `/codebase-audit`, `/review-spec`, `/handoff`, `/wizard`, `/implement-yolo`, `/diagnosing-bugs`, `/codebase-design` and `/improve-codebase-architecture` are gone; use `/grilling` or `/grill-with-docs` in place of `/grill-me` and `/refine`, and `/implement` in place of `/implement-yolo`. `/to-spec`, `/validate-spec`, `/retro` and `/resolving-merge-conflicts` now run only when you type them or when another skill such as `/triage` or `/implement` reaches its step. Before, the agent could start any of them on its own from a plain request.
+
 ## 2026-10-16: Specs follow nine planning principles
 Every Spec from `/triage`, `/grill-with-docs`, `/wayfinder` or `/to-spec` is now checked against nine planning principles. For example: leave the implementer nothing to ask, fit one `/implement` run, measure any number the Spec relies on, and name the test that fails today. `/grilling` recommends options by the same list, and `/triage` now looks for earlier failed fixes, measures a number a report claims, and puts its reproduction in the Spec as the first test.
 
