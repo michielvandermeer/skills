@@ -18,17 +18,23 @@ A skill's pin lasts for the rest of the turn, so a model-invoked skill that othe
 
 The Reviewer is Opus because review is the one stage where a stronger model than the author's pays for itself.
 
+A repo may override an agent's pin in its **Models ref**, `.agents/refs/models.md`, which `/setup models` writes. Each row names an agent's model and effort, and a pointer line in the repo's `CLAUDE.md` or `AGENTS.md` has the session pass them as `model` and `effort` on every dispatch of that agent. A plain `/setup` writes the file with every agent at its pin when it is missing, so the repo's choices sit in one place to edit.
+
 ## Considered Options
 
-A per-repo `.agents/refs/models.md` was rejected. A skill cannot read a repo file before the host has chosen its model, so the file could set only the sub-agents and never the skills that burn the most.
+A Models ref that also sets the skills' pins was rejected: the host chooses a skill's model before the skill can read a repo file. The Models ref covers the agents only.
 
-Passing `model` and `effort` on each Agent call from the skill text was rejected as the main way to pin. The `effort` argument needs Claude Code 2.1.292 or later, and Grok's `spawn_subagent` has none. An agent header works on both, which is why the reviewers became an agent. The call arguments remain the way a caller overrides a pin.
+Keeping the Models ref in the user's global Claude Code config, as pstack does, was rejected. The choice belongs to the repo and travels with it in git.
+
+Passing `model` and `effort` on each Agent call from the skill text was rejected as the main way to pin. The `effort` argument needs Claude Code 2.1.292 or later, and Grok's `spawn_subagent` has none. An agent header works on both, which is why the reviewers became an agent. The call arguments remain the way a caller, or the Models ref, overrides a pin.
 
 Retrying a failed Implementer at higher effort was rejected. The retry fires on a `blocked` report, a malformed report, or a question in place of a result, and more thinking rarely fixes those.
 
 ## Consequences
 
-- A repo cannot change a pin. It forks the plugin, or sets its session model by hand.
+- A repo changes an agent's pin in its Models ref. It cannot change a skill's pin; it forks the plugin, or sets its session model by hand.
+- A row copied from a default does not follow a later change to that agent's pin. `/setup models` marks each row that differs from the current pin.
+- On a host whose dispatch takes no effort, a row sets the model only.
 - `CLAUDE_CODE_EFFORT_LEVEL`, when set, beats an effort pin.
 - A model name in a header is a Claude alias. When a host rejects one, that model pin is dropped and the effort pins stay.
 - The Claude Code docs do not say that a skill's pin reaches the unpinned agents it starts, or that it lasts through a long run. Where it does not carry to the Fixers, the skill text passes `model` and `effort` on those calls.

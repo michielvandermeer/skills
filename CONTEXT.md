@@ -18,6 +18,10 @@ _Avoid_: issue-tracker.md, tracker config, tracker settings
 A starting **Tracker ref** the plugin ships for one system — local Markdown, GitHub Issues, or Jira — that `/setup` copies into a repo. Once copied it is the repo's own; later changes to the template do not reach it.
 _Avoid_: baseline, preset, issue-tracker template
 
+**Models ref**:
+The repo's own choice of the model and effort each of the plugin's agents runs at, at `.agents/refs/models.md`, with a pointer line in the repo's `CLAUDE.md` or `AGENTS.md`. A row overrides that agent's pin on every dispatch; an agent without a row runs at its pin. Skills keep their own pins. Written and changed by `/setup models`; a plain `/setup` writes it with every agent at its pin when it is missing.
+_Avoid_: model config, model overrides, models sheet
+
 **Issue**:
 One piece of work in the repo's **Tracker**, from a first rough thought to a finished **Spec**, carrying exactly one status: `needs-triage` (nobody has triaged it), `needs-info` (waiting on the reporter), `needs-grilling` (a person must decide the solution), `needs-human` (waiting on a secret or a manual test), `wayfinding` (it is a **Map**), or `ready-for-agent` / `ready-for-human` (it carries a Spec, for an agent or a person to build). A `needs-` status means it waits on something; a `ready-for-` status means it carries a Spec. Moving from one stage to the next updates the same Issue; finished or rejected work is closed. `/triage` may also give it a `bug` or `enhancement` category.
 _Avoid_: Idea, ticket, card, work item, PRD
@@ -262,7 +266,7 @@ _Avoid_: passing, all tests pass, mostly green
 Anything an **Implementer** or **Verifier** reports that the Driving session carries forward without acting on: a contradiction with the Spec, a change a later **Step** must know about, a failure left red because the Base branch already fails it, a flaky test, a Hand check skipped for what it needs, a missing **Verify skill** among them, or a Verify skill corrected.
 
 **Spec-bound dispatch**:
-A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, because the scope of the work was already settled: the **Planner**, the **Implementer**, and the **Verifier** run on Sonnet. Its opposite carries design or review judgement: the **Reviewer** is pinned to the model and effort that judgement needs, while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
+A sub-agent whose assignment is a document decided before it was dispatched — a Spec, a research question, an **Attempt**'s idea. Its agent file pins a cheaper model and a fixed effort, which a repo's **Models ref** may override, because the scope of the work was already settled: the **Planner**, the **Implementer**, and the **Verifier** run on Sonnet. Its opposite carries design or review judgement: the **Reviewer** is pinned to the model and effort that judgement needs, while a **Fixer** or a fan-out agent runs at the Driving session's own settings.
 _Avoid_: cheap agent, worker, low-tier agent
 
 **Merge risk**:

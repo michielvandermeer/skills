@@ -124,6 +124,7 @@ def summarize(events, plugin_dir, transcript=None):
                 skills.append(f"{i.get('skill')} {i.get('args') or ''}".strip())
             elif c.get("name") in ("Agent", "Task"):
                 agents.append(f"{i.get('subagent_type') or 'general-purpose'} model={i.get('model') or 'pinned/inherited'}"
+                              f" effort={i.get('effort') or 'pinned/inherited'}"
                               f" — {i.get('description', '')}")
             elif c.get("name") == "Read" and norm(i.get("file_path", "")).startswith(norm(plugin_dir)):
                 plugin_reads.append(os.path.relpath(i["file_path"], plugin_dir))

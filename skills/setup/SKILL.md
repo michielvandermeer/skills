@@ -1,7 +1,7 @@
 ---
 name: setup
-description: Set up or update the repo's Tracker ref, where its Issues live, or its Verify skill, which drives the app the way a user does.
-argument-hint: "[local | github | jira | other | verify]"
+description: Set up or update the repo's Tracker ref, where its Issues live; its Verify skill, which drives the app the way a user does; or its Models ref, the model and effort each plugin agent runs at.
+argument-hint: "[local | github | jira | other | verify | models]"
 disable-model-invocation: true
 model: sonnet
 effort: high
@@ -13,7 +13,7 @@ Write or update `.agents/refs/tracker.md`, the **Tracker ref**: the repo's own d
 
 Everything the user reads runs at the `/technical-writing` bar.
 
-With the argument `verify`, follow [VERIFY.md](VERIFY.md) in place of the steps below.
+With the argument `verify`, follow [VERIFY.md](VERIFY.md) in place of the steps below. With the argument `models`, follow [MODELS.md](MODELS.md).
 
 ## 1. Read what is there
 
@@ -46,12 +46,13 @@ Done: the user said yes to the draft.
 2. On GitHub, create each label the ref names that `gh label list` lacks: the statuses, the Decision ticket types, the categories, and the contexts.
 3. Offer to move the local work from step 1. On yes, file each open document in the new Tracker — an old Idea as an Issue in `needs-grilling`, an old Spec as one in `ready-for-agent`, an Issue in its own status, a Map in `wayfinding` with its open Decision tickets as children — and skip any whose title the Tracker already holds. Delete each local file once its Issue exists. When the new Tracker is local Markdown, moving rewrites each document into LOCAL.md's shape at the path LOCAL.md gives it.
 4. Offer to delete the old tracker docs, and to fix each `AGENTS.md` or `CLAUDE.md` line that contradicts the new ref. Apply what the user accepts.
-5. Commit everything this run changed, staged by name, in one commit.
+5. When `.agents/refs/models.md` is missing, write it and its pointer line with every agent at its default, as [MODELS.md](MODELS.md#the-models-ref) shows.
+6. Commit everything this run changed, staged by name, in one commit.
 
 Done: the commit exists, and every move is done, declined, or reported as failed.
 
 ## 5. Report
 
-Name the Tracker and the ref's path. List the labels created, each document moved with its new reference, each skipped because its title was already there, each move that failed, and each offer the user declined.
+Name the Tracker and the ref's path, and the Models ref when this run wrote it. List the labels created, each document moved with its new reference, each skipped because its title was already there, each move that failed, and each offer the user declined.
 
 Done: every label, move, skip, failure, and declined offer from step 4 appears in the report.

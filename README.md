@@ -105,6 +105,8 @@ Each piece of work is one **Issue**, kept in your repo's **Tracker**. Out of the
 
 To let `/implement` check a change on the running app, run `/setup verify`. It writes `.claude/skills/verify/`, a skill in your repo that launches the app, drives each feature the way a user would, and captures evidence, and it proves the skill works before committing it. Run it again later to bring the skill up to date with the app.
 
+To run the plugin's sub-agents on other models or effort levels in one repo, run `/setup models`. It writes `.agents/refs/models.md`, with one row per sub-agent, and the first `/setup` writes that file with the defaults below.
+
 An Issue has exactly one status at a time:
 
 | Status | What it means |
@@ -155,7 +157,7 @@ The `skills/` and `agents/` directories are discovered automatically by the plug
 
 ## Model and effort pins
 
-These skills pin the model and effort they run on, so parallel runs do not all inherit your session's most expensive setting. Nothing is pinned above `high`. A pin lives in a skill's or agent's header, so it is the same in every repo and there is no per-repo setting. [ADR-0049](docs/adr/0049-agents-are-pinned-in-their-agent-files.md) records why.
+These skills pin the model and effort they run on, so parallel runs do not all inherit your session's most expensive setting. Nothing is pinned above `high`. A pin lives in a skill's or agent's header. A repo can override a sub-agent's pin in `.agents/refs/models.md`, which `/setup models` writes; a skill's pin is the same in every repo. [ADR-0049](docs/adr/0049-agents-are-pinned-in-their-agent-files.md) records why.
 
 **Skills you type.** A pin applies when you type the skill. When another skill reads and follows it, the caller's model stays.
 
@@ -192,7 +194,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. `/implement` and `/hillclimb` use it when a rebase conflicts. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
-| `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. `/setup verify` writes, or brings up to date, the repo's verify skill, which drives the app the way a user does. |
+| `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. `/setup verify` writes, or brings up to date, the repo's verify skill, which drives the app the way a user does. `/setup models` sets the model and effort each sub-agent runs at in the repo. |
 | `technical-writing` | The house standard for every sentence a person reads: document type, sentence rules, and the AI tells to cut. |
 | `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. `/triage`, `/grill-with-docs`, `/wayfinder`, and `/prototype` end with it. |
 | `triage` | Sort incoming reports, or the Issues nobody has triaged yet, into Specs and parked Issues, one Issue per distinct problem, and close what won't be done. |
