@@ -11,7 +11,7 @@ A **Retrospective** applies **High-priority** environment changes to **Owned fil
 
 Apply and present only when the skill the user typed — or, when they typed none, the outermost skill the agent loaded — is this `/retro` or has reached its own done condition.
 
-Run `/writing-for-agents` for where each kind of change belongs, and `/plain-language` before the summary.
+Run `/writing-for-agents` for where each kind of change belongs, and `/technical-writing` before the summary.
 
 The argument names a session, or is empty for the current one.
 

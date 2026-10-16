@@ -68,10 +68,10 @@ Q1. **Does an expired export stay downloadable?**
 
 An export is a file we generate on request and keep for a while. This decides what someone sees when they open the link after that window closes.
 
-- a. Deleted on expiry — storage stays flat, and someone who bookmarked the link gets a bare 404. ← recommended
-- b. Kept and marked expired — the link still resolves and can say why, at the cost of unbounded growth.
+- a. Deleted on expiry. Storage stays flat, and someone who bookmarked the link gets a bare 404. ← recommended
+- b. Kept and marked expired. The link still resolves and can say why, at the cost of unbounded growth.
 
-*My recommendation: a* — the bookmarked-link case is rare enough to answer with a generic message.
+*My recommendation: a*, because the bookmarked-link case is rare enough to answer with a generic message.
 
 Q2. **What should we call the window an export stays valid for?**
 
@@ -94,10 +94,10 @@ Q3. **Does a deleted export leave a record?**
 
 The download page lists past exports. This decides whether an expired one still appears there.
 
-- a. No — the list shows only what can be downloaded, so an expired export vanishes without trace. ← recommended
-- b. Yes, marked expired — the history stays complete, at the cost of a list that grows without bound.
+- a. No. The list shows only what can be downloaded, so an expired export vanishes without trace. ← recommended
+- b. Yes, marked expired. The history stays complete, at the cost of a list that grows without bound.
 
-*My recommendation: a* — nobody has asked for export history.
+*My recommendation: a*, because nobody has asked for export history.
 
 ### Declarations
 
@@ -114,7 +114,7 @@ Before round 1, read every **Grilling profile** in `.agents/refs/profiles/`: min
 
 `Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating, one line where one line does it.
 
-A round is read at speed, often late in a long day of them. Run the `/plain-language` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
+A round is read at speed, often late in a long day of them. Run the `/technical-writing` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
 
 ## Done
 

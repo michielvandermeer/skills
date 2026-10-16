@@ -17,7 +17,7 @@ Answer with something to look at instead of prose. What you make is an **Explana
 
 The topic is anything: part of this repo, a branch's changes, an ADR, or an outside idea. With no topic, explain the last thing discussed in the session. With nothing to go on, ask what to explain and wait.
 
-Run the `/plain-language` skill before writing anything a person reads — the confirmation, labels, page text, narration — and hold its bar throughout. Write for a developer who does not know the topic yet, unless the request names another reader.
+Run the `/technical-writing` skill before writing anything a person reads — the confirmation, labels, page text, narration — and hold its bar throughout. Write for a developer who does not know the topic yet, unless the request names another reader.
 
 ## Process
 

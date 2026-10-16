@@ -101,16 +101,16 @@ _Avoid_: style guide, conventions, coding-standards.md
 
 ### Communication
 
-**Plain language**:
-Writing pitched at a reader who does not know this repo, in the sense of ISO 24495-1:2023. The standard every piece of text a skill puts in front of a person is held to.
-_Avoid_: simple English, simplified language, readability
+**Writing bar**:
+The standard every piece of text a skill puts in front of a person is held to, set by `/technical-writing`: pitched at a developer who does not know this repo, with no em dash, en dash, or semicolon, and none of the AI tells its `UNSLOP.md` lists.
+_Avoid_: plain language, style guide, house style, readability
 
 **Product reader**:
-Someone who knows the product but not its code — a QA tester, a product owner. The reader of the part of a **Tracker** document that says what is wrong and what changes: a **Spec**'s problem, solution, **Hand checks**, and user stories, a `needs-` **Issue**'s motivation and goal, a **Map**'s Destination. That part names only what this reader sees on the product, in words `CONTEXT.md` defines; the rest of the document keeps the developer reader of **Plain language**.
+Someone who knows the product but not its code — a QA tester, a product owner. The reader of the part of a **Tracker** document that says what is wrong and what changes: a **Spec**'s problem, solution, **Hand checks**, and user stories, a `needs-` **Issue**'s motivation and goal, a **Map**'s Destination. That part names only what this reader sees on the product, in words `CONTEXT.md` defines; the rest of the document keeps the developer reader of the **Writing bar**.
 _Avoid_: QA reader, business reader, non-technical reader, end user
 
 **Definition site**:
-Text whose job is to fix the meaning of a term — a `CONTEXT.md` entry, a glossary heading, an ADR passage that coins a name. The one place precision outranks **Plain language**, because careful words paid once are what make the shorthand safe to use everywhere else.
+Text whose job is to fix the meaning of a term — a `CONTEXT.md` entry, a glossary heading, an ADR passage that coins a name. The one place precision outranks the **Writing bar**, because careful words paid once are what make the shorthand safe to use everywhere else.
 _Avoid_: definition block, glossary entry
 
 **Gloss**:

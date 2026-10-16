@@ -98,6 +98,17 @@ def session_loads(transcript):
     return commands, bases
 
 
+def bash_reads(command, plugin_dir):
+    """Plugin skill and agent files a Bash command names, by full path or by folder plus file name."""
+    cmd = command.replace("\\", "/").lower()
+    hits = []
+    for f in sorted(Path(plugin_dir).glob("skills/**/*.md")) + sorted(Path(plugin_dir).glob("agents/*.md")):
+        full, folder = f.as_posix().lower(), f.parent.as_posix().lower()
+        if full in cmd or (folder in cmd and f.name.lower() in cmd):
+            hits.append(os.path.relpath(f, plugin_dir) + " (bash)")
+    return hits
+
+
 def summarize(events, plugin_dir, transcript=None):
     init = next((e for e in events if e.get("type") == "system" and e.get("subtype") == "init"), None)
     result = next((e for e in reversed(events) if e.get("type") == "result"), None)
@@ -116,6 +127,8 @@ def summarize(events, plugin_dir, transcript=None):
                               f" — {i.get('description', '')}")
             elif c.get("name") == "Read" and norm(i.get("file_path", "")).startswith(norm(plugin_dir)):
                 plugin_reads.append(os.path.relpath(i["file_path"], plugin_dir))
+            elif c.get("name") == "Bash":
+                plugin_reads.extend(bash_reads(i.get("command", ""), plugin_dir))
     for d in (result or {}).get("permission_denials") or []:
         denied.append(f"{d.get('tool_name')}: {json.dumps(d.get('tool_input'))[:200]}")
     commands, bases = session_loads(transcript)

@@ -17,7 +17,7 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 The run writes Issues and nothing else. Step 7 names the command that continues each Issue, and the user types it.
 
-Run the `/plain-language` skill before the first message and hold its bar for the opening, every card, and the closing pick. Every Issue holds its durable-document bar. The briefs you send helper agents are for agents and sit outside that bar.
+Run the `/technical-writing` skill before the first message and hold its bar for the opening, every card, and the closing pick. Every Issue holds its durable-document bar. The briefs you send helper agents are for agents and sit outside that bar.
 
 ## Process
 

@@ -21,13 +21,13 @@ A description shows a reviewer what changed, that it works, and how risky it is 
 
 ## Merge risk
 
-**Undo:** <easy — reverting the commits restores the old behaviour | hard — what stays changed after a revert>
+**Undo:** <easy. Reverting the commits restores the old behaviour. | hard. What stays changed after a revert.>
 **Affects:** <who or what would notice if it went wrong>
 
 <the Issue's closing reference>
 ```
 
-Its reader is a reviewer who was never in the session. Write it at the bar the `/plain-language` skill sets: the repo's `CONTEXT.md` terms stand as they are, and this plugin's own words — Iteration, Verifier, run folder — stay out. When the work came from an Issue, end with the closing reference the repo's Tracker ref (`.agents/refs/tracker.md`) gives; a ref that gives none gets the Issue's reference on its own line.
+Its reader is a reviewer who was never in the session. Write it at the bar the `/technical-writing` skill sets: the repo's `CONTEXT.md` terms stand as they are, and this plugin's own words — Iteration, Verifier, run folder — stay out. When the work came from an Issue, end with the closing reference the repo's Tracker ref (`.agents/refs/tracker.md`) gives; a ref that gives none gets the Issue's reference on its own line.
 
 Write the description to a file outside the repo and pass it with `--body-file` to `gh pr create` or `gh pr edit`, or the host's equivalent.
 
