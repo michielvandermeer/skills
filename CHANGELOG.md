@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-17: Reviews respect Spec decisions
+`/code-review` now reads the Spec's Implementation Decisions and no longer suggests a change that a decision there already settles, and `/implement` hands it the Spec to read. Before, the review could suggest a shared helper the Spec had ruled out, the next agent added it, and verification then failed the round for contradicting the Spec.
+
 ## 2026-10-17: Specs checked for false "no edit" claims
 The check that runs on every new Spec now tests claims such as "the README does not mention this, so it needs no edit" by searching the repo and reading its `CLAUDE.md` rules, and it corrects the Spec when the claim is false. Before, such a claim passed unchecked, so an `/implement` run got an instruction its own review and verification then contradicted.
 
