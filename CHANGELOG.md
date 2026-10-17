@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-17: Specs checked for false "no edit" claims
+The check that runs on every new Spec now tests claims such as "the README does not mention this, so it needs no edit" by searching the repo and reading its `CLAUDE.md` rules, and it corrects the Spec when the claim is false. Before, such a claim passed unchecked, so an `/implement` run got an instruction its own review and verification then contradicted.
+
 ## 2026-10-16: Review opinions no longer loop
 `/implement` now sends a change back for another round only when the review finds a broken coding rule or a real defect, such as a crash or a wrong result, or when verification fails. Design suggestions are fixed if another round runs anyway, and otherwise listed in the final report. Before, every review comment started a full extra round, so a small fix could take three rounds and cost half again as much as before the loop.
 
