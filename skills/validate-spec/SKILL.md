@@ -38,7 +38,7 @@ Go section by section through the doc, checking every applicable item below agai
 
 - **Internal consistency** — no User Story lacking matching Implementation Decision coverage; no Out of Scope bullet that a Decision or Testing Decision then contradicts; no Decision resting on an Open Question still unresolved.
 
-- **Drift** — every named file, class, method, glossary term, or docstring claim still matches the current codebase. Grep or read to confirm — don't take the doc's word for it.
+- **Drift** — every named file, class, method, glossary term, or docstring claim still matches the current codebase. Grep or read to confirm — don't take the doc's word for it. A claim of absence is a claim too: "X does not mention Y", "nothing else uses Z", "no other code changes", "no X needs editing". Search the repo for the thing it says is missing. Check each "needs no edit" claim against the repo's own rules in `CLAUDE.md`, `AGENTS.md`, and the files they point to, such as a rule to update the README on every change. A false claim is a fact: correct it, and when a rule requires an edit the Spec ruled out, add that edit to Implementation Decisions.
 
 - **Product reader** — Problem Statement, Solution, How to Check It, and User Stories name only what a person meets on the product, and terms `CONTEXT.md` defines. A file, function, class, or internal part named there is a fact: reword it as what the person meets, and carry the detail to Implementation Decisions when they do not already hold it. Every screen, control, or message a Hand check names is in the markup or the code, or the Solution adds it.
 
