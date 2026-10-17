@@ -1,6 +1,6 @@
 # Tracker: GitHub Issues
 
-Issues live as GitHub issues in this repo's GitHub repository. Use the `gh` CLI, which takes the repository from `git remote -v`. Pass multi-line text with `--body-file`. When `gh auth status` fails, stop and say so.
+Issues live as GitHub issues in this repo's GitHub repository. Use the `gh` CLI, which takes the repository from `git remote -v`. Pass multi-line text with `--body-file`, from a file in a folder made with `mktemp -d` — a path you name yourself can be another session's. When `gh auth status` fails, stop and say so.
 
 ## Settings
 

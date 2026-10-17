@@ -84,6 +84,8 @@ Every comment starts with:
 
 Run `/technical-writing` before any comment a reporter will read.
 
+A comment or body the Tracker takes from a file goes in a folder made once with `mktemp -d`, which the run deletes at its end. A path built from an Issue's number is shared: another triage session on the same Issue, such as a shared parent, writes it too, and a failed command then posts that session's draft.
+
 Done: every named problem has exactly one ending applied in the Tracker, or is not filed, and extras found during investigate have been named and run through this section.
 
 ## Summary
