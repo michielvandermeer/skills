@@ -11,7 +11,7 @@ Two choices, trading the two loads:
 
 Pick model-invocation only when the agent must reach the skill on its own — its work starts from a plain request that never names it, as with `pr` and `/hillclimb` — or a `/goal` must start it by name, as with `/implement`. A skill that fires by hand, or only from another skill's step, is user-invoked and pays no context load.
 
-Another skill reaches a user-invoked skill **by path**: its step links the skill's `SKILL.md` and says to read and follow it — "read and follow [`/retro`](../retro/SKILL.md)". The host refuses to load a user-invoked skill for the agent, so a bare `/retro` in a step never fires. Following by path also keeps the caller's model, where loading a skill would apply that skill's `model:` pin. The same link is how two skills share reference: a plain file one skill holds and the other links, such as `to-spec/PRINCIPLES.md`.
+Another skill reaches a user-invoked skill **by path**: its step links the skill's `SKILL.md` with the path as the link text, says to read the file and follow it, and says the skill does not load as one — "read [`retro/SKILL.md`](../retro/SKILL.md) and follow it — `/retro` does not load as a skill". The host refuses to load a user-invoked skill for the agent, and its refusal tells the agent not to follow the skill any other way, so the step is dropped. A step that shows only `/retro`, even as the text of a link to the file, is often loaded as a skill: on 2026-10-17, 33 of 50 such steps were. Following by path also keeps the caller's model, where loading a skill would apply that skill's `model:` pin. The same link is how two skills share reference: a plain file one skill holds and the other links, such as `to-spec/PRINCIPLES.md`.
 
 ## Splitting by invocation
 

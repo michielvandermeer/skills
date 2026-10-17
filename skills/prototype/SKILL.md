@@ -52,7 +52,7 @@ The verdict decides what the Spec will say; the folder is the playable record th
 
 1. Write `.agents/prototypes/<slug>/` on the original checkout: a logic demo already in that folder in the worktree copies as the folder; a UI prototype copies its in-app prototype files (variants, switcher, throwaway route) into it.
 2. Return the session to the original checkout — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
-3. Read and follow [`/to-spec`](../to-spec/SKILL.md) there. The Spec names **the question the prototype was built to answer**, **what playing with it settled**, and **`.agents/prototypes/<slug>/`**.
+3. Read [`to-spec/SKILL.md`](../to-spec/SKILL.md) and follow it there — `/to-spec` does not load as a skill. The Spec names **the question the prototype was built to answer**, **what playing with it settled**, and **`.agents/prototypes/<slug>/`**.
 4. Remove the worktree and delete the branch: `git worktree remove --force <path>`, then `git branch -D <branch>`.
 
 A verdict that kills the idea ends with no Spec and no folder. Report what was learned, remove the worktree and branch the same way, and write an ADR only when the decision passes the three-part test in `/domain-modeling`.

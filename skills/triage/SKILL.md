@@ -52,7 +52,7 @@ Done: a verify outcome is recorded.
 
 Trust an explicit override in the seed (`spec this`, `ready-for-agent`, or `ready-for-human` → Spec; `needs-info`, `needs-human`, `needs-grilling` → that park). Pick exactly one ending and apply it. Every Issue this run leaves open carries a category, `bug` or `enhancement`.
 
-**Spec** — Buildable. Read and follow [`/to-spec`](../to-spec/SKILL.md), scoped to this problem alone, naming this problem's Issue when it has one: `/to-spec` rewrites that Issue into the Spec, or files one. Work the maintainer or another person will build is `ready-for-human`; tell `/to-spec` so. All other Specs are `ready-for-agent`.
+**Spec** — Buildable. Read [`to-spec/SKILL.md`](../to-spec/SKILL.md) and follow it — `/to-spec` does not load as a skill — scoped to this problem alone, naming this problem's Issue when it has one: `/to-spec` rewrites that Issue into the Spec, or files one. Work the maintainer or another person will build is `ready-for-human`; tell `/to-spec` so. All other Specs are `ready-for-agent`.
 
 A **park** files this problem's Issue, or updates the one it has: set its status to the park's name and add the park's comment.
 
@@ -92,4 +92,4 @@ Done: every named problem has exactly one ending applied in the Tracker, or is n
 
 End with a summary the people in the session can follow up from. For every problem: what it was, and either its Issue's reference and status, or that it was not filed, why, and the reference of any Issue it closed. The summary is the review.
 
-Done: the summary lists every problem this run handled. Then read and follow [`/retro`](../retro/SKILL.md).
+Done: the summary lists every problem this run handled. Then read [`retro/SKILL.md`](../retro/SKILL.md) and follow it — `/retro` does not load as a skill.

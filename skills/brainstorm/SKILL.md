@@ -93,6 +93,6 @@ Done when every kept Direction, or the stopped run, has its Issue in the Tracker
 
 When the Tracker keeps Issues in the repo, commit every Issue from the run in one commit, staged by name, on the branch you are on. Leave every other working-tree change alone.
 
-List each Issue, by its reference, with `/grill-with-docs` as the command that continues it. Then read and follow [`/retro`](../retro/SKILL.md).
+List each Issue, by its reference, with `/grill-with-docs` as the command that continues it. Then read [`retro/SKILL.md`](../retro/SKILL.md) and follow it — `/retro` does not load as a skill.
 
 Done when every Issue from the run is in the Tracker and committed where the Tracker keeps it in the repo, each is listed with its next command, and `/retro` has finished.

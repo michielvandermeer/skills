@@ -28,7 +28,7 @@ An edit that moves, merges, or deletes a passage lists each duty the old passage
 
 ## Loading other skills
 
-A skill's step reaches a user-invoked skill (`disable-model-invocation: true` in its frontmatter) by path, as `skills/writing-for-agents/SKILL-MECHANICS.md` says ([ADR-0074](../../docs/adr/0074-skills-that-other-skills-start-are-user-invoked.md)). A hand-off between two since-deleted skills, from `/diagnosing-bugs` to `/improve-codebase-architecture`, named the bare `/name` and never fired. A step that ends where `/implement` or a typed session skill such as `/grill-with-docs` would start tells the user to run it: those stay one run the user starts ([ADR-0067](../../docs/adr/0067-implement-is-model-invoked-so-a-goal-can-start-it.md)).
+A skill's step reaches a user-invoked skill (`disable-model-invocation: true` in its frontmatter) by path, as `skills/writing-for-agents/SKILL-MECHANICS.md` says ([ADR-0074](../../docs/adr/0074-skills-that-other-skills-start-are-user-invoked.md)). A hand-off between two since-deleted skills, from `/diagnosing-bugs` to `/improve-codebase-architecture`, named the bare `/name` and never fired. A link to the file whose text was the bare `/retro` fared little better: on 2026-10-17, 22 of 24 `/triage` sessions loaded `/retro` as a skill instead, were refused, and skipped the Retrospective. A step that ends where `/implement` or a typed session skill such as `/grill-with-docs` would start tells the user to run it: those stay one run the user starts ([ADR-0067](../../docs/adr/0067-implement-is-model-invoked-so-a-goal-can-start-it.md)).
 
 ## Hosts
 

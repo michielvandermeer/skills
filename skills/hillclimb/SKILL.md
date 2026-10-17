@@ -105,7 +105,7 @@ Done when every finding is fixed or named on a deviations line, and each axis's 
 
 Commit anything still uncommitted. Then, in order:
 
-1. In the run worktree: `git rebase <base>`. A conflict: read and follow [`/resolving-merge-conflicts`](../resolving-merge-conflicts/SKILL.md). When the rebase replayed the branch onto new commits, run the agreed tests again. Re-run a failing project once yourself: a failure that passes on the re-run is a flaky test for the report; one that fails again gets one `general-purpose` fixer, and a second failure **halts**.
+1. In the run worktree: `git rebase <base>`. A conflict: read [`resolving-merge-conflicts/SKILL.md`](../resolving-merge-conflicts/SKILL.md) and follow it — `/resolving-merge-conflicts` does not load as a skill. When the rebase replayed the branch onto new commits, run the agreed tests again. Re-run a failing project once yourself: a failure that passes on the re-run is a flaky test for the report; one that fails again gets one `general-purpose` fixer, and a second failure **halts**.
 2. Move `<before>` to `<base>` and measure the pair as MEASURE.md says. Write the result into this Hillclimb's section of the log. It goes in the report and blocks nothing. Commit the log. When the Hillclimb started from an Issue, this log commit carries the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the report names the Issue for the user to close.
 3. Return the session to the original directory, keeping the branch — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 4. On `<base>`: `git merge --ff-only <branch>`. This step is done when the merge has succeeded, `git worktree remove` has run on the run worktree, deleting `<scratch>` with it — never forced; a lock means another session still has it — `git worktree remove --force` has run on `<before>`, and `git branch -d <branch>` has run. When the merge errors, `<base>` moved: re-enter the run worktree, drop the log commit with `git reset --hard HEAD~1`, go through 1 to 3 again, and retry the merge.
@@ -122,7 +122,7 @@ Run `/technical-writing`, then report:
 
 ### 9. Retrospective
 
-Read and follow [`/retro`](../retro/SKILL.md) — unless another Named session skill started this Hillclimb; that skill runs it.
+Read [`retro/SKILL.md`](../retro/SKILL.md) and follow it — `/retro` does not load as a skill — unless another Named session skill started this Hillclimb; that skill runs it.
 
 ### 10. Push
 
