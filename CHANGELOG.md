@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-17: Specs and retros run again
+`/triage`, `/grill-with-docs`, `/wayfinder`, `/prototype`, `/implement`, and the other skills that end in `/to-spec`, `/retro`, or a conflict resolution tell the agent more plainly to read that step's file, so the step runs. Before, the agent often tried to start the step as a skill instead. Claude Code refused, since those skills only start when you type them, and the agent dropped the step: a `/triage` run asked you to type `/to-spec` yourself, and 22 of 24 `/triage` runs on 2026-10-17 skipped their retrospective.
+
 ## 2026-10-17: Parallel triage drafts stay apart
 `/triage`, `/pr`, and the GitHub Tracker template now put each comment or description draft in its own temporary folder instead of a path built from the Issue number. Before, two `/triage` sessions on one parent Issue overwrote each other's draft, and a failed command posted the other session's stale comment. A repo that copied the GitHub Tracker template earlier keeps its own copy and gets the fix from `/triage` and `/pr` alone.
 
