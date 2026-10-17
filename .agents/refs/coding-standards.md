@@ -12,6 +12,8 @@ A file only agents read during a run — a throwaway script, a screenshot, a tra
 
 Run scratch lives inside the run's working tree, in a folder whose own `.gitignore` holds `*`. A host that isolates a session in its worktree refuses writes outside it, the git common directory included. `b6cdf22` moved the run's scratch folder in from `<git common dir>/proof/`, where Claude Code refused sub-agents' writes in five repos.
 
+A draft an agent writes for a command to read, such as a `--body-file` text, goes in a folder made with `mktemp -d`. Prose that leaves the path to the agent gets `/tmp/<issue>-comment.md`, which two sessions on one Issue share: in mvdmio-suite #476 and #477 a failed command posted the other session's stale draft, and `173fa49` fixed `/triage`, `/pr`, and the GitHub Tracker template.
+
 ## Coined terms
 
 Before a skill edit coins a term, grep `skills/` and `CONTEXT.md` for it. A skill may already use the words in another sense that never reached the glossary: "context folder" meant the folder holding a `CONTEXT.md` in a since-deleted `skills/implement/RUN-RECIPE.md` when a new path level nearly took the same name. A coined term gets its `CONTEXT.md` entry in the same commit.
