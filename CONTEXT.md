@@ -244,7 +244,7 @@ The fixed set of judgement calls in `skills/code-review/PRINCIPLES.md` — bound
 _Avoid_: smell baseline, best practices
 
 **Hard violation**:
-A Standards finding that breaks a rule the repo's **Coding standards** write down, or a **Judgement call** that names a defect: a wrong result, a crash, or lost data. In an implement run, a Hard violation is the only Review finding that sends the run into another **Iteration**.
+A Standards finding that breaks a rule the repo's **Coding standards** write down, or a **Judgement call** that names a defect: a wrong result, a crash, or lost data. A finding that a decision in the Spec's Implementation Decisions explicitly mandates is a **Judgement call** instead. In an implement run, a Hard violation is the only Review finding that sends the run into another **Iteration**.
 _Avoid_: blocker, must-fix, error
 
 **Judgement call**:
