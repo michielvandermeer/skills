@@ -37,3 +37,7 @@ Skill and agent prose names the agent to dispatch (`skills:explorer`, a sub-agen
 A command skill or agent prose hands an agent is **plain**: every argument spelled out, run from the working directory. A value such as a path from `git rev-parse` is resolved once and handed on as a literal path, never as a `$(…)` to paste into commands. Claude Code refuses other forms in a session it isolates in a worktree — a `cd` or `git -C` to another path, a shell variable, `$(…)`, a heredoc — and refused about 70 such commands across nine `/implement` runs before `2a305be`.
 
 Prose that has an agent wait on work it started — a reviewer, a background build — names that work's own report or exit as what it waits on. Left to choose, an agent waits with a `sleep` or a watch that outlives the work and wakes it after it has reported: an implement sub-agent reported twice that way in mvdmio-suite #285, and `dc798c0` fixed it.
+
+## Rules that two skills share
+
+An edit that adds a rule about how one skill treats a finding, a decision, or a document greps `skills/`, `agents/`, and `docs/adr/` for the opposite rule and changes it in the same commit. `3cb0426` told `/code-review` to raise a Hard violation "whatever the Spec says" while `skills/implement/SKILL.md`, `agents/implementer.md`, and ADR-0026 told the Implementer to decline a finding the Spec contradicts. In mvdmio-suite #483 and #491 the Review raised the declined finding again, and one run stopped to ask a person (#42, #43).
