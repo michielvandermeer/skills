@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-17: Spec decisions stop review loops
+`/code-review` now reports a finding that a Spec decision explicitly mandates as a suggestion, even when it breaks a written coding rule, so it no longer sends an `/implement` run back for another round. Before, the review raised it as a rule break whatever the Spec said, the agent declined it because the Spec wins, and the review raised it again, so a run spent an extra round or stopped to ask you.
+
 ## 2026-10-17: Specs and retros run again
 `/triage`, `/grill-with-docs`, `/wayfinder`, `/prototype`, `/implement`, and the other skills that end in `/to-spec`, `/retro`, or a conflict resolution tell the agent more plainly to read that step's file, so the step runs. Before, the agent often tried to start the step as a skill instead. Claude Code refused, since those skills only start when you type them, and the agent dropped the step: a `/triage` run asked you to type `/to-spec` yourself, and 22 of 24 `/triage` runs on 2026-10-17 skipped their retrospective.
 
