@@ -118,12 +118,15 @@ def session_loads(transcript):
 
 
 def bash_reads(command, plugin_dir):
-    """Plugin skill and agent files a Bash command names, by full path or by folder plus file name."""
+    """Plugin skill and agent files a Bash command names, by full path, by folder plus file name, or by
+    `<folder name>/<file>` in a command that also names the plugin dir, as in `cd <plugin>/skills && cat retro/SKILL.md`."""
     cmd = command.replace("\\", "/").lower()
+    root = Path(plugin_dir).as_posix().lower()
     hits = []
     for f in sorted(Path(plugin_dir).glob("skills/**/*.md")) + sorted(Path(plugin_dir).glob("agents/*.md")):
         full, folder = f.as_posix().lower(), f.parent.as_posix().lower()
-        if full in cmd or (folder in cmd and f.name.lower() in cmd):
+        tail = f"{f.parent.name}/{f.name}".lower()
+        if full in cmd or (folder in cmd and f.name.lower() in cmd) or (root in cmd and tail in cmd):
             hits.append(os.path.relpath(f, plugin_dir) + " (bash)")
     return hits
 
