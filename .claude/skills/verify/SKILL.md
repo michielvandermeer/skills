@@ -15,7 +15,7 @@ All commands run from the repo root. The helper is `python .claude/skills/verify
 python .claude/skills/verify/verify.py doctor
 ```
 
-Read-only, about a cent: `claude` logged in, the plugin manifests parse, every skill and agent frontmatter passes `.claude/hooks/check-frontmatter.mjs`, no scratch repo is left from an earlier run, and one Haiku session confirms this checkout is the only plugin named `skills`, with every skill and agent registered and no MCP server loaded. `--offline` skips the session. Run it first, and again whenever a turn looks wrong.
+Read-only, about a cent: `claude` logged in, the plugin manifests parse, every skill and agent frontmatter passes `.claude/hooks/check-frontmatter.mjs`, no scratch repo is left from an earlier run (idle for an hour; a run in progress, in any session, is not left), and one Haiku session confirms this checkout is the only plugin named `skills`, with every skill and agent registered and no MCP server loaded. `--offline` skips the session. Run it first, and again whenever a turn looks wrong.
 
 Done: the last line reads `doctor: ok`.
 

@@ -27,6 +27,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]  # the skills checkout
 RUNS = HERE / "runs"
 SCRATCH_PREFIX = "skills-verify-"
+IDLE_SECONDS = 3600  # a scratch repo this quiet is left over; a quieter-than-this one belongs to a run in progress
 CONFIG = Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude")
 DENIED = ["Bash(git push *)", "Bash(gh issue create *)", "Bash(gh issue edit *)", "Bash(gh issue close *)",
           "Bash(gh issue comment *)", "Bash(gh pr *)", "Bash(gh label *)", "Bash(gh release *)", "Bash(gh repo *)"]
@@ -42,6 +43,24 @@ def sh(argv, cwd=None, check=True):
 
 def norm(p):
     return os.path.normcase(os.path.realpath(p))
+
+
+def newest_mtime(folder):
+    return max((f.stat().st_mtime for f in [folder, *folder.rglob("*")]), default=0)
+
+
+def idle_scratches():
+    """Scratch repos in the temp directory with no activity for IDLE_SECONDS. Activity is the newest file in the run
+    folder that names the scratch repo (a turn streams into it), else in the scratch repo itself."""
+    runs = {}
+    for meta in RUNS.glob("*/meta.json"):
+        try:
+            runs[norm(json.loads(meta.read_text(encoding="utf-8"))["scratch"])] = meta.parent
+        except (OSError, ValueError, KeyError):
+            pass
+    now = time.time()
+    return sorted(s for s in Path(tempfile.gettempdir()).glob(SCRATCH_PREFIX + "*")
+                  if now - newest_mtime(runs.get(norm(s), s)) > IDLE_SECONDS)
 
 
 def claude_argv(prompt, plugin_dir, mcp_file, session_id, resume, model, effort, budget):
@@ -224,7 +243,7 @@ def cmd_doctor(a):
         if r.returncode:
             bad.append(r.stderr.strip())
     check(f"frontmatter of {len(skill_files)} skills and {len(agent_files)} agents", not bad, "\n".join(bad))
-    stale = sorted(Path(tempfile.gettempdir()).glob(SCRATCH_PREFIX + "*"))
+    stale = idle_scratches()
     check("no scratch repo left by an earlier run", not stale,
           ", ".join(map(str, stale)) + " — run cleanup on its run, or delete it if no run names it" if stale else "")
     if not a.offline and claude:
