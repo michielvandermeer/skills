@@ -97,6 +97,7 @@ Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and
 
 **Run `/code-review` yourself** on the Standards axis alone. The fixed point is `<base>` on Iteration 1, so the first Review reads the whole change. From Iteration 2 on it is `<start>`, so a later Review reads only that Iteration's fix; when HEAD has not moved from `<start>` because every finding was declined, it is `<base>` again, and the Review judges the declines alone. Tell it:
 
+- the Spec's path, `.agents/runs/<slug>/spec.md`
 - that `.agents/runs/<slug>/` is run bookkeeping, not code under review
 - that only agents read its report
 - every finding declined so far with its reason: a declined finding is raised again only when the reason does not hold, and the report says why
