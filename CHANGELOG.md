@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-17: Parallel triage drafts stay apart
+`/triage`, `/pr`, and the GitHub Tracker template now put each comment or description draft in its own temporary folder instead of a path built from the Issue number. Before, two `/triage` sessions on one parent Issue overwrote each other's draft, and a failed command posted the other session's stale comment. A repo that copied the GitHub Tracker template earlier keeps its own copy and gets the fix from `/triage` and `/pr` alone.
+
 ## 2026-10-17: Reviews respect Spec decisions
 `/code-review` now reads the Spec's Implementation Decisions and no longer suggests a change that a decision there already settles, and `/implement` hands it the Spec to read. Before, the review could suggest a shared helper the Spec had ruled out, the next agent added it, and verification then failed the round for contradicting the Spec.
 
