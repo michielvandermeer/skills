@@ -16,6 +16,10 @@ Steps run strictly in `NN` order, one Implementer each, in one shared worktree. 
 
 Use the project's domain glossary (`CONTEXT.md`) for titles and descriptions, and respect any ADR covering the area you're touching.
 
+## Work the driving session owns
+
+Before writing a Step, find what the repo says about who writes its Changelog: `grep -n -i changelog` over `AGENTS.md`, `CLAUDE.md`, and `.agents/refs/`, then read the sections that match. When the repo says the driving session writes the entry, or that Step agents leave the Changelog alone, the driving session owns it: it writes the entry from the Spec after review, and every Step's `## What to build`, Footprint, and acceptance criteria hold no Changelog work, however the Spec words its documentation. When the repo says nothing, or says whoever finishes the change writes it, the Changelog is documentation like any other.
+
 ## How many Steps
 
 One Step is the default. A Spec one fresh Implementer can read and build in one session is one Step, and most Specs are. Slice further only where one session would not hold the work: more files than it can read and change, or parts that each need their own long walk. Every extra Step costs a fresh Implementer its orientation, so a Step too small to need its own session is merged into its neighbour.
@@ -29,7 +33,7 @@ When a Spec needs several Steps, each is a **tracer bullet**:
 - It fits in a single fresh context window.
 - It leaves green every project in its **Footprint**. Every Implementer is held to this, so a Step that cannot end green is mis-sliced.
 
-Every Step delivers behaviour: documentation the Spec names rides the Step whose behaviour it describes.
+Every Step delivers behaviour: documentation the Spec names rides the Step whose behaviour it describes, except work the driving session owns.
 
 ## Prefactor first
 
