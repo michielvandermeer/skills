@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-19: Retro files structural fixes as Issues
+`/retro` now tries to fix a corrected mistake through the code's structure first, then with a check, and writes a rule only as a last resort. A fix that needs new code, such as a shared module, a Roslyn analyzer rule, or a test, becomes a `needs-triage` Issue listing every other copy of the mistake, and a rule guards in the meantime. Before, `/retro` wrote a rule even where code could have made the mistake impossible, left the other copies for the next agent to copy, and kept rules in your Coding standards that a check already enforced.
+
 ## 2026-10-18: Implement Steps respect Changelog rules
 `/implement` now checks `AGENTS.md`, `CLAUDE.md`, and `.agents/refs/` for who writes the Changelog, and plans no Changelog work into a Step when the repo says the driving session does. Before, a Spec that asked for an entry could put it into a Step, and the Step agent wrote it against the repo's rule, so Review flagged it and the session had to restore an entry the agent had deleted.
 
