@@ -32,5 +32,6 @@ Each feature file has an H1, one paragraph on the user-visible behaviour, and fo
 - [Grill with docs](grill-with-docs.md) — rounds, glossary and ADRs, a Spec on a confirmed read-back.
 - [Implement](implement.md) — the implement loop in a worktree, landed on the starting branch as one commit.
 - [Model invocation](model-invocation.md) — whether a description fires on a plain request.
+- [Retro](retro.md) — applies High-priority edits in one commit and files a Structural fix as an Issue. Driven on 2026-10-19.
 
-Not yet mapped: the other 20 skills.
+Not yet mapped: the other 19 skills.
