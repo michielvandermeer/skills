@@ -121,7 +121,7 @@ An Issue has exactly one status at a time:
 
 A first rough thought and the Spec it grows into are the same Issue. When the Spec is written, it replaces the Issue's text. The earlier text stays in the Tracker's history (git, for the local Tracker), and comments stay as they are. Finished work is closed as done; work you decide against is closed as not planned.
 
-`/implement` reads an Issue and claims it before it starts, so other runs leave it alone. On GitHub and Jira, claiming assigns the Issue to you, and a run stops on an Issue that is assigned to someone else. The claim is the only thing it writes to the Tracker. A run lands on your branch as one commit named after the work, and then pushes your branch. That commit closes the Issue when your Tracker can do that from a commit, such as `Closes #42` on GitHub. Otherwise the final report names the Issue for you to close. When the run's retrospective then changes a file, the run pushes a second time.
+`/implement` reads an Issue and claims it before it starts, so other runs leave it alone. On GitHub and Jira, claiming assigns the Issue to you, and a run stops on an Issue that is assigned to someone else. The claim is the only thing the run itself writes to the Tracker. Its retrospective may file an Issue for a fix it found. A run lands on your branch as one commit named after the work, and then pushes your branch. That commit closes the Issue when your Tracker can do that from a commit, such as `Closes #42` on GitHub. Otherwise the final report names the Issue for you to close. When the run's retrospective then changes a file, the run pushes a second time.
 
 To stop runs from pushing, add a line to your repo's `AGENTS.md` or `CLAUDE.md` saying implement runs do not push. Do this when a push to your branch deploys, or when you want to push yourself. If someone else pushed to your branch during the run, the run tells you, and the work waits on your machine for you to pull and push.
 
@@ -193,7 +193,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. `/implement` and `/hillclimb` use it when a rebase conflicts. |
-| `retro` | Look at a finished session, apply high-priority changes this repository owns, and summarise the rest. Skills such as `/implement` start this when they finish. |
+| `retro` | Look at a finished session, apply high-priority changes this repository owns, file the structural ones as Issues, and summarise the rest. Skills such as `/implement` start this when they finish. |
 | `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. `/setup verify` writes, or brings up to date, the repo's verify skill, which drives the app the way a user does. `/setup models` sets the model and effort each sub-agent runs at in the repo. |
 | `technical-writing` | The house standard for every sentence a person reads: document type, sentence rules, and the AI tells to cut. |
 | `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. `/triage`, `/grill-with-docs`, `/wayfinder`, and `/prototype` end with it. |

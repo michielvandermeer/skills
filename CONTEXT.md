@@ -186,7 +186,7 @@ A file this git repository contains in its working tree as its own file. Not a c
 _Avoid_: in-scope file, workspace file
 
 **Retrospective**:
-Suggestions for the agent's environment after a session. **High-priority** suggestions for **Owned files** are applied without asking; everything else appears only in the summary, including suggestions for files this repository does not own. A **Named session skill** starts one when it finishes; you can also type `/retro`.
+Suggestions for the agent's environment after a session. **High-priority** suggestions for **Owned files** are applied without asking, and a **Structural fix** is filed as an Issue; everything else appears only in the summary, including suggestions for files this repository does not own. A **Named session skill** starts one when it finishes; you can also type `/retro`.
 _Avoid_: postmortem, wrap-up, retro as a meeting
 
 **Named session skill**:
@@ -194,12 +194,16 @@ A skill that starts a **Retrospective** when it finishes, unless another Named s
 _Avoid_: host skill, wrapping skill, parent skill
 
 **High-priority**:
-A **Retrospective** suggestion whose pain will recur every turn or every session. Includes a judgement-call coding standard and a new check when this session demonstrated them, and the rule a **Correction** points to.
+A **Retrospective** suggestion whose pain will recur every turn or every session. Includes a judgement-call coding standard and a new check that only configures a tool the repo already runs, when this session demonstrated them, and the rule a **Correction** points to.
 _Avoid_: mechanical-only, severity
 
 **Correction**:
 A change a session made to code, or to a **Verify skill**, that existed before that session started, where the session also shows the old code was wrong — the user said so, a bug was being fixed, a test failed, or a review flagged it. Code written earlier in the same session is not a Correction, however soon it was fixed; neither is a change that follows a changed requirement. Who wrote the old code, a person or an agent, does not matter. A **Retrospective** turns a Correction into a Coding standards rule only when the fix points to a pattern future code could repeat.
 _Avoid_: fix, bugfix, regression
+
+**Structural fix**:
+A change to the shape of a repo's code, wider than one type, that makes the mistake behind a **Correction** impossible to repeat: a boundary, one shared path in place of copies, a module split. It names every other place the corrected pattern still lives, because the next agent copies what it finds. A **Retrospective** files it as an Issue in `needs-triage` rather than applying it, together with any check the lesson needs that takes new code.
+_Avoid_: refactor finding, architecture fix, rearchitecture
 
 ### Execution
 

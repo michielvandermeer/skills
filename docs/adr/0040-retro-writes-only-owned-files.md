@@ -7,3 +7,4 @@ Applying every file this session reached was rejected: the installed copy is a c
 ## Consequences
 
 - High-priority auto-apply for Owned files stays, in one repository commit.
+- Filing an Issue in this repository's own Tracker counts as applying ([ADR-0050](0050-retro-learns-from-corrections.md)). A Structural fix for code this repository does not own is not filed.
