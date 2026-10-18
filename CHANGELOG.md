@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-18: Implement Steps respect Changelog rules
+`/implement` now checks `AGENTS.md`, `CLAUDE.md`, and `.agents/refs/` for who writes the Changelog, and plans no Changelog work into a Step when the repo says the driving session does. Before, a Spec that asked for an entry could put it into a Step, and the Step agent wrote it against the repo's rule, so Review flagged it and the session had to restore an entry the agent had deleted.
+
 ## 2026-10-17: Spec decisions stop review loops
 `/code-review` now reports a finding that a Spec decision explicitly mandates as a suggestion, even when it breaks a written coding rule, so it no longer sends an `/implement` run back for another round. Before, the review raised it as a rule break whatever the Spec said, the agent declined it because the Spec wins, and the review raised it again, so a run spent an extra round or stopped to ask you.
 
