@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-20: Specs respect your Coding standards
+`/to-spec` now reads your repo's Coding standards before it drafts a Spec, and prescribes only what they allow. Before, it read the glossary and ADRs but not the standards, so a Spec could ask for what a rule forbids, such as rewording a localization key in place where the repo requires a new key. Review caught it, and the run spent a second Iteration on the fix.
+
 ## 2026-10-19: Retro files structural fixes as Issues
 `/retro` now tries to fix a corrected mistake through the code's structure first, then with a check, and writes a rule only as a last resort. A fix that needs new code, such as a shared module, a Roslyn analyzer rule, or a test, becomes a `needs-triage` Issue listing every other copy of the mistake, and a rule guards in the meantime. Before, `/retro` wrote a rule even where code could have made the mistake impossible, left the other copies for the next agent to copy, and kept rules in your Coding standards that a check already enforced.
 
