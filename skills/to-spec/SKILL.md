@@ -10,7 +10,7 @@ This skill takes the current conversation context and codebase understanding and
 
 ## Process
 
-1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
+1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching. Read the repo's Coding standards, found the way `/code-review` finds them, listing each document's headings and reading the sections that bear on the change. Prescribe only what they allow: a Spec that contradicts one costs its run an Iteration, as mvdmio-suite #540 did when it reworded `Localizations.*` keys in place.
 
 2. Sharpen the task first. Ask how a top expert would approach it: the sources they would read first, the methods they would use, and how they would check from outside that the result is right. Ask what the person is really after, and whether the request is over- or underspecified for that. Drop a constraint you brought in that does not serve that goal as readily as you add one that does, and ask about one a person settled as a `/grilling` question when it works against the goal. Fold in only what makes the change better, not bigger. The sharpening shapes the draft, and only its result reaches the Spec.
 
