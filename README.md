@@ -127,6 +127,14 @@ To stop runs from pushing, add a line to your repo's `AGENTS.md` or `CLAUDE.md` 
 
 Everything else stays in the repo, whichever Tracker you use: the Steps of a run in progress, Prototypes, Attempt logs, ADRs, `CONTEXT.md`, and the files under `.agents/refs/`, Grilling profiles included. [ADR-0001](docs/adr/0001-each-repo-describes-its-tracker.md) records why.
 
+## Teach the skills your rules
+
+Write the rules your code follows in Markdown files under `.agents/refs/`, such as `.agents/refs/testing.md`. A root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` works too. The skills list each file's headings and read the sections that bear on the work. The Implementer follows them while it writes code, the Standards reviewer of `/code-review` checks every change against them, and `/to-spec` writes Specs they allow.
+
+A rule you write down binds. When review finds a change that breaks one, an `/implement` run goes back for another round of fixes. The plugin's own Design principles in [`skills/code-review/PRINCIPLES.md`](skills/code-review/PRINCIPLES.md) apply in every repo, but they only advise. Review reports a finding against one, and an `/implement` run fixes it only when it goes back for another round anyway. A written rule wins over a principle it contradicts. When a principle matters enough to enforce, such as the ban on tests that pass whether or not the code works, repeat it as a rule in your own files.
+
+You seldom write rules from scratch. When you correct an agent's code and the mistake could happen again, `/retro` turns the lesson into a check or a rule for you.
+
 ## Repository layout
 
 ```

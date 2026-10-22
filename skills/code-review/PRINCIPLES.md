@@ -162,7 +162,7 @@ A rule that matters belongs in code that enforces it. A comment restating the ru
 
 ## Test behavior, not implementation
 
-A test calls the code the way its users do and asserts the exact result they see. A test that would pass if every imported function returned `undefined` proves nothing.
+A test calls the code the way its users do and asserts the exact result they see, at the level it acted. Setup may reach lower. The assertion stays at the interface the test drove. A tautological test passes whether or not the code under test is correct, and proves nothing: one that would pass if every imported function returned `undefined` is tautological.
 
 **In a diff:**
 - Loose assertions: `toBeDefined`, `toBeTruthy`, `not.toThrow`, `toBeGreaterThan(0)`.
@@ -170,8 +170,33 @@ A test calls the code the way its users do and asserts the exact result they see
 - An expected value computed by the code under test: `expect(f(a)).toBe(f(a))`.
 - A test that restates a constant or config default.
 - Assertions on data the test built itself, with no call to the subject.
+- A mock or stub of the unit the test claims to test.
+- An assertion below the level the test acted at: an HTTP request checked by querying the database, a public method checked by reading a private field.
 
-**Fix:** call the subject with one concrete input and assert the literal output or effect. For a mock, assert the payload it received. For an absence, also assert the presence on another input. Pin a constant only when its value is a documented promise to users, and name that promise.
+**Fix:** call the subject with one concrete input and assert the literal output or effect. Rewrite a tautological test until breaking the subject turns it red. Assert through the interface the test acted on: after a `POST`, read back with a `GET`. Where the effect has no read path at that level, such as an email sent, assert the payload the boundary double received. For a mock, assert the payload it received. For an absence, also assert the presence on another input. Pin a constant only when its value is a documented promise to users, and name that promise.
+
+## Deterministic tests
+
+A test gives the same result on every run, alone, in any order, and in parallel. A test that fails one run in fifty teaches everyone to rerun instead of read.
+
+**In a diff:**
+- A fixed sleep before an assertion, waiting for async work: `sleep(500)`, `Thread.Sleep`, `setTimeout`.
+- The real clock, an unseeded random source, or a live third-party call inside a test.
+- State one test leaves for another to read: a shared row, a static field, a file at a fixed path.
+- A test that passes only when another test ran first.
+
+**Fix:** await the event, or poll the condition with a timeout. Inject the clock and seed the random source. Give each test its own data and clean it up, so the suite passes in any order.
+
+## Test the failure cases
+
+A behaviour gets a test on each path where it fails or reaches an edge, beside its happy path. An agent writes the happy path first and tends to stop there.
+
+**In a diff:**
+- A new validation, guard, or error branch that no test triggers.
+- A limit or range with no test at its edge: zero, empty, the maximum, one past it.
+- An error-path test that asserts only that something threw, not which error the user sees.
+
+**Fix:** add one test per error branch and per edge the code handles, each asserting the exact error or result the user meets there.
 
 ## Prove it works
 
