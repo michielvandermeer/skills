@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-22: Review flags weak tests
+`/code-review` and the agents of `/implement` now flag four more kinds of weak test in every repo: a test that asserts below the level it acted, such as an HTTP test that checks the database, a tautological test that passes whether or not the code works, a test that depends on a sleep, the clock, or run order, and a new error branch or limit with no test. These findings advise, and the README's new section "Teach the skills your rules" shows how to make a rule binding in your repo. Before, no rule covered a test that checks the database after an HTTP call or an error path left untested, and nothing told you where to write your own rules.
+
 ## 2026-10-20: Specs respect your Coding standards
 `/to-spec` now reads your repo's Coding standards before it drafts a Spec, and prescribes only what they allow. Before, it read the glossary and ADRs but not the standards, so a Spec could ask for what a rule forbids, such as rewording a localization key in place where the repo requires a new key. Review caught it, and the run spent a second Iteration on the fix.
 
