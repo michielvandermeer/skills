@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-27: Fewer skills in your slash menu
+`/grilling`, `/domain-modeling`, `/technical-writing`, `/to-spec`, and `/validate-spec` are now Library skills: `/grill-with-docs`, `/triage`, `/wayfinder`, and the other skills that use them read them from disk, and they are gone from your slash menu and from every session's context. `/resolving-merge-conflicts` now loads on its own when you ask to merge and resolve the conflicts, and `/retro` stays a command you type. Before, five skills nobody typed filled the slash menu, and their descriptions sat in every session for requests that almost never came.
+
 ## 2026-10-27: Simulate first users before launch
 `/simulate-first-users` sends five simulated first-time users through your app, each in its own Playwright browser: the impatient one, the skeptic, the mobile user on a 375px screen over slow 3G, the non-native English speaker, and the breaker. What tripped them up, ranked by how many hit it, goes through `/triage` into Issues, and `/triage` now attaches the screenshots a report references to the Issue it files, or names the files for you to add when your Tracker ref was copied before this change. Before, nothing walked your app as a newcomer would, and a screenshot in a report never reached its Issue, because the Tracker had no way to attach one.
 
