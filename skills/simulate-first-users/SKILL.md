@@ -11,7 +11,7 @@ effort: high
 
 Five **First users**, each a sub-agent playing a different person who meets the app for the first time, walk from the landing page toward **First success** in their own browser. Each screenshots every moment its person is confused, stuck, or annoyed. Their moments, merged and ranked by how many First users hit each one, become the seed of a `/triage` run, which files them as Issues with the screenshots attached. This run fixes nothing: to check fixes, run it again.
 
-Run `/technical-writing` before the first message and hold its bar for every message and for the seed. The briefs you send First users are for agents and sit outside that bar.
+Before the first message, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill — and hold its bar for every message and for the seed. The briefs you send First users are for agents and sit outside that bar.
 
 ## 1. Reach the app
 

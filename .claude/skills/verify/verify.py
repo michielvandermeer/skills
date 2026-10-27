@@ -265,8 +265,13 @@ def cmd_doctor(a):
         result = next((e for e in events if e.get("type") == "result"), {})
         check("live session loads this checkout as the skills plugin", plugin_check(init, plugin_dir) == "ok",
               plugin_check(init, plugin_dir))
-        loaded = [s for s in (init or {}).get("skills") or [] if s.startswith("skills:")]
-        check("every skill registered", len(loaded) == len(skill_files), f"{len(loaded)} of {len(skill_files)}")
+        loaded = {s for s in (init or {}).get("skills") or [] if s.startswith("skills:")}
+        # A Library skill (user-invocable: false) is hidden from the session by design.
+        library = {f"skills:{f.parent.name}" for f in skill_files
+                   if "\nuser-invocable: false\n" in f.read_text(encoding="utf-8").split("\n---", 1)[0] + "\n"}
+        expected = {f"skills:{f.parent.name}" for f in skill_files} - library
+        check(f"every skill registered, and no Library skill", loaded == expected,
+              f"{len(loaded & expected)} of {len(expected)}; missing {sorted(expected - loaded)}; unexpected {sorted(loaded - expected)}")
         loaded_agents = [s for s in (init or {}).get("agents") or [] if s.startswith("skills:")]
         check("every agent registered", len(loaded_agents) == len(agent_files), f"{len(loaded_agents)} of {len(agent_files)}")
         check("no MCP server loaded", init and not init.get("mcp_servers"), str((init or {}).get("mcp_servers")))

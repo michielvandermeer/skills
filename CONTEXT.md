@@ -193,6 +193,10 @@ _Avoid_: postmortem, wrap-up, retro as a meeting
 A skill that starts a **Retrospective** when it finishes, unless another Named session skill started it. Most are typed by the user and cannot be loaded by the agent; `/hillclimb` also starts one when the agent loaded it.
 _Avoid_: host skill, wrapping skill, parent skill
 
+**Library skill**:
+A skill that neither a person nor the agent can start on its own: other skills read its `SKILL.md` from disk and follow it as one of their steps. It is missing from the slash menu, and its description is never in the agent's context. `/grilling`, `/domain-modeling`, `/technical-writing`, `/to-spec`, and `/validate-spec` are Library skills.
+_Avoid_: helper skill, internal skill, hidden skill, sub-skill
+
 **High-priority**:
 A **Retrospective** suggestion whose pain will recur every turn or every session. Includes a judgement-call coding standard and a new check that only configures a tool the repo already runs, when this session demonstrated them, and the rule a **Correction** points to.
 _Avoid_: mechanical-only, severity

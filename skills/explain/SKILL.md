@@ -18,7 +18,7 @@ What you make is an **Explanation**, in one of four **formats**, each richer and
 
 The topic is anything: part of this repo, a branch's changes, an ADR, or an outside idea. With no topic, explain the last thing discussed in the session. With nothing to go on, ask what to explain and wait.
 
-Run the `/technical-writing` skill before writing anything a person reads — the confirmation, labels, page text, narration — and hold its bar throughout. Write for a developer who does not know the topic yet, unless the request names another reader.
+Before writing anything a person reads (the confirmation, labels, page text, narration), read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill — and hold its bar throughout. Write for a developer who does not know the topic yet, unless the request names another reader.
 
 ## Process
 

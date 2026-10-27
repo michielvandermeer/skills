@@ -9,7 +9,7 @@ Waiting for confirmation was rejected: the wrap-up only helps if the high-priori
 ## Consequences
 
 - A session whose typed skill is on the list ends when the retrospective summary is in the chat.
-- The wrap-up has one home: `/retro`. Callers read and follow it ([ADR-0074](0074-skills-that-other-skills-start-are-user-invoked.md)).
+- The wrap-up has one home: `/retro`. Callers read and follow it ([ADR-0074](0074-skills-other-skills-follow-are-read-by-path.md)).
 - If a named session skill calls another, only the skill you typed starts a retrospective.
 - `/hillclimb` is the one skill on the list the agent can also load on its own. It starts a retrospective either way, unless another named session skill started it: an effort of hours leaves lessons whoever began it ([ADR-0061](0061-hillclimb-keeps-only-measured-wins.md)). When you typed no skill, the outermost skill the agent loaded stands in for the one you typed.
 - A halt, or a wait for the user to continue, skips the retrospective. Resume first.

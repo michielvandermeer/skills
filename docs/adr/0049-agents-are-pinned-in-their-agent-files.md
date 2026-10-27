@@ -2,7 +2,7 @@
 
 Each skill you type and each plugin agent sets `model:` and `effort:` in its own header, so a run starts at the setting its work needs and not at your session's most expensive one. Three parallel implement runs on Opus at xhigh burned about 16% of a weekly limit in five hours. Nothing is pinned above `high`.
 
-- **Skills you type**, the ones marked `disable-model-invocation: true`, plus `/implement`, which a `/goal` can also start ([ADR-0067](0067-implement-is-model-invoked-so-a-goal-can-start-it.md)): Opus at high for the interview and design skills (`/grill-with-docs`, `/brainstorm`, `/wayfinder`), Sonnet at high for the rest.
+- **Skills you type**, the ones marked `disable-model-invocation: true` that stay in the slash menu, plus `/implement`, which a `/goal` can also start ([ADR-0067](0067-implement-is-model-invoked-so-a-goal-can-start-it.md)): Opus at high for the interview and design skills (`/grill-with-docs`, `/brainstorm`, `/wayfinder`), Sonnet at high for the rest.
 - **Agents** are pinned as follows:
 
   | Agent | Model | Effort |
@@ -14,7 +14,7 @@ Each skill you type and each plugin agent sets `model:` and `effort:` in its own
 
 - **Everything else** runs on the setting of the skill that starts it: a Hillclimb's Fixers, the `/brainstorm` fan-out, and the `/simulate-first-users` First users.
 
-A skill's pin lasts for the rest of the turn, so a model-invoked skill that other skills load carries none: it would swap its caller's model. A user-invoked skill that other skills need is followed by path ([ADR-0074](0074-skills-that-other-skills-start-are-user-invoked.md)), which skips its pin, so it is pinned for when you type it.
+A skill's pin lasts for the rest of the turn, so a model-invoked skill that other skills load carries none: it would swap its caller's model. A typed skill that other skills need, such as `/retro`, is followed by path ([ADR-0074](0074-skills-other-skills-follow-are-read-by-path.md)), which skips its pin, so it is pinned for when you type it. A Library skill, which nobody types, carries no pin.
 
 The Reviewer is Opus because review is the one stage where a stronger model than the author's pays for itself.
 

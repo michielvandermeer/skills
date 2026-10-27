@@ -22,7 +22,7 @@ An unnamed sub-agent at the session's own effort was rejected. This check is a S
 
 ## Consequences
 
-- `/to-spec` dispatches one Validator per Spec and waits. Skills that call `/to-spec` stay as they are. A `/validate-spec` the user types still runs in the Driving session.
+- `/to-spec` dispatches one Validator per Spec and waits. Skills that call `/to-spec` stay as they are.
 - Open questions leave the write and the commit free to run. The Issue's status becomes `ready-for-agent` or `ready-for-human` in the same update that writes the Spec.
 - A Validator that fails, returns no report, or stops short of a finished checklist ends the session before the write. The draft stays as the Validator left it, the write to the Issue does not run, and the glossary and ADR edits stay uncommitted. A later Spec, the caller's commit, and a Retrospective stay unstarted. On a map, a Spec already written to its Issue stays there, and its files stay uncommitted too, because the map's one commit has not run.
 - The Validator is pinned to Sonnet at `effort: medium` ([ADR-0049](0049-agents-are-pinned-in-their-agent-files.md)). A host without `skills:validator` dispatches `general-purpose` with the same prompt. That dispatch has no pin.

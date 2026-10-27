@@ -170,7 +170,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 **Skills you type.** A pin applies when you type the skill. When another skill reads and follows it, the caller's model stays.
 
 - Opus at high: `/grill-with-docs`, `/brainstorm`, `/wayfinder`.
-- Sonnet at high: `/triage`, `/implement`, `/doctor`, `/explain`, `/setup`, `/learn-habits`, `/to-spec`, `/validate-spec`, `/retro`, `/resolving-merge-conflicts`, `/what-did-i-get-done`, `/simulate-first-users`.
+- Sonnet at high: `/triage`, `/implement`, `/doctor`, `/explain`, `/setup`, `/learn-habits`, `/retro`, `/what-did-i-get-done`, `/simulate-first-users`.
 
 **Sub-agents.**
 
@@ -190,9 +190,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `brainstorm` | Explore a vague problem as very different Directions, side by side, and file the ones you keep as Issues. |
 | `code-review` | Review changes since a fixed point along two axes — Standards, with the design principles, and Spec — in parallel sub-agents. |
 | `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, and brings every ADR to state the decision in force. Once `/setup` has run, it leaves Issues alone. |
-| `domain-modeling` | Build and sharpen a project's domain model. |
 | `explain` | Explain anything as a written walkthrough, a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
-| `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
 | `hillclimb` | Push one measured number — test-suite time, build time, memory, bundle size — toward a target, trying one change at a time and keeping only what measurably helps. Loads on its own when you ask for something to be made faster, smaller, or cheaper. |
 | `implement` | Implement an Issue's Spec, or a description: slice it into steps that each fit one agent, build them, then review against the coding standards and design principles and verify against the Spec, fixing and checking again up to three times, then land it as one commit. |
@@ -200,18 +198,27 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `pr` | Shape a pull request description: a small picture of the change, before-and-after evidence, and how risky it is to merge. Loads on its own whenever the agent writes one. |
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
-| `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. `/implement` and `/hillclimb` use it when a rebase conflicts. |
+| `resolving-merge-conflicts` | Resolve a git merge or rebase conflict hunk by hunk, then finish the operation. Loads on its own when you ask to merge and resolve the conflicts. `/implement` and `/hillclimb` use it when a rebase conflicts. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, file the structural ones as Issues, and summarise the rest. Skills such as `/implement` start this when they finish. |
 | `simulate-first-users` | Send five simulated first-time users through your app, each in its own browser: the impatient one, the skeptic, the mobile user, the non-native English speaker, and the breaker. What tripped them up, ranked by how many hit it, goes through `/triage` into Issues with the screenshots attached. Needs Playwright. |
 | `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. `/setup verify` writes, or brings up to date, the repo's verify skill, which drives the app the way a user does. `/setup models` sets the model and effort each sub-agent runs at in the repo. |
-| `technical-writing` | The house standard for every sentence a person reads: document type, sentence rules, and the AI tells to cut. |
-| `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. `/triage`, `/grill-with-docs`, `/wayfinder`, and `/prototype` end with it. |
 | `triage` | Sort incoming reports, or the Issues nobody has triaged yet, into Specs and parked Issues, one Issue per distinct problem, and close what won't be done. |
-| `validate-spec` | Validate a plan or spec against this repo's template rules and codebase; fix stale references in place. |
 | `wayfinder` | Plan a huge chunk of work as a map — an Issue whose child tickets are decisions — and resolve them one at a time until its Specs can be written. |
 | `what-did-i-get-done` | Summarise what you got done over a period, from your commits, pull requests, and Issues in this repo. |
 | `why` | Trace why code is the way it is, from its history, pull requests, Issues, and connected tools, with what the record says kept apart from what is inferred. Loads on its own when you ask why something works the way it does. |
 | `writing-for-agents` | Reference for writing any document an agent consumes — skills, AGENTS.md, CLAUDE.md. |
+
+### Library skills
+
+Other skills read these as steps of their own. You cannot type them, and the agent does not load them on its own. [ADR-0074](docs/adr/0074-skills-other-skills-follow-are-read-by-path.md) records why.
+
+| Skill | Description |
+|-------|-------------|
+| `domain-modeling` | Build and sharpen a project's domain model. |
+| `grilling` | Grill the user relentlessly, round by round, about a plan or design. |
+| `technical-writing` | The house standard for every sentence a person reads: document type, sentence rules, and the AI tells to cut. |
+| `to-spec` | Turn the conversation into a Spec and write it to the Issue the session started from, or to a new Issue. `/triage`, `/grill-with-docs`, `/wayfinder`, and `/prototype` end with it. |
+| `validate-spec` | Check a new Spec against this repo's template rules and codebase, and fix stale references in place. The Validator runs it for `/to-spec`. |
 
 ## Credits
 

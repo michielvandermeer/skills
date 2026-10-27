@@ -2,11 +2,10 @@
 name: to-spec
 description: Turn the current conversation into a Spec and write it onto its Issue in the repo's Tracker — no interview, just synthesis of what you've already discussed.
 disable-model-invocation: true
-model: sonnet
-effort: high
+user-invocable: false
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a spec (you may know this document as a PRD). Do NOT interview the user — just synthesize what you already know. A decision the conversation did not settle is not yours to close: ask it as one `/grilling` round, then continue.
+This skill takes the current conversation context and codebase understanding and produces a spec (you may know this document as a PRD). Do NOT interview the user — just synthesize what you already know. A decision the conversation did not settle is not yours to close: read [`grilling/SKILL.md`](../grilling/SKILL.md) and ask it as one round in that format — `/grilling` does not load as a skill — then continue.
 
 ## Process
 
@@ -24,7 +23,7 @@ Then sketch out the seams at which you're going to test the feature. Existing se
 
 Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-Draft the Spec using the template below in a new temporary file in the OS temp directory. On a local Markdown Tracker the Issue file itself is the draft: file it at this step when the Issue is new, and write the whole of step 5's update into it. Run the `/technical-writing` skill first: a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar. Problem Statement, Solution, How to Check It, and User Stories are the **Product reader**'s — someone who knows the product but not its code, such as a QA tester. There, "the user" is the person who uses the part of the product the change touches, and the sections name only what that person meets on the product and terms `CONTEXT.md` defines. Every file, function, class, and internal part goes in Implementation Decisions. In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
+Draft the Spec using the template below in a new temporary file in the OS temp directory. On a local Markdown Tracker the Issue file itself is the draft: file it at this step when the Issue is new, and write the whole of step 5's update into it. Read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it first (`/technical-writing` does not load as a skill): a Spec is read cold, weeks later, by someone who was not in this conversation, so it holds the durable-document bar. Problem Statement, Solution, How to Check It, and User Stories are the **Product reader**'s — someone who knows the product but not its code, such as a QA tester. There, "the user" is the person who uses the part of the product the change touches, and the sections name only what that person meets on the product and terms `CONTEXT.md` defines. Every file, function, class, and internal part goes in Implementation Decisions. In a repo with a `CONTEXT-MAP.md`, every `.agents/<kind>/` path in this skill gains a context subfolder — follow [domain-modeling/CONTEXT-PATHS.md](../domain-modeling/CONTEXT-PATHS.md).
 
 4. Dispatch a fresh **Validator** (`skills:validator`, `agents/validator.md` at the plugin root) with two absolute paths: the draft, and [validate-spec/SKILL.md](../validate-spec/SKILL.md). Those paths are the whole prompt. The Validator is pinned to Sonnet at medium effort ([ADR-0052](../../docs/adr/0052-a-fresh-validator-checks-a-new-spec.md)). A host without that agent type dispatches `general-purpose` with the same prompt.
 

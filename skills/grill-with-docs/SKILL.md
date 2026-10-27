@@ -8,7 +8,7 @@ effort: high
 
 Bring the checkout up to date first — pull, with submodules — so the facts you declare and the files you edit are current.
 
-Run a `/grilling` session, using the `/domain-modeling` skill. The glossary entries and ADRs that session produces are yours to write, in this session: `/domain-modeling` times the glossary entries and states an ADR as a declaration, and an ADR that waits for Spec time is written in the same turn as the Spec.
+Run a grilling session: read [`grilling/SKILL.md`](../grilling/SKILL.md) and [`domain-modeling/SKILL.md`](../domain-modeling/SKILL.md) and follow both — neither loads as a skill. The glossary entries and ADRs that session produces are yours to write, in this session: `/domain-modeling` times the glossary entries and states an ADR as a declaration, and an ADR that waits for Spec time is written in the same turn as the Spec.
 
 When the request asks for a `/prototype`, or a question turns out to need one, run it after the Frontier is empty and before the ending below; its verdict is the last set of declarations, and only a Spec that is written names its folder.
 

@@ -11,7 +11,7 @@ effort: high
 
 Write or update `.agents/refs/tracker.md`, the **Tracker ref**: the repo's own description of its **Tracker** and of how each operation the skills name is carried out there. The plugin ships one **Tracker template** per system — [LOCAL.md](LOCAL.md), [GITHUB.md](GITHUB.md), [JIRA.md](JIRA.md). The copy this skill writes is the repo's own to edit; the skills follow it as written, and later changes to a template do not reach it.
 
-Everything the user reads runs at the `/technical-writing` bar.
+Everything the user reads runs at the bar [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) sets: read it and follow it before the first message — `/technical-writing` does not load as a skill.
 
 With the argument `verify`, follow [VERIFY.md](VERIFY.md) in place of the steps below. With the argument `models`, follow [MODELS.md](MODELS.md).
 

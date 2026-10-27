@@ -46,7 +46,7 @@ Done: every investigator has reported, and every category is searched, skipped w
 
 ## 4. Write the answer
 
-Read [EVIDENCE.md](EVIDENCE.md), then run the `/technical-writing` skill. Merge the reports: one citation for an item several of them found, both sides of any contradiction. Spot-check each citation you lean on by opening it. Then write under exactly these headings, in this order, dropping only the optional ones that are empty:
+Read [EVIDENCE.md](EVIDENCE.md), then read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill. Merge the reports: one citation for an item several of them found, both sides of any contradiction. Spot-check each citation you lean on by opening it. Then write under exactly these headings, in this order, dropping only the optional ones that are empty:
 
 - **The question**, restated in one or two sentences.
 - **The code**: paths, line ranges, and symbols.

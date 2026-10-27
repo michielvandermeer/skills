@@ -16,11 +16,9 @@ A document in the Tracker has a second reader. QA testers and product owners rea
 - **The Product reader as the reader of every durable document.** Rejected: a reviewer reading a PR description or an ADR would lose the names they look for.
 - **A separate summary section for people.** Rejected: it tells the problem twice, and the two versions drift apart.
 
-## Why a skill rather than a shared file
+## Why a Library skill
 
-The rule could have been a file at the repo root that each skill reads. It is a model-invoked skill instead, and that costs one description in every user's context, on every turn, forever.
-
-The cost buys two things a file cannot. The rule reaches the agent even from a skill that forgot to point at it, because a description is always loaded. And it never resolves against the wrong file: these skills run inside other people's repos, where a relative path is a guess and a bare filename could hit something of theirs.
+`/technical-writing` is a Library skill that every caller reads by path ([ADR-0074](0074-skills-other-skills-follow-are-read-by-path.md)). It started as a model-invoked skill, whose description reached the agent even from a skill that forgot to point at it. That description cost context on every turn, and it rarely fired on its own. In 60 days, 54 of its 55 loads came from a skill that already named it. Each caller links the file relative to its own folder, which resolves inside the plugin and never against a file in the user's repo.
 
 ## Consequences
 

@@ -36,7 +36,7 @@ Pick whichever shape best fits the question being asked, *not* whichever is easi
 
 One file, plain HTML/CSS/JS — no framework, no bundler, no server, everything inline so it opens by double-click and survives being emailed around. Write it in the folder the [SKILL](SKILL.md) names. Anyone should be able to run it by opening it.
 
-Write it for a non-developer. Every label is in **domain language**, not code — buttons and state read like the business, not the reducer. Explain in plain words what's happening. Run the `/technical-writing` skill before writing labels a person will read.
+Write it for a non-developer. Every label is in **domain language**, not code — buttons and state read like the business, not the reducer. Explain in plain words what's happening. Before writing labels a person will read, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill.
 
 Lay it out with a clean hierarchy, top to bottom:
 

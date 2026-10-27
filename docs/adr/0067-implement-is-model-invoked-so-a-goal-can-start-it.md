@@ -5,7 +5,7 @@
 ## Considered Options
 
 - **Keeping it user-invoked.** Rejected: a `/goal` session cannot run it at all.
-- **A goal that follows `/implement` by path**, as skills follow a user-invoked skill ([ADR-0074](0074-skills-that-other-skills-start-are-user-invoked.md)). Rejected: following by path skips the Sonnet pin, so the run would go on at the goal session's model.
+- **A goal that follows `/implement` by path**, as skills follow `/retro` and the Library skills ([ADR-0074](0074-skills-other-skills-follow-are-read-by-path.md)). Rejected: following by path skips the Sonnet pin, so the run would go on at the goal session's model.
 - **A description that fires on any request to build something.** Rejected: an implement run claims the Issue, opens a worktree, and pushes, which nobody should get from asking for a small change.
 
 ## Consequences

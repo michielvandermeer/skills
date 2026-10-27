@@ -55,7 +55,7 @@ The verdict decides what the Spec will say; the folder is the playable record th
 3. Read [`to-spec/SKILL.md`](../to-spec/SKILL.md) and follow it there — `/to-spec` does not load as a skill. The Spec names **the question the prototype was built to answer**, **what playing with it settled**, and **`.agents/prototypes/<slug>/`**.
 4. Remove the worktree and delete the branch: `git worktree remove --force <path>`, then `git branch -D <branch>`.
 
-A verdict that kills the idea ends with no Spec and no folder. Report what was learned, remove the worktree and branch the same way, and write an ADR only when the decision passes the three-part test in `/domain-modeling`.
+A verdict that kills the idea ends with no Spec and no folder. Report what was learned, remove the worktree and branch the same way, and write an ADR only when the decision passes the three-part test in [`domain-modeling/SKILL.md`](../domain-modeling/SKILL.md).
 
 The Spec is the handover. Real code gets built from it later, by `/implement`.
 

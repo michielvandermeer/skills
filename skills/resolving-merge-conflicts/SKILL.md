@@ -1,12 +1,9 @@
 ---
 name: resolving-merge-conflicts
-description: "Resolve an in-progress git merge or rebase conflict."
-disable-model-invocation: true
-model: sonnet
-effort: high
+description: "Resolve git merge or rebase conflicts. Use when the user asks to merge or rebase and resolve the conflicts, or when a merge or rebase stops on a conflict."
 ---
 
-1. **See the current state** of the merge or rebase. Check git status, git history, and the conflicting files.
+1. **See the current state** of the merge or rebase, starting the one the user asked for when none is in progress. Check git status, git history, and the conflicting files.
 
 2. **Find the primary sources** for each conflict. Read the commit messages on both sides, and the Spec, ADRs, and `CONTEXT.md` that motivated them. A PR or issue is a source when one exists.
 

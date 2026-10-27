@@ -1,6 +1,8 @@
 ---
 name: technical-writing
-description: The house standard for every sentence a person reads. Use when writing a document, report, review, or interview round a person will read, or when another skill needs the writing bar.
+description: The house standard for every sentence a person reads. A Library skill other skills read by path.
+disable-model-invocation: true
+user-invocable: false
 ---
 
 # Technical writing

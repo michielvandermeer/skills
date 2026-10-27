@@ -34,7 +34,7 @@ Done: every source has its list for the window, or is a gap with its error.
 
 ## 3. Write the update
 
-Run the `/technical-writing` skill. Group commits under the pull request that carried them, and an Issue under the pull request that closed it. Lead with what changes behaviour or structure for a user or a developer. Leave out formatting, import, and rename-only work. Describe what each change does, from its title, body, and diff, and leave its motive to the person.
+Read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill. Group commits under the pull request that carried them, and an Issue under the pull request that closed it. Lead with what changes behaviour or structure for a user or a developer. Leave out formatting, import, and rename-only work. Describe what each change does, from its title, body, and diff, and leave its motive to the person.
 
 ```
 <start> to <end>

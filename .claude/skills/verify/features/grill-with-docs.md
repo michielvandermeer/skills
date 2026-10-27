@@ -14,7 +14,7 @@
 ## How to get to it (user POV)
 
 - Type `/skills:grill-with-docs <the plan>` or `/skills:grill-with-docs <Issue path>`.
-- It is user-only: a plain request reaches `/grilling`, not this skill.
+- It is user-only. `/grilling` is a Library skill, so a plain request to grill a plan reaches neither.
 
 ## Driving it with verify.py
 

@@ -20,4 +20,3 @@ The Planner slices a Spec into Steps that each fit one session, but the run revi
 - `/triage` looks for earlier failed fixes of a bug, measures a number a report claims, and hands the reproduction to the Spec as the test that fails on today's code.
 - `/grilling` treats a design with no precedent in the codebase as a `/prototype` question, and a logic prototype then builds two or three competing models.
 - A Validator finding on a principle does not stop the Spec from being written, as with any open question under [ADR-0052](0052-a-fresh-validator-checks-a-new-spec.md).
-- A `/validate-spec` someone types applies the same principles, because it uses the same checklist.

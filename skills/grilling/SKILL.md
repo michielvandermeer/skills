@@ -1,6 +1,8 @@
 ---
 name: grilling
-description: Grill the user relentlessly about a plan or design, round by round. Use when the user wants to stress-test a plan before building, or when another skill needs the round format.
+description: Grill the user relentlessly about a plan or design, round by round. A Library skill other skills read by path.
+disable-model-invocation: true
+user-invocable: false
 ---
 
 Grill me relentlessly until we reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
@@ -115,7 +117,7 @@ Before round 1, read every **Grilling profile** in `.agents/refs/profiles/`: min
 
 `Q` and `D` run continuously across the whole session, so round 2 picks up where round 1 stopped; option letters restart at `a` on every question. The `D` prefix marks a line as mine to skim rather than answer. Declare only in the rounds that decided something worth stating, one line where one line does it.
 
-A round is read at speed, often late in a long day of them. Run the `/technical-writing` skill before round 1 and hold its bar for every round after — it binds how each question is worded, never how hard it presses.
+A round is read at speed, often late in a long day of them. Before round 1, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill — and hold its bar for every round after. It binds how each question is worded, never how hard it presses.
 
 ## Done
 

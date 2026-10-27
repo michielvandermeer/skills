@@ -2,8 +2,7 @@
 name: validate-spec
 description: Validate an Issue, a Spec, a plan, or the current conversation against this repo's own template rules and the current codebase — fix stale references and contradictions in place, flag real decisions as open questions.
 disable-model-invocation: true
-model: sonnet
-effort: high
+user-invocable: false
 ---
 
 # Validate Spec
@@ -54,6 +53,6 @@ Go section by section through the doc, checking every applicable item below agai
 
 ### 4. Report
 
-Under 200 words, at the bar the `/technical-writing` skill sets: what you corrected, and what's still open as a question.
+Read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill. Then report in under 200 words, at its bar: what you corrected, and what's still open as a question.
 
 Done when every checklist item has been checked against every section it applies to, and every finding is either corrected in place or listed as an open question — none silently dropped.
