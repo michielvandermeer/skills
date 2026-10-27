@@ -14,7 +14,7 @@ Sort a **seed** of reports into Specs and parked Issues. One distinct problem �
 
 The seed is what the maintainer handed this session: a pasted email, a markdown file, a description, ticket text, a reference to an Issue, or a query such as "every `needs-triage` Issue".
 
-Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
+Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, attach, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
 1. If the invocation has no seed, ask for one. Stop until it arrives.
 2. A reference to an Issue in this Tracker is the Issue this problem updates. A query lists the Tracker by status; each Issue it returns is the Issue its problem updates.
@@ -76,6 +76,8 @@ Questions are specific and actionable.
 
 **Not filed** — rejected or already implemented. When this problem has an Issue, close it as not planned, with a comment saying why. Otherwise mention it only in the summary.
 
+**Attach** — when this problem's seed text references images, such as `![alt](/path/shot.png)`, attach them to its Issue once its ending has filed or updated it: after `/to-spec` returns on the Spec ending, after the park's comment on a park. A problem that is not filed attaches nothing. When the Tracker ref gives no Attach, or says it is unavailable, or an upload fails, comment the image paths instead and name each file in the summary for the user to add.
+
 Every comment starts with:
 
 ```
@@ -86,10 +88,10 @@ Run `/technical-writing` before any comment a reporter will read.
 
 A comment or body the Tracker takes from a file goes in a folder made once with `mktemp -d`, which the run deletes at its end. A path built from an Issue's number is shared: another triage session on the same Issue, such as a shared parent, writes it too, and a failed command then posts that session's draft.
 
-Done: every named problem has exactly one ending applied in the Tracker, or is not filed, and extras found during investigate have been named and run through this section.
+Done: every named problem has exactly one ending applied in the Tracker, or is not filed, every filed problem's images are attached or named for the user, and extras found during investigate have been named and run through this section.
 
 ## Summary
 
-End with a summary the people in the session can follow up from. For every problem: what it was, and either its Issue's reference and status, or that it was not filed, why, and the reference of any Issue it closed. The summary is the review.
+End with a summary the people in the session can follow up from. For every problem: what it was, and either its Issue's reference and status, or that it was not filed, why, and the reference of any Issue it closed. Name every image left for the user to attach, with its path and its Issue. The summary is the review.
 
 Done: the summary lists every problem this run handled. Then read [`retro/SKILL.md`](../retro/SKILL.md) and follow it — `/retro` does not load as a skill.

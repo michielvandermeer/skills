@@ -170,7 +170,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 **Skills you type.** A pin applies when you type the skill. When another skill reads and follows it, the caller's model stays.
 
 - Opus at high: `/grill-with-docs`, `/brainstorm`, `/wayfinder`.
-- Sonnet at high: `/triage`, `/implement`, `/doctor`, `/explain`, `/setup`, `/learn-habits`, `/to-spec`, `/validate-spec`, `/retro`, `/resolving-merge-conflicts`, `/what-did-i-get-done`.
+- Sonnet at high: `/triage`, `/implement`, `/doctor`, `/explain`, `/setup`, `/learn-habits`, `/to-spec`, `/validate-spec`, `/retro`, `/resolving-merge-conflicts`, `/what-did-i-get-done`, `/simulate-first-users`.
 
 **Sub-agents.**
 
@@ -179,7 +179,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 - Haiku at high: `skills:explorer`.
 - Opus at high: `skills:reviewer`, the `/code-review` reviewers.
 
-Everything else runs on the setting of the skill that starts it: a Hillclimb's fixers, and the `/brainstorm` fan-out.
+Everything else runs on the setting of the skill that starts it: a Hillclimb's fixers, the `/brainstorm` fan-out, and the `/simulate-first-users` First users.
 
 > **Your environment can override a pin.** When `CLAUDE_CODE_EFFORT_LEVEL` is set, it beats every effort pin. Your session's settings and `/effort` do not.
 
@@ -202,6 +202,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve an in-progress git merge or rebase conflict hunk by hunk, then finish the operation. `/implement` and `/hillclimb` use it when a rebase conflicts. |
 | `retro` | Look at a finished session, apply high-priority changes this repository owns, file the structural ones as Issues, and summarise the rest. Skills such as `/implement` start this when they finish. |
+| `simulate-first-users` | Send five simulated first-time users through your app, each in its own browser: the impatient one, the skeptic, the mobile user, the non-native English speaker, and the breaker. What tripped them up, ranked by how many hit it, goes through `/triage` into Issues with the screenshots attached. Needs Playwright. |
 | `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. `/setup verify` writes, or brings up to date, the repo's verify skill, which drives the app the way a user does. `/setup models` sets the model and effort each sub-agent runs at in the repo. |
 | `technical-writing` | The house standard for every sentence a person reads: document type, sentence rules, and the AI tells to cut. |
 | `to-spec` | Turn the current conversation into a Spec and write it to the Issue the session started from, or to a new Issue. `/triage`, `/grill-with-docs`, `/wayfinder`, and `/prototype` end with it. |

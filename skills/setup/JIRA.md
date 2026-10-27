@@ -23,6 +23,7 @@ Issues live as Jira issues in one Jira project. Use the Jira MCP tools this sess
 - **Set status**: swap the status label. An issue carries one status label at a time; its workflow status stays where the team put it.
 - **Set category**: swap the category label.
 - **Comment**: add a comment.
+- **Attach**: attach each image to the issue with the Jira tools' attachment call, then add a comment naming them. When the tools have no attachment call, Attach is unavailable.
 - **Link as blocked by**: an issue link of type Blocks, from the blocker to this issue. After creating it, check the direction: the blocker reads "blocks" and this issue "is blocked by". A blocker is open until its status category is Done.
 - **Close as done**: comment, then run the Done transition.
 - **Close as not planned**: comment why, then run the not-planned transition.

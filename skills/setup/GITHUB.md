@@ -17,6 +17,7 @@ Issues live as GitHub issues in this repo's GitHub repository. Use the `gh` CLI,
 - **Set status**: `gh issue edit <n> --remove-label <old> --add-label <new>`. An issue carries one status label at a time.
 - **Set category**: `gh issue edit <n> --add-label <category>`, removing the other category label.
 - **Comment**: `gh issue comment <n> --body-file <file>`.
+- **Attach**: `gh issue comment <n> --body-file <file> --attach '<path>#<alt text>'`, one `--attach` per image, up to 50. Write each image into the body as `![<alt text>](<path>)` where it belongs; `gh` swaps the path for the uploaded image. When some uploads fail, `gh` still posts the comment with the rest and exits non-zero: name the missing ones. A `gh` whose `gh issue comment --help` lists no `--attach` makes Attach unavailable.
 - **Link as blocked by**: `gh api --method POST repos/<owner>/<repo>/issues/<n>/dependencies/blocked_by -F issue_id=<id>`, where `<id>` is the blocker's database id from `gh api repos/<owner>/<repo>/issues/<blocker> --jq .id`, not its number. Read them with `gh api repos/<owner>/<repo>/issues/<n>/dependencies/blocked_by`. Where dependencies are unavailable, put `Blocked by: #<n>, #<n>` at the top of the body. A blocker is open while its issue is open.
 - **Close as done**: `gh issue close <n> --reason completed --comment "…"`.
 - **Close as not planned**: `gh issue close <n> --reason "not planned" --comment "…"`.

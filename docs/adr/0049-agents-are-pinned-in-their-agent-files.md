@@ -12,7 +12,7 @@ Each skill you type and each plugin agent sets `model:` and `effort:` in its own
   | Explorer | Haiku | high |
   | Reviewer | Opus | high |
 
-- **Everything else** runs on the setting of the skill that starts it: a Hillclimb's Fixers and the `/brainstorm` fan-out.
+- **Everything else** runs on the setting of the skill that starts it: a Hillclimb's Fixers, the `/brainstorm` fan-out, and the `/simulate-first-users` First users.
 
 A skill's pin lasts for the rest of the turn, so a model-invoked skill that other skills load carries none: it would swap its caller's model. A user-invoked skill that other skills need is followed by path ([ADR-0074](0074-skills-that-other-skills-start-are-user-invoked.md)), which skips its pin, so it is pinned for when you type it.
 

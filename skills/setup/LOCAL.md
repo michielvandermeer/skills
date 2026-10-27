@@ -19,9 +19,10 @@ An Issue is one file, `.agents/issues/<slug>.md`, its slug kebab-case from its t
 - **Set status**: edit the `Status:` line.
 - **Set category**: write or edit the `Category:` line.
 - **Comment**: append under `## Comments`, starting with the date.
+- **Attach**: copy the images into `.agents/attachments/<slug>/`, or `.agents/attachments/<context>/<slug>/` in a repo with a `CONTEXT-MAP.md`, and comment with a Markdown image for each, its path relative to the Issue file. The session commits them with its other files.
 - **Link as blocked by**: add the blocker's slug to `Blocked by: <slug>, <slug>`. A blocker is open while its file exists on the branch being checked.
-- **Close as done**: delete the file, and a Map's folder with it, in the commit that finishes the work. Remove its slug from every other Issue's `Blocked by:` line.
-- **Close as not planned**: delete the file in the session's commit. The session's summary says why.
+- **Close as done**: delete the file, its attachments folder, and a Map's folder with it, in the commit that finishes the work. Remove its slug from every other Issue's `Blocked by:` line.
+- **Close as not planned**: delete the file and its attachments folder in the session's commit. The session's summary says why.
 - **Closing reference**: the landing commit closes the Issue as done above. The message carries nothing.
 
 ## Statuses

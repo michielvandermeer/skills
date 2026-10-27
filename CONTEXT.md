@@ -292,3 +292,11 @@ _Avoid_: dry run, test mode, simulation
 **Verify skill**:
 The project skill at `.claude/skills/verify/` in the consuming repo that drives its app the way a user does: launch, doctor, drive, evidence, and cleanup, with a feature map holding one recipe per user-facing feature. Named `verify`, so it replaces Claude Code's bundled `/verify`. In a repo with a `CONTEXT-MAP.md`, each context with a running surface keeps its own under that context's folder. Written and kept current by `/setup verify`; a **Verifier** corrects it only where it steered it wrong.
 _Avoid_: run recipe, verification skill, driver skill, control skill, smoke script
+
+**First user**:
+One of the five simulated people a `/simulate-first-users` run sends through an app for the first time, each a sub-agent in its own browser with one way of failing: the impatient one, the skeptic, the mobile user, the non-native English speaker, and the breaker. Each records every moment it is confused, stuck, or annoyed, with a screenshot.
+_Avoid_: persona, tester, QA agent, test user
+
+**First success**:
+The point at which a new person has got what they came for from an app the first time, such as a created project or a sent message. The goal every **First user** walks toward from the landing page. Named in the `/simulate-first-users` argument, or read from the app when the argument names none.
+_Avoid_: happy path, onboarding goal, activation
