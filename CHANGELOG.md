@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-27: Simulate first users before launch
+`/simulate-first-users` sends five simulated first-time users through your app, each in its own Playwright browser: the impatient one, the skeptic, the mobile user on a 375px screen over slow 3G, the non-native English speaker, and the breaker. What tripped them up, ranked by how many hit it, goes through `/triage` into Issues, and `/triage` now attaches the screenshots a report references to the Issue it files, or names the files for you to add when your Tracker ref was copied before this change. Before, nothing walked your app as a newcomer would, and a screenshot in a report never reached its Issue, because the Tracker had no way to attach one.
+
 ## 2026-10-22: Review flags weak tests
 `/code-review` and the agents of `/implement` now flag four more kinds of weak test in every repo: a test that asserts below the level it acted, such as an HTTP test that checks the database, a tautological test that passes whether or not the code works, a test that depends on a sleep, the clock, or run order, and a new error branch or limit with no test. These findings advise, and the README's new section "Teach the skills your rules" shows how to make a rule binding in your repo. Before, no rule covered a test that checks the database after an HTTP call or an error path left untested, and nothing told you where to write your own rules.
 
