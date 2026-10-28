@@ -45,7 +45,7 @@ Go section by section through the doc, checking every applicable item below agai
 
 - **Principles** — Spec only. Apply each of the **Planning principles** in [to-spec/PRINCIPLES.md](../to-spec/PRINCIPLES.md) whose "In a Spec" signs the Spec shows. Each miss is a question: meeting it changes what gets built, or needs a person to split, prototype, or decide.
 
-- **Testing shape** — Testing Decisions describe external behavior, not markup or implementation structure.
+- **Testing shape** — Testing Decisions describe external behavior, not markup or implementation structure. Every element, class, attribute, or output a test is said to read is one the repo's testing documents allow: read those documents, found the way `/code-review` finds Coding standards. One they forbid is a fact: reword it to what they allow, such as the element's text or state.
 
 - **Completeness** — every Problem Statement claim is addressed by the Solution; every Solution element has at least one User Story and one Hand check, unless How to Check It says nothing changes for a person; anything adjacent the doc doesn't cover is named in Out of Scope, not left implicit.
 

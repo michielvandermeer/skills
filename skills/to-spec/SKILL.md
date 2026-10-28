@@ -92,6 +92,7 @@ Exception: a prototype folder at `.agents/prototypes/<slug>/` is named, not inli
 A list of testing decisions that were made. Include:
 
 - A description of what makes a good test (only test external behavior, not implementation details)
+- Every element, class, attribute, or output a test reads is one the repo's testing documents allow, such as the text or state of the element under test or a hook they list. mvdmio-suite #775 asked tests to read the `button` and `primary` classes and `data-assistant-open`; its run dropped those assertions.
 - For a bug, the test that fails on today's code
 - Which modules will be tested
 - Prior art for the tests (i.e. similar types of tests in the codebase)
