@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-28: Specs follow your testing rules
+A Spec's Testing Decisions now name only what your repo's testing documents allow a test to read, and `/validate-spec` rewords any assertion they forbid to the element's text or state. Before, a Spec could ask tests to read a styling class or a `data-*` attribute your testing rules ban, and the `/implement` run dropped those assertions at the cost of an extra Iteration.
+
 ## 2026-10-27: Fewer skills in your slash menu
 `/grilling`, `/domain-modeling`, `/technical-writing`, `/to-spec`, and `/validate-spec` are now Library skills: `/grill-with-docs`, `/triage`, `/wayfinder`, and the other skills that use them read them from disk, and they are gone from your slash menu and from every session's context. `/resolving-merge-conflicts` now loads on its own when you ask to merge and resolve the conflicts, and `/retro` stays a command you type. Before, five skills nobody typed filled the slash menu, and their descriptions sat in every session for requests that almost never came.
 
