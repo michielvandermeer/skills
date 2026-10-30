@@ -108,7 +108,7 @@ One-question means one closed choice and no follow-up already nameable.
 **Group** when creating grilling tickets — every grilling fork ends as a Focused ticket, a leftover in Small questions, or a blocked one-question standalone:
 
 1. Mint Focused tickets for trees.
-2. Leftover unblocked one-question forks join the unclaimed open Small questions (a singleton joins too) unless the 250K ceiling would be exceeded. With nothing to join: two or more mint Small questions; a singleton keeps a title that names its fork.
+2. Leftover unblocked one-question forks join the unclaimed open Small questions unless the 250K ceiling would be exceeded. With nothing to join, mint Small questions, even for a single leftover.
 3. A blocked one-question grilling ticket stays until it unblocks, then it is a leftover — join or mint, and close the standalone as not planned.
 
 Resolving Small questions: follow [`grilling/SKILL.md`](../grilling/SKILL.md), round 1 every leftover in the body, until that ticket's frontier is empty. Decisions-so-far: one line; the gist lists each decision.
