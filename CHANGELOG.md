@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-31: Lone leftovers join Small questions
+`/wayfinder` now starts a Small questions ticket for a lone leftover grilling question, and a leftover from a later round joins that ticket while you have not claimed it. Before, a lone leftover got a ticket titled after its question, which left a later leftover nothing to join and cost you a session for each.
+
 ## 2026-10-28: Specs follow your testing rules
 A Spec's Testing Decisions now name only what your repo's testing documents allow a test to read, and `/validate-spec` rewords any assertion they forbid to the element's text or state. Before, a Spec could ask tests to read a styling class or a `data-*` attribute your testing rules ban, and the `/implement` run dropped those assertions at the cost of an extra Iteration.
 
