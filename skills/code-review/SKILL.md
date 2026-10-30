@@ -49,7 +49,7 @@ Both briefs end with the same instruction, `<tw>` being the absolute path of [`t
 **Standards sub-agent prompt** — include:
 
 - The full diff command and commit list.
-- The list of standards-source files you found in step 3, and the absolute path of PRINCIPLES.md, with the instruction to list the headings of each first (`grep -n '^#'`) and read the sections that bear on the diff.
+- The list of standards-source files you found in step 3, and the absolute path of PRINCIPLES.md (in the folder the host loaded this skill from, confirmed with `ls` before you hand it over), with the instruction to list the headings of each first (`grep -n '^#'`) and read the sections that bear on the diff.
 - The Spec's path from step 2, when a Spec was found, with the instruction to read its Implementation Decisions section (`grep -n '^## '` finds it) before judging. A Judgement call that a decision there explicitly settles is dropped from the report. A Hard violation that a decision there explicitly mandates is reported as a Judgement call that names the decision.
 - Findings the caller says were declined before, each with its reason, when the caller hands any: raise one again only when its reason does not hold, and say why.
 - Findings the caller hands to check, when it hands any, as `/implement` does from its second Iteration: judge each as fixed or declined, and judge the fix itself against the standards.

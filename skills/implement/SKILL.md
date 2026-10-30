@@ -74,7 +74,7 @@ Hold `git rev-parse HEAD` as `<start>` before the Iteration's first dispatch. Fo
 - on Iteration 1: its own Step file, and an instruction to read the `## Outcome` of every lower-numbered Step file before starting
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
 - the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
-- the design principles, [PRINCIPLES.md](../code-review/PRINCIPLES.md) in the `code-review` skill's directory by absolute path — the Review judges the diff by them and by the Coding standards
+- the design principles, [PRINCIPLES.md](../code-review/PRINCIPLES.md) in the `code-review` skill's directory by absolute path, built from the folder the host loaded this skill from and confirmed with `ls` before the dispatch — the Review judges the diff by them and by the Coding standards
 - the Spec's Testing Decisions section, when it has one, which governs what it tests, and the testing documents it names
 - from Iteration 2 on: every Hard violation and Verify finding the last Iteration reported, and every Judgement call held, verbatim; and every finding an earlier Iteration declined, with its reason
 - the deviations reported so far, verbatim, when there are any
