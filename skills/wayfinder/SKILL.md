@@ -134,9 +134,23 @@ Out-of-scope work never graduates — the frontier stops at the destination — 
 
 Ruling something out of scope is a scoping act, not a step on the route. When a ticket that already exists turns out to sit past the destination — mis-scoped in while charting, or exposed by a resolution — **rule it out of scope** (unambiguously off the frontier) and leave one line in the map's **Out of scope** section: the gist plus why it's out of scope, linking the ticket. It stays out of **Decisions so far**, which records the route actually walked — a scope boundary isn't a step on it.
 
+## The state table
+
+The map's tickets as they stand now, one row each, shown to the user as a table under the map's name. Columns: **Ticket** (the reference), **Title** (the ticket's name wrapping its link), **Status**.
+
+Build it from a fresh [list of the tickets](#the-map), closed ones included. Other sessions change the map concurrently, and this session's own resolution is already in it. Rows follow the map's order. A ticket's status is the first that fits:
+
+- `resolved` — closed as done.
+- `ruled out` — closed as not planned, whether it sat past the destination or a decision invalidated it.
+- `claimed` — assigned.
+- `blocked` — an open blocker, no assignee.
+- `available` — none of the above: the frontier.
+
 ## Invocation
 
 Two modes. Either way, **never resolve more than one ticket per session** — with the exception of research tickets.
+
+Every session closes by presenting the [state table](#the-state-table), whichever way it ends: charted, a ticket resolved, an empty frontier, or the Specs written. Where the steps below run `/retro`, the table comes first.
 
 ### Chart the map
 

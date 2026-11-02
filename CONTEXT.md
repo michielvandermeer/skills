@@ -91,6 +91,9 @@ _Avoid_: leftovers ticket, bundle, grab-bag
 **Map**:
 An **Issue** in status `wayfinding` whose body is the index of a `/wayfinder` effort — Destination, Notes, Decisions so far, fog — and whose children are its **Decision tickets**. Every Map ends in one or more Specs, so its Destination names the whole change those Specs will cover rather than which artifact the effort produces. How many Specs, and where one ends and the next begins, is decided only once no tickets remain — a ticket remains until it is resolved or ruled out of scope — and by a fresh `/wayfinder` session, not the one that resolved the last ticket: each Spec is a change that can land green and is worth shipping on its own, and one Spec may be blocked by another that must land first. The Map's own Issue becomes the first of those Specs; the rest are new Issues.
 
+**State table**:
+The table that closes every `/wayfinder` session: one row per **Decision ticket** of the **Map**, closed ones included, with its reference, name, and status. Built from a fresh list of the tickets, never stored in the Map's body.
+
 **Context subfolder**:
 The folder level, named for one context or `common`, that sits right after the kind folder in a work document's path in a multi-context repo — the `billing` in `.agents/prototypes/billing/<slug>/`. Distinct from a context's own folder, the one holding its `CONTEXT.md`.
 _Avoid_: context folder, app folder
