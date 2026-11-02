@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-02: Wayfinder ends on a ticket table
+Every `/wayfinder` session now ends with a table of the map's tickets, with each ticket's reference, title, and status: resolved, ruled out, claimed, blocked, or available. Before, a session showed only the ticket it worked, so you had to open the Tracker to see where the whole effort stood and which ticket to run next.
+
 ## 2026-10-31: Lone leftovers join Small questions
 `/wayfinder` now starts a Small questions ticket for a lone leftover grilling question, and a leftover from a later round joins that ticket while you have not claimed it. Before, a lone leftover got a ticket titled after its question, which left a later leftover nothing to join and cost you a session for each.
 
