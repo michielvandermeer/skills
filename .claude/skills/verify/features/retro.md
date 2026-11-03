@@ -11,7 +11,7 @@
 
 - Type `/skills:retro` at the end of a session; it reads that session.
 - Type `/skills:retro <session>` to read another one.
-- A Named session skill, such as `/implement` or `/grill-with-docs`, runs it when it finishes. It is user-only (`disable-model-invocation: true`).
+- No skill runs it. It is user-only (`disable-model-invocation: true`).
 
 ## Driving it with verify.py
 

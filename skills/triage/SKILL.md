@@ -94,4 +94,4 @@ Done: every named problem has exactly one ending applied in the Tracker, or is n
 
 End with a summary the people in the session can follow up from. For every problem: what it was, and either its Issue's reference and status, or that it was not filed, why, and the reference of any Issue it closed. Name every image left for the user to attach, with its path and its Issue. The summary is the review.
 
-Done: the summary lists every problem this run handled. Then read [`retro/SKILL.md`](../retro/SKILL.md) and follow it — `/retro` does not load as a skill.
+Done: the summary lists every problem this run handled.

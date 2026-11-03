@@ -15,6 +15,5 @@ A description holds three sections: a small picture of the change, before-and-af
 ## Consequences
 
 - The description stays one line and names only when to load the skill.
-- `pr` stays off the Named session skill list ([ADR-0038](0038-named-session-skills-apply-high-priority-retro.md)).
 - `/pr` works out Merge risk from the diff itself. An implement run records none.
 - `pr` shapes the description only. `/implement` still never opens a pull request.

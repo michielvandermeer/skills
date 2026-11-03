@@ -120,11 +120,7 @@ Read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it
 - the tests that already failed, and any flaky test from step 7;
 - the log's path, and the best idea still untried.
 
-### 9. Retrospective
-
-Read [`retro/SKILL.md`](../retro/SKILL.md) and follow it — `/retro` does not load as a skill — unless another Named session skill started this Hillclimb; that skill runs it.
-
-### 10. Push
+### 9. Push
 
 Run `/implement`'s [push](../implement/SKILL.md#the-push). Read only that section of that file. A line in `AGENTS.md` or `CLAUDE.md` saying implement runs do not push turns this push off too.
 
@@ -161,4 +157,4 @@ Read the log. When this Hillclimb's section has no baseline, go to step 3. When 
 
 ## Halting
 
-A halt is non-destructive and ends the session. Leave the branch, the run worktree, `<before>`, `<scratch>`, and the log exactly as they are — every finished Attempt is committed, and re-invoking `/hillclimb` with the same number picks it back up. Report why it stopped, quoting the failure. A halt skips step 9.
+A halt is non-destructive and ends the session. Leave the branch, the run worktree, `<before>`, `<scratch>`, and the log exactly as they are — every finished Attempt is committed, and re-invoking `/hillclimb` with the same number picks it back up. Report why it stopped, quoting the failure.

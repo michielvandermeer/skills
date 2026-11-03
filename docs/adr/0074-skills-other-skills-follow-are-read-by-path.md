@@ -3,7 +3,7 @@
 A skill that is a step of other skills is read by path: the caller's step links the skill's `SKILL.md` with the path as the link text, says to read the file and follow it, and says the skill does not load as one. How a person or the agent can start the skill on its own depends on who needs it.
 
 - **Library skills**, which only other skills need, set `disable-model-invocation: true` and `user-invocable: false`, so nobody starts them: `/grilling`, `/domain-modeling`, `/technical-writing`, `/to-spec`, and `/validate-spec`. The host registers none of them, so none of their descriptions sits in a session's context and none appears in the slash menu. In the 60 days before this change, nobody typed any of the five except once each for `/to-spec` and `/validate-spec`. Of the agent's 309 loads of `/grilling`, `/domain-modeling`, and `/technical-writing`, all but two came from another skill telling it to.
-- **`/retro`** stays typed-only (`disable-model-invocation: true`), because a person also runs it on its own, such as over every session in the past week. The skills that end in it run it on the current session.
+- **`/retro`** is typed-only (`disable-model-invocation: true`), because a person alone starts it, and no skill follows it by path ([ADR-0038](0038-retro-runs-only-when-the-user-types-it.md)).
 - **`/resolving-merge-conflicts`** is model-invoked and unpinned, so a plain "merge main and resolve the conflicts" loads it. `/implement` and `/hillclimb` still read it by path when a rebase conflicts.
 
 A step whose link text was the bare `/to-spec` or `/retro` was still often loaded as a skill: the day after the path became the link text, 33 of 50 such steps were refused, and each was dropped.

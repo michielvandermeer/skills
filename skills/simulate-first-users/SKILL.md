@@ -65,8 +65,8 @@ Done: every moment belongs to exactly one finding, and every screenshot a moment
 
 When step 1 started the app through the Verify skill, stop it with that skill's Cleanup section.
 
-Read [`triage/SKILL.md`](../triage/SKILL.md) and follow it with `seed.md` as the seed — `/triage` does not load as a skill. It files each finding as a Spec or a parked Issue, attaches each finding's screenshots to its Issue, and ends with its summary and `/retro`.
+Read [`triage/SKILL.md`](../triage/SKILL.md) and follow it with `seed.md` as the seed — `/triage` does not load as a skill. It files each finding as a Spec or a parked Issue, attaches each finding's screenshots to its Issue, and ends with its summary.
 
 Then delete the scratch folder. When the triage summary names screenshots for the user to add by hand, keep the folder and name its path instead.
 
-Done: the triage summary is shown, `/retro` has finished, and the scratch folder is deleted or named.
+Done: the triage summary is shown, and the scratch folder is deleted or named.

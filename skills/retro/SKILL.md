@@ -9,8 +9,6 @@ effort: high
 
 A **Retrospective** applies **High-priority** environment changes to **Owned files** without asking, files each **Structural fix** as an Issue, then summarises. `/code-review` still reviews the product diff; `/retro` reads it only to find **Corrections**.
 
-Apply and present only when the skill the user typed — or, when they typed none, the outermost skill the agent loaded — is this `/retro` or has reached its own done condition.
-
 Run `/writing-for-agents` for how a steering edit is written, and read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it before an Issue or the summary — `/technical-writing` does not load as a skill. Which mechanism a lesson gets follows "Encode lessons in structure" in [code-review/PRINCIPLES.md](../code-review/PRINCIPLES.md): agents copy what exists and take the shortest path, so code that makes the wrong thing impossible beats a check, and a check beats prose.
 
 Issues live in the repo's **Tracker**: carry out each operation on one — file, list, comment — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.

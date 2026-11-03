@@ -9,7 +9,6 @@
 - `grill-explorer` sends every question about the code to a `skills:explorer` agent instead of asking the user.
 - `grill-spec` ends a confirmed change in a Spec on `.agents/issues/<slug>.md`, status `ready-for-agent`, in one commit with the docs, after a `skills:validator` check.
 - `grill-no-change` ends without a Spec, closing the starting Issue as not planned.
-- `grill-retro` runs `/retro` at the end.
 
 ## How to get to it (user POV)
 
@@ -26,7 +25,7 @@ Preconditions:
 - **Start.** Run `verify.py turn <run> "/skills:grill-with-docs <plan>"`. The final message is round 1: questions numbered `Q1..Qn`, each with lettered options.
 - **Answer rounds.** Run `verify.py turn <run> "Q1: a, Q2: b"` with the answer a user would give, one turn per round. After each turn, `scratch-NN.txt` shows `CONTEXT.md` once a term has settled.
 - **Read-back.** When no question is left, the final message is a read-back asking whether understanding is shared. Run `verify.py turn <run> "yes"`.
-- **Proof.** The scratch repo has one commit staging, by name, `CONTEXT.md`, any ADR, and `.agents/issues/<slug>.md` with `Status: ready-for-agent` and the Spec's sections. The summary shows a `skills:validator` dispatch. `/retro` may add one more commit.
+- **Proof.** The scratch repo has one commit staging, by name, `CONTEXT.md`, any ADR, and `.agents/issues/<slug>.md` with `Status: ready-for-agent` and the Spec's sections. The summary shows a `skills:validator` dispatch, and no `/retro` run.
 - **No change.** In another run, answer the read-back with a plan that drops the work. No Spec is written; the final message says why.
 
 ## Gotchas

@@ -135,7 +135,7 @@ A rule you write down binds. When review finds a change that breaks one, an `/im
 
 A rule a script can check belongs in a **Pre-review check**: a line in your `AGENTS.md` or `CLAUDE.md` that starts `Pre-review check:` and names a command, with `<base>` for the branch the work started from, that exits non-zero when what the branch adds breaks a rule. An `/implement` run makes every Implementer pass it before the review, so a break it catches costs a few turns instead of another round.
 
-You seldom write rules from scratch. When you correct an agent's code and the mistake could happen again, `/retro` turns the lesson into a check or a rule for you.
+You seldom write rules from scratch. After a session where you corrected an agent's code and the mistake could happen again, type `/retro`: it turns the lesson into a check or a rule for you. No skill starts it on its own.
 
 ## Repository layout
 

@@ -193,12 +193,8 @@ A file this git repository contains in its working tree as its own file. Not a c
 _Avoid_: in-scope file, workspace file
 
 **Retrospective**:
-Suggestions for the agent's environment after a session. **High-priority** suggestions for **Owned files** are applied without asking, and a **Structural fix** is filed as an Issue; everything else appears only in the summary, including suggestions for files this repository does not own. A **Named session skill** starts one when it finishes; you can also type `/retro`.
+Suggestions for the agent's environment after a session. **High-priority** suggestions for **Owned files** are applied without asking, and a **Structural fix** is filed as an Issue; everything else appears only in the summary, including suggestions for files this repository does not own. You start one by typing `/retro`; no skill starts one.
 _Avoid_: postmortem, wrap-up, retro as a meeting
-
-**Named session skill**:
-A skill that starts a **Retrospective** when it finishes, unless another Named session skill started it. Most are typed by the user and cannot be loaded by the agent; `/hillclimb` also starts one when the agent loaded it.
-_Avoid_: host skill, wrapping skill, parent skill
 
 **Library skill**:
 A skill that neither a person nor the agent can start on its own: other skills read its `SKILL.md` from disk and follow it as one of their steps. It is missing from the slash menu, and its description is never in the agent's context. `/grilling`, `/domain-modeling`, `/technical-writing`, `/to-spec`, and `/validate-spec` are Library skills.

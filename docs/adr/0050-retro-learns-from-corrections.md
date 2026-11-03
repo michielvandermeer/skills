@@ -21,4 +21,4 @@ A Structural fix, and a check that needs new code such as a Roslyn analyzer rule
 - `/code-review` still reviews the product diff. `/retro` reads it only to find Corrections.
 - A repo with no Coding standards gets `.agents/refs/coding-standards.md`, the first time a Correction produces a rule.
 - `/retro` writes no rule for a one-off fact, and none when the Coding standards already hold one.
-- `/retro` writes to the Tracker. Under benchmark mode its filing is a `bench-log` line ([ADR-0066](0066-a-benchmark-run-writes-nothing-outside-its-checkout.md)).
+- `/retro` writes to the Tracker.

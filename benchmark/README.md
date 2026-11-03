@@ -35,7 +35,7 @@ It writes nothing outside the checkout, in layers:
 | Outward write | In the skill | Guard |
 |---|---|---|
 | Claim of the Issue (step 1, `gh issue edit --add-assignee`) | benchmark mode runs `bench-log` instead | `gh` shim refuses writes; `Bash(gh issue edit *)` denied |
-| Push (steps 5 and 6) | benchmark mode runs `bench-log` instead | `pre-push` hook, `pushurl` set to nothing, `Bash(git push *)` denied |
+| Push (step 5) | benchmark mode runs `bench-log` instead | `pre-push` hook, `pushurl` set to nothing, `Bash(git push *)` denied |
 | Comment, close, label, PR, release | no step does them | `gh` shim, tool deny rules |
 | Production Postgres and Stripe MCP servers (the target's `.mcp.json`) | no step uses them | `--strict-mcp-config` with an empty config |
 | Agents | none of `planner`, `implementer`, `reviewer`, `verifier` holds a write, so none is edited; the skill adds one line to every sub-agent prompt | the same guards |

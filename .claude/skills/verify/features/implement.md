@@ -30,7 +30,7 @@ Preconditions:
 - **Agents.** The summary lists `skills:planner` once, `skills:implementer` once per Step and once per later Iteration, and `skills:reviewer` (Standards only) and `skills:verifier` once per Iteration.
 - **Plan.** The land deletes the run's branch, so the plan shows in `transcripts/`: the Planner's reply is the index, it commits `plan: <slug>`, and each Step's Implementer appends `## Outcome` to its Step file and sets `Status: done`. A run with more than one Step lists each Step's title in the landing commit's body.
 - **Report.** The final message says how many Steps and Iterations the run took and that the push was skipped for having no remote.
-- **Proof.** In `scratch-01.txt`: `git log` shows one landing commit after the start, plus at most one `/retro` commit; the landing commit adds the code and test and closes `.agents/issues/<slug>.md`; status is clean; `git branch -a` shows only `main`; `git worktree list` shows only the scratch repo; no `.agents/runs/` or `.agents/worktrees/<slug>` folder remains. Run the Spec's test in the scratch repo and see it pass.
+- **Proof.** In `scratch-01.txt`: `git log` shows one landing commit after the start; the landing commit adds the code and test and closes `.agents/issues/<slug>.md`; status is clean; `git branch -a` shows only `main`; `git worktree list` shows only the scratch repo; no `.agents/runs/` or `.agents/worktrees/<slug>` folder remains. Run the Spec's test in the scratch repo and see it pass.
 - **Halt.** In another run, `git -C <scratch> checkout --detach` before the turn. The run halts, names the detached HEAD, and leaves no commit.
 
 ## Gotchas

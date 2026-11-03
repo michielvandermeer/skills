@@ -18,7 +18,7 @@ The run lands when one Iteration passes both Review and Verify. The Planner, the
 
 Every sub-agent closes leftover gaps from the documents it was handed and the code. See [ADR-0026](../../docs/adr/0026-implement-agents-close-leftover-gaps.md).
 
-No sub-agent pushes, publishes, or changes a live system; work that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and [the push](#the-push) of `<base>` once it has landed. Its `/retro` may also file an Issue or comment on one. The closing reference its landing commit carries is how the Tracker learns the work is done. Under [benchmark mode](#benchmark-mode) it reaches outside zero times. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
+No sub-agent pushes, publishes, or changes a live system; work that needs that **halts**. The run reaches outside the local checkout twice: the **claim** on its Issue, so concurrent runs skip that Issue, and [the push](#the-push) of `<base>` once it has landed. The closing reference its landing commit carries is how the Tracker learns the work is done. Under [benchmark mode](#benchmark-mode) it reaches outside zero times. See [ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md) and [ADR-0001](../../docs/adr/0001-each-repo-describes-its-tracker.md).
 
 ## Process
 
@@ -148,10 +148,6 @@ The final report says how many Steps the Planner made and how many Iterations th
 
 Run [the push](#the-push).
 
-### 6. Retrospective
-
-Read [`retro/SKILL.md`](../retro/SKILL.md) and follow it — `/retro` does not load as a skill — only when the run had a deviations line that was not `none`, a retried or halted agent, or a second Iteration; otherwise the final report says retro was skipped as nothing went wrong. When it committed and step 5's push went out, run [the push](#the-push) again.
-
 ## The landing commit
 
 The landing commit is the one commit the run leaves on `<base>`: the run's whole change, without the run folder ([ADR-0062](../../docs/adr/0062-an-implement-run-lands-as-one-commit.md)). Write its message before the Spec and the Step files are deleted:
@@ -161,20 +157,20 @@ The landing commit is the one commit the run leaves on `<base>`: the run's whole
 
 ## The push
 
-The push sends `<base>` from the original directory: in step 5, once the landing commit is on it, so the CI run it starts carries the landing commit's subject; and in step 6, when `/retro` committed ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip both when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
+The push sends `<base>` from the original directory in step 5, once the landing commit is on it, so the CI run it starts carries the landing commit's subject ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)). Skip it when the repo's `AGENTS.md` or `CLAUDE.md` says implement runs do not push, or when `git remote` lists nothing. Otherwise:
 
 - `<base>` tracks a remote branch: `git push <remote> <base>:<branch>`, with `<remote>` from `git config branch.<base>.remote` and `<branch>` from `git config branch.<base>.merge`.
 - `<base>` tracks nothing: `git push -u origin <base>`. A repo with no `origin` skips the push.
 
 The push sends `<base>` as it stands, commits the user had not pushed yet included. It is a plain push with hooks running — never `--force`, `--force-with-lease`, or `--no-verify`. A refused or failed push gets no retry and is not a halt: the run has landed, and nothing is left to resume.
 
-The run's last lines name the landing commit, then say what each push sent and to which remote branch. When it pushed nothing, they say why: the `AGENTS.md` or `CLAUDE.md` line, no remote, or no `origin`. When a push failed, they quote the error and name the commits that wait on this machine — the landing commit and `/retro`'s after a failed first push, `/retro`'s after a failed second — for the user to pull and push.
+The run's last lines name the landing commit, then say what the push sent and to which remote branch. When it pushed nothing, they say why: the `AGENTS.md` or `CLAUDE.md` line, no remote, or no `origin`. When the push failed, they quote the error and name the landing commit, which waits on this machine, for the user to pull and push.
 
 ## Benchmark mode
 
 The `benchmark/` runner measures what a run costs. It exports `SKILLS_BENCHMARK=1` and `SKILLS_BENCHMARK_LOG` and names `SKILLS_BENCHMARK=1` in the session's system prompt, so the mode is on when your system prompt says so and costs no call to find out. Without that line, skip this section ([ADR-0066](../../docs/adr/0066-a-benchmark-run-writes-nothing-outside-its-checkout.md)).
 
-In benchmark mode every outward write is a **no-op**: the claim in step 1, the push in steps 5 and 6, and `/retro`'s Issue filing or comment in step 6 each run `bench-log "<step>: <the command it would have run>"` instead, and the run goes on as though that write succeeded. Tracker reads stay. Every sub-agent prompt gets one more line: this is a benchmark run, so a `gh` write or a `git push` is a `bench-log` line. The final report says each push was a no-op.
+In benchmark mode every outward write is a **no-op**: the claim in step 1 and the push in step 5 each run `bench-log "<step>: <the command it would have run>"` instead, and the run goes on as though that write succeeded. Tracker reads stay. Every sub-agent prompt gets one more line: this is a benchmark run, so a `gh` write or a `git push` is a `bench-log` line. The final report says the push was a no-op.
 
 ## Worktree waived
 
