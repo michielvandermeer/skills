@@ -39,6 +39,7 @@ On top of whatever the repo documents, the Standards axis always carries the **d
 
 - **The repo overrides.** A documented repo standard always wins; where it endorses something a principle would flag, suppress the finding.
 - **A judgement call unless it names a defect.** Each principle is a labelled heuristic ("possible Boundary discipline breach"). Its finding is a hard violation only when it names a wrong result, a crash, or lost data — and, like any standard here, skip anything tooling already enforces.
+- **A rule carries its weight.** A rule in a repo standard that starts with `[judgement]` is a judgement call when the diff breaks it. A rule that starts with `[hard]`, or with no marker, is a hard violation when the diff breaks it. A break that names a defect is a hard violation whatever the marker says ([ADR-0079](../../docs/adr/0079-a-coding-standards-rule-is-hard-unless-marked-judgement.md)).
 
 ### 4. Spawn the reviewers
 
@@ -53,7 +54,7 @@ Both briefs end with the same instruction, `<tw>` being the absolute path of [`t
 - The Spec's path from step 2, when a Spec was found, with the instruction to read its Implementation Decisions section (`grep -n '^## '` finds it) before judging. A Judgement call that a decision there explicitly settles is dropped from the report. A Hard violation that a decision there explicitly mandates is reported as a Judgement call that names the decision.
 - Findings the caller says were declined before, each with its reason, when the caller hands any: raise one again only when its reason does not hold, and say why.
 - Findings the caller hands to check, when it hands any, as `/implement` does from its second Iteration: judge each as fixed or declined, and judge the fix itself against the standards.
-- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any place the diff goes against a design principle: name the principle and quote the hunk. Open each finding with `Hard violation:` or `Judgement call:`. A hard violation breaks a rule a documented standard states, or names a defect — a wrong result, a crash, or lost data — whichever principle or rule it falls under. Every other finding is a judgement call, and a documented repo standard overrides a principle. Skip anything tooling enforces. Under 400 words."
+- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any place the diff goes against a design principle: name the principle and quote the hunk. Open each finding with `Hard violation:` or `Judgement call:`. A hard violation breaks a rule a documented standard states, unless the rule starts with `[judgement]`, or names a defect — a wrong result, a crash, or lost data — whichever principle or rule it falls under. Every other finding, a break of a `[judgement]` rule included, is a judgement call, and a documented repo standard overrides a principle. Skip anything tooling enforces. Under 400 words."
 
 **Spec sub-agent prompt** — include:
 

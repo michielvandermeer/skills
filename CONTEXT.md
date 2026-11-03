@@ -103,7 +103,7 @@ The folder that stands where a context's name would in a work document's path, i
 _Avoid_: shared, global, cross-app
 
 **Coding standards**:
-A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say. Distinct from the **Design principles**, which apply even when a repo documents nothing.
+A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say. A rule starts with `[judgement]` or `[hard]` to say how heavily a break counts; an unmarked rule is hard ([ADR-0079](docs/adr/0079-a-coding-standards-rule-is-hard-unless-marked-judgement.md)). Distinct from the **Design principles**, which apply even when a repo documents nothing.
 _Avoid_: style guide, conventions, coding-standards.md
 
 **Pre-review check**:
@@ -259,11 +259,11 @@ The fixed set of judgement calls in `skills/code-review/PRINCIPLES.md` — bound
 _Avoid_: smell baseline, best practices
 
 **Hard violation**:
-A Standards finding that breaks a rule the repo's **Coding standards** write down, or a **Judgement call** that names a defect: a wrong result, a crash, or lost data. A finding that a decision in the Spec's Implementation Decisions explicitly mandates is a **Judgement call** instead. In an implement run, a Hard violation is the only Review finding that sends the run into another **Iteration**.
+A Standards finding that breaks a rule the repo's **Coding standards** write down and do not mark `[judgement]`, or a **Judgement call** that names a defect: a wrong result, a crash, or lost data. A finding that a decision in the Spec's Implementation Decisions explicitly mandates is a **Judgement call** instead. In an implement run, a Hard violation is the only Review finding that sends the run into another **Iteration**.
 _Avoid_: blocker, must-fix, error
 
 **Judgement call**:
-A Standards finding that is not a **Hard violation**: every **Design principles** finding that names no defect, and a Coding standards finding the standard itself leaves to judgement. In an implement run it never starts an **Iteration** of its own. It goes to the next Implementer when another Iteration runs anyway, and otherwise into the final report unfixed.
+A Standards finding that is not a **Hard violation**: every **Design principles** finding that names no defect, and a break of a Coding standards rule that starts with `[judgement]`. In an implement run it never starts an **Iteration** of its own. It goes to the next Implementer when another Iteration runs anyway, and otherwise into the final report unfixed.
 _Avoid_: nit, suggestion, soft finding, consider
 
 **Planning principles**:
