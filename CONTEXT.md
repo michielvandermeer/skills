@@ -239,7 +239,7 @@ The sub-agent (`skills:implementer`) that does the Implement part of an **Iterat
 _Avoid_: Step agent, coder, worker
 
 **Verifier**:
-The sub-agent (`skills:verifier`) that does the Verify part of an **Iteration**: it reads the Spec against the diff, builds and runs the whole test suite, and runs the Spec's **Hand checks**, driving the app through the **Verify skill** when the change alters a running surface. It changes no code, and corrects the Verify skill only where the skill steered it wrong. It reports `passed`, or the findings that send the run back to Implement. The land dispatches a fresh one when a rebase brought in code the last one did not check.
+The sub-agent (`skills:verifier`) that does the Verify part of an **Iteration**: it reads the Spec against the diff, builds and runs the whole test suite, and runs the Spec's **Hand checks**, driving the app through the **Verify skill** when the change alters a running surface. It changes no code, and corrects the Verify skill only where the skill steered it wrong. It reports `passed`, or the findings that send the run back to Implement. The land dispatches a fresh one when a rebase brought in code the last one did not check; that one still builds and runs the whole suite, but runs only the Hand checks whose journey reads a path the rebase brought in.
 _Avoid_: Checker, Prover, tester, QA agent
 
 **Climber**:
