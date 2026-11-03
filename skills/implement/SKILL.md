@@ -50,6 +50,8 @@ The session must work *inside* the run worktree for the rest of the run — crea
 
 Before leaving this step, when `.agents/runs/<slug>/spec.md` is missing, write **the Spec** to it — the Issue's title as an H1 and its body, or the description as the argument gave it — and nothing else, then commit it as `spec: <slug>`. The commit keeps it through a resume's reset. From here on every sub-agent reads that copy, and a resume reads it rather than the Issue.
 
+`<precheck>` is the repo's **Pre-review check**: the command on the line that starts `Pre-review check:` in `AGENTS.md` or `CLAUDE.md`, with `<base>` filled in. Without that line there is none, and every step below that names it skips it.
+
 `<scratch>` is `.agents/runs/<slug>/scratch/`, by absolute path: the Verifier's throwaway scripts, screenshots, and transcripts. Create it when it is missing, with a `.gitignore` inside that holds `*`, so no commit sweeps it in. The land deletes it with the run folder; a halt leaves it.
 
 ### 2. Plan the Steps
@@ -77,10 +79,11 @@ Hold `git rev-parse HEAD` as `<start>` before the Iteration's first dispatch. Fo
 - the design principles, [PRINCIPLES.md](../code-review/PRINCIPLES.md) in the `code-review` skill's directory by absolute path, built from the folder the host loaded this skill from and confirmed with `ls` before the dispatch — the Review judges the diff by them and by the Coding standards
 - the Spec's Testing Decisions section, when it has one, which governs what it tests, and the testing documents it names
 - from Iteration 2 on: every Hard violation and Verify finding the last Iteration reported, and every Judgement call held, verbatim; and every finding an earlier Iteration declined, with its reason
+- `<precheck>`, when the repo names one
 - the deviations reported so far, verbatim, when there are any
 - its Iteration number and the limit of three, on Iteration 1 its Step number and the total, and the report format below
 
-Require of it: **its build and the tests closest to its change passing before it finishes**, and its work committed. The whole suite is the Verifier's to run. On Iteration 1, it builds every project on its Footprint's `Projects:` line, appends a short `## Outcome` to its Step file (what it built, where the code differed from the Footprint, and what a later Step needs to know), sets that file's `Status:` to `done`, and commits the file with its code. From Iteration 2 on, it fixes every Verify finding, and fixes each Review finding or declines it on its `declined:` line with the reason. A Review finding that contradicts the Spec is declined: the Spec wins.
+Require of it: **its build, the tests closest to its change, and `<precheck>` passing before it finishes**, and its work committed. The whole suite is the Verifier's to run. On Iteration 1, it builds every project on its Footprint's `Projects:` line, appends a short `## Outcome` to its Step file (what it built, where the code differed from the Footprint, and what a later Step needs to know), sets that file's `Status:` to `done`, and commits the file with its code. From Iteration 2 on, it fixes every Verify finding, and fixes each Review finding or declines it on its `declined:` line with the reason. A Review finding that contradicts the Spec is declined: the Spec wins.
 
 Its entire response is four lines:
 
@@ -91,7 +94,7 @@ declined: <each Review finding left as it is, with why — or "none">
 deviations: <what contradicts the Spec or changes a later Step, or "none">
 ```
 
-Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and `git status` is clean, or every finding it was handed is on its `declined:` line and HEAD has not moved. On Iteration 1, `grep '^Status:'` on its Step file also reads `done`. That is the whole check; read the diff only when it fails. Tell the user `Step <NN>/<total> — <title>: done` after each Step passes it.
+Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and `git status` is clean, or every finding it was handed is on its `declined:` line and HEAD has not moved. On Iteration 1, `grep '^Status:'` on its Step file also reads `done`. Then run `<precheck>` from the run worktree, with its output bounded to the findings; it passes when it exits 0. That is the whole check; read the diff only when it fails. A `<precheck>` that still lists findings after the retry is no halt: the run goes on to Review, and the Review prompt carries those findings ([ADR-0078](../../docs/adr/0078-an-implement-run-runs-the-pre-review-check-before-review.md)). Tell the user `Step <NN>/<total> — <title>: done` after each Step passes it.
 
 #### Review
 
@@ -100,6 +103,7 @@ Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and
 - the Spec's path, `.agents/runs/<slug>/spec.md`
 - that `.agents/runs/<slug>/` is run bookkeeping, not code under review
 - that only agents read its report
+- any `<precheck>` findings the last Implementer left, verbatim, to judge as Hard violations or not
 - every finding declined so far with its reason: a declined finding is raised again only when the reason does not hold, and the report says why
 - from Iteration 2 on, every finding the last Implementer was handed, to judge as fixed or declined, with the fix itself judged against the standards
 

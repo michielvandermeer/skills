@@ -106,6 +106,10 @@ _Avoid_: shared, global, cross-app
 A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say. Distinct from the **Design principles**, which apply even when a repo documents nothing.
 _Avoid_: style guide, conventions, coding-standards.md
 
+**Pre-review check**:
+A command a repo's `AGENTS.md` or `CLAUDE.md` names on a line that starts `Pre-review check:`, with `<base>` standing for the base branch. It lists the **Coding standards** breaks it can find in what the branch adds, and exits non-zero when it lists any. It holds the mechanical rules a **Hard violation** most often cites, so an **Implementer** fixes them in a few turns instead of an **Iteration**. A repo without the line has none, and the run goes straight to Review.
+_Avoid_: lint, precheck, pre-commit check
+
 ### Communication
 
 **Writing bar**:
