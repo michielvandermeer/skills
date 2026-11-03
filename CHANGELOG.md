@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-03: Retro runs only when you type it
+`/implement`, `/triage`, `/grill-with-docs`, `/wayfinder`, `/brainstorm`, `/doctor`, and `/hillclimb` no longer run `/retro` when they finish, so an `/implement` run also makes one push instead of two. Type `/retro` yourself when you want it. Before, it judged one session at a time, which turned one-off fixes into rules and missed context that later sessions supply.
+
+## 2026-11-03: Mark a rule as judgement
+Start a rule in your Coding standards with `[judgement]` and breaking it is reported as a Judgement call, so an `/implement` run no longer goes back for another round over it. A rule with no marker, or one that starts with `[hard]`, still counts as a Hard violation, and so does any break that causes a wrong result, a crash, or lost data. Before, every rule you wrote down sent the run back when broken, even ones you meant as advice.
+
 ## 2026-11-03: Cheaper re-Verify at land
 When another run lands on your base branch while an `/implement` run works, the Verify after the land rebase now builds and runs the whole suite, but runs a Hand check only when the files the base gained are ones its journey reads. Before, that second Verify re-ran every Hand check, browser journeys included, even when the new commits touched no screen, which cost about $100 per two weeks in one repo.
 
