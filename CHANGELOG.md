@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-03: Pre-review check before review
+An `/implement` run now runs your repo's Pre-review check, a command named on a `Pre-review check:` line in `AGENTS.md` or `CLAUDE.md`, after every Implementer and before the review, and the Implementer must leave it passing. Before, a rule break a script could have caught went to the review, which sent the whole run back for another round of fixes.
+
 ## 2026-11-02: Wayfinder ends on a ticket table
 Every `/wayfinder` session now ends with a table of the map's tickets, with each ticket's reference, title, and status: resolved, ruled out, claimed, blocked, or available. Before, a session showed only the ticket it worked, so you had to open the Tracker to see where the whole effort stood and which ticket to run next.
 
