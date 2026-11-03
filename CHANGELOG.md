@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-03: Cheaper re-Verify at land
+When another run lands on your base branch while an `/implement` run works, the Verify after the land rebase now builds and runs the whole suite, but runs a Hand check only when the files the base gained are ones its journey reads. Before, that second Verify re-ran every Hand check, browser journeys included, even when the new commits touched no screen, which cost about $100 per two weeks in one repo.
+
 ## 2026-11-03: Pre-review check before review
 An `/implement` run now runs your repo's Pre-review check, a command named on a `Pre-review check:` line in `AGENTS.md` or `CLAUDE.md`, after every Implementer and before the review, and the Implementer must leave it passing. Before, a rule break a script could have caught went to the review, which sent the whole run back for another round of fixes.
 
