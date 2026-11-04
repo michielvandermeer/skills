@@ -10,8 +10,8 @@ You are the **driving session**: you orchestrate, sub-agents plan, implement, re
 
 A **Planner** first slices the Spec into **Steps**, each small enough for one fresh agent; most Specs are one Step. Then the run is a loop over the whole Spec, at most three **Iterations** ([ADR-0072](../../docs/adr/0072-implement-plans-steps-then-loops-implement-review-verify.md)):
 
-1. **Implement** — on Iteration 1, a fresh `skills:implementer` builds each Step in order; on a later one, a single fresh Implementer fixes what the last Iteration found.
-2. **Review** — `/code-review` judges the diff on its Standards axis: the repo's Coding standards and the design principles. A **Hard violation** sends the run back to 1; a **Judgement call** waits for the next Implementer, or the final report. From Iteration 2 on, Review reads only that Iteration's fix.
+1. **Implement** — on a **building Iteration**, a fresh `skills:implementer` builds each Step in order; on a **fixing Iteration**, a single fresh Implementer fixes the findings it starts from. Iteration 1 builds and every later one fixes, except that a resume from a [Halt record](#halting) makes Iteration 1 a fixing one too.
+2. **Review** — `/code-review` judges the diff on its Standards axis: the repo's Coding standards and the design principles. A **Hard violation** sends the run back to 1; a **Judgement call** waits for the next Implementer, or the final report. On a fixing Iteration, Review reads only the fix.
 3. **Verify** — a fresh `skills:verifier` checks the change does what the Spec asks: the Spec read against the diff, the build and the whole test suite, and the Spec's Hand checks. A finding sends the run back to 1.
 
 The run lands when one Iteration passes both Review and Verify. The Planner, the Implementer, and the Verifier are pinned in their agent files (`agents/planner.md`, `agents/implementer.md`, `agents/verifier.md` at the plugin root) to Sonnet at high effort, because the Spec was decided before they started; the Reviewer `/code-review` starts is pinned to Opus at high ([ADR-0049](../../docs/adr/0049-agents-are-pinned-in-their-agent-files.md)).
@@ -41,7 +41,7 @@ Find worktrees with `git worktree list` (or the host's equivalent). The **run wo
 - **In flight** → a run worktree whose lock names a live process is another session's run: stop and say so. Otherwise:
   - Put the session's working directory on the run worktree's path. When the branch exists without a worktree, `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>` first (ensure `.agents/worktrees/` is ignored; prefer a local ignore when the repo uses one).
   - `git reset --hard && git clean -fd` drops whatever a halted sub-agent left behind. If the host refuses the reset, `git stash push -u` and name the stash in the final report.
-  - When `.agents/runs/<slug>/` holds Step files (`[0-9][0-9]-*.md`), the Steps are already planned: skip step 2 and resume Iteration 1 of step 3 at the lowest-numbered Step whose `Status:` is not `done`, or at its Review when every Step reads `done`. With no Step files, continue at step 2. The branch's commits are the work so far; the Implementer builds on them.
+  - When `.agents/runs/<slug>/` holds Step files (`[0-9][0-9]-*.md`), the Steps are already planned: skip step 2 and resume Iteration 1 of step 3. With a Halt record at `.agents/runs/<slug>/halt.md`, read it and hold what it lists as the last Iteration's report, the Judgement calls held, the declines, and the deviations so far; tell the user `Resuming from the Halt record: <count> findings`; and start a fixing Iteration at its Implement. Without one, start a building Iteration at the lowest-numbered Step whose `Status:` is not `done`, or at its Review when every Step reads `done`. With no Step files, continue at step 2. The branch's commits are the work so far; the Implementer builds on them.
 - **Fresh** → open a worktree for this run, put the session's working directory inside it, then `git reset --hard <base>` so the run starts from the `<base>` you actually have — the new branch has no commits of its own yet:
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
   - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
@@ -70,21 +70,22 @@ Run Iterations, numbered from 1, until one passes both Review and Verify. Each I
 
 #### Implement
 
-On Iteration 1, run each Step in `NN` order, skipping a Step whose `Status:` already reads `done`; its Implement is done when every Step file, `.agents/runs/<slug>/[0-9][0-9]-*.md`, reads `Status: done`. On a later Iteration, run one Implementer for the findings, with no Step file.
+On a building Iteration, run each Step in `NN` order, skipping a Step whose `Status:` already reads `done`; its Implement is done when every Step file, `.agents/runs/<slug>/[0-9][0-9]-*.md`, reads `Status: done`. On a fixing Iteration, run one Implementer for the findings, with no Step file.
 
-Hold `git rev-parse HEAD` as `<start>` before the Iteration's first dispatch. For each dispatch, hold `git rev-parse HEAD` as `<before>`, then dispatch a fresh `skills:implementer` with a prompt of paths and section names — it reads what is behind them:
+Hold `git rev-parse HEAD` as `<start>` before the Iteration's first dispatch. On a resume from a Halt record, `<start>` is instead the commit that last wrote it, `git log -1 --format=%H -- .agents/runs/<slug>/halt.md`, so Review also reads what was committed after the halt. For each dispatch, hold `git rev-parse HEAD` as `<before>`, then dispatch a fresh `skills:implementer` with a prompt of paths and section names — it reads what is behind them:
 
 - the Spec, and `<base>`, the branch its tests are measured against
-- on Iteration 1: its own Step file, and an instruction to read the `## Outcome` of every lower-numbered Step file before starting
+- on a building Iteration: its own Step file, and an instruction to read the `## Outcome` of every lower-numbered Step file before starting
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
 - `<standards>`, for code beyond its Step file's `## Coding standards` section
 - the Spec's Testing Decisions section, when it has one, which governs what it tests, and the testing documents it names
-- from Iteration 2 on: every Hard violation and Verify finding the last Iteration reported, and every Judgement call held, verbatim; and every finding an earlier Iteration declined, with its reason
+- on a fixing Iteration: every Hard violation and Verify finding the last Iteration reported, and every Judgement call held, verbatim; and every finding an earlier Iteration declined, with its reason
+- on a resume from a Halt record: that commits after `<start>` are progress, and a finding they already answer goes on its `declined:` line, naming the commit
 - `<precheck>`, when the repo names one
 - the deviations reported so far, verbatim, when there are any
-- its Iteration number and the limit of three, on Iteration 1 its Step number and the total, and the report format below
+- its Iteration number and the limit of three, on a building Iteration its Step number and the total, and the report format below
 
-Require of it: **its build, the tests closest to its change, and `<precheck>` passing before it finishes**, and its work committed. The whole suite is the Verifier's to run. On Iteration 1, it builds every project on its Footprint's `Projects:` line, appends a short `## Outcome` to its Step file (what it built, where the code differed from the Footprint, and what a later Step needs to know), sets that file's `Status:` to `done`, and commits the file with its code. From Iteration 2 on, it fixes every Verify finding, and fixes each Review finding or declines it on its `declined:` line with the reason. A Review finding that contradicts the Spec is declined: the Spec wins.
+Require of it: **its build, the tests closest to its change, and `<precheck>` passing before it finishes**, and its work committed. The whole suite is the Verifier's to run. On a building Iteration, it builds every project on its Footprint's `Projects:` line, appends a short `## Outcome` to its Step file (what it built, where the code differed from the Footprint, and what a later Step needs to know), sets that file's `Status:` to `done`, and commits the file with its code. On a fixing Iteration, it fixes every Verify finding, and fixes each Review finding or declines it on its `declined:` line with the reason. A Review finding that contradicts the Spec is declined: the Spec wins.
 
 Its entire response is four lines:
 
@@ -95,18 +96,18 @@ declined: <each Review finding left as it is, with why — or "none">
 deviations: <what contradicts the Spec or changes a later Step, or "none">
 ```
 
-Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and `git status` is clean, or every finding it was handed is on its `declined:` line and HEAD has not moved. On Iteration 1, `grep '^Status:'` on its Step file also reads `done`. Then run `<precheck>` from the run worktree, with its output bounded to the findings; it passes when it exits 0. That is the whole check; read the diff only when it fails. A `<precheck>` that still lists findings after the retry is no halt: the run goes on to Review, and the Review prompt carries those findings ([ADR-0078](../../docs/adr/0078-an-implement-run-runs-the-pre-review-check-before-review.md)). Tell the user `Step <NN>/<total> — <title>: done` after each Step passes it.
+Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and `git status` is clean, or every finding it was handed is on its `declined:` line and HEAD has not moved. On a building Iteration, `grep '^Status:'` on its Step file also reads `done`. Then run `<precheck>` from the run worktree, with its output bounded to the findings; it passes when it exits 0. That is the whole check; read the diff only when it fails. A `<precheck>` that still lists findings after the retry is no halt: the run goes on to Review, and the Review prompt carries those findings ([ADR-0078](../../docs/adr/0078-an-implement-run-runs-the-pre-review-check-before-review.md)). Tell the user `Step <NN>/<total> — <title>: done` after each Step passes it.
 
 #### Review
 
-**Run `/code-review` yourself** on the Standards axis alone. The fixed point is `<base>` on Iteration 1, so the first Review reads the whole change. From Iteration 2 on it is `<start>`, so a later Review reads only that Iteration's fix; when HEAD has not moved from `<start>` because every finding was declined, it is `<base>` again, and the Review judges the declines alone. Tell it:
+**Run `/code-review` yourself** on the Standards axis alone. The fixed point is `<base>` on a building Iteration, so the first Review reads the whole change. On a fixing Iteration it is `<start>`, so the Review reads only the fix; when HEAD has not moved from `<start>` because every finding was declined, it is `<base>` again, and the Review judges the declines alone. Tell it:
 
 - the Spec's path, `.agents/runs/<slug>/spec.md`
 - that `.agents/runs/<slug>/` is run bookkeeping, not code under review
 - that only agents read its report
 - any `<precheck>` findings the last Implementer left, verbatim, to judge as Hard violations or not
 - every finding declined so far with its reason: a declined finding is raised again only when the reason does not hold, and the report says why
-- from Iteration 2 on, every finding the last Implementer was handed, to judge as fixed or declined, with the fix itself judged against the standards
+- on a fixing Iteration, every finding the last Implementer was handed, to judge as fixed or declined, with the fix itself judged against the standards
 
 Hold the Standards report; weigh it on the report alone. `/code-review` opens each finding with `Hard violation:` or `Judgement call:`. Hold its Judgement calls with any held from earlier Iterations until the next Implementer is handed them.
 
@@ -184,5 +185,7 @@ The worktree, the review diff, the land, and the push cover this repository only
 ## Halting
 
 A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, and the run worktree exactly as they are — the work is committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: that the Planner failed and why; or the Iteration, the part — Implement, Review, or Verify — with the Step's number and title on Iteration 1's Implement, and why it did not finish. Quote a test or environment failure, and the findings an Iteration 3 left. For a result that was not the report, say the agent did not finish.
+
+A halt with findings — an Iteration 3 that ended on a Hard violation or a Verify finding, or the failed Verify after the land's rebase — first writes the **Halt record**, the one commit a halt makes. Write `.agents/runs/<slug>/halt.md`, replacing any earlier one, with four lists, all verbatim: the Hard violations and Verify findings that ended the run, the Judgement calls held, every finding declined with its reason, and the deviations so far. Commit that file alone as `halt: <slug>`. The halt report then says the Halt record holds the findings and that running `/implement` again hands them to an Implementer.
 
 Re-invoking `/implement` with the same argument picks the run back up where step 1 says, with three Iterations again: at the Planner when no Step file exists, otherwise in Iteration 1.

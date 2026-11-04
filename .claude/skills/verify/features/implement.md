@@ -10,6 +10,7 @@
 - `implement-loop` reports a `Step <NN>/<total> — <title>: done` line per Step, then `Iteration <N>/3 — review:` lines (`passed`, or the count of hard violations and judgement calls) and `— verify:` lines, and the final report says how many Steps and Iterations the run took and lists the judgement calls that land unfixed.
 - `implement-cleanup` deletes `.agents/runs/<slug>/`, the worktree, and branch `<slug>` once it has landed.
 - `implement-halt` halts on a detached HEAD or an open blocker and leaves everything in place for a resume.
+- `implement-resume` resumes from a Halt record at `.agents/runs/<slug>/halt.md`: one Implementer fixes its findings, Review reads only what came after it, and Verify runs in full.
 - `implement-no-push` skips the push when `git remote` lists nothing.
 
 ## How to get to it (user POV)
@@ -32,6 +33,7 @@ Preconditions:
 - **Report.** The final message says how many Steps and Iterations the run took and that the push was skipped for having no remote.
 - **Proof.** In `scratch-01.txt`: `git log` shows one landing commit after the start; the landing commit adds the code and test and closes `.agents/issues/<slug>.md`; status is clean; `git branch -a` shows only `main`; `git worktree list` shows only the scratch repo; no `.agents/runs/` or `.agents/worktrees/<slug>` folder remains. Run the Spec's test in the scratch repo and see it pass.
 - **Halt.** In another run, `git -C <scratch> checkout --detach` before the turn. The run halts, names the detached HEAD, and leaves no commit.
+- **Resume.** In another run, hand-build branch `<slug>` before the turn: `spec.md` and a `Status: done` Step file under `.agents/runs/<slug>/`, code that misses one Spec requirement, and a `halt.md` commit (`halt: <slug>`) naming that miss as a Verify finding. Run the same turn. The run prints a `Resuming from the Halt record:` line, dispatches no `skills:planner`, sends one `skills:implementer` that names the finding, passes a `Standards` Review of the fix alone, then a `skills:verifier`, and lands.
 
 ## Gotchas
 

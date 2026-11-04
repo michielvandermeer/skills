@@ -24,6 +24,11 @@ Review judges how the code is written; Verify judges whether it does what was as
 - **A Hard violation raised whatever the Spec says.** Tried, then reversed. In two `mvdmio-suite` runs the Review raised the flagged code again after the Implementer declined it for a Spec decision, as [ADR-0026](0026-implement-agents-close-leftover-gaps.md) tells it to: one run spent an extra Iteration, and the other stopped to ask a person.
 - **Every Review reads the whole diff.** Rejected: a fresh reviewer on the whole change raises new judgement calls each time, and the cost of the Review grows with the change rather than with the fix.
 - **One Implementer fixes the Judgement calls before Verify, with no Review after.** Rejected: it adds an Implementer to most runs, and a fix that rides an Iteration the run needs anyway costs nothing extra.
+- **Resume from a Halt record as Iteration 2.** Rejected: it needs no exceptions to Iteration 1, but it gives that resume one Iteration fewer than any other, and a resume is a fresh run with more to start from.
+- **Resume only after a halt on Verify findings.** Rejected: a Hard violation halt pays for the same whole-diff Review before its known findings reach an Implementer, and the skill would need a rule to tell the two apart.
+- **Resume by running Verify alone to find the findings again.** Rejected: it still pays for a full Verify, it cannot recover a Hard violation, and it loses the Judgement calls and declines.
+- **Resume by asking the user to paste the halt report.** Rejected: the user has to keep the report, and it holds no declines.
+- **Ignore the Halt record once anyone commits after it.** Rejected: a person who fixes one finding by hand would pay for the whole-diff Review again and lose the Judgement calls and declines.
 - **No limit on Iterations.** Rejected: a Review finding the Implementer keeps declining, or a test it cannot fix, would loop forever. Three leaves room for a fix and a fix of the fix.
 
 ## Consequences
@@ -36,7 +41,9 @@ Review judges how the code is written; Verify judges whether it does what was as
 - Judgement calls alone never halt a run.
 - The whole test suite runs once per Iteration that reaches Verify, in the Verifier. Each Implementer builds the projects on its Footprint and runs only the tests closest to its change.
 - A rebase at land that brings in code the last Verify did not check sends the run through one more Verify, and a failure there starts the next Iteration.
-- A resume starts again at Iteration 1, with three Iterations, on top of the branch's commits.
+- A resume starts again at Iteration 1, with three Iterations, on top of the branch's commits. It is a fresh run from a further-along point.
+- A halt with findings commits a **Halt record** to the run folder: the third Iteration's Hard violations or Verify findings, or those of the Verify after the land's rebase, with the Judgement calls held, the declines, and the deviations. Nothing else outlives the halted session. A resume from it makes Iteration 1 a fixing Iteration: one Implementer fixes the findings, Review reads everything since that commit, and Verify runs in full. A resumed Hard violation halt gets no fresh Review of the whole change, because the run's first Review read it.
+- Commits made after the Halt record count as progress. Review reads them, and the Implementer declines a finding they already answer, so a stale Halt record needs no check of its own.
 - The landing commit's body lists each Step's title when the run had more than one ([ADR-0062](0062-an-implement-run-lands-as-one-commit.md)).
 - A Spec that holds several changes is still a Spec to split, because the run lands it as one ([ADR-0073](0073-a-spec-is-held-to-the-planning-principles.md)).
 - Merge risk is no longer recorded during the run. `/pr` works it out from the diff when it writes a description.
