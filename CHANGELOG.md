@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-04: Resume starts from the findings
+When an `/implement` run halts on findings from its third Iteration, running `/implement` again now hands those findings straight to an Implementer, then reviews only the fix and runs Verify in full. Any commit you make after the halt counts as progress, so a finding you fixed by hand needs no second fix. Before, a resume started with a Review of the whole diff and a Verify to find what the halt had already reported, which cost about 13 minutes in one run.
+
 ## 2026-11-04: Retro reads many sessions
 `/retro` now reads a window of past sessions, the last 100 in the repo unless you name your own, such as `/retro past week`, and it works best in a clean session. It writes a rule or check, or files an Issue, only for a lesson at least three sessions show, and it stops if the window holds fewer than three. Before, it judged one session alone, so one-off fixes became rules, and `/retro <session>` no longer works.
 
