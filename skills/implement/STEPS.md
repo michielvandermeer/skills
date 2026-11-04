@@ -22,7 +22,7 @@ Before writing a Step, find what the repo says about who writes its Changelog: `
 
 ## How many Steps
 
-One Step is the default. A Spec one fresh Implementer can read and build in one session is one Step, and most Specs are. Slice further only where one session would not hold the work: more files than it can read and change, or parts that each need their own long walk. Every extra Step costs a fresh Implementer its orientation, so a Step too small to need its own session is merged into its neighbour.
+One Step is the default. A Spec one fresh Implementer can read and build in one session is one Step. Slice further only where one session would not hold the work: more files than it can read and change, or parts that each need their own long walk. Every extra Step costs a fresh Implementer its orientation, so a Step too small to need its own session is merged into its neighbour.
 
 ## Tracer bullets
 

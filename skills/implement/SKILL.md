@@ -8,7 +8,7 @@ effort: high
 
 You are the **driving session**: you orchestrate, sub-agents plan, implement, review, and verify. You hold the Step index, each sub-agent's short report, the findings that go back to the next Iteration, and any deviations — that is the whole of your context, and it is what lets a Spec of any size land inside one session. So you hand paths, and the sub-agent that needs a document reads it. While a sub-agent runs, waiting is the work.
 
-A **Planner** first slices the Spec into **Steps**, each small enough for one fresh agent; most Specs are one Step. Then the run is a loop over the whole Spec, at most three **Iterations** ([ADR-0072](../../docs/adr/0072-implement-plans-steps-then-loops-implement-review-verify.md)):
+A **Planner** first slices the Spec into **Steps**, each small enough for one fresh agent; about half of Specs are one Step. Then the run is a loop over the whole Spec, at most three **Iterations** ([ADR-0072](../../docs/adr/0072-implement-plans-steps-then-loops-implement-review-verify.md)):
 
 1. **Implement** — on a **building Iteration**, a fresh `skills:implementer` builds each Step in order; on a **fixing Iteration**, a single fresh Implementer fixes the findings it starts from. Iteration 1 builds and every later one fixes, except that a resume from a [Halt record](#halting) makes Iteration 1 a fixing one too.
 2. **Review** — `/code-review` judges the diff on its Standards axis: the repo's Coding standards and the design principles. A **Hard violation** sends the run back to 1; a **Judgement call** waits for the next Implementer, or the final report. On a fixing Iteration, Review reads only the fix.

@@ -227,7 +227,7 @@ The sub-agent (`skills:planner`) that starts an implement run: it walks the code
 _Avoid_: slicer, architect
 
 **Step**:
-One slice of a Spec that a single fresh **Implementer** builds on an implement run's first **Iteration**, recorded as a file under `.agents/runs/<slug>/` with what to build, a **Footprint**, the **Coding standards** rules and **Design principles** that apply to it copied word for word, acceptance criteria, and, once built, an Outcome. Steps run in number order, and each reads the Outcomes of the Steps before it. Most Specs are one Step. Review and Verify judge all Steps together, never one alone.
+One slice of a Spec that a single fresh **Implementer** builds on an implement run's first **Iteration**, recorded as a file under `.agents/runs/<slug>/` with what to build, a **Footprint**, the **Coding standards** rules and **Design principles** that apply to it copied word for word, acceptance criteria, and, once built, an Outcome. Steps run in number order, and each reads the Outcomes of the Steps before it. About half of Specs are one Step. Review and Verify judge all Steps together, never one alone.
 _Avoid_: task, ticket, phase, slice
 
 **Footprint**:
