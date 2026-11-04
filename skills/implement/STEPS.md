@@ -6,7 +6,7 @@ You are the **Planner** for an `/implement` run. Read the Spec you were handed, 
 
 The walk is done when every Step's Footprint can be filled. Stop there even when more searching would find more context. A Spec that spans many files still gets a walk long enough to name them.
 
-Open a file only when it might belong on a Footprint, or to settle a slice or ordering the Spec left to the code. Documents the host already placed in this context stay already-read. This document is the template for Step files; Step files from other runs are not.
+Open a file only when it might belong on a Footprint, to settle a slice or ordering the Spec left to the code, or to copy [the rules a Step carries](#the-rules-a-step-carries). Documents the host already placed in this context stay already-read. This document is the template for Step files; Step files from other runs are not.
 
 Where the Spec is silent on behaviour a Step must have, write one reading into that Step's `## What to build` and acceptance criteria so every later Implementer shares it, from the walk already done. Fill only silence: what the Spec already named stays as it is, and what its Out of Scope refuses stays out.
 
@@ -67,6 +67,18 @@ Projects: <the projects that must be green when this Step finishes>
 - `path/to/file` — `SymbolName`, `OtherSymbol`
 - `path/to/other/file` — <what lives here that this Step touches>
 
+## Coding standards
+
+### `<path/to/standards-file.md>`
+
+- <each rule that bears on this Step, word for word, marker included>
+
+## Design principles
+
+### <principle heading>
+
+<the principle's section, word for word>
+
 ## Acceptance criteria
 
 - [ ] Criterion 1
@@ -85,3 +97,12 @@ The **Footprint** is where the walk lands: the files each Step is expected to to
 - **A guess, not a contract.** Earlier Steps move code, so a later Step's Footprint drifts. The Implementer follows the code where the two disagree and records the drift in its `## Outcome`, which every later Step reads. Write your best guess and let it be corrected.
 - **Name every project.** A project you leave off the `Projects:` line is a project nobody builds until the Verifier. `Projects: none` is for a change no project compiles.
 - **Another repository is planned last.** A file there is named by absolute path, and `Projects:` names that repository's projects ([ADR-0028](../../docs/adr/0028-implement-claims-its-issue-and-pushes-only-what-lands.md)).
+
+## The rules a Step carries
+
+Review judges every Step's code by the repo's Coding standards and the Design principles. Copy the ones that bear on a Step into its Step file, so its Implementer has them in the one file it always reads before it writes.
+
+- **Coding standards**: the files your prompt names. Read each the way you read code. Copy every rule that bears on the Step's Footprint or on the kind of change it makes, such as a new test, a migration, or a public API, under the file's path. A rule you are unsure of goes in: a needless rule costs a few lines, and a missing one costs an Iteration.
+- **Design principles**: `PRINCIPLES.md` at the path your prompt names. Copy each principle section that bears on the Step by the same test, heading and text.
+
+Copy word for word, with every `[judgement]` or `[hard]` marker kept: Review judges by the text, and a paraphrase is a different rule. Leave a section out when nothing applies, or when the repo has no Coding standards.

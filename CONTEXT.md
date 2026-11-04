@@ -219,7 +219,7 @@ The sub-agent (`skills:planner`) that starts an implement run: it walks the code
 _Avoid_: slicer, architect
 
 **Step**:
-One slice of a Spec that a single fresh **Implementer** builds on an implement run's first **Iteration**, recorded as a file under `.agents/runs/<slug>/` with what to build, a **Footprint**, acceptance criteria, and, once built, an Outcome. Steps run in number order, and each reads the Outcomes of the Steps before it. Most Specs are one Step. Review and Verify judge all Steps together, never one alone.
+One slice of a Spec that a single fresh **Implementer** builds on an implement run's first **Iteration**, recorded as a file under `.agents/runs/<slug>/` with what to build, a **Footprint**, the **Coding standards** rules and **Design principles** that apply to it copied word for word, acceptance criteria, and, once built, an Outcome. Steps run in number order, and each reads the Outcomes of the Steps before it. Most Specs are one Step. Review and Verify judge all Steps together, never one alone.
 _Avoid_: task, ticket, phase, slice
 
 **Footprint**:
@@ -251,7 +251,7 @@ The sub-agent (`skills:reviewer`, pinned to Opus) that `/code-review` dispatches
 _Avoid_: review agent, critic, review bot
 
 **Design principles**:
-The fixed set of judgement calls in `skills/code-review/PRINCIPLES.md` — boundary discipline, type system discipline, idempotent operations, and the rest — that the Standards axis of `/code-review` applies on top of a repo's **Coding standards**, even when a repo documents nothing. A documented repo standard always wins over a principle. The **Implementer** reads them before it writes code.
+The fixed set of judgement calls in `skills/code-review/PRINCIPLES.md` — boundary discipline, type system discipline, idempotent operations, and the rest — that the Standards axis of `/code-review` applies on top of a repo's **Coding standards**, even when a repo documents nothing. A documented repo standard always wins over a principle. The **Planner** copies the ones that bear on a **Step** into its Step file, and the **Reviewer** judges by all of them.
 _Avoid_: smell baseline, best practices
 
 **Hard violation**:

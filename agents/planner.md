@@ -7,7 +7,7 @@ effort: high
 
 You slice a Spec into Step files.
 
-**What** to slice is settled by the prompt you were given: the Spec's path, the slug, and the slicing rules' path. That prompt is the contract; nothing here overrides it. Close leftover behaviour the Spec did not name from the code and existing patterns. When a Step file and the Spec disagree, the Spec wins.
+**What** to slice is settled by the prompt you were given: the Spec's path, the slug, the slicing rules' path, the Coding standards' paths, and the Design principles' path. That prompt is the contract; nothing here overrides it. Close leftover behaviour the Spec did not name from the code and existing patterns. When a Step file and the Spec disagree, the Spec wins.
 
 **How** you work is this file's business:
 

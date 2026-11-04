@@ -52,11 +52,13 @@ Before leaving this step, when `.agents/runs/<slug>/spec.md` is missing, write *
 
 `<precheck>` is the repo's **Pre-review check**: the command on the line that starts `Pre-review check:` in `AGENTS.md` or `CLAUDE.md`, with `<base>` filled in. Without that line there is none, and every step below that names it skips it.
 
+`<standards>` is the Coding standards' paths, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written; none when the repo has none. `<principles>` is the absolute path to [PRINCIPLES.md](../code-review/PRINCIPLES.md) in the `code-review` skill's directory, built from the folder the host loaded this skill from and confirmed with `ls`. The Planner copies what bears on each Step from both into its Step file ([ADR-0080](../../docs/adr/0080-the-planner-copies-each-steps-rules-into-its-step-file.md)).
+
 `<scratch>` is `.agents/runs/<slug>/scratch/`, by absolute path: the Verifier's throwaway scripts, screenshots, and transcripts. Create it when it is missing, with a `.gitignore` inside that holds `*`, so no commit sweeps it in. The land deletes it with the run folder; a halt leaves it.
 
 ### 2. Plan the Steps
 
-Dispatch a `skills:planner`. Give it the Spec's path, `<slug>`, and the absolute path to [STEPS.md](STEPS.md) in this skill's directory — those three and nothing else. It reads the slicing rules itself, writes one Step file per Step to `.agents/runs/<slug>/`, and commits them before returning, so the resets later in the run cannot delete a Step not yet built. When `git status` still shows Step files afterwards, commit them yourself as `plan: <slug>`.
+Dispatch a `skills:planner`. Give it the Spec's path, `<slug>`, the absolute path to [STEPS.md](STEPS.md) in this skill's directory, `<standards>`, and `<principles>` — those five and nothing else. It reads the slicing rules itself, writes one Step file per Step to `.agents/runs/<slug>/`, and commits them before returning, so the resets later in the run cannot delete a Step not yet built. When `git status` still shows Step files afterwards, commit them yourself as `plan: <slug>`.
 
 It returns the index and nothing else: one line per Step, `NN | title | one-line deliverable`. Tell the user how many Steps it planned, with their titles.
 
@@ -75,8 +77,7 @@ Hold `git rev-parse HEAD` as `<start>` before the Iteration's first dispatch. Fo
 - the Spec, and `<base>`, the branch its tests are measured against
 - on Iteration 1: its own Step file, and an instruction to read the `## Outcome` of every lower-numbered Step file before starting
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
-- the Coding standards, found the same way `/code-review` finds them — `.agents/refs/` first, then a root-level coding-standards or contributing file when that is what the repo has; only documents that say how code should be written — when those exist
-- the design principles, [PRINCIPLES.md](../code-review/PRINCIPLES.md) in the `code-review` skill's directory by absolute path, built from the folder the host loaded this skill from and confirmed with `ls` before the dispatch — the Review judges the diff by them and by the Coding standards
+- `<standards>`, for code beyond its Step file's `## Coding standards` section
 - the Spec's Testing Decisions section, when it has one, which governs what it tests, and the testing documents it names
 - from Iteration 2 on: every Hard violation and Verify finding the last Iteration reported, and every Judgement call held, verbatim; and every finding an earlier Iteration declined, with its reason
 - `<precheck>`, when the repo names one
