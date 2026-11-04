@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-04: Retro reads many sessions
+`/retro` now reads a window of past sessions, the last 100 in the repo unless you name your own, such as `/retro past week`, and it works best in a clean session. It writes a rule or check, or files an Issue, only for a lesson at least three sessions show, and it stops if the window holds fewer than three. Before, it judged one session alone, so one-off fixes became rules, and `/retro <session>` no longer works.
+
 ## 2026-11-04: Step files carry your rules
 An `/implement` run now copies the Coding standards rules and Design principles that apply to each Step into that Step's file, word for word, so the Implementer has them in front of it before it writes code. Before, the Implementer was only told where your rules live and opened them in about 40% of runs, so many runs went back for another round over a rule it never read.
 
