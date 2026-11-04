@@ -193,19 +193,27 @@ A file this git repository contains in its working tree as its own file. Not a c
 _Avoid_: in-scope file, workspace file
 
 **Retrospective**:
-Suggestions for the agent's environment after a session. **High-priority** suggestions for **Owned files** are applied without asking, and a **Structural fix** is filed as an Issue; everything else appears only in the summary, including suggestions for files this repository does not own. You start one by typing `/retro`; no skill starts one.
+Suggestions for the agent's environment drawn from a **Window** of past sessions, never from one session alone. **High-priority** suggestions for **Owned files** are applied without asking, and a **Structural fix** is filed as an Issue; everything else appears only in the summary, including suggestions for files this repository does not own. You start one by typing `/retro`, usually in a clean session; no skill starts one.
 _Avoid_: postmortem, wrap-up, retro as a meeting
+
+**Window**:
+The past sessions in this repo that one `/retro` or `/learn-habits` run reads, on every host. Named in the argument as free text, such as `past week` or `last 50`; with no argument, the last 100. A `/learn-habits` Window counts only grilling sessions. A `/retro` Window counts every top-level session and must hold at least three.
+_Avoid_: range, batch, session list
+
+**Lesson**:
+One thing a **Retrospective** could fix in the agent's environment, shown by a session. Two sessions show the same Lesson when one rule or check would have prevented both. A Lesson is acted on only when at least three sessions in the **Window** show it; the count is sessions, not occurrences.
+_Avoid_: finding, pattern, insight
 
 **Library skill**:
 A skill that neither a person nor the agent can start on its own: other skills read its `SKILL.md` from disk and follow it as one of their steps. It is missing from the slash menu, and its description is never in the agent's context. `/grilling`, `/domain-modeling`, `/technical-writing`, `/to-spec`, and `/validate-spec` are Library skills.
 _Avoid_: helper skill, internal skill, hidden skill, sub-skill
 
 **High-priority**:
-A **Retrospective** suggestion whose pain will recur every turn or every session. Includes a judgement-call coding standard and a new check that only configures a tool the repo already runs, when this session demonstrated them, and the rule a **Correction** points to.
+A **Retrospective** suggestion whose pain will recur every turn or every session, from a **Lesson** at least three sessions show. Includes a judgement-call coding standard, a new check that only configures a tool the repo already runs, and the rule a **Correction** points to.
 _Avoid_: mechanical-only, severity
 
 **Correction**:
-A change a session made to code, or to a **Verify skill**, that existed before that session started, where the session also shows the old code was wrong — the user said so, a bug was being fixed, a test failed, or a review flagged it. Code written earlier in the same session is not a Correction, however soon it was fixed; neither is a change that follows a changed requirement. Who wrote the old code, a person or an agent, does not matter. A **Retrospective** turns a Correction into a Coding standards rule only when the fix points to a pattern future code could repeat.
+A change a session made to code, or to a **Verify skill**, that existed before that session started, where the session also shows the old code was wrong — the user said so, a bug was being fixed, a test failed, or a review flagged it. Code written earlier in the same session is not a Correction, however soon it was fixed; neither is a change that follows a changed requirement. Who wrote the old code, a person or an agent, does not matter. A **Retrospective** turns Corrections into a Coding standards rule only when the fix points to a pattern future code could repeat and three sessions show that **Lesson**.
 _Avoid_: fix, bugfix, regression
 
 **Structural fix**:
@@ -227,8 +235,12 @@ The **Planner**'s guess, in a **Step** file, at where that Step's work lands: th
 _Avoid_: scope, file list
 
 **Iteration**:
-One pass of an implement run's loop over the whole Spec: Implement, then Review, then Verify. A **Hard violation** from Review ends the Iteration before Verify; a Verify finding ends it after; a **Judgement call** ends nothing. The next Iteration starts at Implement with those findings and any Judgement calls so far. The first Iteration's Implement builds the **Steps** in order; a later one's fixes the findings. The first Iteration's Review reads the whole change; a later one's reads only that Iteration's fix. A run lands when one Iteration passes both, and halts when its third does not.
+One pass of an implement run's loop over the whole Spec: Implement, then Review, then Verify. A **Hard violation** from Review ends the Iteration before Verify; a Verify finding ends it after; a **Judgement call** ends nothing. The next Iteration starts at Implement with those findings and any Judgement calls so far. The first Iteration's Implement builds the **Steps** in order; a later one's fixes the findings. The first Iteration's Review reads the whole change; a later one's reads only that Iteration's fix. A run lands when one Iteration passes both, and halts when its third does not. A resume counts from the first Iteration again, with three to spend. When the halt left findings, that first Iteration starts from them: its Implement fixes them, and its Review reads only the fix.
 _Avoid_: round (a grilling term), cycle, attempt (a Hillclimb term)
+
+**Halt record**:
+The file an implement run commits to its run folder when it halts with findings: its third **Iteration** ended on a **Hard violation** or a Verify finding, or the Verify after the land's rebase failed in that Iteration. It holds what the next **Implementer** needs: the findings word for word, the **Judgement calls** held, the findings declined with their reasons, and the **Deviations** so far. A resume hands it to the first Iteration's Implementer, and commits made after it count as progress, so a finding they already answer needs no fix. A later halt with findings replaces it. A halt with no findings leaves none.
+_Avoid_: halt report, halt file, resume state, checkpoint
 
 **Implementer**:
 The sub-agent (`skills:implementer`) that does the Implement part of an **Iteration**, under `/implement`. On the first Iteration a fresh one builds each **Step**, appends its Outcome to the Step file, and marks it done; on each later Iteration one fresh Implementer fixes every Verify finding it was handed, and fixes or declines each **Hard violation** and **Judgement call**, with a reason for each decline. It builds what it touched, runs the tests closest to its change, commits, and returns a fixed four-line report.
@@ -274,7 +286,7 @@ The branch the session was on when `/implement` started, read again on a resume.
 _Avoid_: master, main, default branch, trunk
 
 **Landing commit**:
-The one commit an implement run leaves on the **Base branch** when it lands: the whole run's change, named after what it does, carrying the Issue's closing reference. It replaces every commit the run made along the way — the Spec copy, the plan, each **Step**'s, and each Iteration's — so none of those stays on the Base branch, and it holds no run folder. A **Retrospective**'s commit, when there is one, follows it as a commit of its own.
+The one commit an implement run leaves on the **Base branch** when it lands: the whole run's change, named after what it does, carrying the Issue's closing reference. It replaces every commit the run made along the way — the Spec copy, the plan, each **Step**'s, and each Iteration's — so none of those stays on the Base branch, and it holds no run folder.
 _Avoid_: squash commit, land commit, cleanup commit, merge commit
 
 **Green**:

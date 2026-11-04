@@ -135,7 +135,7 @@ A rule you write down binds. When review finds a change that breaks one, an `/im
 
 A rule a script can check belongs in a **Pre-review check**: a line in your `AGENTS.md` or `CLAUDE.md` that starts `Pre-review check:` and names a command, with `<base>` for the branch the work started from, that exits non-zero when what the branch adds breaks a rule. An `/implement` run makes every Implementer pass it before the review, so a break it catches costs a few turns instead of another round.
 
-You seldom write rules from scratch. After a session where you corrected an agent's code and the mistake could happen again, type `/retro`: it turns the lesson into a check or a rule for you. No skill starts it on its own.
+You seldom write rules from scratch. After a stretch of work, open a clean session and type `/retro`: it reads your past sessions and turns each lesson that at least three of them show into a check or a rule for you. With no argument it reads the last 100 sessions in the repo, and you can name your own window, such as `/retro past week`. No skill starts it on its own.
 
 ## Repository layout
 
@@ -201,7 +201,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `prototype` | Build a throwaway prototype to answer a design question, then turn the answer into a Spec. |
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve a git merge or rebase conflict hunk by hunk, then finish the operation. Loads on its own when you ask to merge and resolve the conflicts. `/implement` and `/hillclimb` use it when a rebase conflicts. |
-| `retro` | Look at a finished session, apply high-priority changes this repository owns, file the structural ones as Issues, and summarise the rest. Skills such as `/implement` start this when they finish. |
+| `retro` | Read a window of past sessions, apply high-priority changes this repository owns for lessons at least three sessions show, file the structural ones as Issues, and summarise the rest. Only you start it. |
 | `simulate-first-users` | Send five simulated first-time users through your app, each in its own browser: the impatient one, the skeptic, the mobile user, the non-native English speaker, and the breaker. What tripped them up, ranked by how many hit it, goes through `/triage` into Issues with the screenshots attached. Needs Playwright. |
 | `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. `/setup verify` writes, or brings up to date, the repo's verify skill, which drives the app the way a user does. `/setup models` sets the model and effort each sub-agent runs at in the repo. |
 | `triage` | Sort incoming reports, or the Issues nobody has triaged yet, into Specs and parked Issues, one Issue per distinct problem, and close what won't be done. |

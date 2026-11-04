@@ -19,7 +19,7 @@ One person may commit under a different email on each machine, so a profile's `E
 
 Typed by the user, never loaded by a grilling skill. Rebuild the profile from scratch over a window: the last 100 grilling sessions in this repo, or the window the argument names. A rebuild replaces the whole file except its `Email:` line.
 
-1. **Find the sessions.** Read the session logs of every host on this machine, not only this one. Look up where each keeps them; today Claude Code keeps `~/.claude/projects/<cwd with / as ->/<session>.jsonl` (skip `/subagents/`), and Grok keeps `~/.grok/sessions/<url-encoded cwd>/<session>/`, where only a session whose `prompt_context.json` says `"audience": "primary"` is top-level. A worktree's sessions belong to its repo. A grilling session is one where an assistant message holds a `## Round N` heading and an option marked `← recommended`, whichever skill ran it; that text inside a file the session merely read is not a Round.
+1. **Find the sessions.** Read the session logs [SESSION-LOGS.md](SESSION-LOGS.md) names. A grilling session is one where an assistant message holds a `## Round N` heading and an option marked `← recommended`, whichever skill ran it; that text inside a file the session merely read is not a Round.
 2. **Read them in batches.** Dispatch `skills:explorer` sub-agents, about 15 sessions each, in parallel. Each returns one record per answered Question: session date, the kind of question in a few plain words, the options, which one was recommended, what the person picked or wrote, any `*Your habit:*` line and the Habit it named, and the person's stated reason, paraphrased. Carry their records, never the logs.
 3. **Build** the profile from the records under [Habit rules](#habit-rules).
 
