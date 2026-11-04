@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-04: Step files carry your rules
+An `/implement` run now copies the Coding standards rules and Design principles that apply to each Step into that Step's file, word for word, so the Implementer has them in front of it before it writes code. Before, the Implementer was only told where your rules live and opened them in about 40% of runs, so many runs went back for another round over a rule it never read.
+
 ## 2026-11-03: Retro runs only when you type it
 `/implement`, `/triage`, `/grill-with-docs`, `/wayfinder`, `/brainstorm`, `/doctor`, and `/hillclimb` no longer run `/retro` when they finish, so an `/implement` run also makes one push instead of two. Type `/retro` yourself when you want it. Before, it judged one session at a time, which turned one-off fixes into rules and missed context that later sessions supply.
 
