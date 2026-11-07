@@ -62,7 +62,7 @@ Dispatch a `skills:planner`. Give it the Spec's path, `<slug>`, the absolute pat
 
 It returns the index and nothing else — one line per Step, `NN | title | one-line deliverable` — with one line before it only when its commit was refused. Tell the user how many Steps it planned, with their titles.
 
-The plan succeeded when that reply is the index and `.agents/runs/<slug>/` holds Step files, committed or left uncommitted by a refused commit. Otherwise the Planner gets the retry in [The limit](#the-limit), and a second failure **halts** the run. The commit above is your only write in this step: the Step files are the Planner's to write.
+The plan succeeded when that reply is the index, with or without the one refused-commit line before it, and `.agents/runs/<slug>/` holds Step files, committed or left uncommitted by a refused commit. Otherwise the Planner gets the retry in [The limit](#the-limit), and a second failure **halts** the run. The commit above is your only write in this step: the Step files are the Planner's to write.
 
 ### 3. Loop
 
