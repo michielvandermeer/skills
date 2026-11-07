@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-07: Hook refusals stop the run
+When your repo's commit hook refuses one of an `/implement` run's own bookkeeping commits, such as its Spec copy over a file-size limit, the run now stops, quotes the hook's message, and tells you to exempt `.agents/runs/` in that hook and run `/implement` again. A run never rewrites its Spec copy, so to build a changed Issue you delete the run's branch and worktree and start again. Before, the run carried on with the Spec copy uncommitted and lost it at the next reset.
+
 ## 2026-11-04: Resume starts from the findings
 When an `/implement` run halts on findings from its third Iteration, running `/implement` again now hands those findings straight to an Implementer, then reviews only the fix and runs Verify in full. Any commit you make after the halt counts as progress, so a finding you fixed by hand needs no second fix. Before, a resume started with a Review of the whole diff and a Verify to find what the halt had already reported, which cost about 13 minutes in one run.
 
