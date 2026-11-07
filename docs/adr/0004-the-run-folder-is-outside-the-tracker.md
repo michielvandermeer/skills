@@ -9,14 +9,15 @@ The folder is *ephemeral* in a way Issues are not. The run commits the Spec copy
 ## Considered Options
 
 - **Excluding the folder from the clean instead of committing the Spec copy.** Rejected: it leaves the copy at the mercy of whichever agent touches it next.
-- **Running the repo's hooks on run-folder commits, and halting when one refuses.** Rejected: in a repo with a file-size hook, a Spec longer than the limit could never run. The hook guards code that lands, and these files never land.
+- **Committing run-folder files with `git commit --no-verify`.** Rejected: it skips a repo's hooks on purpose, and the repo owner decides what a hook guards. A hook that scans for secrets matters on every commit, whether or not it lands. A repo whose hook should not judge run bookkeeping says so in the hook, by exempting `.agents/runs/`.
 - **Splitting the Spec copy into files under a size limit.** Rejected: every agent in the run would read the Spec a new way, for a limit meant for other files.
 - **Rewriting the Spec copy from the Issue on a resume.** Rejected: the Step files were cut from the old copy, so the next Implementer would build against two different documents.
 
 ## Consequences
 
 - `/code-review` treats `.agents/runs/` as run bookkeeping, not code under review.
-- A commit that changes only the run folder skips the repo's hooks with `--no-verify`, every time: the Spec copy, the Step files, the Halt record, and the deletion before landing. None of those commits reaches the Base branch, because the landing commit holds no run folder. Every commit that carries code still runs hooks.
+- Every commit a run makes runs the repo's hooks, run-folder commits included: the Spec copy, the Step files, the Halt record, and the deletion before landing. No agent in a run passes `--no-verify`. A repo whose hook would refuse run bookkeeping, such as a file-size limit a long Spec breaks, exempts `.agents/runs/` in the hook itself.
+- When a hook refuses a run-folder commit, the run halts and quotes the hook's output. The user exempts the folder in the hook, then runs `/implement` again.
 - A run writes its Spec copy once and never rewrites it. A changed Issue reaches no run already started. To build the change, the user deletes the run's branch and worktree and runs `/implement` again.
 - The scratch folder holds a `.gitignore` of `*`, so no commit sweeps in a throwaway script or screenshot.
 - On the local Tracker, a repo mid-run can hold the run folder beside a Map's Decision tickets under `.agents/`. They are told apart by directory, so anything new that scans `.agents/` must pick its root deliberately.
