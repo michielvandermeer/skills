@@ -47,9 +47,9 @@ Then claim the Issue as the Tracker ref says. When the ref says another user hol
 
 ### 2. Enter the worktree
 
-In the original directory, ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then create `<before>` with `git worktree add --detach` at `<base>`. The run worktree is reset to `<base>` below, so `<before>` sits at its HEAD.
+In the original directory, ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then read the SHA `<base>` points to, once, and hold it. Create `<before>` with `git worktree add --detach` at that SHA. The run worktree is reset to the same SHA below, so `<before>` sits at its HEAD even when another session lands on `<base>` meanwhile.
 
-Then open a worktree on `<branch>` and put the session's working directory inside it, then `git reset --hard <base>`:
+Then open a worktree on `<branch>` and put the session's working directory inside it, then `git reset --hard` to the held SHA:
 
 - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have. Record the branch name it chose when that name is not `hillclimb/<slug>`.
 - Otherwise `git -c checkout.workers=0 worktree add` at `.agents/worktrees/hillclimb/<slug>` on `<branch>`, and change the session's working directory there.
@@ -110,8 +110,8 @@ Done when every finding is fixed or named on a deviations line, and each axis's 
 
 Commit anything still uncommitted. Then, in order:
 
-1. In the run worktree: `git rebase <base>`. A conflict: read [`resolving-merge-conflicts/SKILL.md`](../resolving-merge-conflicts/SKILL.md) and follow it. When the rebase replayed the branch onto new commits, run the agreed tests again. Re-run a failing project once yourself: a failure that passes on the re-run is a flaky test for the report; one that fails again gets one `general-purpose` fixer, and a second failure **halts**.
-2. Move `<before>` to the SHA `<base>` pointed to when item 1's rebase ran — the commit the run worktree now builds on — and measure the pair as MEASURE.md says. Write the result into this Hillclimb's section of the log. It goes in the report and blocks nothing. Commit the log. When the Hillclimb started from an Issue, this log commit carries the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the report names the Issue for the user to close.
+1. Read the SHA `<base>` points to, and hold it. In the run worktree, rebase with the SHA spelled out as the argument: `git rebase <held SHA>`. A conflict: read [`resolving-merge-conflicts/SKILL.md`](../resolving-merge-conflicts/SKILL.md) and follow it. When the rebase replayed the branch onto new commits, run the agreed tests again. Re-run a failing project once yourself: a failure that passes on the re-run is a flaky test for the report; one that fails again gets one `general-purpose` fixer, and a second failure **halts**.
+2. Move `<before>` to the SHA held in item 1 — the commit the run worktree now builds on — and measure the pair as MEASURE.md says. Write the result into this Hillclimb's section of the log. It goes in the report and blocks nothing. Commit the log. When the Hillclimb started from an Issue, this log commit carries the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the report names the Issue for the user to close.
 3. Return the session to the original directory, keeping the branch — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 4. On `<base>`: `git merge --ff-only <branch>`. This step is done when the merge has succeeded, `git worktree remove` has run on the run worktree, deleting `<scratch>` with it — never forced; a lock means another session still has it — `git worktree remove --force` has run on `<before>`, and `git branch -d <branch>` has run. When the merge errors, `<base>` moved: re-enter the run worktree, drop the log commit with `git reset --hard HEAD~1`, go through 1 to 3 again, and retry the merge.
 
