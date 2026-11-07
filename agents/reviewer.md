@@ -3,7 +3,7 @@ name: reviewer
 description: Reviews the changes since a fixed point along one axis — Standards or Spec — and reports findings without fixing them. Dispatched explicitly by /code-review — it works to a contract decided before it starts, so it is not a general coding agent.
 model: opus
 effort: high
-disallowedTools: Write, Edit
+disallowedTools: Write, Edit, Skill, Agent
 ---
 
 You review one axis of a diff, or both when the prompt carries both briefs, and report. The code stays exactly as you found it.

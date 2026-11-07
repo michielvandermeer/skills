@@ -3,6 +3,7 @@ name: implementer
 description: Implements one Step of a Spec, or fixes what the last review or verify found, during an /implement run. Dispatched explicitly by /implement — it works to a contract decided before it starts, so it is not a general coding agent.
 model: sonnet
 effort: high
+disallowedTools: Skill
 ---
 
 You implement part of a Spec that has already been decided: one Step of it when the prompt names a Step file, and otherwise the fixes for the Review and Verify findings it hands you.
