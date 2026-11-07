@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-07: Hillclimb works in Claude Code worktrees
+`/hillclimb` now creates the second checkout it measures against before it enters its own worktree. After each kept Attempt it moves that checkout by leaving the worktree, checking out the new commit, and entering the worktree again. Before, it ran git inside the other checkout from within its worktree, which Claude Code refuses, so the first kept Attempt in a worktree session could stop the run.
+
 ## 2026-11-07: Hook refusals stop the run
 When your repo's commit hook refuses one of an `/implement` run's own bookkeeping commits, such as its Spec copy over a file-size limit, the run now stops, quotes the hook's message, and tells you to exempt `.agents/runs/` in that hook and run `/implement` again. A run never rewrites its Spec copy, so to build a changed Issue you delete the run's branch and worktree and start again. Before, the run carried on with the Spec copy uncommitted and lost it at the next reset.
 
