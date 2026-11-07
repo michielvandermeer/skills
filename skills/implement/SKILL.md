@@ -109,9 +109,11 @@ Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and
 - every finding declined so far with its reason: a declined finding is raised again only when the reason does not hold, and the report says why
 - on a fixing Iteration, every finding the last Implementer was handed, to judge as fixed or declined, with the fix itself judged against the standards
 
+Check the Standards report for its closing line before weighing it: the report's last line reads `Standards: <h> hard violations, <j> judgement calls`, and a line of another shape, or one mid-report, is not it. The line proves the report is complete; it does not decide the result, so a line that undercounts never turns a Hard violation into a pass. A report with no closing line, or a result that is not a report at all (empty, cut off, a question, a progress note), is a failed Review and earns the retry in [The limit](#the-limit).
+
 Hold the Standards report; weigh it on the report alone. `/code-review` opens each finding with `Hard violation:` or `Judgement call:`. Hold its Judgement calls with any held from earlier Iterations until the next Implementer is handed them.
 
-Review passes when the report has no Hard violation. Tell the user `Iteration <N>/3 — review: passed`, with `(<j> judgement calls)` after it when there are any, or `Iteration <N>/3 — review: <h> hard violations, <j> judgement calls`, then go on without waiting: a passed Review goes to Verify; a Hard violation starts the next Iteration at Implement, with Verify skipped.
+Review passes when its complete report has no Hard violation. Tell the user `Iteration <N>/3 — review: passed`, with `(<j> judgement calls)` after it when there are any, or `Iteration <N>/3 — review: <h> hard violations, <j> judgement calls`, then go on without waiting: a passed Review goes to Verify; a Hard violation starts the next Iteration at Implement, with Verify skipped.
 
 #### Verify
 
@@ -130,7 +132,7 @@ Tell the user `Iteration <N>/3 — verify: passed`, or `Iteration <N>/3 — veri
 
 An Iteration 3 that ends on a Hard violation or a Verify finding **halts** the run, and the halt report quotes those findings. Judgement calls alone never halt a run.
 
-A `blocked` report, a failed structural check, or any result that is not the report — a question, a progress note, a pause to wait on a background run — earns exactly one retry, for the Planner, each Implementer, and the Verifier alike, and the retry is not a new Iteration. When the host can resume the same agent, resume it once with one line: the work is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd`, then re-dispatch the same agent with the same prompt, appending a test or environment failure in its own words, or that the previous run returned something other than the report. Commits it made survive that reset. A second failure **halts** the run.
+A `blocked` report, a failed structural check, or any result that is not the report — a question, a progress note, a pause to wait on a background run — earns exactly one retry, for the Planner, each Implementer, the Verifier, and the Review alike, and the retry is not a new Iteration. When the host can resume the same agent, resume it once with one line: the work is still yours to finish; return the report. Otherwise `git reset --hard && git clean -fd`, then re-dispatch the same agent with the same prompt, appending a test or environment failure in its own words, or that the previous run returned something other than the report. Commits it made survive that reset. The Review changes no code, so its retry skips the reset: it runs the same Standards Review with the same inputs, resuming the same reviewer once when the host can, otherwise running `/code-review` again with the same fixed point and the same things told to it. A second failure **halts** the run.
 
 Carry every deviations line that is not `none`, verbatim, into later dispatches and the final report.
 
@@ -185,9 +187,11 @@ The worktree, the review diff, the land, and the push cover this repository only
 
 ## Halting
 
-A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, and the run worktree exactly as they are — the work is committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: that the Planner failed and why; or the Iteration, the part — Implement, Review, or Verify — with the Step's number and title on Iteration 1's Implement, and why it did not finish. Quote a test or environment failure, and the findings an Iteration 3 left. For a result that was not the report, say the agent did not finish.
+A halt is non-destructive and it is the end of the session. Leave the Spec, the Step files, the branch, and the run worktree exactly as they are — the work is committed, and the run is resumable only because nothing was cleaned up. Report why the run stopped: that the Planner failed and why; or the Iteration, the part — Implement, Review, or Verify — with the Step's number and title on Iteration 1's Implement, and why it did not finish. Quote a test or environment failure, and the findings an Iteration 3 left. For a result that was not the report, say the agent did not finish; for a Review that failed twice to return a report with its closing line, say the Review returned no report.
 
 A halt with findings — an Iteration 3 that ended on a Hard violation or a Verify finding, or the failed Verify after the land's rebase — first writes the **Halt record**, the one commit a halt makes. Write `.agents/runs/<slug>/halt.md`, replacing any earlier one, with four lists, all verbatim: the Hard violations and Verify findings that ended the run, the Judgement calls held, every finding declined with its reason, and the deviations so far. Commit that file alone as `halt: <slug>`. The halt report then says the Halt record holds the findings and that running `/implement` again hands them to an Implementer.
+
+A halt on a Review with no report holds no findings, so it writes no Halt record and makes no `halt:` commit.
 
 A hook that refuses one of the run-folder commits — `spec:`, `plan:`, `halt:`, or the deletion commit in step 4 — halts the run with no findings, so no Halt record is written unless the refused commit is `halt:`. The run neither retries the commit nor carries on uncommitted. The halt report names the refused commit, quotes the hook's output, and tells the user to exempt `.agents/runs/` in that hook and run `/implement` again. A refused `halt:` commit puts the findings that would have filled the Halt record in the report, verbatim, and says the record is not committed, so the next resume starts a building Iteration rather than a fixing one. A refused deletion commit says nothing landed.
 
