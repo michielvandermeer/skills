@@ -46,7 +46,7 @@ Find worktrees with `git worktree list` (or the host's equivalent). The **run wo
   - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have rather than searching the host's CLI or docs. Record the branch name it chose when that name is not `<slug>`.
   - Otherwise ensure the consuming repo ignores `.agents/worktrees/` (add the line if missing; prefer a local ignore when the repo uses one), then `git -c checkout.workers=0 worktree add` at `.agents/worktrees/<slug>` on branch `<slug>`, and change the session's working directory there.
 
-The session must work *inside* the run worktree for the rest of the run — creating a worktree alone is not enough. Run every command from there as a **plain** command: every argument spelled out, and files written with the host's file tools. A host that isolates the session in its worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it. Scope every search to the worktree, and name it in every sub-agent prompt as the only directory the agent works in. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it and begin every command with `cd <that path> &&`. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
+The session must work *inside* the run worktree for the rest of the run — creating a worktree alone is not enough. Run every command from there as a **plain** command: every argument spelled out. A host that isolates the session in its worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it. Every file the session reads, edits, or writes goes through the host's file tools, addressed by an absolute path under the worktree; a repo-relative path, such as a Footprint entry, is joined to the worktree's path, and a file in another repository, named by absolute path, is the one exception. Scope every search to the worktree, and name it in every sub-agent prompt as the only directory the agent works in. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it and begin every command with `cd <that path> &&`. An `/implement` prompt that explicitly waives the worktree takes the branch in [Worktree waived](#worktree-waived) instead.
 
 Before leaving this step, when `.agents/runs/<slug>/spec.md` is missing, write **the Spec** to it — the Issue's title as an H1 and its body, or the description as the argument gave it — and nothing else, then commit it as `spec: <slug>`. Every commit a run makes runs the repo's hooks, and no commit passes `--no-verify`: a repo whose hook would refuse run bookkeeping exempts `.agents/runs/` in the hook itself. A refused `spec:` commit halts the run before the Planner ([Halting](#halting)); the resume's reset deletes the uncommitted copy, so this step writes it fresh from the Issue, a first write and not a rewrite. The commit keeps the copy through a resume's reset. From here on every sub-agent reads that copy. A run never rewrites it and a resume never reads the Issue's body again, so a changed Spec is built by deleting the run's branch and worktree and running `/implement` again.
 
@@ -58,7 +58,7 @@ Before leaving this step, when `.agents/runs/<slug>/spec.md` is missing, write *
 
 ### 2. Plan the Steps
 
-Dispatch a `skills:planner`. Give it the Spec's path, `<slug>`, the absolute path to [STEPS.md](STEPS.md) in this skill's directory, `<standards>`, and `<principles>` — those five and nothing else. It reads the slicing rules itself, writes one Step file per Step to `.agents/runs/<slug>/`, and commits them before returning, so the resets later in the run cannot delete a Step not yet built. When `git status` still shows Step files afterwards, commit them yourself as `plan: <slug>`. A hook that refused the Planner's commit leaves them there, so this is the second attempt, and its refusal halts the run ([Halting](#halting)); a resume then finds no committed Step files and runs the Planner again.
+Dispatch a `skills:planner`. Give it the Spec's path, `<slug>`, the absolute path to [STEPS.md](STEPS.md) in this skill's directory, `<standards>`, `<principles>`, and the run worktree's absolute path, as the only directory it works in — those six and nothing else. It reads the slicing rules itself, writes one Step file per Step to `.agents/runs/<slug>/`, and commits them before returning, so the resets later in the run cannot delete a Step not yet built. When `git status` still shows Step files afterwards, commit them yourself as `plan: <slug>`. A hook that refused the Planner's commit leaves them there, so this is the second attempt, and its refusal halts the run ([Halting](#halting)); a resume then finds no committed Step files and runs the Planner again.
 
 It returns the index and nothing else — one line per Step, `NN | title | one-line deliverable` — with one line before it only when its commit was refused. Tell the user how many Steps it planned, with their titles.
 
@@ -74,6 +74,7 @@ On a building Iteration, run each Step in `NN` order, skipping a Step whose `Sta
 
 Hold `git rev-parse HEAD` as `<start>` before the Iteration's first dispatch. On a resume from a Halt record, `<start>` is instead the commit that last wrote it, `git log -1 --format=%H -- .agents/runs/<slug>/halt.md`, so Review also reads what was committed after the halt. For each dispatch, hold `git rev-parse HEAD` as `<before>`, then dispatch a fresh `skills:implementer` with a prompt of paths and section names — it reads what is behind them:
 
+- the run worktree's absolute path, as the only directory it works in
 - the Spec, and `<base>`, the branch its tests are measured against
 - on a building Iteration: its own Step file, and an instruction to read the `## Outcome` of every lower-numbered Step file before starting
 - `CONTEXT.md` and any ADR covering the area it touches, for vocabulary
@@ -96,7 +97,7 @@ declined: <each Review finding left as it is, with why — or "none">
 deviations: <what contradicts the Spec or changes a later Step, or "none">
 ```
 
-Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and `git status` is clean, or every finding it was handed is on its `declined:` line and HEAD has not moved. On a building Iteration, `grep '^Status:'` on its Step file also reads `done`. Then run `<precheck>` from the run worktree, with its output bounded to the findings; it passes when it exits 0. That is the whole check; read the diff only when it fails. A `<precheck>` that still lists findings after the retry is no halt: the run goes on to Review, and the Review prompt carries those findings ([ADR-0078](../../docs/adr/0078-an-implement-run-runs-the-pre-review-check-before-review.md)). Tell the user `Step <NN>/<total> — <title>: done` after each Step passes it.
+Then **check it structurally**: `git rev-parse HEAD` differs from `<before>` and `git status` is clean, or every finding it was handed is on its `declined:` line and HEAD has not moved. On a building Iteration, `grep '^Status:'` on its Step file also reads `done`. Then run `<precheck>` from the run worktree, with its output bounded to the findings; it passes when it exits 0. When its `deviations:` line names a stray path, an edit it found outside the worktree and redid there, hold the path for the final report and leave the main checkout alone. That is the whole check; read the diff only when it fails. A `<precheck>` that still lists findings after the retry is no halt: the run goes on to Review, and the Review prompt carries those findings ([ADR-0078](../../docs/adr/0078-an-implement-run-runs-the-pre-review-check-before-review.md)). Tell the user `Step <NN>/<total> — <title>: done` after each Step passes it.
 
 #### Review
 
@@ -117,7 +118,7 @@ Review passes when its complete report has no Hard violation. Tell the user `Ite
 
 #### Verify
 
-Dispatch a fresh `skills:verifier` with a prompt of paths: the Spec, `<base>`, the Spec's Testing Decisions section when it has one, `<scratch>`, and the report format below.
+Dispatch a fresh `skills:verifier` with a prompt of paths: the run worktree's absolute path, as the only directory it works in, the Spec, `<base>`, the Spec's Testing Decisions section when it has one, `<scratch>`, and the report format below.
 
 ```
 status: passed | failed | blocked
@@ -147,7 +148,7 @@ Commit anything still uncommitted; `git rebase` refuses a dirty tree. Each remai
 3. Return the session to the original directory, keeping the branch and its commits — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 4. From the original directory, on `<base>`: `git merge --ff-only <landing>`. (`<base>` lives here, so only the original directory can fast-forward it.) `<landing>`'s parent is `<onto>`, so this is a fast-forward only while `<base>` is still `<onto>`. This step is done when that merge has succeeded, `git worktree remove <path>` has run — never forced; a lock means another session still has it — and the branch is deleted. Delete the branch with `git branch -D <branch>` once `git diff --quiet <branch> <base>` succeeds: its commits never reach `<base>`, so `-d` refuses it, and the empty diff shows `<base>` holds all of its work. When the diff is not empty, keep the branch and name it in the final report. When the merge errors, `<base>` moved: re-enter the worktree, drop the deletion commit with `git reset --hard HEAD~1` — it holds only the deletion, so the Spec comes back for the Verifier — then go through 1 to 3 again and retry this merge.
 
-The final report says how many Steps the Planner made and how many Iterations the run took, quotes every `declined:` line that was not `none` and every deviations line, lists every Judgement call still held, which lands unfixed, and names each Hand check the Verifier skipped and what it needs.
+The final report says how many Steps the Planner made and how many Iterations the run took, quotes every `declined:` line that was not `none` and every deviations line, names each stray path an Implementer reported as a file to check in the user's main checkout, lists every Judgement call still held, which lands unfixed, and names each Hand check the Verifier skipped and what it needs.
 
 ### 5. Push
 
@@ -179,7 +180,7 @@ In benchmark mode every outward write is a **no-op**: the claim in step 1 and th
 
 ## Worktree waived
 
-The run folder lives at `.agents/runs/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. Step 1 skips opening a worktree. Step 4 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, make the deletion commit and `<landing>` there, check out `<base>` yourself, then fast-forward to `<landing>`. That merge is done when it succeeds and the branch is deleted as step 3 says. When it errors, `<base>` moved: check out the branch, drop the deletion commit as step 4 says, go through items 1 and 2 of step 4 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/runs/<slug>/` in this checkout.
+The run folder lives at `.agents/runs/<slug>/` in the checkout, and there is nothing to enter, exit, or remove. The "run worktree" path every sub-agent is told is the checkout's own absolute path. Step 1 skips opening a worktree. Step 4 drops the return-to-original-directory step and `git worktree remove`: rebase on the branch, make the deletion commit and `<landing>` there, check out `<base>` yourself, then fast-forward to `<landing>`. That merge is done when it succeeds and the branch is deleted as step 3 says. When it errors, `<base>` moved: check out the branch, drop the deletion commit as step 4 says, go through items 1 and 2 of step 4 again, check out `<base>` yourself, and retry the merge. A run in flight is branch `<slug>`, or `.agents/runs/<slug>/` in this checkout.
 
 ## Work in another repository
 

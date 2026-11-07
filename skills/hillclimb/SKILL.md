@@ -54,7 +54,7 @@ Then open a worktree on `<branch>` and put the session's working directory insid
 - If this host has a tool that **creates the worktree and moves the session into it**, use that tool — even when its path is not the fallback below. Decide from the tool list you already have. Record the branch name it chose when that name is not `hillclimb/<slug>`.
 - Otherwise `git -c checkout.workers=0 worktree add` at `.agents/worktrees/hillclimb/<slug>` on `<branch>`, and change the session's working directory there.
 
-The session works *inside* the run worktree until step 7 returns it. Run every command from there as a **plain** command: every argument spelled out, and files written with the host's file tools. A host that isolates the session in its worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it. Name the run worktree in every sub-agent prompt as the only directory the agent works in, adding the plain-command rule for the Explorer and a `general-purpose` agent. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it and begin every command with `cd <that path> &&`. A Hillclimb always runs in a worktree; a prompt cannot waive it.
+The session works *inside* the run worktree until step 7 returns it. Run every command from there as a **plain** command: every argument spelled out. A host that isolates the session in its worktree refuses a command it cannot prove stays inside, such as one with a `cd` or `git -C`, a shell variable, `$(…)`, or a heredoc, and says how to split it. Every file the session reads, edits, or writes goes through the host's file tools, addressed by an absolute path under the worktree; a repo-relative path is joined to the worktree's path, and a file in another repository, named by absolute path, is the one exception. Name the run worktree in every sub-agent prompt as the only directory the agent works in, adding the plain-command rule for the Explorer and a `general-purpose` agent. On a host whose shell starts every command in the original directory, resolve the worktree's absolute path once with `pwd` inside it and begin every command with `cd <that path> &&`. A Hillclimb always runs in a worktree; a prompt cannot waive it.
 
 Create `<scratch>` and its `.gitignore`, and write a recorded branch name to `<scratch>/branch`.
 
@@ -79,7 +79,7 @@ Before each Attempt, check the **stop rule**. The Hillclimb stops when the targe
 Each Attempt:
 
 1. Take the top idea from **Ideas not yet tried**, and read the log's rows on the code it touches.
-2. Dispatch a fresh `skills:climber`. Its prompt is the idea in your words plus paths: the run worktree, the log, `CONTEXT.md` and any ADR covering the area, the Coding standards — found the way `/code-review` finds them, `.agents/refs/` first — the command for the agreed tests, and this report format:
+2. Dispatch a fresh `skills:climber`. Its prompt is the idea in your words plus paths: the run worktree's absolute path, as the only directory the Climber works in, the log, `CONTEXT.md` and any ADR covering the area, the Coding standards — found the way `/code-review` finds them, `.agents/refs/` first — the command for the agreed tests, and this report format:
 
    ```
    status: ready | blocked

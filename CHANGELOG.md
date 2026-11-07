@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-07: Runs stay in their worktree
+Every agent an `/implement` or `/hillclimb` run starts is now told the worktree's absolute path and edits files only under it. An Implementer that finds an edit outside it redoes the edit in the worktree, and the run's final message names the stray file to check in your main checkout. Before, a Step's edit could land in the main checkout and be missing from the branch.
+
 ## 2026-11-07: Empty Review no longer passes
 An `/implement` run now reruns a Review once when its report does not end with the `Standards: <h> hard violations, <j> judgement calls` line, and stops with a message that the Review returned no report if the second one fails too. Running `/implement` again then picks the run up from where it stopped. Before, a Review that returned no report counted as a pass, so findings it never reported went unfixed.
 
