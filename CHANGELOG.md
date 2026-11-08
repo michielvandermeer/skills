@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-08: First users stop using a phone
+`/simulate-first-users` no longer sends a First user on a 375px phone screen; the third First user is now the slow-connection user, who uses a desktop screen over slow 3G and is annoyed by anything slow to appear or with no sign it is loading. Before, every run reported phone-width findings for apps that have no phone layouts, and those findings ended as Issues closed as not planned.
+
 ## 2026-11-08: Doctor trims Coding standards
 `/doctor` now has a Standards health pass that cuts every Coding standards rule to one line of at most 40 words, merges duplicates, drops stale rules, deletes rules a check fully enforces, and moves text that is not a rule into `.agents/refs/`. Its report shows words per file before and after, and `/retro` writes each new rule in the same short shape. Before, standards grew without limit, and an `/implement` run paid for every word of them again on every Step.
 
