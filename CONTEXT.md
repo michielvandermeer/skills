@@ -110,6 +110,14 @@ _Avoid_: style guide, conventions, coding-standards.md
 The `/doctor` pass that brings every **Coding standards** rule to one short line, deleting rules a check enforces, merging duplicates, and dropping stale ones, and reports the word counts before and after.
 _Avoid_: standards audit, standards lint
 
+**Steering file**:
+A file that tells an agent how to work in a repo, apart from its **Coding standards**: an `AGENTS.md` or `CLAUDE.md` at any depth, a skill's `SKILL.md` and the files it links to, an agent definition file, and the host's global always-loaded agent files. A repo's own steering files are the ones its checkout holds, so the host's global files are never among them.
+_Avoid_: instruction file, agent doc, prompt file
+
+**Steering health**:
+The `/doctor` pass that checks the rules in a repo's own **Steering files**. It merges a rule that repeats another, fixes or drops a path to a file that no longer exists, and settles a contradiction between two rules when an ADR, the code, or a later commit shows which one holds. It reports every contradiction it cannot settle and every path it cannot judge.
+_Avoid_: steering audit, agent docs lint, rule check
+
 **Pre-review check**:
 A command a repo's `AGENTS.md` or `CLAUDE.md` names on a line that starts `Pre-review check:`, with `<base>` standing for the base branch. It lists the **Coding standards** breaks it can find in what the branch adds, and exits non-zero when it lists any. It holds the mechanical rules a **Hard violation** most often cites, so an **Implementer** fixes them in a few turns instead of an **Iteration**. A repo without the line has none, and the run goes straight to Review.
 _Avoid_: lint, precheck, pre-commit check
