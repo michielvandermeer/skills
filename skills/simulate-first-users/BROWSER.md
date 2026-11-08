@@ -20,8 +20,8 @@ Done: the test session opened and closed.
 
 The session name is `<stamp>-<n>`, the scratch folder's stamp and the First user's number, so two runs on one machine never share a browser. Every command starts `<command> cli -s=<session>`.
 
-- **Open**: `open --config=<subfolder>/cli.json`. The mobile user adds `--device "iPhone SE (3rd gen)"`, a 375px screen.
-- **Slow 3G**, for the mobile user only, right after Open and before the first page: `run-code "async page => { const s = await page.context().newCDPSession(page); await s.send('Network.emulateNetworkConditions', { offline: false, latency: 2000, downloadThroughput: 50000, uploadThroughput: 50000 }); }"`. These are Chromium's slow 3G numbers, and they hold across later page loads.
+- **Open**: `open --config=<subfolder>/cli.json`.
+- **Slow 3G**, for the slow-connection user (First user 3) only, right after Open and before the first page: `run-code "async page => { const s = await page.context().newCDPSession(page); await s.send('Network.emulateNetworkConditions', { offline: false, latency: 2000, downloadThroughput: 50000, uploadThroughput: 50000 }); }"`. These are Chromium's slow 3G numbers, and they hold across later page loads.
 - **Go to the app**: `goto <url>`.
 - **See the page**: `screenshot --filename <subfolder>/<NN>.png` shows what your person sees. `snapshot` lists the page's elements with refs such as `e21`, which the actions below take.
 - **Act**: `click <ref>`, `dblclick <ref>`, `fill <ref> "<text>"`, `type "<text>"`, `press Enter`, `select <ref> <value>`, `check <ref>`, `go-back`, `reload`.

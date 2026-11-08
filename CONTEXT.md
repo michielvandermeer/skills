@@ -317,7 +317,7 @@ The project skill at `.claude/skills/verify/` in the consuming repo that drives 
 _Avoid_: run recipe, verification skill, driver skill, control skill, smoke script
 
 **First user**:
-One of the five simulated people a `/simulate-first-users` run sends through an app for the first time, each a sub-agent in its own browser with one way of failing: the impatient one, the skeptic, the mobile user, the non-native English speaker, and the breaker. Each records every moment it is confused, stuck, or annoyed, with a screenshot.
+One of the five simulated people a `/simulate-first-users` run sends through an app for the first time, each a sub-agent in its own browser with one way of failing: the impatient one, the skeptic, the slow-connection user, the non-native English speaker, and the breaker. Each records every moment it is confused, stuck, or annoyed, with a screenshot.
 _Avoid_: persona, tester, QA agent, test user
 
 **First success**:

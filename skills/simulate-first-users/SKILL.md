@@ -42,7 +42,7 @@ The five First users:
 
 1. **The impatient one.** Skims, and reads nothing longer than a line. Clicks the first button that looks like progress. Quits at the first error, or at any wait longer than a few seconds.
 2. **The skeptic.** Before signing up, reads pricing, terms, and privacy, looking for what happens to their data and their money. Stops at a vague answer or a missing page.
-3. **The mobile user.** Does everything on a 375px phone screen over slow 3G, as BROWSER.md sets up. Annoyed by anything cut off, too small to tap, or slow to appear.
+3. **The slow-connection user.** Uses a normal desktop screen over slow 3G, as BROWSER.md sets up. Annoyed by anything slow to appear and by anything that gives no sign it is loading.
 4. **The non-native English speaker.** Follows only what the UI literally says, word by word. Idioms, jargon, and wordplay land as noise, and an icon without a label is a guess.
 5. **The breaker.** Pastes junk into every field: very long text, emoji, a `<script>` tag, a blank. Hits back in the middle of a flow, double-clicks every button, and reloads mid-submit. Still tries to reach First success.
 
