@@ -12,7 +12,7 @@ Each skill you type and each plugin agent sets `model:` and `effort:` in its own
   | Explorer | Haiku | high |
   | Reviewer | Opus | high |
 
-- **Everything else** runs on the setting of the skill that starts it: a Hillclimb's Fixers, the `/brainstorm` fan-out, and the `/simulate-first-users` First users.
+- **Everything else** runs on the setting of the skill that starts it: a Hillclimb's Fixers, the `/brainstorm` fan-out, the `/simulate-first-users` First users, and the `/hunt-codebase-improvements` Hunters.
 
 A skill's pin lasts for the rest of the turn, so a model-invoked skill that other skills load carries none: it would swap its caller's model. A typed skill that other skills need, such as `/retro`, is followed by path ([ADR-0074](0074-skills-other-skills-follow-are-read-by-path.md)), which skips its pin, so it is pinned for when you type it. A Library skill, which nobody types, carries no pin.
 
