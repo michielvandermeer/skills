@@ -146,6 +146,7 @@ You seldom write rules from scratch. After a stretch of work, open a clean sessi
 │   └── marketplace.json   # marketplace catalog (this repo is its own marketplace)
 ├── agents/                # sub-agents the skills dispatch, one markdown file each
 │   ├── climber.md
+│   ├── cold-reader.md
 │   ├── explorer.md
 │   ├── implementer.md
 │   ├── planner.md
@@ -177,7 +178,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 **Sub-agents.**
 
 - Sonnet at high: `skills:planner`, `skills:implementer`, `skills:verifier`.
-- Sonnet at medium: `skills:climber`, `skills:validator`, `skills:researcher`.
+- Sonnet at medium: `skills:climber`, `skills:cold-reader`, `skills:validator`, `skills:researcher`.
 - Haiku at high: `skills:explorer`.
 - Opus at high: `skills:reviewer`, the `/code-review` reviewers.
 
