@@ -44,13 +44,26 @@ A Correction whose fix points to a pattern future code could repeat shows a **Le
 - a one-off fact, such as a wrong constant → record nothing;
 - any other Lesson → a new Coding standards rule.
 
+A Lesson whose rule cannot name a kind of change is a one-off fact, unless an earlier outcome, such as a check, took it.
+
 For each Lesson, search the codebase for other copies of the corrected pattern: the next agent copies what it finds. The copies go into the Lesson's Issue, else onto the not-applied list as **High-priority**.
 
-A Lesson that contradicts or repeats a rule already written changes or removes that rule, so the Coding standards keep one rule on the point.
+The Coding standards keep one rule on the point:
+
+- A Lesson that contradicts a rule already written changes or removes it.
+- A Lesson the rule already covers adds nothing to it, even when the rule is outside the shape below: `/doctor` trims it.
+- A Lesson that shows the rule too narrow rewrites it, in the same commit, to name the wider kind of change. A new case is never appended to a rule.
+- A rule `/retro` changes that is itself outside the shape below is rewritten to the shape below in the same commit. Rules no Lesson touches stay as they are.
 
 Write the rule into the repo's existing Coding standards: the file in `.agents/refs/` that holds them, else a root `CODING_STANDARDS.md` or `CONTRIBUTING.md`, else create `.agents/refs/coding-standards.md`. A Correction in a file this repo does not own still writes its rule here.
 
-Every Coding standards rule `/retro` writes is one imperative line of at most 40 words, with the incident cut to an `(#n)` or commit reference ([ADR-0081](../../docs/adr/0081-a-coding-standards-rule-is-one-short-line.md)).
+**Rule shape.** Every rule `/retro` writes or changes, the **File** step's interim guard included, names a kind of change, never one file, type, or Issue, and reads true to someone who never saw the incident. Write only what every session behind the Lesson shares. It is one imperative line of at most 40 words, with at most one short example or reason and at most one `(#n)` or commit reference ([ADR-0081](../../docs/adr/0081-a-coding-standards-rule-is-one-short-line.md)).
+
+A rule holds none of: an incident story, a Sentry or log ID, an error message or stack frame, a figure from one run, a path or symbol only the corrected bug had (unless it is the rule's subject), a procedure for probing, reproducing, or bisecting, a note that the rule is interim or to be deleted. Each goes where a reader who wants it looks:
+
+- The evidence goes in the commit message, and in the Issue when one is filed or commented on.
+- The note to delete an interim rule goes in the Issue, which **File** makes name the rule.
+- An error signature goes in the repo's triage document when the Coding standards' folder holds one, and nowhere when it holds none. `/retro` creates no triage document.
 
 ## Categories
 
@@ -80,9 +93,11 @@ Sort what remains by how many sessions show it, whatever its category:
 
 Rank by how often the pain will recur and how much it costs. An every-turn context-load problem outranks a one-off expensive call.
 
-**High-priority** is pain that will recur every turn or every session. It includes a judgement-call coding standard, a new configuration check, and a Correction's rule (see **Corrections**). Apply those without asking to **Owned files**. Each edit is the smallest change that encodes what the sessions showed. A new check that would fail on the current branch still applies.
+**High-priority** is pain that will recur every turn or every session. It includes a judgement-call coding standard, a new configuration check, and a Correction's rule (see **Corrections**). Apply those without asking to **Owned files**. Each edit is the fewest words that state what the sessions share, not the most detailed record of them. A new check that would fail on the current branch still applies.
 
-Owned-file high-priority edits: one commit.
+Before the commit, count each rule written or changed with `wc -w`, leaving out a leading `[judgement]` or `[hard]` marker, and rewrite any over 40 words.
+
+Owned-file high-priority edits: one commit. Its message lists, for each rule written or changed, the sessions that showed the Lesson and the evidence left out of the rule.
 
 A file that is not an **Owned file**, or a write or commit that cannot complete: that item is not applied; continue the rest.
 
