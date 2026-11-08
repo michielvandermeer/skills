@@ -266,6 +266,10 @@ _Avoid_: spec checker, spec reviewer, linter
 The sub-agent (`skills:reviewer`, pinned to Opus) that `/code-review` dispatches once per axis — Standards and Spec — in parallel, each starting fresh, or for one axis alone when the caller names it. An implement run's Review is the Standards axis alone. It reads the changes since the fixed point and reports findings; it fixes nothing.
 _Avoid_: review agent, critic, review bot
 
+**Re-review**:
+A `/code-review` the user asks for again, in the same conversation, on a branch it has already reviewed. Its Standards axis reads only the commits since the commit the last review read, and both axes judge each earlier finding as fixed or still open rather than raising it again. The Review of an implement run's **fixing Iteration** is not a Re-review: its caller hands the findings itself.
+_Avoid_: second pass, follow-up review, round (a grilling term)
+
 **Design principles**:
 The fixed set of judgement calls in `skills/code-review/PRINCIPLES.md` — boundary discipline, type system discipline, idempotent operations, and the rest — that the Standards axis of `/code-review` applies on top of a repo's **Coding standards**, even when a repo documents nothing. A documented repo standard always wins over a principle. The **Planner** copies the ones that bear on a **Step** into its Step file, and the **Reviewer** judges by all of them.
 _Avoid_: smell baseline, best practices
