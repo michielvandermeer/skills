@@ -323,3 +323,11 @@ _Avoid_: persona, tester, QA agent, test user
 **First success**:
 The point at which a new person has got what they came for from an app the first time, such as a created project or a sent message. The goal every **First user** walks toward from the landing page. Named in the `/simulate-first-users` argument, or read from the app when the argument names none.
 _Avoid_: happy path, onboarding goal, activation
+
+**Hunt axis**:
+One kind of code improvement a `/hunt-codebase-improvements` run looks for, with its own evidence bar: state bugs, cruft, outbound calls, UI polish, performance, CI time, scheduled jobs, or scaling needs. A run with no instructions hunts every axis. A run with instructions hunts only the axes they name, or one free-form hunt when they fit none.
+_Avoid_: audit, lens, dimension, check type
+
+**Hunter**:
+The sub-agent a `/hunt-codebase-improvements` run sends along one **Hunt axis**, or along the user's free-form instructions. It reads the code, runs read-only commands, and drives the running app where its axis needs one, then reports findings with their evidence. It changes no file.
+_Avoid_: auditor, scanner, axis agent
