@@ -12,13 +12,14 @@ The folder is *ephemeral* in a way Issues are not. The run commits the Spec copy
 - **Committing run-folder files with `git commit --no-verify`.** Rejected: it skips a repo's hooks on purpose, and the repo owner decides what a hook guards. A hook that scans for secrets matters on every commit, whether or not it lands. A repo whose hook should not judge run bookkeeping says so in the hook, by exempting `.agents/runs/`.
 - **Splitting the Spec copy into files under a size limit.** Rejected: every agent in the run would read the Spec a new way, for a limit meant for other files.
 - **Rewriting the Spec copy from the Issue on a resume.** Rejected: the Step files were cut from the old copy, so the next Implementer would build against two different documents.
+- **Stopping a resume to ask when the Issue's body has changed.** Rejected: the run lands unattended ([ADR-0028](0028-implement-claims-its-issue-and-pushes-only-what-lands.md)), the answer is always to build the copy, and a stop that waits on a person is a halt by another name.
 
 ## Consequences
 
 - `/code-review` treats `.agents/runs/` as run bookkeeping, not code under review.
 - Every commit a run makes runs the repo's hooks, run-folder commits included: the Spec copy, the Step files, the Halt record, and the deletion before landing. No agent in a run passes `--no-verify`. A repo whose hook would refuse run bookkeeping, such as a file-size limit a long Spec breaks, exempts `.agents/runs/` in the hook itself.
 - When a hook refuses a run-folder commit, the run halts and quotes the hook's output. The user exempts the folder in the hook, then runs `/implement` again.
-- A run writes its Spec copy once and never rewrites it. A changed Issue reaches no run already started. To build the change, the user deletes the run's branch and worktree and runs `/implement` again.
+- A run writes its Spec copy once and never rewrites it. A changed Issue reaches no run already started. A resume that finds the Issue's body different from its Spec copy says so in one line, with how to build the new text, and carries on without asking. To build the change, the user deletes the run's branch and worktree and runs `/implement` again.
 - The scratch folder holds a `.gitignore` of `*`, so no commit sweeps in a throwaway script or screenshot.
 - On the local Tracker, a repo mid-run can hold the run folder beside a Map's Decision tickets under `.agents/`. They are told apart by directory, so anything new that scans `.agents/` must pick its root deliberately.
 - A halted run leaves the folder on its branch, and `/implement` resumes from it: at the first Step not marked done, or at Review when every Step is. Nothing surfaces it to the user unprompted.
