@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-08: Resume names a changed Issue
+A resumed `/implement` run now tells you in one line when its Issue's body changed after the run started, and how to build the new text: delete the run's branch and worktree, then run `/implement` again. The run carries on with the text it started with and never stops to ask. Before, it sometimes stopped to ask and sometimes said nothing.
+
 ## 2026-11-08: Specs are read cold first
 Every Spec that `/grill-with-docs`, `/triage`, `/wayfinder`, or `/prototype` writes is now read first by a Cold reader that sees only the draft, retells it, and names each sentence it could read two ways. The session rewrites each misread part to state what you decided and shows you a short **Cold reader** list before the Validator's report. Before, a sentence only you could read correctly went through to `/implement`, which built the other reading.
 
