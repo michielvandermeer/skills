@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-08: Doctor trims Coding standards
+`/doctor` now has a Standards health pass that cuts every Coding standards rule to one line of at most 40 words, merges duplicates, drops stale rules, deletes rules a check fully enforces, and moves text that is not a rule into `.agents/refs/`. Its report shows words per file before and after, and `/retro` writes each new rule in the same short shape. Before, standards grew without limit, and an `/implement` run paid for every word of them again on every Step.
+
 ## 2026-11-07: Runs stay in their worktree
 Every agent an `/implement` or `/hillclimb` run starts is now told the worktree's absolute path and edits files only under it. An Implementer that finds an edit outside it redoes the edit in the worktree, and the run's final message names the stray file to check in your main checkout. Before, a Step's edit could land in the main checkout and be missing from the branch.
 
