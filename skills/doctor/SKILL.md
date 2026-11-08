@@ -1,6 +1,6 @@
 ---
 name: doctor
-description: "Moves documents into this project's canonical layout, closes local Issues the code already implements, and brings every ADR to state the decision in force."
+description: "Moves documents into this project's canonical layout, closes local Issues the code already implements, brings every ADR to state the decision in force, and trims oversized Coding standards to one short line per rule."
 disable-model-invocation: true
 model: sonnet
 effort: high
@@ -8,7 +8,7 @@ effort: high
 
 # Doctor
 
-Keep a project's decision documents healthy: move every document into its canonical location, close the local Issues that already shipped, and bring every ADR in `docs/adr/` to the shape where it states the decision in force, as things stand today — see [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) for that shape. Act on your own judgement from start to finish: make every change below, commit them all in one commit, then report.
+Keep a project's decision documents healthy: move every document into its canonical location, close the local Issues that already shipped, bring every ADR in `docs/adr/` to the shape where it states the decision in force, as things stand today — see [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) for that shape — and trim the Coding standards to one short line per rule. Act on your own judgement from start to finish: make every change below, commit them all in one commit, then report.
 
 Issues live in the repo's **Tracker**: carry out each operation on one — file, read, list, rewrite, set status, comment, link, close — as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
@@ -44,7 +44,7 @@ Classify each remaining document by what it actually contains. Filename and curr
 
 - **Spec** (also plan and PRD): has (or is clearly meant to have) sections like Problem Statement, Solution, How to Check It, User Stories, Implementation Decisions, Testing Decisions, Out of Scope — the `/to-spec` template — or a `Status:` line with a triage role plus prose describing a feature to build.
 - **Idea**: has sections like Motivation, Goal, Decisions (locked), Out of scope, Open questions — the shape `/validate-spec` checks on an Issue in `needs-grilling`. Looser and earlier-stage than a Spec; no implementation detail.
-- **ADR**: the shape in [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) — a short title plus 1-3 sentences of context/decision/why, with or without a `status:` line, optionally Considered Options or Consequences. Usually sequentially numbered. The ADR pass below strips any status line once the ADR lands.
+- **ADR**: the shape in [domain-modeling/ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) — a short title plus 1-3 sentences of context/decision/why, with or without a `status:` line, optionally Considered Options or Consequences. Usually sequentially numbered. The ADRs pass below strips any status line once the ADR lands.
 - **Coding standards**: documents how code should be written or how the repo/team works, contribution guidelines included. Common filenames: `CODING_STANDARDS.md`, `CONTRIBUTING.md`, `STYLEGUIDE.md`.
 - **Old refinement**: the legacy refinement shape — Intent, How it works today, In scope, Out of scope, Prototype, Open Questions — or an older variant: Introduction, Use cases, Scope, Notes, and older still a Technical details section. Functional throughout, with no implementation decisions and no `Status:` line. It is a source only, and it converts to an Issue (below).
 - **Issue**: a `Category:` line and a `Status:` line near the top.
@@ -151,14 +151,37 @@ Application code stays as it is, and the report is the only record of a bug.
 
 Done when every ADR you keep has a number no other ADR in its folder holds, has no `status:` line, states the decision in force, and agrees with the code — or disagrees only where the code has a bug the report names.
 
+## Standards health
+
+Bring every Coding standards rule to the shape [ADR-0081](../../docs/adr/0081-a-coding-standards-rule-is-one-short-line.md) sets, because `/implement` copies each rule that applies into every Step file. This pass runs after the ADRs pass and before the Update every link pass, so that pass also fixes links to text this pass moved or merged. It changes the standards itself, in the one commit, and it writes no Spec, no ADR, and starts no `/implement` run.
+
+**Files.** The documents `/implement` hands its agents as Coding standards, found the way `/code-review` finds them: `.agents/refs/` first, then a root `CODING_STANDARDS.md` or `CONTRIBUTING.md` (the Layout pass has already moved a root-level one), and only documents that say how code should be written. A testing document an index links to as standards counts. A reference document such as a linter catalogue, build commands, or a triage seed does not. A repo with no Coding standards skips this pass; the report says so in one line.
+
+**Rule shape.** One imperative line of at most 40 words, counted as whitespace-separated words the way `wc -w` counts. It holds the requirement, its exceptions and scope, and at most one short example or reason. A leading `[judgement]` or `[hard]` marker stays and is not counted. Nested bullets under a rule belong to it and count toward its words. Split one long rule into several one-line rules when that fits. The cap is fixed here: no per-repo setting, no per-file or total budget.
+
+**Never drop a requirement to fit.** Every requirement, exception, and scope limit in the old text is kept, moved to a named place, or covered by a check you have read. A rule that cannot fit in 40 words stays as long as it needs and goes in the report as over the cap. Write no new requirement.
+
+Apply these to every rule:
+
+- **History.** Cut an incident story, the issue it came from, and the commit that fixed it to an `(#n)` or SHA reference at the end of the rule.
+- **Enforced.** Delete a rule when an analyzer rule, a lint rule or setting, or the repo's Pre-review check covers all of it. Coverage counts only after you have read that check's source or documented behaviour and confirmed it catches every case the rule names. When a check covers part of a rule, keep the uncovered part in full and drop the covered part. When you cannot confirm coverage, the rule stays and goes in the report. Leave no pointer line behind.
+- **Duplicates.** Rules that state the same requirement, in one file or across files, become one rule in the file whose topic fits best, keeping every exception either source had.
+- **Stale.** Drop a rule that names a path, type, or symbol absent from the codebase when nothing succeeds it. When the name's history in git shows a rename, give the rule the new name. When you cannot tell which happened, the rule stays and goes in the report.
+- **Not a rule.** Move text that is not a rule (stack facts, process steps, config values, helper catalogues) to the `.agents/refs/` document whose topic fits it, or a new one there, by the same content-shape judgement the Layout pass uses. An index file that only links the standards documents stays.
+- **`[judgement]`.** Never add, remove, or change a marker. List as candidates the unmarked rules whose break would be a style matter rather than a wrong result, a crash, or lost data ([ADR-0079](../../docs/adr/0079-a-coding-standards-rule-is-hard-unless-marked-judgement.md)).
+
+Count words with `wc -w`, the same way before and after, over the same file set.
+
+Done when every rule is one line of at most 40 words or is in the report as over the cap, every old requirement is kept, moved, or covered by a check you read, and every file's word count before and after is in hand for the report.
+
 ## Update every link
 
-Grep the whole repo for every path the Layout pass moved or deleted and every ADR you Folded, renumbered, renamed, or deleted — search both the old path and the bare filename, and include `CLAUDE.md` and `AGENTS.md`. Fix every link you find, in skills, READMEs, code comments, anywhere a path, a bare filename, or an `ADR-NNNN` reference appears. A link to a deleted ADR with no Folded successor goes, along with any words that only make sense beside it. A bare `ADR-NNNN` naming a duplicate's number, where the words around it don't settle which ADR it means, stays as written and goes in the report.
+Grep the whole repo for every path the Layout pass moved or deleted, every ADR you Folded, renumbered, renamed, or deleted, and every Coding standards document the Standards health pass merged into another file or deleted — search both the old path and the bare filename, and include `CLAUDE.md` and `AGENTS.md`. Also search every heading anchor (`#...`) of a rule or section the Standards health pass moved or merged. Fix every link you find, in skills, READMEs, code comments, anywhere a path, a bare filename, an anchor, or an `ADR-NNNN` reference appears. A link to a deleted ADR with no Folded successor goes, along with any words that only make sense beside it. A bare `ADR-NNNN` naming a duplicate's number, where the words around it don't settle which ADR it means, stays as written and goes in the report.
 
-Done when every old path and bare filename greps clean across the repo, and every bare `ADR-NNNN` naming a duplicate's number is fixed or in the report.
+Done when every old path, bare filename, and moved anchor greps clean across the repo, and every bare `ADR-NNNN` naming a duplicate's number is fixed or in the report.
 
 ## Report
 
-Close with what moved and where, what stayed and why (unclassified, collision, no effort folder, a status the local Tracker lacks, the repo's Tracker ref), which Issues you closed as done, and what you renumbered, Folded, rewrote, and deleted among the ADRs, with the evidence for each ADR changed because of the code — the reader's way of knowing what to look at in the diff. List each `ADR-NNNN` you could not attribute to one of a duplicate's ADRs, with where it appears. When the Tracker ref kept documents in place, suggest `/setup`, which offers to move local work into the Tracker. List every bug the code check found, with its evidence and a suggestion to take it to `/triage`. For the report, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill.
+Close with what moved and where, what stayed and why (unclassified, collision, no effort folder, a status the local Tracker lacks, the repo's Tracker ref), which Issues you closed as done, and what you renumbered, Folded, rewrote, and deleted among the ADRs, with the evidence for each ADR changed because of the code — the reader's way of knowing what to look at in the diff. List each `ADR-NNNN` you could not attribute to one of a duplicate's ADRs, with where it appears. When the Tracker ref kept documents in place, suggest `/setup`, which offers to move local work into the Tracker. List every bug the code check found, with its evidence and a suggestion to take it to `/triage`. For Standards health, give a table of words per file before and after with a total row. List every rule merged, deleted as enforced (naming the check), dropped as stale, moved, or split, each with its reason. List every rule left over 40 words, every rule left in place because coverage or staleness could not be confirmed, and the `[judgement]` candidates. A repo with no Coding standards gets one line saying the pass was skipped. For the report, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill.
 
-Done when every move, every document left where it was, every Issue you closed, every ADR you renumbered, Folded, rewrote, or deleted, every `ADR-NNNN` you could not attribute, and every bug appears in the report.
+Done when every move, every document left where it was, every Issue you closed, every ADR you renumbered, Folded, rewrote, or deleted, every `ADR-NNNN` you could not attribute, and every bug appears in the report, and the Standards health part is in it: the skip line, or the word counts and every rule changed, left over the cap, left unconfirmed, or named a `[judgement]` candidate.

@@ -46,9 +46,11 @@ A Correction whose fix points to a pattern future code could repeat shows a **Le
 
 For each Lesson, search the codebase for other copies of the corrected pattern: the next agent copies what it finds. The copies go into the Lesson's Issue, else onto the not-applied list as **High-priority**.
 
-A Lesson that contradicts a rule already written changes or removes that rule, so the Coding standards keep one rule on the point.
+A Lesson that contradicts or repeats a rule already written changes or removes that rule, so the Coding standards keep one rule on the point.
 
 Write the rule into the repo's existing Coding standards: the file in `.agents/refs/` that holds them, else a root `CODING_STANDARDS.md` or `CONTRIBUTING.md`, else create `.agents/refs/coding-standards.md`. A Correction in a file this repo does not own still writes its rule here.
+
+Every Coding standards rule `/retro` writes is one imperative line of at most 40 words, with the incident cut to an `(#n)` or commit reference ([ADR-0081](../../docs/adr/0081-a-coding-standards-rule-is-one-short-line.md)).
 
 ## Categories
 
@@ -92,7 +94,7 @@ A **Structural fix** changes the shape of the code, wider than one type, so the 
 
 1. List the open Issues. One that already covers the fix gets the sessions' evidence as a comment, and filing stops there.
 2. Otherwise file one Issue per Lesson in `needs-triage`, category `enhancement`. Its body names the mistake the sessions corrected, the Structural fix, the check and where it goes with a link to the repo's own steps for adding one, and every copy of the pattern.
-3. Apply the Lesson's interim guard now: the first outcome that applies without new code — a configuration check, else a Coding standards rule. The Issue names it, to delete when the fix lands.
+3. Apply the Lesson's interim guard now: the first outcome that applies without new code — a configuration check, else a Coding standards rule, in the shape **Corrections** sets. The Issue names it, to delete when the fix lands.
 
 A fix for a file this repo does not own is not filed; it stays in the summary. A filing that cannot complete moves the item to the not-applied list as **High-priority**, saying why.
 
