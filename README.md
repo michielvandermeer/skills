@@ -191,7 +191,7 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | Skill | Description |
 |-------|-------------|
 | `brainstorm` | Explore a vague problem as very different Directions, side by side, and file the ones you keep as Issues. |
-| `code-review` | Review changes since a fixed point along two axes — Standards, with the design principles, and Spec — in parallel sub-agents. |
+| `code-review` | Review changes since a fixed point along two axes — Standards, with the design principles, and Spec — in parallel sub-agents. Asked again in the same conversation, it reviews only what changed since and reports each earlier finding as fixed or still open. |
 | `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, brings every ADR to state the decision in force, and trims oversized Coding standards to one short line per rule. Once `/setup` has run, it leaves Issues alone. |
 | `explain` | Explain anything as a written walkthrough, a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |

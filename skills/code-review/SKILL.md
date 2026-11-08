@@ -14,11 +14,21 @@ Both axes run as **parallel sub-agents** so they don't pollute each other's cont
 
 ### 1. Pin the fixed point
 
-Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. If they didn't specify one, ask for it.
+**Re-review.** The review is a Re-review when all of these hold, and a full review otherwise:
+
+- This conversation already holds a `/code-review` report for the current branch, with `reviewed up to` and a short SHA in its summary line. A report written for an agents-only caller, or before Re-reviews existed, has none.
+- The user asks for a review again with no fixed point, or with the same fixed point as that report. Asking for the whole branch again ("review all of it again") or naming another fixed point is a full review.
+- The caller hands no findings to check. Declined findings count as handed.
+
+Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. If they didn't specify one and this is not a Re-review, ask for it. A Re-review keeps the fixed point of the last report.
 
 Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
 
 Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here — not inside two parallel sub-agents.
+
+Capture `git rev-parse --short HEAD` too: step 5 names it in the summary line.
+
+A Re-review starts at `<last>`, the short SHA after `reviewed up to` in that report's summary line, and keeps the original fixed point for the Spec axis. When `git merge-base --is-ancestor <last> HEAD` fails, the commit is gone from the branch (a rebase, reset, or amend): review in full and open the report with one line saying so. Otherwise the Standards diff command and commit list run from `<last>` to `HEAD`: `git diff <last>...HEAD` and `git log <last>..HEAD --oneline`. The empty-diff check above stays on the whole change from the original fixed point. When `<last>..HEAD` holds no commits, step 4 sends no Standards reviewer.
 
 ### 2. Identify the spec source
 
@@ -49,27 +59,30 @@ Both briefs end with the same instruction, `<tw>` being the absolute path of [`t
 
 **Standards sub-agent prompt** — include:
 
-- The full diff command and commit list.
+- The full diff command and commit list. On a Re-review they run from `<last>` (step 1).
 - The list of standards-source files you found in step 3, and the absolute path of PRINCIPLES.md (in the folder the host loaded this skill from, confirmed with `ls` before you hand it over), with the instruction to list the headings of each first (`grep -n '^#'`) and read the sections that bear on the diff.
 - The Spec's path from step 2, when a Spec was found, with the instruction to read its Implementation Decisions section (`grep -n '^## '` finds it) before judging. A Judgement call that a decision there explicitly settles is dropped from the report. A Hard violation that a decision there explicitly mandates is reported as a Judgement call that names the decision.
 - Findings the caller says were declined before, each with its reason, when the caller hands any: raise one again only when its reason does not hold, and say why.
-- Findings the caller hands to check, when it hands any, as `/implement` does on a fixing Iteration: judge each as fixed or declined, and judge the fix itself against the standards.
+- Findings the caller hands to check, when it hands any, as `/implement` does on a fixing Iteration: judge each as fixed or declined, and judge the fix itself against the standards. On a Re-review this skill hands over the Standards section of the last report as those findings: the reviewer reports each as `Fixed:` or `Still open:` in one line before any new findings, and raises new findings only on hunks in this diff.
 - For a caller that says only agents read the report: the instruction that the report ends with one closing line, `Standards: <h> hard violations, <j> judgement calls`, counting the findings opened with `Hard violation:` and `Judgement call:` above it. A report with no findings still ends with it, reading zero of each. The caller matches that line to tell a complete report from a cut-off one.
 - The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any place the diff goes against a design principle: name the principle and quote the hunk. Open each finding with `Hard violation:` or `Judgement call:`. A hard violation breaks a rule a documented standard states, unless the rule starts with `[judgement]`, or names a defect — a wrong result, a crash, or lost data — whichever principle or rule it falls under. Every other finding, a break of a `[judgement]` rule included, is a judgement call, and a documented repo standard overrides a principle. Skip anything tooling enforces. Under 400 words."
 
 **Spec sub-agent prompt** — include:
 
-- The diff command and commit list.
+- The diff command and commit list, from the original fixed point even on a Re-review, because completeness is judged against the whole change.
 - The path or fetched contents of the spec.
+- On a Re-review, the Spec section of the last report, with the instruction to report each earlier finding as `Fixed:` or `Still open:` in one line before any new findings, and to repeat none of them in full. A requirement that is still missing stays `Still open:`.
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
 
 If the spec is missing, skip the Spec sub-agent and note this in the final report.
+
+On a Re-review with no commits since `<last>`, write the Standards section yourself: one line saying there were no new commits, then every earlier Standards finding as `Still open:`. The Spec sub-agent runs as usual.
 
 ### 5. Aggregate
 
 Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned; a caller that named one axis gets only that heading. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
 
-End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
+End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any), then `reviewed up to <short sha>`, the `HEAD` captured in step 1. A caller that says only agents read the report gets no SHA. Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
 
 ## Why two axes
 
