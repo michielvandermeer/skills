@@ -103,7 +103,7 @@ The folder that stands where a context's name would in a work document's path, i
 _Avoid_: shared, global, cross-app
 
 **Coding standards**:
-A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say. A rule starts with `[judgement]` or `[hard]` to say how heavily a break counts; an unmarked rule is hard ([ADR-0079](docs/adr/0079-a-coding-standards-rule-is-hard-unless-marked-judgement.md)). A rule is one imperative line: a requirement with its exceptions and scope, and the story behind it left to git ([ADR-0081](docs/adr/0081-a-coding-standards-rule-is-one-short-line.md)). Distinct from the **Design principles**, which apply even when a repo documents nothing.
+A repo's own documents on how its code should be written — at `.agents/refs/` first, or a root-level `CODING_STANDARDS.md` or `CONTRIBUTING.md` when that is where the repo keeps them. Each repo writes its own rules; the skills name where to find them, never what they say. A rule starts with `[judgement]` or `[hard]` to say how heavily a break counts; an unmarked rule is hard ([ADR-0079](docs/adr/0079-a-coding-standards-rule-is-hard-unless-marked-judgement.md)). A rule is one imperative line: a requirement for a kind of change, never one file, type, or Issue, with its exceptions and scope, and the story behind it left to git ([ADR-0081](docs/adr/0081-a-coding-standards-rule-is-one-short-line.md)). Distinct from the **Design principles**, which apply even when a repo documents nothing.
 _Avoid_: style guide, conventions, coding-standards.md
 
 **Pre-review check**:
