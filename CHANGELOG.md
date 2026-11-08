@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-08: Specs are read cold first
+Every Spec that `/grill-with-docs`, `/triage`, `/wayfinder`, or `/prototype` writes is now read first by a Cold reader that sees only the draft, retells it, and names each sentence it could read two ways. The session rewrites each misread part to state what you decided and shows you a short **Cold reader** list before the Validator's report. Before, a sentence only you could read correctly went through to `/implement`, which built the other reading.
+
 ## 2026-11-08: First users stop using a phone
 `/simulate-first-users` no longer sends a First user on a 375px phone screen; the third First user is now the slow-connection user, who uses a desktop screen over slow 3G and is annoyed by anything slow to appear or with no sign it is loading. Before, every run reported phone-width findings for apps that have no phone layouts, and those findings ended as Issues closed as not planned.
 
