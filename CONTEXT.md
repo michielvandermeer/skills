@@ -262,6 +262,10 @@ _Avoid_: attempt agent, hillclimber, worker
 The sub-agent (`skills:validator`) that checks a Spec `/to-spec` has just drafted. It works from the draft's path, corrects facts in that file, and returns the report of corrections and open questions; `/to-spec` then writes the corrected Spec to its Issue in one update.
 _Avoid_: spec checker, spec reviewer, linter
 
+**Cold reader**:
+The sub-agent (`skills:cold-reader`) that `/to-spec` hands a Spec draft before the **Validator** sees it, with the draft's path as its only input: no repo, no conversation. It retells in plain words what the Spec says will change and be built, and names each place it had to guess between two readings. The Driving session, which knows what was decided, rewrites the draft wherever the retelling differs.
+_Avoid_: explainer, spec explainer, fresh reader, explain-back agent
+
 **Reviewer**:
 The sub-agent (`skills:reviewer`, pinned to Opus) that `/code-review` dispatches once per axis — Standards and Spec — in parallel, each starting fresh, or for one axis alone when the caller names it. An implement run's Review is the Standards axis alone. It reads the changes since the fixed point and reports findings; it fixes nothing.
 _Avoid_: review agent, critic, review bot

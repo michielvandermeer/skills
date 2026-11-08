@@ -8,7 +8,7 @@ Each skill you type and each plugin agent sets `model:` and `effort:` in its own
   | Agent | Model | Effort |
   |---|---|---|
   | Planner, Implementer, Verifier | Sonnet | high |
-  | Climber, Validator, Researcher | Sonnet | medium |
+  | Climber, Validator, Cold reader, Researcher | Sonnet | medium |
   | Explorer | Haiku | high |
   | Reviewer | Opus | high |
 
