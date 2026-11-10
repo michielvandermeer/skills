@@ -67,7 +67,7 @@ One check in a **Spec**'s How to Check It section: what a person does on the run
 _Avoid_: acceptance check, acceptance criterion, test case, manual test, QA script
 
 **Stop rule**:
-One line in a **Spec**'s Stop Rules section naming a number the finished change must stay within for the Spec's own premise to hold: what is counted, over what scope, the threshold, and the figure measured before the Spec was written. A count that stays within it says nothing; one that falls outside it says the Spec described the code wrongly, so no **Iteration** can fix it. The **Verifier** checks every Stop rule in each Verify, and a broken one halts the run at once, leaving no **Halt record**. A Spec carries Stop Rules only when the session that settled it chose one; a Spec with none leaves the section out.
+One line in a **Spec**'s Stop Rules section naming a number the finished change must stay within for the Spec's own premise to hold: what is counted, over what scope, the threshold, and the figure measured before the Spec was written. A count that falls outside it says the Spec described the code wrongly, so no **Iteration** can fix it. The **Verifier** checks every Stop rule in each Verify, and a broken one halts the run at once, leaving no **Halt record**. A Spec carries Stop Rules only when the session that settled it chose one; a Spec with none leaves the section out.
 _Avoid_: stop condition, guard, abort rule, tripwire, sanity check
 
 **Unstated claim**:
