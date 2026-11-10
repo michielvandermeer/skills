@@ -47,7 +47,7 @@ The record of every **Attempt** on one measured number, in that number's **Hillc
 _Avoid_: decision log (that is an ADR), decision.tsv, experiment log
 
 **Spec**:
-The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, **Hand checks**, user stories, implementation and testing decisions — replacing whatever the Issue said before. Its problem, solution, Hand checks, and user stories are written for the **Product reader**; the rest is written for a developer new to the repo. The input to `/implement`, held to the **Planning principles** so one run can build it with no one to ask. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
+The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, **Hand checks**, user stories, implementation and testing decisions, and any **Stop rules** — replacing whatever the Issue said before. Its problem, solution, Hand checks, and user stories are written for the **Product reader**; the rest is written for a developer new to the repo. The input to `/implement`, held to the **Planning principles** so one run can build it with no one to ask. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
 _Avoid_: PRD, plan, design doc
 
 **ADR**:
@@ -65,6 +65,10 @@ _Avoid_: squash, consolidate, supersede
 **Hand check**:
 One check in a **Spec**'s How to Check It section: what a person does on the running product, and what they should see, written so a QA tester can follow it by hand. The **Verifier** runs every Hand check too, in each **Iteration** of an implement run. A Spec where nothing changes for a person has none, and says so.
 _Avoid_: acceptance check, acceptance criterion, test case, manual test, QA script
+
+**Stop rule**:
+One line in a **Spec**'s Stop Rules section naming a number the finished change must stay within for the Spec's own premise to hold: what is counted, over what scope, the threshold, and the figure measured before the Spec was written. A count that stays within it says nothing; one that falls outside it says the Spec described the code wrongly, so no **Iteration** can fix it. The **Verifier** checks every Stop rule in each Verify, and a broken one halts the run at once, leaving no **Halt record**. A Spec carries Stop Rules only when the session that settled it chose one; a Spec with none leaves the section out.
+_Avoid_: stop condition, guard, abort rule, tripwire, sanity check
 
 **Unstated claim**:
 A claim a Spec treats as settled that it never states as a decision and that the code does not establish as fact.
@@ -251,7 +255,7 @@ One pass of an implement run's loop over the whole Spec: Implement, then Review,
 _Avoid_: round (a grilling term), cycle, attempt (a Hillclimb term)
 
 **Halt record**:
-The file an implement run commits to its run folder when it halts with findings: its third **Iteration** ended on a **Hard violation** or a Verify finding, or the Verify after the land's rebase failed in that Iteration. It holds what the next **Implementer** needs: the findings word for word, the **Judgement calls** held, the findings declined with their reasons, and the **Deviations** so far. A resume hands it to the first Iteration's Implementer, and commits made after it count as progress, so a finding they already answer needs no fix. A later halt with findings replaces it. A halt with no findings leaves none.
+The file an implement run commits to its run folder when it halts with findings: its third **Iteration** ended on a **Hard violation** or a Verify finding, or the Verify after the land's rebase failed in that Iteration. It holds what the next **Implementer** needs: the findings word for word, the **Judgement calls** held, the findings declined with their reasons, and the **Deviations** so far. A resume hands it to the first Iteration's Implementer, and commits made after it count as progress, so a finding they already answer needs no fix. A later halt with findings replaces it. A halt with no findings, a broken **Stop rule** among them, leaves none.
 _Avoid_: halt report, halt file, resume state, checkpoint
 
 **Implementer**:
@@ -259,7 +263,7 @@ The sub-agent (`skills:implementer`) that does the Implement part of an **Iterat
 _Avoid_: Step agent, coder, worker
 
 **Verifier**:
-The sub-agent (`skills:verifier`) that does the Verify part of an **Iteration**: it reads the Spec against the diff, builds and runs the whole test suite, and runs the Spec's **Hand checks**, driving the app through the **Verify skill** when the change alters a running surface. It changes no code, and corrects the Verify skill only where the skill steered it wrong. It reports `passed`, or the findings that send the run back to Implement. The land dispatches a fresh one when a rebase brought in code the last one did not check; that one still builds and runs the whole suite, but runs only the Hand checks whose journey reads a path the rebase brought in.
+The sub-agent (`skills:verifier`) that does the Verify part of an **Iteration**: it reads the Spec against the diff, builds and runs the whole test suite, and runs the Spec's **Hand checks**, driving the app through the **Verify skill** when the change alters a running surface. It changes no code, and corrects the Verify skill only where the skill steered it wrong. It reports `passed`, the findings that send the run back to Implement, or a broken **Stop rule**, which halts the run. The land dispatches a fresh one when a rebase brought in code the last one did not check; that one still builds and runs the whole suite, but runs only the Hand checks whose journey reads a path the rebase brought in.
 _Avoid_: Checker, Prover, tester, QA agent
 
 **Climber**:
