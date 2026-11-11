@@ -107,6 +107,10 @@ A list of testing decisions that were made. Include:
 - Which modules will be tested
 - Prior art for the tests (i.e. similar types of tests in the codebase)
 
+## Stop Rules
+
+One bullet per **Stop rule**, written for a developer new to the repo. Each names what is counted, over what scope (the whole change, or each named part), the threshold, and the figure measured before this Spec, with how it was measured. Write only the Stop rules the settled design chose. Leave this section out when there are none.
+
 ## Out of Scope
 
 A description of the things that are out of scope for this spec.

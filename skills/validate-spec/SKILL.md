@@ -31,7 +31,7 @@ Go section by section through the doc, checking every applicable item below agai
 
 - **Shape** — the target has the sections its type's template requires:
   - `needs-` Issue: Motivation, Goal, Decisions (locked), Out of scope, Open questions.
-  - Spec: Problem Statement, Solution, How to Check It, User Stories, Implementation Decisions, Testing Decisions, Out of Scope, Further Notes. A Spec without How to Check It is a fact: write it from the Solution and User Stories, as the `/to-spec` template lays out.
+  - Spec: Problem Statement, Solution, How to Check It, User Stories, Implementation Decisions, Testing Decisions, Out of Scope, Further Notes, and optionally Stop Rules. A Spec without How to Check It is a fact: write it from the Solution and User Stories, as the `/to-spec` template lays out.
 
   An Issue carries exactly one status: `needs-triage`, `needs-info`, `needs-grilling`, `needs-human`, `wayfinding`, `ready-for-agent`, or `ready-for-human`. Any other status, or a second one, is a question: which status it holds is a decision. Until it is answered, check the Issue as the type its sections fit. A `needs-` Issue carries none of the banned implementation detail — file paths, class/method names, schemas, code blocks.
 
@@ -46,6 +46,8 @@ Go section by section through the doc, checking every applicable item below agai
 - **Principles** — Spec only. Apply each of the **Planning principles** in [to-spec/PRINCIPLES.md](../to-spec/PRINCIPLES.md) whose "In a Spec" signs the Spec shows. Each miss is a question: meeting it changes what gets built, or needs a person to split, prototype, or decide.
 
 - **Testing shape** — Testing Decisions describe external behavior, not markup or implementation structure. Every element, class, attribute, or output a test is said to read is one the repo's testing documents allow: read those documents, found the way `/code-review` finds Coding standards. One they forbid is a fact: reword it to what they allow, such as the element's text or state.
+
+- **Stop rules** — Spec only. A stop instruction anywhere outside Stop Rules, such as "stop if the touched count is under a third of the starting set" in Implementation Decisions, is a fact: move it into Stop Rules in the rule's shape (what is counted, over what scope, the threshold, the measured figure with how it was measured) and remove it from where it was. A Stop rule whose count reads two ways, or that has no measured figure, is a question. So is its scope when the rule states none, or states one that could be the whole change or each part: that is a separate question from the one about the figure, and picking a scope yourself does not settle it. A Spec with no stop instruction and no count it relies on gains no Stop Rules section, and the report raises nothing about Stop rules.
 
 - **Completeness** — every Problem Statement claim is addressed by the Solution; every Solution element has at least one User Story and one Hand check, unless How to Check It says nothing changes for a person; anything adjacent the doc doesn't cover is named in Out of Scope, not left implicit.
 

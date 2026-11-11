@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-11: Broken Stop rules halt the run
+A Spec can now hold a Stop Rules section, and an `/implement` run halts when the finished change breaks one: it lands nothing, quotes the rule and the count it measured, and tells you the Issue needs a new grilling session. To build a corrected Spec, delete the run's branch and worktree, then run `/implement` again. Before, such a run landed and reported the gap only as a deviation.
+
 ## 2026-11-08: Resume names a changed Issue
 A resumed `/implement` run now tells you in one line when its Issue's body changed after the run started, and how to build the new text: delete the run's branch and worktree, then run `/implement` again. The run carries on with the text it started with and never stops to ask. Before, it sometimes stopped to ask and sometimes said nothing.
 

@@ -72,8 +72,9 @@ A number a Spec promises or relies on is measured before anyone trusts it: a spe
 - A target such as "twice as fast", "under 200 ms", or "half the memory", with no baseline measured on today's code.
 - A Hand check that reads a number off a single run.
 - A number taken from a report without anyone measuring it.
+- A count the Spec relies on that only the finished change can confirm, such as how many tests or call sites the change will touch, with no Stop rule.
 
-**Fix:** measure the baseline before the Spec, and record the run count and the spread. Name what limits the number, such as a lock, the disk, or one code path, using a profile. Rule out what else the number could be measuring: errors, cached or skipped work, code that never ran, noise. The Hand check measures the result the same way the baseline was measured.
+**Fix:** add a Stop rule with the measured figure for a count only the finished change can confirm. Measure the baseline before the Spec, and record the run count and the spread. Name what limits the number, such as a lock, the disk, or one code path, using a profile. Rule out what else the number could be measuring: errors, cached or skipped work, code that never ran, noise. The Hand check measures the result the same way the baseline was measured.
 
 ## Attack the premise
 
