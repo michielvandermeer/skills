@@ -4,7 +4,7 @@
 
 ## Sub-features
 
-- `grill-rounds` asks the open questions as a numbered set with lettered options, and waits.
+- `grill-rounds` asks the questions as a numbered set separated by `---`, lettering options only on a closed choice, and waits.
 - `grill-docs` writes `CONTEXT.md` before the next round, and `docs/adr/NNNN-slug.md` when a decision passes the ADR tests.
 - `grill-explorer` sends every question about the code to a `skills:explorer` agent instead of asking the user.
 - `grill-spec` ends a confirmed change in a Spec on `.agents/issues/<slug>.md`, status `ready-for-agent`, in one commit with the docs, after a `skills:cold-reader` explain-back and then a `skills:validator` check.
@@ -23,8 +23,8 @@ Preconditions:
 - A small, real plan the scratch repo can hold, such as "add a `greet(name)` function to a new `greet.py` that returns `Hello, <name>!`, with a unittest". A plan with one domain term ("greeting") gives the glossary something to record.
 - A decision between two close options in that plan, such as whether `greet("")` returns `Hello, !` or raises `ValueError`. Settle it in a round, and note the answer.
 
-- **Start.** Run `verify.py turn <run> "/skills:grill-with-docs <plan>"`. The final message is round 1: questions numbered `Q1..Qn`, each with lettered options.
-- **Answer rounds.** Run `verify.py turn <run> "Q1: a, Q2: b"` with the answer a user would give, one turn per round. After each turn, `scratch-NN.txt` shows `CONTEXT.md` once a term has settled.
+- **Start.** Run `verify.py turn <run> "/skills:grill-with-docs <plan>"`. The final message is round 1: a `Subject:` line, then questions numbered `Q1..Qn` separated by `---` lines, with lettered options only on a closed choice.
+- **Answer rounds.** Run `verify.py turn <run> "Q1: yes, Q2: b"` with the answer a user would give, "yes" for an unlettered question and a letter for a lettered one, one turn per round. After each turn, `scratch-NN.txt` shows `CONTEXT.md` once a term has settled.
 - **Read-back.** When no question is left, the final message is a read-back asking whether understanding is shared. Run `verify.py turn <run> "yes"`.
 - **Spec.** After the `yes`, the session drafts the Spec. The transcript shows a `skills:cold-reader` dispatch whose whole prompt is the draft's absolute path, then a `skills:validator` dispatch, and the final message shows the **Cold reader** list above the Validator's report.
 - **Outside check.** Read the Spec in `.agents/issues/<slug>.md`. Every sentence about the close-options decision states the option answered in the session, and none allows the other. Judge it against that answer in the transcript, not against the Cold reader list.

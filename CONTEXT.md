@@ -163,7 +163,7 @@ One batch of questions a Driving session puts to the user at once, covering the 
 Every decision on the Design tree whose prerequisites are already settled — what a Round can ask without guessing at answers it hasn't heard. An empty frontier ends the session.
 
 **Question**:
-A frontier item with more than one defensible answer, where a different answer visibly changes what gets built. Numbered `Q1`, `Q2` continuously across a session; options within one lettered `a`, `b`, `c`.
+A frontier item with more than one defensible answer, where a different answer visibly changes what gets built. Numbered `Q1`, `Q2` continuously across a session, and separated from the next Question by a `---` line. Its options are lettered `a`, `b`, `c` only when the answers are a small closed set; otherwise it carries none, is answered in prose, and is worded so "yes" accepts its recommendation.
 _Avoid_: open question — that is a parked item, not a live Question
 
 **Explainer**:
@@ -177,10 +177,6 @@ _Avoid_: example table, scenario list
 **Declaration**:
 A frontier item with one defensible answer, reasoned out and stated flat rather than asked. Numbered `D1`, `D2` continuously across a session, one per line; silence accepts it.
 _Avoid_: assumption
-
-**Orientation**:
-The one to three plain sentences that open round 1 of a `/grilling` session, naming what is being grilled so a reader who landed on the tab cold among several can place it. Round 1 only.
-_Avoid_: summary, preamble, blurb, lede
 
 **Read-back**:
 The closing round of a `/grilling` session once the Frontier is empty: the settled design restated in plain sentences, walking every surface and case the change touches, with no Questions and no new Declarations, ending in the ask for confirmation that we have reached a shared understanding. No Spec, ADR, or code is written before that confirmation.

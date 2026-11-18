@@ -33,7 +33,7 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 ## Altitude
 
-Open round 1 with an **orientation** — one to three plain sentences that name what we are grilling, written for someone who opened this tab cold among several sessions. Then name the **subject** on one line — `Subject: functional (correct me if not)` — in round 1 only, like the orientation; print it again only in the round where it changes, with one line saying why. When a subject is genuinely mixed, classify by where *my* judgement is needed rather than by which half is bigger. An Issue with no user-visible change — a refactor, a flag removal — is `technical` from round 1.
+Open round 1 by naming the **subject** on one line — `Subject: functional (correct me if not)`. Print it again only in the round where it changes, with one line saying why. When a subject is genuinely mixed, classify by where *my* judgement is needed rather than by which half is bigger. An Issue with no user-visible change — a refactor, a flag removal — is `technical` from round 1.
 
 The subject sets the **altitude** you grill at:
 
@@ -61,22 +61,19 @@ Raising altitude means fewer and broader questions. It bottoms out at the functi
 Hold this format every session:
 
 ```
-We're deciding what happens when someone opens an export link after it has expired, and what to call the window that file stays valid for.
-
 Subject: functional (correct me if not)
 
 ## Round 1
 
-Q1. **Does an expired export stay downloadable?**
+Q1. **Should an expired export be deleted?**
 
 An export is a file we generate on request and keep for a while. This decides what someone sees when they open the link after that window closes.
 
-- a. Deleted on expiry. Storage stays flat, and someone who bookmarked the link gets a bare 404. ← recommended
-- b. Kept and marked expired. The link still resolves and can say why, at the cost of unbounded growth.
+*My recommendation:* yes, delete it on expiry. Storage stays flat, and the bookmarked-link case is rare enough to answer with a generic 404.
 
-*My recommendation: a*, because the bookmarked-link case is rare enough to answer with a generic message.
+---
 
-Q2. **What should we call the window an export stays valid for?**
+Q2. **Should we call the window an export stays valid for `retention`?**
 
 This name goes into the schema, the API, and the screen, so it is expensive to change later. Proposed meaning: the time from generation until the file is deleted.
 
@@ -86,7 +83,7 @@ This name goes into the schema, the API, and the screen, so it is expensive to c
 | Link opened on day 8 | Outside it; the export is gone |
 | Owner deletes the export on day 2 | Ends it early; the window itself is unchanged |
 
-*My recommendation:* `retention`, since that is the word the storage layer already uses.
+*My recommendation:* yes, `retention`, since that is the word the storage layer already uses.
 
 ### Declarations
 
@@ -94,17 +91,18 @@ D1. Exports go to the object store already behind the reports feature.
 D2. Retention is one fixed window for every user.
 ```
 
-Round 2 continues the numbering:
+Round 2 continues the numbering. Q3 has a small closed set of answers, so it is lettered:
 
 ```
 ## Round 2
 
-Q3. **Does a deleted export leave a record?**
+Q3. **What does the download page show for an expired export?**
 
 The download page lists past exports. This decides whether an expired one still appears there.
 
-- a. No. The list shows only what can be downloaded, so an expired export vanishes without trace. ← recommended
-- b. Yes, marked expired. The history stays complete, at the cost of a list that grows without bound.
+- a. Nothing. The list shows only what can be downloaded, so an expired export vanishes without trace. ← recommended
+- b. A row marked expired, with the link disabled. The history stays complete, at the cost of a list that grows without bound.
+- c. A row marked expired, with a "generate again" button. It helps most, at the cost of a new action and endpoint.
 
 *My recommendation: a*, because nobody has asked for export history.
 
@@ -113,13 +111,13 @@ The download page lists past exports. This decides whether an expired one still 
 D3. The 404 page carries the generic "this link has expired" copy the site already uses.
 ```
 
-A blank line separates questions; one declaration per line, packed tight.
+A line holding `---`, with a blank line above and below, separates one question from the next, and `### Declarations` follows the last question directly. One declaration per line, packed tight.
 
 Every question, a yes/no one included, opens with an **explainer** — one to three sentences saying what the question is about and what rides on the answer, written for someone who has never seen the thing you are asking about. It sets the question up and stops there.
 
 **Scenario-test** every term: a question that defines or names one follows its explainer with a **scenario table** — one row per situation the term would be used in, at least one on the boundary, each row showing how the term reads there. A closed question's table gains a column per option.
 
-Letter the options where the choice is closed, one per line, each ending with what it costs, and mark your pick twice: `← recommended` on the option, and a `*My recommendation:*` line carrying the reason. An open question has nothing to letter, so it gets the recommendation line alone, as Q2 does. I answer by letter: `Q1: b`.
+Ask a question open by default: in prose, with the `*My recommendation:*` line alone, as Q1 and Q2 do. Word it so "yes" accepts your recommendation. Letter the options only where the answers are a small closed set you could name before I answered, as Q3 does: one option per line, each ending with what it costs, and your pick marked twice, with `← recommended` on the option and a `*My recommendation:*` line carrying the reason. I answer a lettered question by letter: `Q3: b`.
 
 Before round 1, read every **Grilling profile** in `.agents/refs/profiles/`: mine is the one whose `Email:` line lists `git config user.email`, else the one named after `git config user.name` in kebab case; the rest are my team. Only their `## Habits` count. Where one of my **Habits** applies to a closed question, recommend the option it points to, with a `*Your habit:*` line above the recommendation line naming that Habit; when you hold a different pick against it, keep yours and say why on that line. Name each person whose Habit applies, by first name, on the option it points to — `← recommended, Ana, Ben`, `← Chen` — me included; a teammate gets the name and no line. An open question carries no names. A Habit moves a recommendation and never turns a question into a declaration, and my picks in this session outrank my profile. With no profiles, or no email, rounds run as above with no names.
 
