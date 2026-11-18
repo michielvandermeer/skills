@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-18: Grilling questions are less rigid
+A `/grill-with-docs` question now comes in plain prose with one recommended answer, which you accept by saying "yes", and gets lettered options only when the answers are a small closed set. A `---` line now separates questions, and round 1 opens with the `Subject:` line instead of an orientation sentence. Before, nearly every question came as an a, b, c list.
+
 ## 2026-11-18: Terms come with scenarios
 Every `/grill-with-docs` question that defines or names a term now ends its explanation with a table of scenarios where the term would be used, including boundary cases, so you can correct the definition against concrete cases. Before, you judged a proposed term from its wording alone.
 
