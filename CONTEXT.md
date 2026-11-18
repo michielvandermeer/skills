@@ -122,6 +122,10 @@ _Avoid_: instruction file, agent doc, prompt file
 The `/doctor` pass that checks the rules in a repo's own **Steering files**. It merges a rule that repeats another, fixes or drops a path to a file that no longer exists, and settles a contradiction between two rules when an ADR, the code, or a later commit shows which one holds. It reports every contradiction it cannot settle and every path it cannot judge.
 _Avoid_: steering audit, agent docs lint, rule check
 
+**Glossary health**:
+The `/doctor` pass that checks every `CONTEXT.md` a repo has. It deletes each entry whose word means the same in any codebase or names how the app is built, each section that is not the intro or `## Language`, and the usage or implementation text inside a kept entry. It reports what it deleted and every entry it was unsure about, which stays.
+_Avoid_: glossary audit, glossary lint, context cleanup
+
 **Pre-review check**:
 A command a repo's `AGENTS.md` or `CLAUDE.md` names on a line that starts `Pre-review check:`, with `<base>` standing for the base branch. It lists the **Coding standards** breaks it can find in what the branch adds, and exits non-zero when it lists any. It holds the mechanical rules a **Hard violation** most often cites, so an **Implementer** fixes them in a few turns instead of an **Iteration**. A repo without the line has none, and the run goes straight to Review.
 _Avoid_: lint, precheck, pre-commit check

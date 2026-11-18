@@ -63,7 +63,7 @@ When the user states how something works, check whether the code agrees. If you 
 
 When a term is resolved, update `CONTEXT.md` right there. Don't batch these up — capture them as they happen. In a round-based session the term resolves when the user's answer arrives, or when a declaration has stood through the round it appeared in; the entry is written before the next round goes out, and a declaration promising an entry later is the batching this rule forbids. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
 
-`CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
+`CONTEXT.md` is a glossary and nothing else: an intro and `## Language` entries. It is no spec, scratch pad, or home for implementation decisions. Before writing an entry, apply the Rules in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md#rules): an entry defines what a term is, never how the application uses it or is built. A rule, usage, or implementation fact that surfaces goes in the code, or in an ADR when the code cannot explain it and the three tests below hold.
 
 ### Offer ADRs sparingly
 
@@ -77,4 +77,4 @@ If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](
 
 When the decision on the table already has an ADR, follow [Rewriting an ADR in place](./ADR-FORMAT.md#rewriting-an-adr-in-place).
 
-An ADR argues, and a glossary entry defines. For the argument, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill. Where either document fixes the meaning of a term, spend whatever words precision needs — that is a definition site, and it is the one place plainness gives way.
+An ADR argues, and a glossary entry defines. For the argument, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill. Where either document fixes the meaning of a term, spend whatever words precision needs on what the term means, never on how it is used — that is a definition site, and it is the one place plainness gives way.
