@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-18: Terms come with scenarios
+Every `/grill-with-docs` question that defines or names a term now ends its explanation with a table of scenarios where the term would be used, including boundary cases, so you can correct the definition against concrete cases. Before, you judged a proposed term from its wording alone.
+
 ## 2026-11-11: Broken Stop rules halt the run
 A Spec can now hold a Stop Rules section, and an `/implement` run halts when the finished change breaks one: it lands nothing, quotes the rule and the count it measured, and tells you the Issue needs a new grilling session. To build a corrected Spec, delete the run's branch and worktree, then run `/implement` again. Before, such a run landed and reported the gap only as a deviation.
 
