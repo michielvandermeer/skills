@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-18: Glossaries stay domain-only
+`/doctor` now checks every `CONTEXT.md` and deletes entries that are not domain terms, sections that are not glossary, and text about how the app uses or builds a term. `/domain-modeling` applies the same test before it writes an entry. Before, glossaries kept growing with rules, UI layout terms, class names, and example dialogues.
+
 ## 2026-11-18: Grilling questions are less rigid
 A `/grill-with-docs` question now comes in plain prose with one recommended answer, which you accept by saying "yes", and gets lettered options only when the answers are a small closed set. A `---` line now separates questions, and round 1 opens with the `Subject:` line instead of an orientation sentence. Before, nearly every question came as an a, b, c list.
 
