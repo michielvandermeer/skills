@@ -78,7 +78,13 @@ An export is a file we generate on request and keep for a while. This decides wh
 
 Q2. **What should we call the window an export stays valid for?**
 
-This name goes into the schema, the API, and the screen, so it is expensive to change later.
+This name goes into the schema, the API, and the screen, so it is expensive to change later. Proposed meaning: the time from generation until the file is deleted.
+
+| Scenario | Is it the retention? |
+|---|---|
+| Link opened on day 3 of a 7-day window | Inside it |
+| Link opened on day 8 | Outside it; the export is gone |
+| Owner deletes the export on day 2 | Ends it early; the window itself is unchanged |
 
 *My recommendation:* `retention`, since that is the word the storage layer already uses.
 
@@ -110,6 +116,8 @@ D3. The 404 page carries the generic "this link has expired" copy the site alrea
 A blank line separates questions; one declaration per line, packed tight.
 
 Every question, a yes/no one included, opens with an **explainer** — one to three sentences saying what the question is about and what rides on the answer, written for someone who has never seen the thing you are asking about. It sets the question up and stops there.
+
+A question that defines or names a term closes its explainer with a **scenario table**: one row per situation where the term would be used, at least one on the boundary, each row showing how the term reads there. Scenario-test the term this way, so I correct the definition against cases rather than against wording. A closed question's table gains a column per option.
 
 Letter the options where the choice is closed, one per line, each ending with what it costs, and mark your pick twice: `← recommended` on the option, and a `*My recommendation:*` line carrying the reason. An open question has nothing to letter, so it gets the recommendation line alone, as Q2 does. I answer by letter: `Q1: b`.
 

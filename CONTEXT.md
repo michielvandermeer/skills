@@ -170,6 +170,10 @@ _Avoid_: open question — that is a parked item, not a live Question
 The one to three sentences opening every Question, saying what the question is about and what rides on the answer. Written for someone who has never seen the thing being asked about. Distinct from a **Gloss**, which introduces a skill's own vocabulary rather than the subject matter.
 _Avoid_: framing sentence, preamble, context
 
+**Scenario table**:
+The table closing the Explainer of every Question that defines or names a term: one row per situation the term would be used in, at least one on its boundary, each showing how the term reads there. Lets the user correct a definition against cases rather than wording.
+_Avoid_: example table, scenario list
+
 **Declaration**:
 A frontier item with one defensible answer, reasoned out and stated flat rather than asked. Numbered `D1`, `D2` continuously across a session, one per line; silence accepts it.
 _Avoid_: assumption
