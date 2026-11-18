@@ -117,7 +117,7 @@ A blank line separates questions; one declaration per line, packed tight.
 
 Every question, a yes/no one included, opens with an **explainer** — one to three sentences saying what the question is about and what rides on the answer, written for someone who has never seen the thing you are asking about. It sets the question up and stops there.
 
-A question that defines or names a term closes its explainer with a **scenario table**: one row per situation where the term would be used, at least one on the boundary, each row showing how the term reads there. Scenario-test the term this way, so I correct the definition against cases rather than against wording. A closed question's table gains a column per option.
+**Scenario-test** every term: a question that defines or names one follows its explainer with a **scenario table** — one row per situation the term would be used in, at least one on the boundary, each row showing how the term reads there. A closed question's table gains a column per option.
 
 Letter the options where the choice is closed, one per line, each ending with what it costs, and mark your pick twice: `← recommended` on the option, and a `*My recommendation:*` line carrying the reason. An open question has nothing to letter, so it gets the recommendation line alone, as Q2 does. I answer by letter: `Q1: b`.
 

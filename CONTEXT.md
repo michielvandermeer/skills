@@ -171,7 +171,7 @@ The one to three sentences opening every Question, saying what the question is a
 _Avoid_: framing sentence, preamble, context
 
 **Scenario table**:
-The table closing the Explainer of every Question that defines or names a term: one row per situation the term would be used in, at least one on its boundary, each showing how the term reads there. Lets the user correct a definition against cases rather than wording.
+The table following the Explainer of every Question that defines or names a term: one row per situation the term would be used in, at least one on its boundary, each showing how the term reads there. Lets the user correct a definition against cases rather than wording.
 _Avoid_: example table, scenario list
 
 **Declaration**:
