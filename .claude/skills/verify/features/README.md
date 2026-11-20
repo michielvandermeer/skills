@@ -30,8 +30,9 @@ Each feature file has an H1, one paragraph on the user-visible behaviour, and fo
 - [Setup](setup.md) — writes and commits the Tracker ref. Driven end to end on 2026-10-15.
 - [Code review](code-review.md) — two reviewers, Standards and Spec, nothing written.
 - [Grill with docs](grill-with-docs.md) — rounds, glossary and ADRs, a Spec on a confirmed read-back.
+- [Hunt application improvements](hunt-application-improvements.md) — Hunters through the app the Verify skill starts, a ranked seed, then triage. Driven on 2026-11-21.
 - [Implement](implement.md) — the implement loop in a worktree, landed on the starting branch as one commit.
 - [Model invocation](model-invocation.md) — whether a description fires on a plain request.
 - [Retro](retro.md) — reads a Window of sessions, applies High-priority edits in one commit, and files a Structural fix as an Issue. The stop below three sessions was driven on 2026-11-04. Acting on a Lesson was last driven on 2026-10-19, before the Window.
 
-Not yet mapped: the other 19 skills.
+Not yet mapped: the other 18 skills.

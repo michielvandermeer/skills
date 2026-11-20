@@ -1,6 +1,6 @@
-# The eight Hunt axes
+# The eleven Hunt axes
 
-One section per axis, in the order a run reports them. Each brief says what the **Hunter** looks for, what it may run, and its evidence bar: a finding without that evidence is not reported. The shared rules (change no file outside your subfolder, run only commands that change nothing, report at most five) come from `SKILL.md`.
+One section per axis, in the order a run reports them. Each brief says what the **Hunter** looks for, what it may run, and its evidence bar: a finding without that evidence is not reported. The shared rules (change no file outside your subfolder, run only commands that change nothing, report at most five or the stop goal's share) come from `SKILL.md`.
 
 ## State bugs
 
@@ -20,7 +20,7 @@ Evidence bar: for dead code, proof that nothing reaches it: no caller, and no ro
 
 ## Outbound calls
 
-Look for: every HTTP, database, queue, and LLM call, checked for a missing timeout, retries without backoff and jitter, writes that are unsafe to retry, and connection pools too small for peak load.
+Look for: every HTTP, database, queue, and LLM call, checked for a missing timeout, retries without backoff and jitter, writes that are unsafe to retry, and connection pools too small for peak load. Spending caps on paid services belong to Payments.
 
 May run: reads of the code and configuration.
 
@@ -52,7 +52,7 @@ Evidence bar: the seconds per cause, from the runs read, with how many runs that
 
 ## Scheduled jobs
 
-Look for: every job the repo defines, such as workflow schedules and recurring jobs registered in code. A cron entry on a server is infrastructure and outside this axis. For each job: how often it runs, its failures, whether anyone uses its output, and where it overlaps another job. Give each a verdict: keep it, change how often it runs, or turn it off.
+Look for: every job the repo defines, such as workflow schedules and recurring jobs registered in code. A cron entry on a server is infrastructure and outside this axis. For each job: how often it runs, its failures, whether anyone uses its output, and where it overlaps another job. Give each a verdict: keep it, change how often it runs, or turn it off. Whether a failed job alerts anyone belongs to Operations.
 
 May run: reads of the code; `gh run list` and `gh run view` for a job's recent results, when the repo's remote is GitHub.
 
@@ -65,3 +65,27 @@ Look for: cache, queue, load balancer, read replicas, object storage or CDN, ret
 May run: reads of the code and configuration.
 
 Evidence bar: the code that shows the need exists now. Only a need judged "needed now" is reported. A need that asks for new hosting, such as a load balancer, read replicas, or a CDN, is marked as an infrastructure fix.
+
+## Security
+
+Look for: secret keys, such as OpenAI keys, Stripe secret keys, and service-role keys, in frontend code or anywhere in git history. Server-side auth and permission checks, and input validation, on every endpoint. Data access rules, such as row-level security, that let users reach only their own data. Upload buckets that are private and serve expiring links. HttpOnly and Secure on session cookies. Passwords, tokens, and keys kept out of logs. Packages with known vulnerabilities.
+
+May run: reads of the code, configuration, and manifests. Read-only git commands over the history, such as `git log -p` and `git grep`. The ecosystem's dependency audit, such as `npm audit`.
+
+Evidence bar: the file and line, or the commit, that shows what is missing or wrong. A key is reported by its location, never by its value. A known vulnerability carries the package, its version, and the advisory the audit names.
+
+## Payments
+
+Look for: payment webhooks that verify their signatures, and a repeated webhook recorded once. Amounts computed on the server, never taken from the client. Access removed when a trial or subscription ends. Rate limits on sign-up, login, and verification-code endpoints. Per-user caps on pay-per-use services, such as AI, SMS, and email. Size and type limits on uploads.
+
+May run: reads of the code and configuration.
+
+Evidence bar: the file and line, or the commit, that shows what is missing or wrong. A fix made in a dashboard is marked as an infrastructure fix.
+
+## Operations
+
+Look for: error monitoring wired in. Backups configured, and a restore tested. Alerts when a scheduled job fails. An external uptime monitor. Debug mode, test accounts, and test data turned off in production configuration.
+
+May run: reads of the code, configuration, manifests, and git history.
+
+Evidence bar: the file and line, or the commit, that shows what is missing or wrong. Many of these fixes are made in a hosting or service dashboard: such a fix is marked as an infrastructure fix.

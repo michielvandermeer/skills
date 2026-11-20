@@ -173,7 +173,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 **Skills you type.** A pin applies when you type the skill. When another skill reads and follows it, the caller's model stays.
 
 - Opus at high: `/grill-with-docs`, `/brainstorm`, `/wayfinder`.
-- Sonnet at high: `/triage`, `/implement`, `/doctor`, `/explain`, `/setup`, `/learn-habits`, `/retro`, `/what-did-i-get-done`, `/simulate-first-users`, `/hunt-codebase-improvements`.
+- Sonnet at high: `/triage`, `/implement`, `/doctor`, `/explain`, `/setup`, `/learn-habits`, `/retro`, `/what-did-i-get-done`, `/hunt-codebase-improvements`, `/hunt-application-improvements`.
 
 **Sub-agents.**
 
@@ -182,7 +182,7 @@ These skills pin the model and effort they run on, so parallel runs do not all i
 - Haiku at high: `skills:explorer`.
 - Opus at high: `skills:reviewer`, the `/code-review` reviewers.
 
-Everything else runs on the setting of the skill that starts it: a Hillclimb's fixers, the `/brainstorm` fan-out, the `/simulate-first-users` First users, and the `/hunt-codebase-improvements` Hunters.
+Everything else runs on the setting of the skill that starts it: a Hillclimb's fixers, the `/brainstorm` fan-out, and the Hunters of `/hunt-codebase-improvements` and `/hunt-application-improvements`.
 
 > **Your environment can override a pin.** When `CLAUDE_CODE_EFFORT_LEVEL` is set, it beats every effort pin. Your session's settings and `/effort` do not.
 
@@ -195,7 +195,8 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `doctor` | Moves documents into the current project's canonical layout, turns old local Ideas, Specs, and Issues into Issues on the local Tracker, closes the ones already built, brings every ADR to state the decision in force, trims oversized Coding standards to one short line per rule, and cleans repeats, dead paths, and contradictions out of Steering files. Once `/setup` has run, it leaves Issues alone. |
 | `explain` | Explain anything as a written walkthrough, a diagram in the chat, an HTML page, or a narrated video, picking the format that fits. |
 | `grill-with-docs` | A relentless round-by-round interview that also produces ADRs and a glossary as you go. |
-| `hunt-codebase-improvements` | Hunt your codebase for improvements along eight axes at once: state bugs, cruft, outbound calls, UI polish, performance, CI time, scheduled jobs, and scaling needs. Give it instructions to hunt along one concern only. It changes no file: what it finds goes through `/triage` into Issues, with infrastructure findings filed for a person. UI polish needs Playwright when the app is running. |
+| `hunt-application-improvements` | Start your app locally and send ten Hunters through all of it, each playing someone who meets it from outside: the impatient one, the skeptic, the slow-connection user, the non-native English speaker, the breaker, the attacker, the search crawler, the keyboard user, the design reviewer, and the privacy reviewer. Give it instructions to hunt along one axis only, or a stop goal such as `stop at 100 findings`. What they find, ranked by severity, goes through `/triage` into Issues with the screenshots attached. Needs Playwright and a verify skill.
+| `hunt-codebase-improvements` | Hunt your codebase for improvements along eleven axes at once: state bugs, cruft, outbound calls, UI polish, performance, CI time, scheduled jobs, scaling needs, security, payments, and operations. Give it instructions to hunt along one concern only, or a stop goal such as `stop after 10 minutes`. It changes no file: what it finds goes through `/triage` into Issues, with infrastructure findings filed for a person. UI polish needs Playwright when the app is running. |
 | `hillclimb` | Push one measured number — test-suite time, build time, memory, bundle size — toward a target, trying one change at a time and keeping only what measurably helps. Loads on its own when you ask for something to be made faster, smaller, or cheaper. |
 | `implement` | Implement an Issue's Spec, or a description: slice it into steps that each fit one agent, build them, then review against the coding standards and design principles and verify against the Spec, fixing and checking again up to three times, then land it as one commit. |
 | `learn-habits` | Learn how each person answers grilling questions into a profile per person in the repo, so later rounds recommend what you would likely pick and name what each teammate would likely pick. Type it to rebuild your profile from past sessions; no grilling session runs it for you. |
@@ -204,7 +205,6 @@ Everything else runs on the setting of the skill that starts it: a Hillclimb's f
 | `research` | Investigate a question against high-trust primary sources and capture findings as Markdown. |
 | `resolving-merge-conflicts` | Resolve a git merge or rebase conflict hunk by hunk, then finish the operation. Loads on its own when you ask to merge and resolve the conflicts. `/implement` and `/hillclimb` use it when a rebase conflicts. |
 | `retro` | Read a window of past sessions, apply high-priority changes this repository owns for lessons at least three sessions show, file the structural ones as Issues, and summarise the rest. Only you start it. |
-| `simulate-first-users` | Send five simulated first-time users through your app, each in its own browser: the impatient one, the skeptic, the slow-connection user, the non-native English speaker, and the breaker. What tripped them up, ranked by how many hit it, goes through `/triage` into Issues with the screenshots attached. Needs Playwright. |
 | `setup` | Choose where the repo's Issues live — local Markdown, GitHub Issues, Jira, or another system — and write the `.agents/refs/tracker.md` file the other skills follow. `/setup verify` writes, or brings up to date, the repo's verify skill, which drives the app the way a user does. `/setup models` sets the model and effort each sub-agent runs at in the repo. |
 | `triage` | Sort incoming reports, or the Issues nobody has triaged yet, into Specs and parked Issues, one Issue per distinct problem, and close what won't be done. |
 | `wayfinder` | Plan a huge chunk of work as a map — an Issue whose child tickets are decisions — and resolve them one at a time until its Specs can be written. |

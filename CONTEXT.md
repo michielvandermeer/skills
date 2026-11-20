@@ -340,18 +340,10 @@ _Avoid_: dry run, test mode, simulation
 The project skill at `.claude/skills/verify/` in the consuming repo that drives its app the way a user does: launch, doctor, drive, evidence, and cleanup, with a feature map holding one recipe per user-facing feature. Named `verify`, so it replaces Claude Code's bundled `/verify`. In a repo with a `CONTEXT-MAP.md`, each context with a running surface keeps its own under that context's folder. Written and kept current by `/setup verify`; a **Verifier** corrects it only where it steered it wrong.
 _Avoid_: run recipe, verification skill, driver skill, control skill, smoke script
 
-**First user**:
-One of the five simulated people a `/simulate-first-users` run sends through an app for the first time, each a sub-agent in its own browser with one way of failing: the impatient one, the skeptic, the slow-connection user, the non-native English speaker, and the breaker. Each records every moment it is confused, stuck, or annoyed, with a screenshot.
-_Avoid_: persona, tester, QA agent, test user
-
-**First success**:
-The point at which a new person has got what they came for from an app the first time, such as a created project or a sent message. The goal every **First user** walks toward from the landing page. Named in the `/simulate-first-users` argument, or read from the app when the argument names none.
-_Avoid_: happy path, onboarding goal, activation
-
 **Hunt axis**:
-One kind of code improvement a `/hunt-codebase-improvements` run looks for, with its own evidence bar: state bugs, cruft, outbound calls, UI polish, performance, CI time, scheduled jobs, or scaling needs. A run with no instructions hunts every axis. A run with instructions hunts only the axes they name, or one free-form hunt when they fit none.
-_Avoid_: audit, lens, dimension, check type
+One kind of improvement a hunt run looks for, with its own evidence bar. A `/hunt-codebase-improvements` axis is a kind of fault in the code: state bugs, cruft, outbound calls, UI polish, performance, CI time, scheduled jobs, scaling needs, security, payments, or operations. A `/hunt-application-improvements` axis is one kind of person meeting the locally running app from outside: the impatient one, the skeptic, the slow-connection user, the non-native English speaker, the breaker, the attacker, the search crawler, the keyboard user, the design reviewer, or the privacy reviewer.
+_Avoid_: audit, lens, dimension, check type, viewpoint, persona, First user
 
 **Hunter**:
-The sub-agent a `/hunt-codebase-improvements` run sends along one **Hunt axis**, or along the user's free-form instructions. It reads the code, runs read-only commands, and drives the running app where its axis needs one, then reports findings with their evidence. It changes no file.
-_Avoid_: auditor, scanner, axis agent
+The sub-agent a hunt run sends along one **Hunt axis**, or along the user's free-form instructions. It reports findings with their evidence and changes no file. A `/hunt-codebase-improvements` Hunter reads the code. A `/hunt-application-improvements` Hunter plays its axis's person and sees only what that person can see, never the repo.
+_Avoid_: auditor, scanner, axis agent, tester, QA agent
