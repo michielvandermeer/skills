@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-21: Hunt the whole running app
+`/simulate-first-users` is now `/hunt-application-improvements`: it starts your app locally through its verify skill and sends ten Hunters through all of it, adding an attacker, a search crawler, a keyboard user, a design reviewer, and a privacy reviewer to the five first users, with findings ranked by severity and an optional stop goal such as `stop after 10 minutes`. `/hunt-codebase-improvements` gains Security, Payments, and Operations axes for leaked keys, unchecked webhooks, and missing backups, and takes the same stop goals. Before, a run walked only toward one first success and saw nothing an attacker, a crawler, or a reviewer would.
+
 ## 2026-11-19: Contradictory Specs are caught
 `/validate-spec` now pairs each Hand check with the User Story or Testing Decision it proves, checks every general rule against the lists it covers, and measures every count, baseline, limit, or price from its source instead of copying the Issue. Before, a Spec could pass with a Hand check that Testing Decisions ruled out, or a listed item that broke a rule the same Spec stated, and the `/implement` run halted later.
 
