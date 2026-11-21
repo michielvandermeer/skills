@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-21: Hunts file needs-triage Issues
+`/hunt-codebase-improvements` and `/hunt-application-improvements` now file each finding as its own Issue in `needs-triage`, with screenshots attached, and comment on an existing Issue instead of filing a duplicate. You run `/triage` when you want the findings sorted. Before, a hunt ran `/triage` itself and wrote Specs and parked Issues for dozens of findings you had not read.
+
 ## 2026-11-21: Hunt the whole running app
 `/simulate-first-users` is now `/hunt-application-improvements`: it starts your app locally through its verify skill and sends ten Hunters through all of it, adding an attacker, a search crawler, a keyboard user, a design reviewer, and a privacy reviewer to the five first users, with findings ranked by severity and an optional stop goal such as `stop after 10 minutes`. `/hunt-codebase-improvements` gains Security, Payments, and Operations axes for leaked keys, unchecked webhooks, and missing backups, and takes the same stop goals. Before, a run walked only toward one first success and saw nothing an attacker, a crawler, or a reviewer would.
 
