@@ -1,6 +1,6 @@
 ---
 name: hunt-application-improvements
-description: Send Hunters that play outsiders, such as users, an attacker, a search crawler, and reviewers, through your locally running app to find as many problems as they can, then triage them into Issues with screenshots.
+description: Send Hunters that play outsiders, such as users, an attacker, a search crawler, and reviewers, through your locally running app to find as many problems as they can, then file them as `needs-triage` Issues with screenshots.
 argument-hint: "[instructions]"
 disable-model-invocation: true
 model: sonnet
@@ -9,11 +9,11 @@ effort: high
 
 # Hunt application improvements
 
-**Hunters**, each a sub-agent playing one kind of outsider along one **Hunt axis**, go through the locally running app all at once. Each sees only what its person can see. The repo's code is closed to every one of them. Their findings, merged and ranked, become the seed of a `/triage` run, which files them as Specs or parked Issues with the screenshots attached. This run fixes nothing: to check fixes, run it again.
+**Hunters**, each a sub-agent playing one kind of outsider along one **Hunt axis**, go through the locally running app all at once. Each sees only what its person can see. The repo's code is closed to every one of them. Their findings, merged and ranked, are filed as Issues in `needs-triage` with the screenshots attached, for you to sort with `/triage`. This run fixes nothing: to check fixes, run it again.
 
 The argument holds optional instructions in plain words, such as `the attacker and the breaker on the billing pages` or `stop after 10 minutes`.
 
-Before the first message, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it. `/technical-writing` does not load as a skill. Hold its bar for every message and for the seed. The briefs you send Hunters are for agents and sit outside that bar.
+Before the first message, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it. `/technical-writing` does not load as a skill. Hold its bar for every message and for the findings list. The briefs you send Hunters are for agents and sit outside that bar.
 
 The ten Hunt axes, in this order, each briefed in [AXES.md](AXES.md) with its subfolder slug: the impatient one, the skeptic, the slow-connection user, the non-native English speaker, the breaker, the attacker, the search crawler, the keyboard user, the design reviewer, the privacy reviewer.
 
@@ -60,13 +60,13 @@ Dispatch one `general-purpose` sub-agent per Hunter, all in one message, on your
 
 Wait for each Hunter's own report. Done: every Hunter has reported.
 
-## 4. Stop the app and write the seed
+## 4. Stop the app and write the findings list
 
 Stop the app with the Verify skill's Cleanup section.
 
 Merge the findings into one per distinct problem: the same dead button met by three Hunters is one finding with three Hunters. Give each a severity: `security or data loss`, `blocks a person`, or `annoys`. Order the findings by severity, in that order, then by how many Hunters hit them, most first, then by how early in a walk the problem appears.
 
-Write the seed as `seed.md` in the scratch folder. Above the findings: the URL the Verify skill gave, the date, the axes that ran, the stop goal when there was one, and each Hunter's coverage. Each finding has:
+Write the findings list as `findings.md` in the scratch folder. Above the findings: the URL the Verify skill gave, the date, the axes that ran, the stop goal when there was one, and each Hunter's coverage. Each finding has:
 
 - a title naming the problem as a person meets it
 - its severity
@@ -74,12 +74,18 @@ Write the seed as `seed.md` in the scratch folder. Above the findings: the URL t
 - what each saw and did, in words a Product reader understands, quoting UI text
 - its screenshots as Markdown images with absolute paths and alt text, such as `![The impatient one: Continue does nothing](/abs/path/impatient/01.png)`
 
-Done: every Hunter's finding belongs to exactly one finding in the seed, and every screenshot a Hunter names is in the seed.
+Done: every Hunter's finding belongs to exactly one finding in `findings.md`, and every screenshot a Hunter names is in `findings.md`.
 
-## 5. Triage
+## 5. File the findings
 
-Read [`triage/SKILL.md`](../triage/SKILL.md) and follow it with `seed.md` as the seed. `/triage` does not load as a skill. It files each finding as a Spec or a parked Issue, attaches each finding's screenshots to its Issue, and ends with its summary.
+Carry out each Tracker operation as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-Then delete the scratch folder. When the triage summary names screenshots for the user to add by hand, keep the folder and name its path instead.
+1. List the open Issues. A finding an open Issue already covers adds its evidence to that Issue as a comment, starting with `> *This was generated by AI during a hunt.*`, and is not filed again.
+2. File every other finding as its own Issue in `needs-triage`, with no category label. Its title is the finding's title, and its body is the finding's severity, Hunters, and what they saw and did, without the screenshots.
+3. Attach each filed finding's screenshots to its Issue. When the Tracker ref gives no Attach, or says it is unavailable, or an upload fails, comment the image paths instead and name each file in the closing summary for the user to add.
 
-Done: the triage summary is shown, and the scratch folder is deleted or named.
+Then delete the scratch folder. When the summary names screenshots for the user to add by hand, keep the folder and name its path instead.
+
+End with a summary: each finding with its Issue's reference, and each finding added to an existing Issue with that Issue's reference. Tell the user to run `/triage` on the `needs-triage` Issues.
+
+Done: the summary is shown, and the scratch folder is deleted or named.

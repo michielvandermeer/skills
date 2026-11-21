@@ -1,6 +1,6 @@
 ---
 name: hunt-codebase-improvements
-description: Hunt your codebase for improvements along eleven axes, such as state bugs, cruft, slow pages, wasted CI time, and leaked keys, then triage what the hunt finds into Issues.
+description: Hunt your codebase for improvements along eleven axes, such as state bugs, cruft, slow pages, wasted CI time, and leaked keys, then file what the hunt finds as `needs-triage` Issues.
 argument-hint: "[instructions] [stop goal] [url]"
 disable-model-invocation: true
 model: sonnet
@@ -9,11 +9,11 @@ effort: high
 
 # Hunt codebase improvements
 
-**Hunters**, each a sub-agent, search the codebase along one **Hunt axis** each, all at once. Their findings, merged into one list, become the seed of a `/triage` run, which files them as Specs or parked Issues. This run fixes nothing and makes no commit: every fix goes through the Spec `/triage` files.
+**Hunters**, each a sub-agent, search the codebase along one **Hunt axis** each, all at once. Their findings, merged into one list, are filed as Issues in `needs-triage`, for you to sort with `/triage`. This run fixes nothing and makes no commit.
 
 The argument holds optional instructions in plain words, such as `make Statistics' form inputs match Compliance` or `why are our outbound calls flaky`, may hold a URL, and may hold a **stop goal**, such as `stop after 10 minutes` or `stop at 100 findings`. A stop goal comes alone or with instructions, and is not itself an instruction.
 
-Before the first message, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill — and hold its bar for every message and for the seed. The briefs you send Hunters are for agents and sit outside that bar.
+Before the first message, read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it — `/technical-writing` does not load as a skill — and hold its bar for every message and for the findings list. The briefs you send Hunters are for agents and sit outside that bar.
 
 The eleven Hunt axes, in this order, each briefed in [AXES.md](AXES.md): State bugs, Cruft, Outbound calls, UI polish, Performance, CI time, Scheduled jobs, Scaling needs, Security, Payments, Operations.
 
@@ -66,34 +66,36 @@ Dispatch one `general-purpose` sub-agent per Hunter that runs, all in one messag
   - Report at most five findings, or your share of the stop goal's count, your strongest by evidence, and say how many more you saw.
   - With a time limit, check the time with `date` as you go, and report what you have once the limit passes.
   - When you find nothing along your axis, report zero findings and say so. Invent none.
-  - Report in plain text: each finding's title, axis, evidence, screenshot paths, and whether its fix changes infrastructure (production servers, volumes, encryption at rest, hosting, backups, deploy pipelines, server scripts, settings in a hosting or service dashboard), then the count of further findings you saw.
+  - Report in plain text: each finding's title, axis, evidence, and screenshot paths, then the count of further findings you saw.
 
 The UI polish Hunter's brief also carries BROWSER.md's commands with every value filled in and its own session named `<stamp>-ui`. Its own `cli.json`, in the `ui-polish` subfolder, is the one BROWSER.md writes, with its 1440 by 900 desktop viewport. No Hunter uses a phone width.
 
 Wait for each Hunter's own report. Done: every Hunter has reported.
 
-## 5. Stop the app and write the seed
+## 5. Stop the app and write the findings list
 
 When step 2 started the app through the Verify skill, stop it with that skill's Cleanup section.
 
-Merge the reports into `seed.md` in the scratch folder: one finding per distinct problem. A problem two Hunters both found is one finding naming both axes. Group the findings by axis in the order above. Do not rank them by severity. Above the findings: the instructions, the stop goal when there is one, the URL when the app ran, the date, and each axis that did not run, with its reason. Each finding has:
+Merge the reports into `findings.md` in the scratch folder: one finding per distinct problem. A problem two Hunters both found is one finding naming both axes. Group the findings by axis in the order above. Do not rank them by severity. Above the findings: the instructions, the stop goal when there is one, the URL when the app ran, the date, and each axis that did not run, with its reason. Each finding has:
 
 - a title naming the problem as a developer meets it
 - its axis, or both axes
 - its evidence, as the Hunter reported it
 - its screenshots as Markdown images with absolute paths and alt text, such as `![Statistics: the save button has no disabled state](/abs/path/ui-polish/01.png)`
 
-A finding whose fix changes infrastructure carries `ready-for-human` in the seed, which `/triage` trusts. Infrastructure is production servers, volumes, encryption at rest, hosting, backups, deploy pipelines, server scripts, and settings made in a hosting or service dashboard, such as an uptime monitor or a backup schedule, and a scaling need that asks for new hosting, such as a load balancer, read replicas, or a CDN. Pull request CI workflows are code, not infrastructure.
+Done: every report's findings belong to exactly one finding, and every screenshot a report names is in `findings.md`.
 
-Done: every report's findings belong to exactly one finding, and every screenshot a report names is in the seed.
+## 6. File the findings
 
-## 6. Triage
+Carry out each Tracker operation as `.agents/refs/tracker.md` says, or as [setup/LOCAL.md](../setup/LOCAL.md) says when the repo has no ref.
 
-Read [`triage/SKILL.md`](../triage/SKILL.md) and follow it with `seed.md` as the seed — `/triage` does not load as a skill. It files each finding as a Spec or a parked Issue and ends with its summary.
+1. List the open Issues. A finding an open Issue already covers adds its evidence to that Issue as a comment, starting with `> *This was generated by AI during a hunt.*`, and is not filed again.
+2. File every other finding as its own Issue in `needs-triage`, with no category label. Its title is the finding's title, and its body is the finding's axis and evidence.
+3. Attach each filed finding's screenshots to its Issue. When the Tracker ref gives no Attach, or says it is unavailable, or an upload fails, comment the image paths instead and name each file in the closing summary for the user to add.
 
-Then delete the scratch folder. When the triage summary names screenshots for the user to add by hand, keep the folder and name its path instead.
+Then delete the scratch folder. When the summary names screenshots for the user to add by hand, keep the folder and name its path instead.
 
-End with `/triage`'s summary plus:
+End with a summary: each finding with its Issue's reference, and each finding added to an existing Issue with that Issue's reference. Tell the user to run `/triage` on the `needs-triage` Issues. Then add:
 
 - one line per axis that could not run, with the reason
 - one line per axis that ran from the code alone because the app was not running, and the reference-app line from step 2 and the browser line from step 3 when they apply

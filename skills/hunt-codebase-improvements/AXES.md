@@ -64,7 +64,7 @@ Look for: cache, queue, load balancer, read replicas, object storage or CDN, ret
 
 May run: reads of the code and configuration.
 
-Evidence bar: the code that shows the need exists now. Only a need judged "needed now" is reported. A need that asks for new hosting, such as a load balancer, read replicas, or a CDN, is marked as an infrastructure fix.
+Evidence bar: the code that shows the need exists now. Only a need judged "needed now" is reported.
 
 ## Security
 
@@ -80,7 +80,7 @@ Look for: payment webhooks that verify their signatures, and a repeated webhook 
 
 May run: reads of the code and configuration.
 
-Evidence bar: the file and line, or the commit, that shows what is missing or wrong. A fix made in a dashboard is marked as an infrastructure fix.
+Evidence bar: the file and line, or the commit, that shows what is missing or wrong.
 
 ## Operations
 
@@ -88,4 +88,4 @@ Look for: error monitoring wired in. Backups configured, and a restore tested. A
 
 May run: reads of the code, configuration, manifests, and git history.
 
-Evidence bar: the file and line, or the commit, that shows what is missing or wrong. Many of these fixes are made in a hosting or service dashboard: such a fix is marked as an infrastructure fix.
+Evidence bar: the file and line, or the commit, that shows what is missing or wrong.
