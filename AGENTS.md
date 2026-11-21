@@ -20,7 +20,7 @@ A session the grill-queue runs unattended from a `needs-grilling` Issue is the e
 
 ## Editing agent documents
 
-Match `skills/writing-for-agents/SKILL.md` on every skill file, `AGENTS.md`, or `CLAUDE.md` you edit. Run `/writing-for-agents` on them after.
+Match `skills/writing-for-agents/SKILL.md` on every skill file, `AGENTS.md`, or `CLAUDE.md` you edit. Before the commit, run `/writing-for-agents` on them as a review pass over the diff and fix what it finds.
 
 Human-facing skill output runs at `skills/technical-writing/SKILL.md` — see [ADR-0009](docs/adr/0009-skill-output-follows-technical-writing.md).
 
