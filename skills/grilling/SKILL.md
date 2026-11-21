@@ -33,12 +33,7 @@ Issues live in the repo's **Tracker**: carry out each operation on one — file,
 
 ## Altitude
 
-Open round 1 by naming the **subject** on one line — `Subject: functional (correct me if not)`. Print it again only in the round where it changes, with one line saying why. When a subject is genuinely mixed, classify by where *my* judgement is needed rather than by which half is bigger. An Issue with no user-visible change — a refactor, a flag removal — is `technical` from round 1.
-
-The subject sets the **altitude** you grill at:
-
-- **Functional** — grill high: what we are trying to achieve, how it should behave, what happens at the edges. Technology and structure are yours to settle from precedent already in the codebase, stated as declarations.
-- **Technical** — grill low, into the detail. Get there by way of the functional goal, which is clear enough once you could hold up a candidate option and say whether it serves that goal. Until then, keep grilling high.
+The **altitude** is how deep you grill. High is what we are trying to achieve, how it should behave, what happens at the edges. Low is technology and structure, reached once the goal is clear enough that you could hold up a candidate option and say whether it serves that goal.
 
 The size of the change sets where you start, and most sessions are one change to a system that already works — so start high. Grill **scope** before anything else: what this change covers, and what it leaves alone.
 
@@ -61,8 +56,6 @@ Raising altitude means fewer and broader questions. It bottoms out at the functi
 Hold this format every session:
 
 ```
-Subject: functional (correct me if not)
-
 ## Round 1
 
 Q1. **Should an expired export be deleted?**

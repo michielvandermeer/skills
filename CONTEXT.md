@@ -194,11 +194,8 @@ _Avoid_: scout, researcher, background reader
 One of the very different ways to tackle a vague problem that a `/brainstorm` run lays out side by side — a pitch, how it works, what it costs, what it is best at, and its biggest risk. Each comes from its own angle, so the set spreads rather than clusters. A Direction the user keeps becomes an Issue in `needs-grilling`; the rest are dropped with their reason. When the user stops without keeping one, none is dropped: every Direction shown goes to the Open questions of one Issue. Distinct from an option, which is one lettered answer inside a Question.
 _Avoid_: option, approach, alternative, candidate
 
-**Subject**:
-The altitude a `/grilling` session grills at, named on one line in its first Round and classified `functional` or `technical` by where the user's judgement is needed rather than by which half is bigger.
-
 **Altitude**:
-How deep a Round grills, set by the Subject. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
+How deep a Round grills: high on goals, behaviour, and edge cases, low on technology and structure. A session starts high and goes low once the goal is clear enough to judge a candidate option against it. Raised by turning Questions into Declarations, lowered when the user asks for detail. It bottoms out at the functional decisions, which stay Questions however high it goes.
 
 **Grilling profile**:
 One person's **Habits** in one repo, learned only from their grilling sessions in that repo and kept there at `.agents/refs/profiles/<name>.md`, so it travels with git to everyone who works there. The same person may have different Habits in different repos. A grilling session reads every profile in the repo to predict which option each person would pick. A profile changes only when a person types `/learn-habits`.

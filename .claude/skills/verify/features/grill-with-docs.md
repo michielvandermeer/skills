@@ -23,7 +23,7 @@ Preconditions:
 - A small, real plan the scratch repo can hold, such as "add a `greet(name)` function to a new `greet.py` that returns `Hello, <name>!`, with a unittest". A plan with one domain term ("greeting") gives the glossary something to record.
 - A decision between two close options in that plan, such as whether `greet("")` returns `Hello, !` or raises `ValueError`. Settle it in a round, and note the answer.
 
-- **Start.** Run `verify.py turn <run> "/skills:grill-with-docs <plan>"`. The final message is round 1: a `Subject:` line, then questions numbered `Q1..Qn` separated by `---` lines, with lettered options only on a closed choice.
+- **Start.** Run `verify.py turn <run> "/skills:grill-with-docs <plan>"`. The final message is round 1: a `## Round 1` heading, then questions numbered `Q1..Qn` separated by `---` lines, with lettered options only on a closed choice.
 - **Answer rounds.** Run `verify.py turn <run> "Q1: yes, Q2: b"` with the answer a user would give, "yes" for an unlettered question and a letter for a lettered one, one turn per round. After each turn, `scratch-NN.txt` shows `CONTEXT.md` once a term has settled.
 - **Read-back.** When no question is left, the final message is a read-back asking whether understanding is shared. Run `verify.py turn <run> "yes"`.
 - **Spec.** After the `yes`, the session drafts the Spec. The transcript shows a `skills:cold-reader` dispatch whose whole prompt is the draft's absolute path, then a `skills:validator` dispatch, and the final message shows the **Cold reader** list above the Validator's report.
