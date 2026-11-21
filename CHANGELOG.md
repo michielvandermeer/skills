@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-21: Grilling drops the Subject line
+A grilling session no longer opens with `Subject: functional (correct me if not)` and no longer sorts itself as functional or technical. Every session asks about goals and behaviour first and moves into technical detail once the goal is clear. Before, every round 1 carried a label you had to check, and it was never once corrected.
+
 ## 2026-11-21: Hunts file needs-triage Issues
 `/hunt-codebase-improvements` and `/hunt-application-improvements` now file each finding as its own Issue in `needs-triage`, with screenshots attached, and comment on an existing Issue instead of filing a duplicate. You run `/triage` when you want the findings sorted. Before, a hunt ran `/triage` itself and wrote Specs and parked Issues for dozens of findings you had not read.
 
