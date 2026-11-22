@@ -1,0 +1,3 @@
+{"type": "user", "timestamp": "2026-11-08T10:00:00.000Z", "message": {"role": "user", "content": "work"}}
+{"type": "assistant", "timestamp": "2026-11-08T10:00:01.000Z", "message": {"role": "assistant", "content": [{"type": "tool_use", "name": "Read", "input": {"file_path": "/home/u/.claude/plugins/cache/mvdmio/skills/aaaaaaaaaaaa/skills/implement/SKILL.md"}}]}}
+{"type": "assistant", "timestamp": "2026-11-08T10:00:02.000Z", "message": {"role": "assistant", "content": [{"type": "tool_use", "name": "Read", "input": {"file_path": "/home/u/.claude/plugins/cache/mvdmio/skills/cccccccccccc/skills/implement/SKILL.md"}}]}}

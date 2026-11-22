@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-10T13:00:00.000Z", "cwd": "__REPO__", "message": {"role": "user", "content": "SECRET-PROMPT"}}
+{"type": "assistant", "timestamp": "2026-11-10T13:00:01.000Z", "cwd": "__REPO__", "message": {"id": "m1", "role": "assistant", "content": [{"type": "tool_use", "name": "Edit", "input": {"file_path": "/x/.agents/runs/h/halt.md", "old_string": "a", "new_string": "b"}}]}}

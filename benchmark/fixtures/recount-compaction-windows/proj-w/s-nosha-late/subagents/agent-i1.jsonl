@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-07T05:01:00.000Z", "message": {"role": "user", "content": "Step 1 of 5."}}
+{"type": "assistant", "timestamp": "2026-11-07T05:02:00.000Z", "message": {"id": "s-nosha-late-m1", "role": "assistant", "model": "claude-sonnet-4-6", "content": [], "usage": {"input_tokens": 0, "output_tokens": 500000, "cache_read_input_tokens": 200000, "cache_creation_input_tokens": 0}}}

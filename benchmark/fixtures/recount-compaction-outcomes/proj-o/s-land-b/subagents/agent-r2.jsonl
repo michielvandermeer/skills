@@ -1,0 +1,4 @@
+{"type": "user", "timestamp": "2026-11-10T11:00:10.000Z", "message": {"role": "user", "content": "SECRET-PROMPT review"}}
+{"type": "assistant", "timestamp": "2026-11-10T11:00:11.000Z", "message": {"id": "m-old", "role": "assistant", "content": [{"type": "text", "text": "Hard violation: SECRET-OLD"}]}}
+{"type": "assistant", "timestamp": "2026-11-10T11:00:12.000Z", "message": {"id": "m-last", "role": "assistant", "content": [{"type": "text", "text": "1. Judgement call: SECRET-A"}]}}
+{"type": "assistant", "timestamp": "2026-11-10T11:00:13.000Z", "message": {"id": "m-last", "role": "assistant", "content": [{"type": "text", "text": "Judgement call: SECRET-B\nThe Hard violation was discussed, not found"}]}}

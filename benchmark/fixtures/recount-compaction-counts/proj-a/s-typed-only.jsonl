@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-02T11:00:00.000Z", "message": {"role": "user", "content": "/implement #5"}}
+{"type": "assistant", "timestamp": "2026-11-02T11:00:01.000Z", "message": {"id": "m-t", "role": "assistant", "model": "claude-sonnet-4-6", "content": [], "usage": {"input_tokens": 100, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}}}

@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-10T13:00:10.000Z", "message": {"role": "user", "content": "SECRET-PROMPT build"}}
+{"type": "assistant", "timestamp": "2026-11-10T13:00:11.000Z", "message": {"id": "m1", "role": "assistant", "content": [{"type": "tool_use", "name": "SubagentHandback", "input": {"message": "status: blocked\nSECRET-DETAIL"}}]}}

@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-10T15:00:10.000Z", "message": {"role": "user", "content": "SECRET-PROMPT plan"}}
+{"type": "assistant", "timestamp": "2026-11-10T15:00:11.000Z", "message": {"id": "m1", "role": "assistant", "content": [{"type": "text", "text": "planned"}]}}

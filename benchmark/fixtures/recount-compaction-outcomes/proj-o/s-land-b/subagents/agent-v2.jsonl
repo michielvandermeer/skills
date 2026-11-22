@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-10T11:00:20.000Z", "message": {"role": "user", "content": "SECRET-PROMPT verify"}}
+{"type": "assistant", "timestamp": "2026-11-10T11:00:21.000Z", "message": {"id": "m1", "role": "assistant", "content": [{"type": "text", "text": "Status: passed\nSECRET-DETAIL"}]}}

@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-05T15:00:01.000Z", "message": {"role": "user", "content": "SECRET-PROMPT Step 1 of 1."}}
+{"type": "assistant", "timestamp": "2026-11-05T15:00:02.000Z", "message": {"id": "m-two", "role": "assistant", "model": "claude-sonnet-4-6", "content": [], "usage": {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 300000, "cache_creation_input_tokens": 0}}}
