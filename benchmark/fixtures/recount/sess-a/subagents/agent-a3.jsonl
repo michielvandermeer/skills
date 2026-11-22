@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-01T10:10:00.000Z", "message": {"role": "user", "content": "Iteration 5 review."}}
+{"type": "assistant", "timestamp": "2026-11-01T10:10:01.000Z", "message": {"role": "assistant", "content": [{"type": "tool_use", "name": "Read", "input": {"file_path": "/x/.agents/refs/coding-standards.md"}}]}}

@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-10-21T09:10:00.000Z", "message": {"role": "user", "content": "Review."}}
+{"type": "user", "timestamp": "2026-10-21T09:10:01.000Z", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "t1", "content": "/home/u/.claude/plugins/cache/mvdmio/skills/aaaaaaaaaaaa/skills/implement/SKILL.md"}]}}

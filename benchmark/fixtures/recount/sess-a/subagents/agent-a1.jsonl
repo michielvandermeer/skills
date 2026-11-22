@@ -1,0 +1,3 @@
+{"type": "user", "timestamp": "2026-11-01T10:00:00.000Z", "message": {"role": "user", "content": "Build Step 01. Follow the Coding standards and the PRINCIPLES file."}}
+{"type": "assistant", "timestamp": "2026-11-01T10:00:01.000Z", "message": {"role": "assistant", "content": [{"type": "tool_use", "name": "Read", "input": {"file_path": "/x/.agents/refs/coding-standards.md"}}]}}
+{"type": "assistant", "timestamp": "2026-11-01T10:00:02.000Z", "message": {"role": "assistant", "content": [{"type": "tool_use", "name": "Read", "input": {"file_path": "/x/.agents/refs/PRINCIPLES.md", "limit": 50}}]}}

@@ -2,6 +2,7 @@
 import csv
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,7 @@ import collect  # noqa: E402
 import compare  # noqa: E402
 import guards  # noqa: E402
 import metrics  # noqa: E402
+import recount  # noqa: E402
 import run  # noqa: E402
 import score  # noqa: E402
 
@@ -424,6 +426,183 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual((rows[0]["valid"], rows[0]["model"], rows[0]["effort"], rows[0]["subagents"]), ("True", "sonnet", "high", "4"))
             self.assertAlmostEqual(float(rows[0]["cost_usd"]), 0.0339, places=4)
             self.assertAlmostEqual(float(rows[0]["cost_reviewer"]), 0.0111, places=4)
+
+
+class RecountTests(unittest.TestCase):
+    """Hand-counted from fixtures/recount/: 8 sessions, 16 Implementers, one reviewer that must not count."""
+    FIXTURES = HERE / "fixtures" / "recount"
+
+    def test_count_applies_every_rule(self):
+        self.assertEqual(recount.count(recount.read_sessions(self.FIXTURES)), {
+            "sessions": 8, "reached_2": 4, "reached_3": 1,
+            "hard_violation": 2, "hard_cites_standards": 1,
+            "first_standards": 6, "first_standards_whole": 3, "first_standards_parts": 3,
+            "first_principles": 2, "first_principles_whole": 1, "first_principles_parts": 1,
+            "first_names_standards": 2, "first_names_principles": 1,
+            "reached_2_with_reader": 2, "reached_2_without_reader": 2, "cites_with_reader": 1,
+        })
+
+    def test_prompt_iteration_numbers(self):
+        agents = {a["first_ts"]: a["n"] for sessions in recount.read_sessions(self.FIXTURES).values() for a in sessions}
+        ts = metrics._time
+        self.assertEqual(agents[ts("2026-11-01T10:00:00.000Z")], 0)  # unnumbered prompt
+        self.assertEqual(agents[ts("2026-11-01T10:05:00.000Z")], 1)  # "Iteration 1 ... Iteration 2": the first wins
+
+    def test_triage_selects_by_mtime_and_first_record(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "logs"
+            shutil.copytree(self.FIXTURES, root)
+            old = recount.TRIAGE_MTIME - 86400
+            for path in (root / "sess-h").rglob("*.jsonl"):
+                os.utime(path, (old, old))  # sess-h: mtime before 2026-10-16
+            # sess-f starts after the #56 scan time; sess-g starts exactly at it and stays in
+            out = subprocess.run([sys.executable, str(HERE / "recount.py"), "--triage", str(root)],
+                                 capture_output=True, text=True, check=True).stdout
+        self.assertEqual(out, "sessions 6\nimplementers 14\n")
+
+    def test_an_unknown_mode_prints_usage_and_fails(self):
+        result = subprocess.run([sys.executable, str(HERE / "recount.py"), "--bogus"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Usage: python benchmark/recount.py [log-root]", result.stderr)
+
+
+class RecountWindowTests(unittest.TestCase):
+    """Hand-counted from fixtures/recount-windows/: 11 sessions, each with one or two Implementers.
+    aaaaaaaaaaaa is a plugin cache commit without 0f8254c, bbbbbbbbbbbb one with it, cccccccccccc one git cannot resolve."""
+    FIXTURES = HERE / "fixtures" / "recount-windows"
+    SCAN = metrics._time("2026-11-10T00:00:00Z")  # fixture-local; the module constant is only the CLI default
+
+    @staticmethod
+    def contains(sha):
+        return {"aaaaaaaaaaaa": False, "bbbbbbbbbbbb": True}.get(sha)
+
+    def split(self, scan=SCAN):
+        windows, unresolved = recount.split_windows(recount.read_windowed(self.FIXTURES, scan), self.contains)
+        return {name: sorted(sessions) for name, sessions in windows.items()}, unresolved, windows
+
+    def test_each_session_goes_into_its_window(self):
+        ids, unresolved, _ = self.split()
+        self.assertEqual(ids["before"], ["w-late", "w-noise", "w-nosha-early", "w-old", "w-sub", "w-unres-old"])
+        self.assertEqual(ids["after"], ["w-new", "w-nosha-late", "w-prompt", "w-unres"])
+        self.assertEqual(ids["mixed"], ["w-both"])
+        self.assertEqual(unresolved, {"cccccccccccc"})
+
+    def test_counts_per_window(self):
+        _, _, windows = self.split()
+        counts = {name: recount.count(sessions) for name, sessions in windows.items()}
+        self.assertEqual({name: (c["sessions"], c["reached_2"]) for name, c in counts.items()},
+                         {"before": (6, 1), "after": (4, 1), "mixed": (1, 1)})
+
+    def test_records_after_the_scan_time_change_no_count(self):
+        # w-late has a record naming bbbbbbbbbbbb and an n == 2 Implementer, both stamped 2027-01-01
+        ids, _, windows = self.split()
+        self.assertIn("w-late", ids["before"])
+        self.assertEqual(recount.count({"w-late": windows["before"]["w-late"]})["reached_2"], 0)
+        later, _, windows = self.split(metrics._time("2027-02-01T00:00:00Z"))
+        self.assertIn("w-late", later["mixed"])
+        self.assertEqual(recount.count({"w-late": windows["mixed"]["w-late"]})["reached_2"], 1)
+
+    def test_a_rerun_gives_the_same_counts(self):
+        self.assertEqual(self.split()[:2], self.split()[:2])
+
+    def test_report_for_the_fixture(self):
+        report = recount.window_report(self.FIXTURES, self.SCAN, self.contains).splitlines()
+        self.assertIn("all end at scan time 2026-11-10T00:00:00Z; unresolved SHAs 1", report[0])
+        self.assertEqual(report[1].split(), ["count", "before", "after", "mixed"])
+        self.assertEqual(report[2].split(), ["sessions", "6", "4", "1"])
+        self.assertEqual(report[-2], "reached Iteration 2: before 1/6 (16.7%), after 1/4 (25.0%), p = 0.7469")
+        self.assertEqual(report[-1], "verdict: not dropped")
+
+    def test_containment_of_real_commits(self):
+        self.assertIs(recount.contains_fix("0f8254c795f6"), True)  # 0f8254c itself
+        self.assertIs(recount.contains_fix("045d8e2ae201"), False)  # its parent
+        self.assertIsNone(recount.contains_fix("000000000000"))  # git cannot resolve it
+
+
+class NoiseCommitTests(unittest.TestCase):
+    """Commits in a throwaway git repo with fixed dates; the span is 2026-11-04T08:11:29Z to 2026-11-22T05:44:11Z."""
+    AFTER = metrics._time("2026-11-04T08:11:29Z")
+    UNTIL = metrics._time("2026-11-22T05:44:11Z")
+    PATHS = ["skills/implement/", "agents/planner.md"]
+
+    def commit(self, repo, path, subject, when):
+        target = Path(repo) / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(subject, encoding="utf-8")
+        env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when}
+        for args in (["add", "."], ["-c", "user.name=t", "-c", "user.email=t@example.com", "commit", "-q", "-m", subject]):
+            subprocess.run(["git", *args], cwd=repo, env=env, check=True, capture_output=True)
+
+    def repo(self, tmp):
+        subprocess.run(["git", "init", "-q"], cwd=tmp, check=True, capture_output=True)
+        self.commit(tmp, "skills/implement/SKILL.md", "before the span", "2026-11-04T08:00:00Z")
+        self.commit(tmp, "skills/implement/SKILL.md", "inside, listed folder", "2026-11-05T10:00:00Z")
+        self.commit(tmp, "README.md", "inside, unlisted path", "2026-11-06T10:00:00Z")
+        self.commit(tmp, "agents/planner.md", "inside, listed file", "2026-11-22T05:44:11Z")
+        self.commit(tmp, "agents/planner.md", "after the scan time", "2026-11-22T05:44:12Z")
+        return tmp
+
+    def test_lists_only_listed_commits_inside_the_span_newest_first(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            lines = recount.commits_in_span(self.repo(tmp), self.AFTER, self.UNTIL, self.PATHS)
+        self.assertEqual([line.split(" ", 1)[1] for line in lines],
+                         ["2026-11-22 inside, listed file", "2026-11-05 inside, listed folder"])
+        self.assertTrue(all(len(line.split(" ", 1)[0]) >= 7 for line in lines))
+
+    def test_an_empty_span_lists_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(recount.commits_in_span(self.repo(tmp), self.UNTIL + 100, self.UNTIL + 200, self.PATHS), [])
+
+    def test_a_missing_repo_is_none(self):
+        self.assertIsNone(recount.commits_in_span("/nonexistent/repo", self.AFTER, self.UNTIL, self.PATHS))
+
+    def test_report_prints_each_part_and_survives_a_missing_checkout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self.repo(tmp)
+            out = recount.noise_report(repo, "/nonexistent/suite", self.AFTER, self.UNTIL)
+        lines = out.splitlines()
+        self.assertEqual(lines[0], "skills commits touching the implement, code-review or agent files, "
+                                   "2026-11-04T08:11:29Z to 2026-11-22T05:44:11Z:")
+        self.assertEqual(lines[3], "called out: 69406f0: " + recount.RESUME_NOTE)
+        self.assertEqual(lines[4], "mvdmio-suite commits touching coding-standards files, "
+                                   "2026-11-04T08:11:29Z to 2026-11-22T05:44:11Z: could not be read")
+        self.assertEqual(len(lines), 5)
+
+
+class TwoProportionTests(unittest.TestCase):
+    def test_worked_example(self):
+        # 30/100 against 45/100: pooled 0.375, z = 0.15 / sqrt(0.375 * 0.625 * 0.02) = 2.19, p = 0.0285
+        # (checked outside the code with statistics.NormalDist: 2 * (1 - cdf(2.1909)) = 0.02846)
+        self.assertAlmostEqual(recount.two_proportion_p(30, 100, 45, 100), 0.028, places=3)
+
+    def test_a_lower_after_rate_at_p_below_005_is_dropped(self):
+        p, dropped = recount.compare_rates(45, 100, 30, 100)
+        self.assertAlmostEqual(p, 0.028, places=3)
+        self.assertTrue(dropped)
+
+    def test_a_higher_after_rate_at_p_below_005_is_not_dropped(self):
+        p, dropped = recount.compare_rates(30, 100, 45, 100)
+        self.assertAlmostEqual(p, 0.028, places=3)
+        self.assertFalse(dropped)
+
+    def test_a_lower_after_rate_at_p_above_005_is_not_dropped(self):
+        p, dropped = recount.compare_rates(5, 10, 3, 10)
+        self.assertGreater(p, 0.05)
+        self.assertFalse(dropped)
+
+    def test_an_empty_window_is_not_dropped(self):
+        self.assertEqual(recount.compare_rates(5, 10, 0, 0), (1.0, False))
+
+    def test_equal_rates_give_p_one(self):
+        self.assertEqual(recount.two_proportion_p(10, 50, 10, 50), 1.0)
+
+    def test_an_empty_window_gives_p_one(self):
+        self.assertEqual(recount.two_proportion_p(0, 0, 5, 10), 1.0)
+        self.assertEqual(recount.two_proportion_p(5, 10, 0, 0), 1.0)
+
+    def test_a_zero_pooled_error_gives_p_one(self):
+        self.assertEqual(recount.two_proportion_p(0, 10, 0, 10), 1.0)
+        self.assertEqual(recount.two_proportion_p(10, 10, 10, 10), 1.0)
 
 
 if __name__ == "__main__":

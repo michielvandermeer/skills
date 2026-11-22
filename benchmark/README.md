@@ -85,4 +85,4 @@ The report states the claim, then one of **cheaper**, **costlier**, **no measura
 
 ## Files
 
-`specs.yaml` the frozen Specs (base is the landing commit's parent) - `run.py` the runner - `guards.py` the `gh` shim, `pre-push` hook and `bench-log` - `metrics.py` transcript extractor - `score.py` quality scoring - `collect.py` CSV rows - `compare.py` the report - `test_benchmark.py` and `fixtures/` the tests.
+`specs.yaml` the frozen Specs (base is the landing commit's parent) - `run.py` the runner - `guards.py` the `gh` shim, `pre-push` hook and `bench-log` - `metrics.py` transcript extractor - `recount.py` Implementer-session counts from the Claude Code logs, before and after a skills commit (no argument) or the #56 triage selection (`--triage`) - `score.py` quality scoring - `collect.py` CSV rows - `compare.py` the report - `test_benchmark.py` and `fixtures/` the tests.
