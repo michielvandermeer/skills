@@ -17,7 +17,7 @@ The folder is *ephemeral* in a way Issues are not. The run commits the Spec copy
 ## Consequences
 
 - `/code-review` treats `.agents/runs/` as run bookkeeping, not code under review.
-- Every commit a run makes runs the repo's hooks, run-folder commits included: the Spec copy, the Step files, the Halt record, and the deletion before landing. No agent in a run passes `--no-verify`. A repo whose hook would refuse run bookkeeping, such as a file-size limit a long Spec breaks, exempts `.agents/runs/` in the hook itself.
+- Every commit a run makes runs the repo's hooks, run-folder commits included: the Spec copy, the Step files, and the Halt record. The run folder's deletion exists only inside the landing commit, which runs hooks too. No agent in a run passes `--no-verify`. A repo whose hook would refuse run bookkeeping, such as a file-size limit a long Spec breaks, exempts `.agents/runs/` in the hook itself.
 - When a hook refuses a run-folder commit, the run halts and quotes the hook's output. The user exempts the folder in the hook, then runs `/implement` again.
 - A run writes its Spec copy once and never rewrites it. A changed Issue reaches no run already started. A resume that finds the Issue's body different from its Spec copy says so in one line, with how to build the new text, and carries on without asking. To build the change, the user deletes the run's branch and worktree and runs `/implement` again.
 - The scratch folder holds a `.gitignore` of `*`, so no commit sweeps in a throwaway script or screenshot.
