@@ -10,17 +10,16 @@ import functools
 import json
 import math
 import re
-import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 from metrics import _lines, _time
+from plugin_windows import REPO_ROOT, _before, _iso, commits_in_span, contains, listing, named_commit, read_shas, split_windows
 
 DEFAULT_ROOT = Path.home() / ".claude" / "projects" / "-home-mvdm-projects-mvdmio-mvdmio-suite"
 TRIAGE_MTIME = datetime(2026, 10, 16).timestamp()  # local midnight
 TRIAGE_SCAN = _time("2026-11-03T22:32:32Z")  # the #56 scan time
-REPO_ROOT = Path(__file__).resolve().parent.parent
 SUITE_ROOT = Path("/home/mvdm/projects/mvdmio/mvdmio-suite")
 FIX_SHA = "0f8254c"
 FIX_PUSHED = _time("2026-11-04T08:11:29Z")  # the push of 0f8254c; the commit is from 08:11:27Z
@@ -36,7 +35,6 @@ RESUME_NOTE = "a resume from a Halt record counts from Iteration 1 again, which 
 ITERATION_RE = re.compile(r"Iteration (\d+)")
 CAT_RE = re.compile(r"\bcat\b")
 CITATION_RE = re.compile(r"coding-standards[\w-]*\.md")
-CACHE_SHA_RE = re.compile(r"plugins/cache/mvdmio/skills/([0-9a-f]{12})/")
 
 
 def _prompt(record):
@@ -68,11 +66,6 @@ def _is_principles(text):
 
 def _strongest(old, new):
     return "whole" if "whole" in (old, new) else new or old
-
-
-def _before(record, until):
-    """False for a record stamped after until; a record with no timestamp stays."""
-    return not record.get("timestamp") or _time(record["timestamp"]) <= until
 
 
 def read_agent(path, until=math.inf):
@@ -153,47 +146,14 @@ def triage_sessions(root):
     return read_sessions(root, keep)
 
 
-def _session_logs(root, session):
-    """The top-level log of a session and every sub-agent log, whatever their agent type."""
-    return [Path(root) / f"{session}.jsonl", *sorted((Path(root) / session / "subagents").glob("agent-*.jsonl"))]
-
-
 def read_windowed(root, until):
     """{session: (agents, cache SHAs, earliest record time)} for sessions with an Implementer, records up to until."""
     sessions = read_sessions(root, lambda path, agent: agent["first_ts"] is not None, until)
-    seen = {}
-    for session, agents in sessions.items():
-        shas, times = set(), []
-        for log in filter(Path.exists, _session_logs(root, session)):
-            for record in (r for r in _lines(log) if _before(r, until)):
-                shas.update(CACHE_SHA_RE.findall(json.dumps(record)))
-                if record.get("timestamp"):
-                    times.append(_time(record["timestamp"]))
-        seen[session] = (agents, shas, min(times))
-    return seen
+    return {session: (agents, *read_shas(root, session, until)) for session, agents in sessions.items()}
 
 
-@functools.cache
-def contains_fix(sha):
-    """True when the plugin cache commit sha contains FIX_SHA, False when not, None when git cannot resolve it."""
-    code = subprocess.run(["git", "merge-base", "--is-ancestor", FIX_SHA, sha], cwd=REPO_ROOT, capture_output=True).returncode
-    return {0: True, 1: False}.get(code)
-
-
-def split_windows(seen, contains):
-    """({window: {session: [agent]}}, unresolved SHAs) with window in before, after, mixed. An unresolved SHA names nothing."""
-    windows = {"before": {}, "after": {}, "mixed": {}}
-    unresolved = set()
-    for session, (agents, shas, earliest) in seen.items():
-        found = {sha: contains(sha) for sha in shas}
-        unresolved |= {sha for sha, answer in found.items() if answer is None}
-        resolved = set(found.values()) - {None}
-        if not resolved:
-            name = "before" if earliest < FIX_PUSHED else "after"
-        else:
-            name = {frozenset({False}): "before", frozenset({True}): "after"}.get(frozenset(resolved), "mixed")
-        windows[name][session] = agents
-    return windows, unresolved
+contains_fix = functools.partial(contains, FIX_SHA)
+split_windows = functools.partial(split_windows, pushed=FIX_PUSHED)
 
 
 def two_proportion_p(x1, n1, x2, n2):
@@ -217,10 +177,6 @@ def _rate(x, n):
     return f"{x}/{n} ({x / n:.1%})" if n else f"{x}/{n}"
 
 
-def _iso(moment):
-    return datetime.fromtimestamp(moment, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
 def window_report(root, scan=SCAN_TIME, contains=contains_fix):
     """The before, after and mixed table, the test on "reached Iteration 2", and the verdict, as text."""
     windows, unresolved = split_windows(read_windowed(root, scan), contains)
@@ -238,37 +194,8 @@ def window_report(root, scan=SCAN_TIME, contains=contains_fix):
     return "\n".join(lines)
 
 
-def commits_in_span(repo, after, until, pathspecs):
-    """["sha date subject"] for commits in repo touching pathspecs, committed after `after` up to and including
-    `until` (epoch seconds), newest first; None when git cannot read repo. Dates are UTC."""
-    if not Path(repo).is_dir():
-        return None
-    done = subprocess.run(["git", "log", "--format=%h%x09%ct%x09%s", "--", *pathspecs], cwd=repo, capture_output=True, text=True)
-    if done.returncode != 0:
-        return None
-    lines = []
-    for row in done.stdout.splitlines():
-        sha, stamp, subject = row.split("\t", 2)
-        if after < int(stamp) <= until:
-            lines.append(f"{sha} {_iso(int(stamp))[:10]} {subject}")
-    return lines
-
-
-def named_commit(repo, sha):
-    """"sha date subject" of one commit, or None when repo has no such commit."""
-    done = subprocess.run(["git", "log", "-1", "--format=%h%x09%ct%x09%s", sha], cwd=repo, capture_output=True, text=True)
-    if done.returncode != 0 or not done.stdout.strip():
-        return None
-    short, stamp, subject = done.stdout.rstrip("\n").split("\t", 2)
-    return f"{short} {_iso(int(stamp))[:10]} {subject}"
-
-
 def noise_report(repo=REPO_ROOT, suite=SUITE_ROOT, after=FIX_PUSHED, until=SCAN_TIME):
     """The other commits in the window that could have moved the Iteration numbers, as text."""
-    def listing(title, lines):
-        if lines is None:
-            return [f"{title}: could not be read"]
-        return [f"{title}:", *(lines or ["none"])]
     resume = named_commit(repo, RESUME_SHA) or RESUME_SHA
     return "\n".join([*listing(f"skills commits touching the implement, code-review or agent files, {_iso(after)} to {_iso(until)}",
                                commits_in_span(repo, after, until, REPO_NOISE_PATHS)),

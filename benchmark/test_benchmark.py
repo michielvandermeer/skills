@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -16,7 +17,9 @@ import collect  # noqa: E402
 import compare  # noqa: E402
 import guards  # noqa: E402
 import metrics  # noqa: E402
+import plugin_windows  # noqa: E402
 import recount  # noqa: E402
+import recount_startup  # noqa: E402
 import run  # noqa: E402
 import score  # noqa: E402
 
@@ -603,6 +606,370 @@ class TwoProportionTests(unittest.TestCase):
     def test_a_zero_pooled_error_gives_p_one(self):
         self.assertEqual(recount.two_proportion_p(0, 10, 0, 10), 1.0)
         self.assertEqual(recount.two_proportion_p(10, 10, 10, 10), 1.0)
+
+
+class PercentileTests(unittest.TestCase):
+    def test_odd_count_median_is_the_middle_value(self):
+        self.assertEqual(recount_startup.percentile([5, 1, 3], 0.5), 3)
+
+    def test_even_count_median_is_between_the_middle_values(self):
+        self.assertEqual(recount_startup.percentile([4, 1, 3, 2], 0.5), 2.5)
+
+    def test_a_percentile_interpolates_between_closest_ranks(self):
+        self.assertAlmostEqual(recount_startup.percentile([1, 3, 5], 0.1), 1.4)  # rank 0.2 of 0..2
+        self.assertAlmostEqual(recount_startup.percentile([4, 1, 3, 2], 0.9), 3.7)  # rank 2.7 of 0..3
+
+    def test_a_single_value_is_its_own_percentile(self):
+        self.assertEqual([recount_startup.percentile([7], q) for q in (0.1, 0.5, 0.9)], [7, 7, 7])
+
+    def test_an_empty_list_has_no_percentile(self):
+        self.assertIsNone(recount_startup.percentile([], 0.5))
+
+
+class RecountStartupTests(unittest.TestCase):
+    """Hand-counted from fixtures/recount-startup/: 11 sessions over two projects.
+    aaaaaaaaaaaa is a plugin cache commit without 6bd7016, bbbbbbbbbbbb one with it. With the scan at 2026-11-20:
+    before = s-old, s-nosha-early; after = s-new, s-nosha-late, s-late; mixed = s-both. s-too-early (aaaa) and
+    s-nosha-prestart start before 2026-10-31 and are in no column; s-explorer-only holds only an explorer."""
+    FIXTURES = HERE / "fixtures" / "recount-startup"
+    SCAN = metrics._time("2026-11-20T00:00:00Z")  # fixture-local; the module constant is only the CLI default
+
+    @staticmethod
+    def contains(sha):
+        return {"aaaaaaaaaaaa": False, "bbbbbbbbbbbb": True}.get(sha)
+
+    def windows(self, scan=SCAN):
+        windows, unresolved = recount_startup.windowed_sessions(self.FIXTURES, scan, self.contains)
+        return windows, unresolved
+
+    def test_each_session_goes_into_its_window(self):
+        windows, unresolved = self.windows()
+        self.assertEqual({name: sorted(sessions) for name, sessions in windows.items()}, {
+            "before": [("proj-a", "s-nosha-early"), ("proj-a", "s-old")],
+            "after": [("proj-a", "s-late"), ("proj-b", "s-new"), ("proj-b", "s-nosha-late")],
+            "mixed": [("proj-a", "s-both")]})
+        self.assertEqual(unresolved, set())
+
+    def test_the_table_counts_each_row(self):
+        table = dict(recount_startup.build_table(self.windows()[0]))
+        self.assertEqual({name: table[name] for name in (
+            "sessions all", "sessions implementer", "sub-agents all", "sub-agents planner", "sub-agents implementer",
+            "sub-agents reviewer", "sub-agents verifier",
+            "skills listing all", "skills listing planner", "skills listing verifier",
+            "tools with Skill all", "tools with Skill implementer", "tools with Skill verifier",
+            "tools with Agent all", "tools with Agent reviewer", "tools with Agent implementer",
+            "sub-agents without a shape")}, {
+            "sessions all": ["2", "3", "1"],
+            "sessions implementer": ["1", "1", "1"],
+            "sub-agents all": ["4", "5", "1"],
+            "sub-agents planner": ["1", "1", "0"],
+            "sub-agents implementer": ["1", "1", "1"],
+            "sub-agents reviewer": ["1", "2", "0"],
+            "sub-agents verifier": ["1", "1", "0"],
+            "skills listing all": ["1/4 (25.0%)", "0/5 (0.0%)", "0/1 (0.0%)"],
+            "skills listing planner": ["1/1 (100.0%)", "0/1 (0.0%)", "0/0"],
+            "skills listing verifier": ["0/1 (0.0%)", "0/1 (0.0%)", "0/0"],
+            "tools with Skill all": ["2/3 (66.7%)", "0/5 (0.0%)", "0/1 (0.0%)"],
+            "tools with Skill implementer": ["1/1 (100.0%)", "0/1 (0.0%)", "0/1 (0.0%)"],
+            "tools with Skill verifier": ["0/0", "0/1 (0.0%)", "0/0"],
+            "tools with Agent all": ["1/3 (33.3%)", "2/5 (40.0%)", "0/1 (0.0%)"],
+            "tools with Agent reviewer": ["0/1 (0.0%)", "1/2 (50.0%)", "0/0"],
+            "tools with Agent implementer": ["0/1 (0.0%)", "1/1 (100.0%)", "0/1 (0.0%)"],
+            "sub-agents without a shape": ["1", "0", "0"]})
+
+    def test_the_first_request_percentiles_per_role(self):
+        # s-old's implementer: one request over two lines (3+9000+0, 3+9000+2000, each type's largest: 11003), and a
+        # later request that must not count; its planner: 10+20000+5000, later request ignored
+        table = dict(recount_startup.build_table(self.windows()[0]))
+        self.assertEqual({name: cells for name, cells in table.items() if name.startswith("first request")}, {
+            "first request p50 planner": ["25010", "6000", "-"],
+            "first request p10 planner": ["25010", "6000", "-"],
+            "first request p90 planner": ["25010", "6000", "-"],
+            "first request p50 implementer": ["11003", "9000", "4000"],
+            "first request p10 implementer": ["11003", "9000", "4000"],
+            "first request p90 implementer": ["11003", "9000", "4000"],
+            "first request p50 reviewer": ["3000", "8000", "-"],  # after: 7000 and 9000
+            "first request p10 reviewer": ["3000", "7200", "-"],
+            "first request p90 reviewer": ["3000", "8800", "-"],
+            "first request p50 verifier": ["8000", "5000", "-"],
+            "first request p10 verifier": ["8000", "5000", "-"],
+            "first request p90 verifier": ["8000", "5000", "-"]})
+
+    def test_one_sub_agent_log_reduces_to_its_startup_facts(self):
+        subagents = self.FIXTURES / "proj-a" / "s-old" / "subagents"
+        implementer = recount_startup.read_subagent(subagents / "agent-i1.jsonl", "implementer", self.SCAN)
+        self.assertEqual((implementer["first_request"], implementer["model"], implementer["listing"], implementer["tools"]),
+                         (11003, "claude-sonnet-4-6", False, {"Read", "Skill"}))  # a later request is Opus
+        planner = recount_startup.read_subagent(subagents / "agent-p1.jsonl", "planner", self.SCAN)
+        self.assertEqual((planner["model"], planner["listing"], planner["tools"]), ("claude-opus-4-7", True, {"Read", "Skill", "Agent"}))
+        verifier = recount_startup.read_subagent(subagents / "agent-v1.jsonl", "verifier", self.SCAN)
+        self.assertEqual((verifier["listing"], verifier["tools"]), (False, None))  # a listing after the first request is not at start
+
+    def test_an_explorer_and_a_session_with_only_an_explorer_do_not_count(self):
+        sessions = recount_startup.read_agents(self.FIXTURES, self.SCAN)
+        self.assertNotIn(("proj-a", "s-explorer-only"), sessions)
+        self.assertEqual(sorted(a["role"] for a in sessions[("proj-a", "s-old")]), ["implementer", "planner", "verifier"])
+
+    def test_a_before_session_earlier_than_the_start_is_in_no_column(self):
+        windows, _ = self.windows()
+        named = {session for sessions in windows.values() for _, session in sessions}
+        self.assertNotIn("s-too-early", named)  # names the old SHA only
+        self.assertNotIn("s-nosha-prestart", named)  # names no SHA
+
+    def test_records_after_the_scan_time_do_not_count(self):
+        # s-late has a record naming aaaa and a Reviewer, both stamped 2026-11-25
+        later, _ = self.windows(metrics._time("2026-12-01T00:00:00Z"))
+        self.assertEqual(sorted(later["mixed"]), [("proj-a", "s-both"), ("proj-a", "s-late")])
+        self.assertEqual(sorted(a["role"] for a in later["mixed"][("proj-a", "s-late")]["agents"]), ["implementer", "reviewer"])
+        self.assertEqual(sorted(later["after"]), [("proj-b", "s-new"), ("proj-b", "s-nosha-late")])
+
+    def test_a_rerun_gives_the_same_counts(self):
+        first, second = (recount_startup.build_table(self.windows()[0]) for _ in range(2))
+        self.assertEqual(first, second)
+
+    def test_report_names_the_bounds_the_method_and_the_columns(self):
+        report = recount_startup.window_report(*self.windows(), self.SCAN).splitlines()
+        self.assertIn("first record before 2026-11-07T01:47:33Z", report[0])
+        self.assertIn("all end at scan time 2026-11-20T00:00:00Z; unresolved SHAs 0", report[0])
+        self.assertIn("percentiles by linear interpolation between closest ranks", report[1])
+        self.assertEqual(report[2].split(), ["count", "before", "after", "mixed"])
+        self.assertEqual(report[3].split(), ["sessions", "all", "2", "3", "1"])
+
+    def test_containment_of_real_commits(self):
+        self.assertIs(plugin_windows.contains(recount_startup.FIX_SHA, "6bd70161a905"), True)  # 6bd7016 itself
+        self.assertIs(plugin_windows.contains(recount_startup.FIX_SHA, "2d84926da062"), False)  # its parent
+
+    def test_baseline_selects_by_file_mtime_and_record_time(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "logs"
+            shutil.copytree(self.FIXTURES, root)
+            for path in root.rglob("agent-*.jsonl"):
+                stamp = recount_startup.BEFORE_START + (-86400 if "s-too-early" in path.parts else 86400)
+                os.utime(path, (stamp, stamp))
+            out = subprocess.run([sys.executable, str(HERE / "recount_startup.py"), "--baseline", str(root)],
+                                 capture_output=True, text=True, check=True).stdout
+        # the logs from 2026-11-10 on are written after the cut-off; s-too-early's log is older than the start
+        # kept: s-old (planner, implementer, verifier), s-both, s-nosha-early, s-nosha-prestart
+        # cost: every turn of those four sessions, the explorer's too. Hand-worked from PRICES, in millionths of a dollar:
+        # sonnet 1605 (explorer) + 5205 + 9105 + 10314 (implementer, largest of its two lines) + 6105 + 12105,
+        # opus 41475 + 50224.5 (planner) + 50189.5 (implementer's later request) = 186328
+        self.assertEqual(out.splitlines()[1:], ["sessions 4", "sub-agents 6", "median first request 6000", "total cost $0.19"])
+
+    def test_an_unknown_mode_prints_usage_and_fails(self):
+        result = subprocess.run([sys.executable, str(HERE / "recount_startup.py"), "--bogus"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Usage: python benchmark/recount_startup.py [log-root]", result.stderr)
+
+
+class RecountStartupPassesTests(unittest.TestCase):
+    """Hand-counted from fixtures/recount-startup-passes/proj-p/: before = s-b1, s-b2 (aaaa); after = s-a1, s-a2 (bbbb);
+    mixed holds no session. Costs, in dollars from PRICES (sonnet 3/15/3.75/0.30, opus 5/25/6.25/10 1h/0.50 per million):
+    s-b1 4.50 (driving turn) + 6.75 (one turn over two lines, 2M in and 50k out, priced once; the <synthetic> turn and
+    the turn after the scan time do not count) + 1.80 + 1.35 + 2.25 (the Reviewers) + 6.50 (the explorer) = 23.15;
+    s-b2 0.85 (opus 100k in, 14k out); s-a1 0.75; s-a2 27.25 (opus: 0.50 in, 6.25 5-minute write, 20.00 1-hour write, 0.50 out)."""
+    FIXTURES = HERE / "fixtures" / "recount-startup-passes"
+    SCAN = metrics._time("2026-11-20T00:00:00Z")
+
+    @staticmethod
+    def contains(sha):
+        return {"aaaaaaaaaaaa": False, "bbbbbbbbbbbb": True}.get(sha)
+
+    def windows(self):
+        return recount_startup.windowed_sessions(self.FIXTURES, self.SCAN, self.contains)[0]
+
+    def test_the_table_counts_cost_passes_findings_send_backs_and_lost_tools(self):
+        table = dict(recount_startup.build_table(self.windows()))
+        self.assertEqual({name: table[name] for name in (
+            "session cost mean", "session cost total", "sessions with >1 reviewer", "sessions with >1 verifier",
+            "Hard violations total", "Hard violations per session", "Judgement calls total", "Judgement calls per session",
+            "send-backs total", "send-backs per session", "lost-tool attempts")}, {
+            "session cost mean": ["$12.00", "$14.00", "-"],
+            "session cost total": ["$24.00", "$28.00", "$0.00"],
+            "sessions with >1 reviewer": ["1/2 (50.0%)", "0/2 (0.0%)", "0/0"],  # s-b1 has two; s-a1 has one Reviewer and one Verifier
+            "sessions with >1 verifier": ["1/2 (50.0%)", "0/2 (0.0%)", "0/0"],  # s-b2 has two
+            "Hard violations total": ["5", "1", "0"],  # before 3 + 1 + 1; after 1
+            "Hard violations per session": ["2.50", "0.50", "-"],
+            "Judgement calls total": ["6", "2", "0"],  # before 4 + 1 + 1; after 2
+            "Judgement calls per session": ["3.00", "1.00", "-"],
+            "send-backs total": ["0", "2", "0"],  # Iteration 1 is not one; "Iteration 2 ... Iteration 1" and "Iteration 2" are
+            "send-backs per session": ["0.00", "1.00", "-"],
+            "lost-tool attempts": ["2", "2", "0"]})
+
+    def test_a_reviewer_reports_through_its_last_handback_else_its_last_message(self):
+        subagents = self.FIXTURES / "proj-p"
+        def reviewer(session, name):
+            agent = recount_startup.read_subagent(subagents / session / "subagents" / name, "reviewer", self.SCAN)
+            return agent["handback"], agent["findings"]
+        # handback only: six counted lines (list markers, bold, indent), two lines that mention a finding mid-line are not
+        self.assertEqual(reviewer("s-b1", "agent-r1.jsonl"), (True, {"Hard violation": 3, "Judgement call": 4}))
+        # plain text only: the last message id, over two lines; an earlier message does not count
+        self.assertEqual(reviewer("s-b1", "agent-r2.jsonl"), (False, {"Hard violation": 1, "Judgement call": 1}))
+        # plain text, then a handback call: the handback wins
+        self.assertEqual(reviewer("s-b2", "agent-r1.jsonl"), (True, {"Hard violation": 1, "Judgement call": 1}))
+        # a handback call, then more text: the handback wins
+        self.assertEqual(reviewer("s-a1", "agent-r1.jsonl"), (True, {"Hard violation": 1, "Judgement call": 2}))
+
+    def test_a_send_back_is_the_first_iteration_number_of_two_or_more(self):
+        def send_back(session, name):
+            return recount_startup.read_subagent(self.FIXTURES / "proj-p" / session / "subagents" / name, "implementer", self.SCAN)["send_back"]
+        self.assertEqual([send_back("s-b2", "agent-i1.jsonl"), send_back("s-a1", "agent-i1.jsonl"),
+                          send_back("s-a2", "agent-i1.jsonl"), send_back("s-a2", "agent-i2.jsonl")],
+                         [False, True, True, False])  # Iteration 1; Iteration 2 ... Iteration 1; Iteration 2; no number
+
+    def test_each_lost_tool_attempt_prints_its_window_role_tool_and_next_call(self):
+        self.assertEqual(recount_startup.attempt_lines(self.windows()), [
+            "before implementer Skill next Read", "before verifier Agent next none",
+            "after implementer Skill next Agent", "after reviewer Skill next Read"])
+        # not attempts: Skill in a Reviewer that has it, Skill and Agent in an Implementer that has both, Agent in an
+        # Implementer with no shape record, Skill in a Verifier with no shape record; the is_error result is no second one
+
+    def test_the_report_ends_with_the_attempt_lines(self):
+        report = recount_startup.window_report(*recount_startup.windowed_sessions(self.FIXTURES, self.SCAN, self.contains), self.SCAN).splitlines()
+        self.assertEqual(report[-5:], ["lost-tool attempts (window, role, tool, next tool call):",
+                                       "before implementer Skill next Read", "before verifier Agent next none",
+                                       "after implementer Skill next Agent", "after reviewer Skill next Read"])
+
+    def test_a_window_with_no_sessions_prints_means_and_shares_without_error(self):
+        table = dict(recount_startup.build_table({"empty": {}}))
+        self.assertEqual({name: table[name] for name in (
+            "session cost mean", "session cost total", "sessions with >1 reviewer", "Hard violations per session",
+            "send-backs per session", "lost-tool attempts")},
+            {"session cost mean": ["-"], "session cost total": ["$0.00"], "sessions with >1 reviewer": ["0/0"],
+             "Hard violations per session": ["-"], "send-backs per session": ["-"], "lost-tool attempts": ["0"]})
+
+
+class RecountStartupVerdictTests(unittest.TestCase):
+    """The verdict over the grilling preview of 2026-11-22 (Spec, Verdict): each role's after p90 against its before p10."""
+    BEFORE = {"planner": 25293, "implementer": 29453, "reviewer": 25120, "verifier": 26793}
+    AFTER = {"planner": 20929, "implementer": 24652, "reviewer": 19770, "verifier": 22616}
+
+    def test_dropped_when_every_role_separates(self):
+        self.assertEqual(recount_startup.verdict(self.BEFORE, self.AFTER, 0), "dropped")
+
+    def test_a_tie_is_not_dropped_and_one_below_it_is(self):
+        self.assertEqual(recount_startup.verdict(self.BEFORE, {**self.AFTER, "reviewer": 25120}, 0), "not dropped")
+        self.assertEqual(recount_startup.verdict(self.BEFORE, {**self.AFTER, "reviewer": 25119}, 0), "dropped")
+
+    def test_one_overlapping_role_is_not_dropped(self):
+        self.assertEqual(recount_startup.verdict(self.BEFORE, {**self.AFTER, "verifier": 30000}, 0), "not dropped")
+
+    def test_a_role_missing_from_a_window_is_not_dropped(self):
+        self.assertEqual(recount_startup.verdict(self.BEFORE, {**self.AFTER, "planner": None}, 0), "not dropped")
+        self.assertEqual(recount_startup.verdict({**self.BEFORE, "implementer": None}, self.AFTER, 0), "not dropped")
+        self.assertEqual(recount_startup.verdict({}, {}, 0), "not dropped")
+
+    def test_a_lost_tool_attempt_fails_whatever_the_percentiles_say(self):
+        self.assertEqual(recount_startup.verdict(self.BEFORE, self.AFTER, 1), "failed")
+        self.assertEqual(recount_startup.verdict(self.BEFORE, {**self.AFTER, "verifier": 30000}, 3), "failed")
+
+    @staticmethod
+    def window(requests, lost=()):
+        """One session whose sub-agents have the given first requests per role, the first one with the lost-tool attempts."""
+        agents = [{"role": role, "first_request": n, "lost": []} for role, ns in requests.items() for n in ns]
+        agents[0]["lost"] = list(lost)
+        return {("proj", "s"): {"agents": agents, "cost": 0.0}}
+
+    def test_report_prints_the_verdict_beside_the_percentiles_it_judged(self):
+        # before p10 of [100, 200] is 110 (linear interpolation); after p90 of [90, 100] is 99
+        before = self.window({role: [100, 200] for role in recount_startup.ROLES})
+        after = self.window({role: [90, 100] for role in recount_startup.ROLES})
+        self.assertEqual(recount_startup.verdict_report({"before": before, "after": after, "mixed": {}}).splitlines(), [
+            "verdict: dropped", "planner: before p10 110, after p90 99", "implementer: before p10 110, after p90 99",
+            "reviewer: before p10 110, after p90 99", "verifier: before p10 110, after p90 99",
+            "lost-tool attempts in the after window: 0"])
+
+    def test_report_fails_on_an_after_attempt_and_ignores_the_mixed_window(self):
+        before = self.window({role: [100, 200] for role in recount_startup.ROLES})
+        after = self.window({role: [90, 100] for role in recount_startup.ROLES}, lost=[("Skill", None), ("Agent", "Read")])
+        mixed = self.window({"planner": [500]}, lost=[("Skill", None)])
+        report = recount_startup.verdict_report({"before": before, "after": after, "mixed": mixed}).splitlines()
+        self.assertEqual((report[0], report[-1]), ("verdict: failed", "lost-tool attempts in the after window: 2"))
+        report = recount_startup.verdict_report({"before": before, "after": self.window({"planner": [90]}), "mixed": mixed}).splitlines()
+        self.assertEqual((report[0], report[2], report[-1]), (
+            "verdict: not dropped", "implementer: before p10 110, after p90 -", "lost-tool attempts in the after window: 0"))
+
+
+class RecountStartupNoiseTests(unittest.TestCase):
+    """The noise list over throwaway git repos with fixed dates; the span is 2026-11-07T01:47:33Z to 2026-11-20T00:00:00Z,
+    the suite's from the before window's start. Reviewers, hand-counted from the fixtures. recount-startup-passes, before:
+    b1's r1 (claude-sonnet-4-6, handback), b1's r2 (claude-sonnet-4-6, plain text), b2's r1 (no model on its records,
+    handback); after: one claude-sonnet-4-6 with a handback; no mixed Reviewer. recount-startup: one plain-text
+    claude-sonnet-4-6 before, two after (s-new's; the one in s-late is stamped after the scan), no mixed Reviewer."""
+    commit = NoiseCommitTests.commit
+    SCAN = metrics._time("2026-11-20T00:00:00Z")
+    PASSES = HERE / "fixtures" / "recount-startup-passes"
+    STARTUP = HERE / "fixtures" / "recount-startup"
+
+    @staticmethod
+    def contains(sha):
+        return {"aaaaaaaaaaaa": False, "bbbbbbbbbbbb": True}.get(sha)
+
+    def head(self, repo):
+        return subprocess.run(["git", "log", "-1", "--format=%h"], cwd=repo, capture_output=True, text=True, check=True).stdout.strip()
+
+    def repos(self, tmp):
+        """A skills repo and a suite repo; returns both paths and the short SHAs of the commits the lists must name."""
+        repo, suite = Path(tmp) / "skills", Path(tmp) / "suite"
+        for path in (repo, suite):
+            path.mkdir()
+            subprocess.run(["git", "init", "-q"], cwd=path, check=True, capture_output=True)
+        self.commit(repo, "agents/implementer.md", "before the push", "2026-11-07T01:00:00Z")
+        self.commit(repo, "skills/implement/SKILL.md", "inside, listed folder", "2026-11-08T10:00:00Z")
+        self.commit(repo, "README.md", "inside, unlisted path", "2026-11-09T10:00:00Z")
+        self.commit(repo, "agents/reviewer.md", "inside, listed file", "2026-11-10T10:00:00Z")
+        listed = self.head(repo)
+        self.commit(repo, "agents/verifier.md", "after the scan time", "2026-11-20T00:00:01Z")
+        self.commit(suite, ".agents/refs/models.md", "before the before window", "2026-10-20T10:00:00Z")
+        self.commit(suite, ".agents/refs/models.md", "trial on Sonnet", "2026-11-06T20:06:44Z")
+        trial = self.head(suite)
+        self.commit(suite, "README.md", "inside, unlisted path", "2026-11-07T10:00:00Z")
+        self.commit(suite, ".agents/refs/models.md", "after the scan time", "2026-11-21T10:00:00Z")
+        return repo, suite, listed, trial
+
+    def windows(self, root):
+        return recount_startup.windowed_sessions(root, self.SCAN, self.contains)[0]
+
+    def test_lists_each_part_and_names_the_commits_it_calls_out(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, suite, listed, trial = self.repos(tmp)
+            with unittest.mock.patch.dict(recount_startup.CALLED_OUT, clear=True, values={listed: "the first note", "0000000": "the missing one"}), \
+                    unittest.mock.patch.object(recount_startup, "TRIAL_SHA", trial):
+                lines = recount_startup.noise_report(self.windows(self.PASSES), repo, suite, self.SCAN).splitlines()
+        self.assertEqual(lines[:4], [
+            "skills commits touching the implement, code-review or agent files, 2026-11-07T01:47:33Z to 2026-11-20T00:00:00Z:",
+            f"{listed} 2026-11-10 inside, listed file", f"{lines[2].split()[0]} 2026-11-08 inside, listed folder",
+            f"called out: {listed} 2026-11-10 inside, listed file: the first note"])
+        self.assertEqual(lines[4], "called out: 0000000 (not found): the missing one")
+        self.assertTrue(lines[5].startswith("mvdmio-suite commits touching the models ref, 20"))
+        self.assertTrue(lines[5].endswith(" to 2026-11-20T00:00:00Z:"))
+        self.assertEqual(lines[6:], [
+            f"{trial} 2026-11-06 trial on Sonnet",
+            f"called out: {trial} 2026-11-06 trial on Sonnet: {recount_startup.TRIAL_NOTE}",
+            "reviewer models before: claude-sonnet-4-6 2, unknown 1", "reviewer models after: claude-sonnet-4-6 1",
+            "reviewer models mixed: none",
+            "reviewers ending with SubagentHandback before: 2/3 (66.7%)", "reviewers ending with SubagentHandback after: 1/1 (100.0%)",
+            "reviewers ending with SubagentHandback mixed: 0/0",
+            "the Reviewer handback share fell without any commit here; its cause is unknown"])
+
+    def test_an_unreadable_suite_and_an_empty_span_say_so(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self.repos(tmp)[0]
+            lines = recount_startup.noise_report(self.windows(self.PASSES), repo, Path(tmp) / "missing", self.SCAN - 20 * 86400).splitlines()
+        called = len(recount_startup.CALLED_OUT)  # the two named commits are not in the throwaway repo
+        self.assertEqual(lines[0], "skills commits touching the implement, code-review or agent files, "
+                                   "2026-11-07T01:47:33Z to 2026-10-31T00:00:00Z:")
+        self.assertEqual(lines[1], "none")
+        self.assertTrue(lines[2 + called].startswith("mvdmio-suite commits touching the models ref, "))
+        self.assertTrue(lines[2 + called].endswith(": could not be read"))
+        self.assertEqual(lines[3 + called], f"called out: {recount_startup.TRIAL_SHA} (not found): {recount_startup.TRIAL_NOTE}")
+
+    def test_reviewer_models_and_handbacks_over_the_other_fixture_tree(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            lines = recount_startup.noise_report(self.windows(self.STARTUP), Path(tmp) / "a", Path(tmp) / "b", self.SCAN).splitlines()
+        self.assertEqual(lines[-7:-1], [
+            "reviewer models before: claude-sonnet-4-6 1", "reviewer models after: claude-sonnet-4-6 2", "reviewer models mixed: none",
+            "reviewers ending with SubagentHandback before: 0/1 (0.0%)", "reviewers ending with SubagentHandback after: 0/2 (0.0%)",
+            "reviewers ending with SubagentHandback mixed: 0/0"])
 
 
 if __name__ == "__main__":

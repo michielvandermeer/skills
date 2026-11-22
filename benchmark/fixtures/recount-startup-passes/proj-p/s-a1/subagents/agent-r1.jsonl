@@ -1,0 +1,7 @@
+{"type": "user", "timestamp": "2026-11-12T08:20:00.000Z", "message": {"role": "user", "content": "go"}}
+{"type": "api-request-shape", "timestamp": "2026-11-12T08:20:01.000Z", "shape": {"tools": [{"name": "Read"}]}}
+{"type": "assistant", "timestamp": "2026-11-12T08:20:02.000Z", "requestId": "q-rd1", "message": {"id": "m-rd1", "role": "assistant", "model": "claude-sonnet-4-6", "content": [{"type": "tool_use", "id": "t1", "name": "Skill", "input": {"skill": "x"}}], "usage": {"input_tokens": 200000, "output_tokens": 10000}}}
+{"type": "user", "timestamp": "2026-11-12T08:20:03.000Z", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "t1", "is_error": true, "content": "no such tool"}]}}
+{"type": "assistant", "timestamp": "2026-11-12T08:20:04.000Z", "message": {"id": "m-rd2", "role": "assistant", "content": [{"type": "tool_use", "id": "t2", "name": "Read", "input": {"file_path": "/x"}}]}}
+{"type": "assistant", "timestamp": "2026-11-12T08:20:05.000Z", "message": {"id": "m-rd3", "role": "assistant", "content": [{"type": "tool_use", "id": "t3", "name": "SubagentHandback", "input": {"message": "Hard violation: z1\n- Judgement call: z2\nJudgement call: z3"}}]}}
+{"type": "assistant", "timestamp": "2026-11-12T08:20:06.000Z", "message": {"id": "m-rd4", "role": "assistant", "content": [{"type": "text", "text": "Hard violation: after1\nHard violation: after2"}]}}

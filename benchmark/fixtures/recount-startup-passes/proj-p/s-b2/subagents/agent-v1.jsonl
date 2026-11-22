@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-04T08:30:00.000Z", "message": {"role": "user", "content": "go"}}
+{"type": "assistant", "timestamp": "2026-11-04T08:30:02.000Z", "message": {"id": "m-v1a", "role": "assistant", "content": [{"type": "tool_use", "id": "t5", "name": "Skill", "input": {"skill": "x"}}]}}

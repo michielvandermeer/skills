@@ -1,0 +1,3 @@
+{"type": "user", "timestamp": "2026-11-03T08:10:00.000Z", "message": {"role": "user", "content": "go"}}
+{"type": "api-request-shape", "timestamp": "2026-11-03T08:10:01.000Z", "shape": {"tools": [{"name": "Read"}]}}
+{"type": "assistant", "timestamp": "2026-11-03T08:10:02.000Z", "requestId": "q-ra1", "message": {"id": "m-ra1", "role": "assistant", "model": "claude-sonnet-4-6", "content": [{"type": "tool_use", "id": "t1", "name": "SubagentHandback", "input": {"message": "Hard violation: a1\n- Judgement call: b1\n**Hard violation** c1\n  Judgement call: d1\n1. Hard violation: e1\n* Judgement call: f1\n- **Judgement call** g1\nFound no Hard violation here\nThe Judgement call below is noted"}}], "usage": {"input_tokens": 500000, "output_tokens": 20000}}}

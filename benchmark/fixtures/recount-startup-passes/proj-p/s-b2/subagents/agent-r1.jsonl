@@ -1,0 +1,5 @@
+{"type": "user", "timestamp": "2026-11-04T08:20:00.000Z", "message": {"role": "user", "content": "go"}}
+{"type": "api-request-shape", "timestamp": "2026-11-04T08:20:01.000Z", "shape": {"tools": [{"name": "Read"}, {"name": "Skill"}]}}
+{"type": "assistant", "timestamp": "2026-11-04T08:20:02.000Z", "message": {"id": "m-rc1", "role": "assistant", "content": [{"type": "text", "text": "Hard violation: t1\nHard violation: t2"}]}}
+{"type": "assistant", "timestamp": "2026-11-04T08:20:03.000Z", "message": {"id": "m-rc2", "role": "assistant", "content": [{"type": "tool_use", "id": "t3", "name": "Skill", "input": {"skill": "x"}}]}}
+{"type": "assistant", "timestamp": "2026-11-04T08:20:04.000Z", "message": {"id": "m-rc3", "role": "assistant", "content": [{"type": "tool_use", "id": "t4", "name": "SubagentHandback", "input": {"message": "Hard violation: h1\nJudgement call: j1"}}]}}

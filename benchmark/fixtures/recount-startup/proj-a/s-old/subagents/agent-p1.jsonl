@@ -1,0 +1,6 @@
+{"type": "user", "timestamp": "2026-11-02T10:00:01.000Z", "message": {"role": "user", "content": "go"}}
+{"type": "attachment", "timestamp": "2026-11-02T10:00:02.000Z", "attachment": {"type": "environment"}}
+{"type": "attachment", "timestamp": "2026-11-02T10:00:03.000Z", "attachment": {"type": "skill_listing"}}
+{"type": "api-request-shape", "timestamp": "2026-11-02T10:00:04.000Z", "shape": {"tools": [{"name": "Read"}, {"name": "Skill"}, {"name": "Agent"}]}}
+{"type": "assistant", "timestamp": "2026-11-02T10:00:05.000Z", "message": {"id": "m-p1", "role": "assistant", "model": "claude-opus-4-7", "content": [{"type": "text", "text": "ok"}], "usage": {"input_tokens": 10, "cache_read_input_tokens": 20000, "cache_creation_input_tokens": 5000, "output_tokens": 7}}}
+{"type": "assistant", "timestamp": "2026-11-02T10:00:09.000Z", "message": {"id": "m-p1b", "role": "assistant", "model": "claude-opus-4-7", "content": [{"type": "text", "text": "ok"}], "usage": {"input_tokens": 10, "cache_read_input_tokens": 99999, "cache_creation_input_tokens": 0, "output_tokens": 7}}}

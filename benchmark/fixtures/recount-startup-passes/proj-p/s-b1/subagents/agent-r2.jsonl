@@ -1,0 +1,5 @@
+{"type": "user", "timestamp": "2026-11-03T08:20:00.000Z", "message": {"role": "user", "content": "go"}}
+{"type": "api-request-shape", "timestamp": "2026-11-03T08:20:01.000Z", "shape": {"tools": [{"name": "Read"}]}}
+{"type": "assistant", "timestamp": "2026-11-03T08:20:02.000Z", "requestId": "q-rb1", "message": {"id": "m-rb1", "role": "assistant", "model": "claude-sonnet-4-6", "content": [{"type": "text", "text": "Hard violation: old1\nHard violation: old2"}], "usage": {"input_tokens": 400000, "output_tokens": 10000}}}
+{"type": "assistant", "timestamp": "2026-11-03T08:20:03.000Z", "requestId": "q-rb2", "message": {"id": "m-rb2", "role": "assistant", "model": "claude-sonnet-4-6", "content": [{"type": "text", "text": "Summary line\nHard violation: x1"}], "usage": {"input_tokens": 600000, "output_tokens": 5000}}}
+{"type": "assistant", "timestamp": "2026-11-03T08:20:04.000Z", "requestId": "q-rb2", "message": {"id": "m-rb2", "role": "assistant", "model": "claude-sonnet-4-6", "content": [{"type": "text", "text": "- Judgement call: y1"}], "usage": {"input_tokens": 600000, "output_tokens": 30000}}}
