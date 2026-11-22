@@ -29,6 +29,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from fractions import Fraction
 from pathlib import Path
+from typing import NamedTuple, Optional
 
 from compaction_logs import _prices, read_runs
 from metrics import _time
@@ -229,9 +230,20 @@ def _builder_costs(runs, window, low, high, grouped):
             if a["role"] == "implementer" and a["step"] is not None and IN_COMPACTION_GROUP[window](a) == grouped]
 
 
+class Comparison(NamedTuple):
+    """The cells of one Steps group of the comparison: mean builder cost of each group before and after, and the changes."""
+    compaction_before: Optional[float]
+    compaction_after: Optional[float]
+    compaction_change: Optional[float]
+    control_before: Optional[float]
+    control_after: Optional[float]
+    control_change: Optional[float]
+    difference: Optional[float]
+
+
 def comparison_rows(before, after):
-    """[(Steps group, [cell])] with the cells: mean builder cost of the compaction group before and after, its change, the
-    same for the control group, and the compaction group's change minus the control group's. The 0 group has no builders.
+    """[(Steps group, Comparison)]: mean builder cost of the compaction group before and after, its change, the same for the
+    control group, and the compaction group's change minus the control group's. The 0 group has no builders.
     A cell with no builder, or a change needing one, is None."""
     rows = []
     for name, low, high in STEP_GROUPS[1:]:
@@ -240,7 +252,7 @@ def comparison_rows(before, after):
             costs = [statistics.fmean(c) if c else None
                      for c in (_builder_costs(before, "before", low, high, grouped), _builder_costs(after, "after", low, high, grouped))]
             cells += costs + [None if None in costs else costs[1] - costs[0]]
-        rows.append((name, cells + [None if None in (cells[2], cells[5]) else cells[2] - cells[5]]))
+        rows.append((name, Comparison(*cells, None if None in (cells[2], cells[5]) else cells[2] - cells[5])))
     return rows
 
 
@@ -277,16 +289,23 @@ def reviewer_report(windows):
                         for window, runs in windows.items() for models, cells in reviewer_split(runs))])
 
 
+class VerdictGroup(NamedTuple):
+    """The runs of one Steps group: compacted, of them reaching Iteration 3, uncompacted, of them reaching Iteration 3."""
+    compacted: int
+    compacted_reached: int
+    plain: int
+    plain_reached: int
+
+
 def verdict_groups(runs):
-    """{Steps group: (compacted runs, of them reaching Iteration 3, uncompacted runs, of them reaching Iteration 3)} over the
-    runs of 3 or more Steps; a compacted run has an Implementer that compacted."""
+    """{Steps group: VerdictGroup} over the runs of 3 or more Steps; a compacted run has an Implementer that compacted."""
     groups = {}
     for name, low, high in STEP_GROUPS[3:]:
         in_group = [r for r in runs if low <= run_steps(r) <= high]
         has_compacted = lambda run: any(a["compactions"] for a in run["agents"] if a["role"] == "implementer")
         compacted = [r for r in in_group if has_compacted(r)]
         plain = [r for r in in_group if not has_compacted(r)]
-        groups[name] = tuple(n for rs in (compacted, plain) for n in (len(rs), sum(run_iteration(r) >= 3 for r in rs)))
+        groups[name] = VerdictGroup(*(n for rs in (compacted, plain) for n in (len(rs), sum(run_iteration(r) >= 3 for r in rs))))
     return groups
 
 
@@ -299,15 +318,15 @@ def verdict(saving, spend, groups):
     held, share = [], saving / spend if spend else 0.0
     if share < REOPEN_SAVING_UNDER:
         held.append(f"the measured saving {_money(saving)} is {share:.1%} of the spend {_money(spend)}, under {REOPEN_SAVING_UNDER:.0%}")
-    big, reached = sum(g[0] + g[2] for g in groups.values()), sum(g[1] + g[3] for g in groups.values())
+    big, reached = sum(g.compacted + g.plain for g in groups.values()), sum(g.compacted_reached + g.plain_reached for g in groups.values())
     if reached * 100 > REOPEN_ITERATION_3_OVER * big:
         held.append(f"{_share(reached, big)} of the after runs of 3 or more Steps reach Iteration 3, over {REOPEN_ITERATION_3_OVER}%")
-    left_out = [name for name, g in groups.items() if g[0] and not g[2]]
-    used = [g for g in groups.values() if g[0] and g[2]]
-    compacted, compacted_reached = sum(g[0] for g in used), sum(g[1] for g in used)
+    left_out = [name for name, g in groups.items() if g.compacted and not g.plain]
+    used = [g for g in groups.values() if g.compacted and g.plain]
+    compacted, compacted_reached = sum(g.compacted for g in used), sum(g.compacted_reached for g in used)
     if compacted:
         actual = Fraction(compacted_reached, compacted)
-        expected = sum(g[0] * Fraction(g[3], g[2]) for g in used) / compacted
+        expected = sum(g.compacted * Fraction(g.plain_reached, g.plain) for g in used) / compacted
         if actual - expected >= REOPEN_EXCESS:
             held.append(f"the compacted runs reach Iteration 3 in {float(actual):.1%} ({compacted_reached}/{compacted}), "
                         f"{float(actual - expected) * 100:.1f} points above the expected {float(expected):.1%}, "
@@ -325,10 +344,10 @@ def verdict_report(runs):
     if left_out:
         lines.append(f"  left out of the compacted runs condition, no uncompacted runs: {', '.join(left_out)}")
     lines += ["raw counts:", f"  saving {_money(saving)}, spend {_money(spend)}",
-              f"  after runs of 3 or more Steps: {sum(g[0] + g[2] for g in groups.values())}, "
-              f"reaching Iteration 3: {sum(g[1] + g[3] for g in groups.values())}",
-              f"  compacted runs: {sum(g[0] for g in groups.values())}, reaching Iteration 3: {sum(g[1] for g in groups.values())}",
-              *(f"  Steps {name}: uncompacted runs {g[2]}, reaching Iteration 3: {g[3]}" for name, g in groups.items())]
+              f"  after runs of 3 or more Steps: {sum(g.compacted + g.plain for g in groups.values())}, "
+              f"reaching Iteration 3: {sum(g.compacted_reached + g.plain_reached for g in groups.values())}",
+              f"  compacted runs: {sum(g.compacted for g in groups.values())}, reaching Iteration 3: {sum(g.compacted_reached for g in groups.values())}",
+              *(f"  Steps {name}: uncompacted runs {g.plain}, reaching Iteration 3: {g.plain_reached}" for name, g in groups.items())]
     return "\n".join(lines)
 
 

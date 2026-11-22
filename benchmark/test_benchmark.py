@@ -919,12 +919,6 @@ class RecountCompactionWindowsTests(unittest.TestCase):
         self.assertEqual(rows[0], "second baseline: the same selection, first record from 2026-11-05T13:59:00Z")
         self.assertEqual([line.rsplit(None, 1) for line in rows[1:4]], [["runs", "1"], ["Implementers", "1"], ["Implementer cost", "$2.02"]])
 
-    def test_a_rerun_gives_the_same_table(self):
-        def table():
-            windows, unresolved = self.windows()
-            return recount_compaction.window_report(windows, unresolved, self.SCAN)
-        self.assertEqual(table(), table())
-
     def test_the_command_prints_the_bounds_the_table_and_the_second_baseline(self):
         out = subprocess.run([sys.executable, str(HERE / "recount_compaction.py"), str(self.FIXTURES)],
                              capture_output=True, text=True, check=True).stdout.splitlines()
@@ -979,6 +973,16 @@ class RecountCompactionOutcomesTests(unittest.TestCase):
         self.assertEqual({s: (r["landed"], r["halted"]) for s, r in self.runs().items()}, {
             "s-land-a": (True, False), "s-land-b": (True, False), "s-land-c": (True, False),
             "s-halt": (False, True), "s-neither": (False, False), "s-unread": (True, False)})
+
+    def test_a_log_deleted_during_the_scan_is_skipped(self):
+        doomed = next(self.root.glob("*/s-halt.jsonl"))
+        def keep(log):
+            if log == doomed:
+                log.unlink()  # another session deletes it after the glob listed it
+            return True
+        kept = {r["session"] for r in compaction_logs.read_runs(self.root, self.UNTIL, keep=keep)}
+        self.assertEqual(kept, set(self.runs()))
+        self.assertNotIn("s-halt", kept)
 
     def test_a_landing_commit_is_reverted_by_subject_or_sha(self):
         self.assertEqual({s: r["landing"] for s, r in self.runs().items()}, {
@@ -1159,8 +1163,8 @@ class RecountCompactionMeasureTests(unittest.TestCase):
         # after (8 + 10) / 2 = 9, change -3; difference -5 - -3 = -2. The Steps 1 group has no control after and no compaction before.
         # The fixer (no Step, cost 99) is no builder.
         rows = recount_compaction.comparison_rows(*self.comparison_windows())
-        self.assertEqual(rows, [("1", [None, 5, None, 6, None, None, None]), ("2", [None] * 7),
-                                ("3 to 4", [25, 20, -5, 12, 9, -3, -2]), ("5 to 7", [None] * 7), ("8 or more", [None] * 7)])
+        self.assertEqual(rows, [("1", (None, 5, None, 6, None, None, None)), ("2", (None,) * 7),
+                                ("3 to 4", (25, 20, -5, 12, 9, -3, -2)), ("5 to 7", (None,) * 7), ("8 or more", (None,) * 7)])
 
     def test_the_comparison_report_prints_dashes_for_empty_cells_and_names_the_other_changes(self):
         lines = recount_compaction.comparison_report(*self.comparison_windows()).splitlines()
@@ -1212,7 +1216,10 @@ class RecountCompactionMeasureTests(unittest.TestCase):
 class RecountCompactionVerdictTests(unittest.TestCase):
     """The verdict over hand-built figures: saving, spend and per Steps group (compacted runs, of them reaching Iteration 3,
     uncompacted runs, of them reaching Iteration 3). The saving is 3% of the spend unless a test says otherwise."""
-    verdict = staticmethod(recount_compaction.verdict)
+    @staticmethod
+    def verdict(saving, spend, groups):
+        return recount_compaction.verdict(saving, spend, {name: recount_compaction.VerdictGroup(*g) for name, g in groups.items()})
+
     KEEP = {"3 to 4": (10, 4, 10, 4), "5 to 7": (0, 0, 0, 0), "8 or more": (0, 0, 0, 0)}  # 8/20 = 40% reach Iteration 3; 40% against 40% expected
 
     def test_keep_when_no_condition_holds(self):

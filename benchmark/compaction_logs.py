@@ -1,7 +1,8 @@
 """Read the Claude Code logs under a root into /implement runs, for recount_compaction.py: the turns of each Implementer,
 Reviewer and Verifier, their Step and Iteration numbers, their compactions, their findings and status as counts, and
 how each run ended. Reads <root>/*/<session>.jsonl and <root>/*/<session>/subagents/agent-*.jsonl with the
-agent-*.meta.json next to them. Returns counts, never log text."""
+agent-*.meta.json next to them. read_log returns the prompt and the report text, for the functions that turn them into counts;
+every other function returns counts only, never log text."""
 import functools
 import json
 import re
@@ -243,10 +244,14 @@ def read_run(project, session, log, until):
 
 
 def read_runs(root, until, keep=lambda log: True):
-    """Every run under root that keep() accepts by its top-level log path, records up to until, in path order."""
+    """Every run under root that keep() accepts by its top-level log path, records up to until, in path order. A log that
+    another session deletes during the scan is skipped."""
     runs = []
     for log in sorted(Path(root).glob("*/*.jsonl")):
-        run = read_run(log.parent.name, log.stem, log, until) if keep(log) else None
+        try:
+            run = read_run(log.parent.name, log.stem, log, until) if keep(log) else None
+        except FileNotFoundError:
+            continue
         if run:
             runs.append(run)
     return runs
