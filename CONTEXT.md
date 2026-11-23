@@ -333,6 +333,14 @@ _Avoid_: merge danger, one-way door, two-way door
 The state of an `/implement` run the `benchmark/` runner starts to measure what it costs: `SKILLS_BENCHMARK=1`, named in the session's system prompt. The claim and every push become no-ops that write one line to a log, and every other part of the run goes as it does in production. Compared with what the run does, it changes only whether the run reaches outside the checkout.
 _Avoid_: dry run, test mode, simulation
 
+**Recorded run**:
+One `/implement` run in **Benchmark mode** on a chosen Spec that keeps what a later rerun needs: every commit the run made, each sub-agent dispatch's prompt and the commit it started on, and each dispatch's cost and verdict. Its commits outlive the **Landing commit**, which a production run would squash them into. A real session log is not a Recorded run, because its run's commits are gone.
+_Avoid_: fixture run, golden run, snapshot, trace
+
+**Replay**:
+One sub-agent dispatch from a **Recorded run**, run again with the same prompt on the same commit, possibly under changed skills. It yields that dispatch's cost and verdict alone, while every other dispatch of the run keeps its recorded figures. A fresh run of the whole Spec is not a Replay.
+_Avoid_: rerun, re-dispatch, playback
+
 **Verify skill**:
 The project skill at `.claude/skills/verify/` in the consuming repo that drives its app the way a user does: launch, doctor, drive, evidence, and cleanup, with a feature map holding one recipe per user-facing feature. Named `verify`, so it replaces Claude Code's bundled `/verify`. In a repo with a `CONTEXT-MAP.md`, each context with a running surface keeps its own under that context's folder. Written and kept current by `/setup verify`; a **Verifier** corrects it only where it steered it wrong.
 _Avoid_: run recipe, verification skill, driver skill, control skill, smoke script
