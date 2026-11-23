@@ -9,7 +9,7 @@ import re
 import subprocess
 from pathlib import Path
 
-from metrics import _lines, _time, role_of
+from metrics import TEST_RE, _lines, _time, role_of
 from plugin_windows import _before
 from recount_startup import _report_findings
 
@@ -73,8 +73,10 @@ def _slug(path):
 
 def _tool_facts(block, facts):
     """Fold one tool_use block into facts: the last landing command's issue, a Halt record write, the last handback message,
-    the run slug of the first path naming one, and the Reads each compaction still waiting for a change sees."""
+    the run slug of the first path naming one, the test runs and browser commands, and the Reads each compaction still waiting
+    for a change sees."""
     tool_input = block.get("input") or {}
+    facts["browser"] += "playwright" in (block.get("name") or "").lower()
     path = tool_input.get("file_path") or ""
     facts["slug"] = facts["slug"] or _slug(path)
     if block.get("name") == "Read":
@@ -86,6 +88,7 @@ def _tool_facts(block, facts):
             compaction["open"] = False
     if block.get("name") == "Bash":
         command = tool_input.get("command") or ""
+        facts["tests"] += bool(TEST_RE.search(command))
         closes = CLOSES_RE.findall(command)
         if LANDING_RE.search(command) and closes:
             facts["landed"] = int(closes[-1])
@@ -101,13 +104,14 @@ def read_log(path, until):
     field, and a <synthetic> record is skipped. facts holds cwd (the first one recorded), landed (the issue number of
     the last landing command, else None), halt_record (a Halt record was written) and report (the message of the last
     SubagentHandback call, else the text blocks of the last message id); the report is read here and only counted later.
-    facts also holds slug (the run slug of the first path naming .agents/runs/<slug>/, else None) and compactions, one per
+    facts also holds tests (Bash calls matching metrics.TEST_RE), browser (tool calls whose name contains playwright, any case),
+    slug (the run slug of the first path naming .agents/runs/<slug>/, else None) and compactions, one per
     compact_boundary record in order: before (its preTokens), place (the turns seen before it, so the first turn after it
     is turns[place]), files (basenames the host restored after it), reads (basenames Read before the next Edit, Write or
     MultiEdit) and open (no such change yet)."""
     seen, prompt, first = {}, None, None
     facts, last_id, last_text = {"cwd": None, "landed": None, "halt_record": False, "handback": None,
-                                 "slug": None, "compactions": []}, None, []
+                                 "slug": None, "compactions": [], "tests": 0, "browser": 0}, None, []
     for record in (r for r in _lines(path) if _before(r, until)):
         if record.get("timestamp"):
             moment = _time(record["timestamp"])
@@ -145,12 +149,13 @@ def read_log(path, until):
 
 def _agent(log, agent_type, until):
     """One sub-agent: id, role, model, turns in order, Step (n, of the builder) and Iteration numbers, its report as counts
-    and a status (findings, status, blocked), never the text; its run slug; its compactions; and its first record time."""
+    and a status (findings, status, blocked), never the text; its run slug; its test runs and browser commands; its compactions; and its first record time."""
     turns, prompt, first, facts = read_log(log, until)
     step, iteration = STEP_RE.search(prompt), ITERATION_RE.search(prompt)
     agent = {"id": log.stem.removeprefix("agent-"), "role": role_of(agent_type), "model": turns[0]["model"] if turns else None,
              "turns": turns, "step": int(step.group(1)) if step else None, "steps": int(step.group(2)) if step else None,
              "iteration": int(iteration.group(1)) if iteration else None, "slug": facts["slug"],
+             "test_runs": facts["tests"], "browser_commands": facts["browser"],
              "compactions": _compactions(facts["compactions"], turns, int(step.group(1)) if step else None),
              **_report_facts(facts["report"])}
     return agent, first
@@ -194,6 +199,12 @@ def _commits(directory):
     return [tuple(chunk.strip("\n").split("\x1f", 1)) for chunk in out.split("\x1e") if chunk.strip()]
 
 
+def _landing(commits, issue):
+    """The index in commits of the latest non-revert commit whose message carries Closes #issue as a whole number, else None."""
+    closes = re.compile(rf"Closes #{issue}(?!\d)")
+    return next((i for i, (_, message) in enumerate(commits) if closes.search(message) and not message.startswith('Revert "')), None)
+
+
 def landing_state(cwd, issue):
     """"reverted", "kept" or "unread" for the landing commit of Closes #issue in the repo holding cwd. unread: cwd
     was never recorded or no existing ancestor of it is a repo. The landing commit is the latest non-revert commit
@@ -202,8 +213,7 @@ def landing_state(cwd, issue):
     commits = _commits(str(_existing_ancestor(cwd))) if cwd else None
     if commits is None:
         return "unread"
-    closes = re.compile(rf"Closes #{issue}(?!\d)")
-    landing = next((i for i, (_, message) in enumerate(commits) if closes.search(message) and not message.startswith('Revert "')), None)
+    landing = _landing(commits, issue)
     if landing is None:
         return "kept"
     sha, message = commits[landing]
@@ -213,12 +223,28 @@ def landing_state(cwd, issue):
     return "reverted" if reverted else "kept"
 
 
+def landing_parent(cwd, issue):
+    """The sha of the parent of the landing commit of Closes #issue in the repo holding cwd: the commit the run started from.
+    None when cwd was never recorded, no existing ancestor of it is a repo, no commit lands the issue, or the landing
+    commit has no parent."""
+    commits = _commits(str(_existing_ancestor(cwd))) if cwd else None
+    landing = _landing(commits, issue) if commits else None
+    if landing is None:
+        return None
+    try:
+        return subprocess.run(["git", "rev-parse", "--verify", "-q", f"{commits[landing][0]}^"], cwd=_existing_ancestor(cwd),
+                              capture_output=True, text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
 def read_run(project, session, log, until):
     """The run of one top-level session log, or None when it has no sub-agent of a run type or no record up to until.
     first is the earliest record over the logs; main_cost and subagent_cost cover every turn, every sub-agent type
     included; agents holds the Implementers, Reviewers and Verifiers. landed is the run's landing: the main session ran
     a landing command (an issue number), halted says it wrote a Halt record and did not land, landing is landing_state
-    of a landed run, else None. slug is the first run slug (.agents/runs/<slug>/) a path of the main log, then of each
+    of a landed run, else None. issue is the issue number of the landing command (None when the run did not land) and cwd the
+    first working directory the main log records. slug is the first run slug (.agents/runs/<slug>/) a path of the main log, then of each
     sub-agent log in file order, names; a run whose logs name none has its session id."""
     turns, _, first, facts = read_log(log, until)
     times, agents, slugs, run_type, subagent_cost = [first], [], [facts["slug"]], False, 0.0
@@ -239,7 +265,7 @@ def read_run(project, session, log, until):
         return None
     landed = facts["landed"] is not None
     return {"project": project, "session": session, "slug": next((s for s in slugs if s), session), "first": min(times), "main_cost": sum(t["cost"] for t in turns),
-            "subagent_cost": subagent_cost, "agents": agents, "landed": landed, "halted": facts["halt_record"] and not landed,
+            "subagent_cost": subagent_cost, "agents": agents, "issue": facts["landed"], "cwd": facts["cwd"], "landed": landed, "halted": facts["halt_record"] and not landed,
             "landing": landing_state(facts["cwd"], facts["landed"]) if landed else None}
 
 

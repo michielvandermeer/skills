@@ -39,9 +39,10 @@ Otherwise agree the start. Name, in plain language:
 - the number, its unit, and which direction is better — the end-to-end number the user waits on, not a piece of it;
 - the command it comes from;
 - the **target**, the **minimum number of Attempts**, and a **time limit** if any — the stop rule in step 5;
+- the **spend limit**, in list-price dollars, when the command runs Claude sessions, as a benchmark or a Replay does — the stop rule in step 5. A number whose command runs none, such as test-suite time or build time, gets no spend limit;
 - the tests that must keep passing: the whole suite unless the request narrows it.
 
-Propose a value for everything the request left out — a target such as 30% better than the baseline, at least 10 Attempts. When the request already named the number and the target, state the start and go on. Otherwise wait for the user's OK; from that OK on, the Hillclimb runs unattended.
+Propose a value for everything the request left out — a target such as 30% better than the baseline, at least 10 Attempts. When the request already named the number and the target, state the start and go on. Otherwise wait for the user's OK; from that OK on, the Hillclimb runs unattended. One exception: the spend limit is required and never proposed. A request for such a number that names none gets the question and waits for the answer, even when it named the number and the target; the baseline does not start without it.
 
 Then claim the Issue as the Tracker ref says. When the ref says another user holds it, stop and name them. A ref that gives no claim for Issues skips this.
 
@@ -62,9 +63,9 @@ Create `<scratch>` and its `.gitignore`, and write a recorded branch name to `<s
 
 When `<folder>/log.md` exists, read it whole and reuse the script beside it. Otherwise write both, the log in [the shape below](#the-attempt-log).
 
-Hold the script to MEASURE.md: its contract, then its sensitivity check, run now even on a reused script. A script that cannot tell a slow case from a fast one gets a revised workload or number; when no revision separates them, **halt**.
+Hold the script to MEASURE.md: its contract, running total included for a script that runs Claude sessions, then its sensitivity check, run now even on a reused script. A script that cannot tell a slow case from a fast one gets a revised workload or number; when no revision separates them, **halt**.
 
-Record the baseline: check what else is running, build `<before>`, and measure it alone with at least 3 runs. Run the agreed tests once in the run worktree. Write this Hillclimb's section at the top of the log — the agreed start, the deadline (start plus the time limit), the baseline, and the tests that already fail. An already-failing test is noted and blocks nothing ([ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md)). Commit `<folder>` as `hillclimb(<slug>): start`.
+Record the baseline: check what else is running, build `<before>`, and measure it alone with at least 3 runs. Run the agreed tests once in the run worktree. Write this Hillclimb's section at the top of the log — the agreed start, the deadline (start plus the time limit), the spend limit, the running total after the baseline, the baseline, and the tests that already fail. An already-failing test is noted and blocks nothing ([ADR-0029](../../docs/adr/0029-green-is-measured-against-the-base-branch.md)). Commit `<folder>` as `hillclimb(<slug>): start`. When the baseline's running total has reached the spend limit, skip step 4: step 5's stop rule stops the Hillclimb before its first Attempt.
 
 ### 4. Profile
 
@@ -74,7 +75,7 @@ Replace the log's **Ideas not yet tried** with that list and commit the log.
 
 ### 5. Run the Attempts, one at a time
 
-Before each Attempt, check the **stop rule**. The Hillclimb stops when the target and the minimum number of Attempts are both met, when the deadline has passed, or when the ideas left are marginal and not worth their cost. Cheap untried ideas left mean it goes on, and the target stays as agreed. When it stops, go to step 6.
+Before each Attempt, check the **stop rule**. The Hillclimb stops when the target and the minimum number of Attempts are both met, when the deadline has passed, when the running total has reached the spend limit, or when the ideas left are marginal and not worth their cost. Cheap untried ideas left mean it goes on, and the target stays as agreed. The total is the one the last measurement printed, the baseline's included. When it stops, go to step 6.
 
 Each Attempt:
 
@@ -91,7 +92,7 @@ Each Attempt:
 4. Build `<before>` and the run worktree, then measure the pair as MEASURE.md says: alternating, at least 3 runs per side.
 5. Run the agreed tests in the run worktree.
 6. **Keep** the change when the number moved past the run-to-run spread in the agreed direction, no test fails that did not fail at the baseline, and the work count held — or when it simplifies the code and holds the number. A change that removes counted work is kept only when the Climber's `changed:` line names what it removed. A change that breaks behaviour is reverted however much it helps. Everything else is **reverted**.
-7. Record it in one commit. Kept: write the row, then commit the changed files and the log together — never `git add -A` — with a message that names the change and its before → after, then hold the new HEAD's SHA and move `<before>` to it. Reverted: `git reset --hard && git clean -fd` first, then write the row and commit the log alone.
+7. Record it in one commit. Kept: write the row and the section's running total, then commit the changed files and the log together — never `git add -A` — with a message that names the change and its before → after, then hold the new HEAD's SHA and move `<before>` to it. Reverted: `git reset --hard && git clean -fd` first, then write the row and the section's running total and commit the log alone.
 8. Tell the user one line: `Attempt <n> — <idea>: kept | reverted, <before> → <after>`.
 
 After 3 reverted Attempts in a row, dispatch a fresh Explorer as in step 4, naming the kind of change that kept failing and asking for a different kind. Its list replaces the old one.
@@ -111,7 +112,7 @@ Done when every finding is fixed or named on a deviations line, and each axis's 
 Commit anything still uncommitted. Then, in order:
 
 1. Read the SHA `<base>` points to, and hold it. In the run worktree, rebase with the SHA spelled out as the argument: `git rebase <held SHA>`. A conflict: read [`resolving-merge-conflicts/SKILL.md`](../resolving-merge-conflicts/SKILL.md) and follow it. When the rebase replayed the branch onto new commits, run the agreed tests again. Re-run a failing project once yourself: a failure that passes on the re-run is a flaky test for the report; one that fails again gets one `general-purpose` fixer, and a second failure **halts**.
-2. Move `<before>` to the SHA held in item 1 — the commit the run worktree now builds on — and measure the pair as MEASURE.md says. Write the result into this Hillclimb's section of the log. It goes in the report and blocks nothing. Commit the log. When the Hillclimb started from an Issue, this log commit carries the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the report names the Issue for the user to close.
+2. Move `<before>` to the SHA held in item 1 — the commit the run worktree now builds on — and measure the pair as MEASURE.md says. Write the result and the running total into this Hillclimb's section of the log. The result goes in the report and blocks nothing. Commit the log. When the Hillclimb started from an Issue, this log commit carries the Issue's closing reference as the Tracker ref gives it; when the ref gives none, the report names the Issue for the user to close.
 3. Return the session to the original directory, keeping the branch — a host leave-worktree action when it does exactly that, otherwise change directory yourself.
 4. On `<base>`: `git merge --ff-only <branch>`. This step is done when the merge has succeeded, `git worktree remove` has run on the run worktree, deleting `<scratch>` with it — never forced; a lock means another session still has it — `git worktree remove --force` has run on `<before>`, and `git branch -d <branch>` has run. When the merge errors, `<base>` moved: re-enter the run worktree, drop the log commit with `git reset --hard HEAD~1`, go through 1 to 3 again, and retry the merge.
 
@@ -121,6 +122,7 @@ Read [`technical-writing/SKILL.md`](../technical-writing/SKILL.md) and follow it
 
 - the number and its target, the baseline and the final value against `<base>`, and the change in percent;
 - how many Attempts were kept and how many reverted;
+- when the spend limit stopped the Hillclimb: the limit and the running total;
 - each kept change on one line, with its merge risk;
 - the tests that already failed, and any flaky test from step 7;
 - the log's path, and the best idea still untried.
@@ -144,7 +146,8 @@ Measured by `measure.<ext>`: <what it runs, in one line>.
 
 ## Hillclimb <YYYY-MM-DD>
 
-Started from: <Issue, or the request in one line>. Target: <target>. Minimum Attempts: <n>. Deadline: <time, or none>.
+Started from: <Issue, or the request in one line>. Target: <target>. Minimum Attempts: <n>. Deadline: <time, or none>. Spend limit: <list-price dollars, or none>.
+Spent: <running total in list-price dollars, or none> — rewritten after each measurement.
 Baseline: <median> (<min>–<max>, <runs> runs), <work count>. Already failing: <tests, or none>.
 Result: <final median against <base>> (<change in %>) — written in step 7.
 
@@ -158,7 +161,7 @@ Result: <final median against <base>> (<change in %>) — written in step 7.
 
 A run worktree whose lock names a live process is another session's Hillclimb: stop and say so. Otherwise, in the original directory, recreate `<before>` when it is missing: `git worktree add --detach` at `<branch>`'s HEAD, with `.agents/worktrees/` ignored as step 2 says. Then put the session's working directory on the run worktree, or `git -c checkout.workers=0 worktree add` one at `.agents/worktrees/hillclimb/<slug>` on `<branch>` when it has none. `git reset --hard && git clean -fd` throws away an Attempt that never reached its commit. Recreate `<scratch>` inside the run worktree as step 2 does, when it is missing.
 
-Read the log. When this Hillclimb's section has no baseline, go to step 3. When the deadline has passed, go to step 6 — unless the user's request gives a new time limit, which goes in the section as the new deadline. Otherwise go to step 5, or to step 4 when **Ideas not yet tried** is empty.
+Read the log. When this Hillclimb's section has no baseline, go to step 3. When the deadline has passed, or the section's running total has reached its spend limit, go to step 6 — unless the user's request gives a new time limit, which goes in the section as the new deadline, or a new spend limit, which replaces the one in the section. Otherwise go to step 5, or to step 4 when **Ideas not yet tried** is empty.
 
 ## Halting
 

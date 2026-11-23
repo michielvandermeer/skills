@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-05T10:00:50.000Z", "message": {"role": "user", "content": "Reduced verify after rebase PROMPT"}}
+{"type": "assistant", "timestamp": "2026-11-05T10:00:51.000Z", "message": {"id": "vr", "role": "assistant", "content": [{"type": "text", "text": "Status: passed"}]}}

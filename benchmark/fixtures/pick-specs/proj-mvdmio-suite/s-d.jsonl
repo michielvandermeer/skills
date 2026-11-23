@@ -1,0 +1,2 @@
+{"type": "user", "timestamp": "2026-11-13T10:00:00.000Z", "message": {"role": "user", "content": "PROMPT-MAIN"}, "cwd": "__REPO__"}
+{"type": "assistant", "timestamp": "2026-11-13T10:00:01.000Z", "message": {"id": "m1", "role": "assistant", "content": [{"type": "tool_use", "name": "Bash", "input": {"command": "git commit -m \"Add s-d\n\nCloses #104\""}}]}}

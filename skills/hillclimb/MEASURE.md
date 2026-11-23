@@ -10,6 +10,7 @@ A Hillclimb trusts one thing: the frozen measurement script. These rules keep it
 - Each run executes the measured command in that checkout and writes its raw output to `<scratch>`, the `scratch/` folder beside the script. The timed region holds the measured work only; building and installing happen before it.
 - Every run records the number, the **work count** — what was actually done, such as the number of tests that ran — and the **error count**: failures, non-success responses, crashes. A change that skips work or fails fast looks faster; these two counts catch it.
 - It prints one line per side — median, min–max range, runs, work count, errors — and nothing else, because the driving session reads every summary for hours.
+- A script that runs Claude sessions adds the **running total** to that line: the list-price dollars spent since the Hillclimb began, every run of every side and the baseline included. It keeps the total in a file in `<scratch>`, so a resume carries it on, and it prints the total as it stands after the measurement.
 
 **Freeze** it after the sensitivity check. No Attempt and no fixer edits it. A Hillclimb that must change it measures a new baseline and says so in that row's `Note`.
 

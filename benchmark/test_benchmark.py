@@ -1,11 +1,16 @@
 """Tests for the benchmark tooling, on synthetic data only: python benchmark/test_benchmark.py"""
+import contextlib
 import csv
+import importlib.util
+import io
 import json
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
+import threading
+import types
 import unittest
 import unittest.mock
 from pathlib import Path
@@ -17,13 +22,19 @@ import collect  # noqa: E402
 import compaction_logs  # noqa: E402
 import compare  # noqa: E402
 import guards  # noqa: E402
+import judge  # noqa: E402
 import metrics  # noqa: E402
+import pick_specs  # noqa: E402
 import plugin_windows  # noqa: E402
+import record  # noqa: E402
 import recount  # noqa: E402
 import recount_compaction  # noqa: E402
 import recount_startup  # noqa: E402
+import replay  # noqa: E402
 import run  # noqa: E402
 import score  # noqa: E402
+import seed  # noqa: E402
+import usage_share  # noqa: E402
 
 
 class GhGuardTests(unittest.TestCase):
@@ -119,6 +130,13 @@ class MetricsTests(unittest.TestCase):
         self.assertAlmostEqual(roles["implementer"]["cost_usd"], 0.01626, places=6)
         self.assertEqual(roles["main"]["calls"], 2)
         self.assertEqual(self.m["subagents"], 4)
+
+    def test_cost_is_kept_by_agent_token_kind_and_model(self):
+        agents = self.m["by_agent"]
+        self.assertEqual(agents["agent-ver1"], {"claude-sonnet-5": {
+            "input": 1, "output": 10, "cache_write_5m": 0, "cache_write_1h": 0, "cache_read": 100, "cost_usd": 0.000183}})
+        self.assertEqual(agents["agent-impl1"]["claude-sonnet-5"]["cache_write_1h"], 2000)
+        self.assertEqual(agents["main"]["claude-sonnet-5"]["output"], 150)  # the streamed call counts once, at its largest
 
     def test_a_prover_that_held_counts_as_a_passed_verify(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1576,6 +1594,988 @@ class RecountStartupNoiseTests(unittest.TestCase):
             "reviewer models before: claude-sonnet-4-6 1", "reviewer models after: claude-sonnet-4-6 2", "reviewer models mixed: none",
             "reviewers ending with SubagentHandback before: 0/1 (0.0%)", "reviewers ending with SubagentHandback after: 0/2 (0.0%)",
             "reviewers ending with SubagentHandback mixed: 0/0"])
+
+
+class PickSpecsTests(unittest.TestCase):
+    """Hand-counted from fixtures/pick-specs/ (copied with __REPO__ and __NOREPO__ filled in) and a throwaway repo of commits,
+    oldest first: base, "Add s-a" Closes #101, "Add s-b" Closes #102. proj-mvdmio-suite holds s-a (#101: 2 Steps, 1 Iteration,
+    2 test runs, 3 browser commands), s-b (#102: 4, 2, 4, 6), s-c (#103: 6, 3, 9, 12, its cwd in no repo), s-d (#104: 4, 2, 4, 0),
+    s-e (#105: 4, 2, 5, 5), s-f (no landing, so no run) and s-h (#107, first recorded 2026-11-05; 2 Steps, 2 Iterations: Verify Iteration 1 and a reduced verify after the rebase with no number, 2 test runs, 2 browser commands). proj-other holds s-g (#106,
+    a landed run of another project). Implementers and Reviewers of every run also run tests and browser commands, which do
+    not count. Medians 4, 2, 4, 5; 90th percentile 5.2, 2.6, 7.4, 9.6. Distances to the median: #101 1.9, #102 0.2, #103 3.65,
+    #105 0.25; to the 90th percentile: #101 4.27, #102 2.17, #103 1.28, #105 2.12."""
+    FIXTURES = HERE / "fixtures" / "pick-specs"
+    commit = NoiseCommitTests.commit
+
+    def setUp(self):
+        compaction_logs._commits.cache_clear()
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        repo, norepo = Path(tmp.name) / "repo", Path(tmp.name) / "norepo"
+        repo.mkdir()
+        norepo.mkdir()
+        subprocess.run(["git", "init", "-q"], cwd=repo, check=True, capture_output=True)
+        for day, subject in enumerate(["base", "Add s-a\n\nCloses #101", "Add s-b\n\nCloses #102"], 1):
+            self.commit(repo, "f.txt", subject, f"2026-11-0{day}T10:00:00Z")
+        self.repo, self.norepo = repo, norepo
+        self.base_of_102 = subprocess.run(["git", "rev-parse", "HEAD~1"], cwd=repo, check=True, capture_output=True, text=True).stdout.strip()
+        self.root = Path(tmp.name) / "logs"
+        shutil.copytree(self.FIXTURES, self.root)
+        paths = {"__NOREPO__": json.dumps(str(norepo))[1:-1], "__REPO__": json.dumps(str(repo))[1:-1]}  # JSON-escaped backslashes
+        for log in self.root.rglob("*.jsonl"):
+            text = log.read_text(encoding="utf-8")
+            for placeholder, path in paths.items():
+                text = text.replace(placeholder, path)
+            log.write_text(text, encoding="utf-8")
+
+    def pick(self, *args, root=None):
+        return subprocess.run([sys.executable, str(HERE / "pick_specs.py"), "--root", str(root or self.root), *args],
+                              capture_output=True, text=True)
+
+    def test_it_prints_each_run_the_shapes_and_the_two_picks(self):
+        entry = lambda issue, base: [f"  - id: spec-{issue}", f"    issue: {issue}", f"    base: {base}", "    landing: TODO",
+                                     "    landing_lines: TODO", "    build: TODO", "    tests: TODO"]
+        result = self.pick()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.splitlines(), [
+            "#101: steps 2, iterations 1, test runs 2, browser commands 3",
+            "#102: steps 4, iterations 2, test runs 4, browser commands 6",
+            "#103: steps 6, iterations 3, test runs 9, browser commands 12",
+            "#104: steps 4, iterations 2, test runs 4, browser commands 0 (skipped: no browser command)",
+            "#105: steps 4, iterations 2, test runs 5, browser commands 5",
+            "median shape: steps 4, iterations 2, test runs 4, browser commands 5",
+            "90th-percentile shape: steps 5.2, iterations 2.6, test runs 7.4, browser commands 9.6",
+            f"median pick: #102, started from {self.base_of_102}", *entry(102, self.base_of_102),
+            "90th-percentile pick: #103, started from unresolved", *entry(103, "unresolved")])
+
+    def test_a_run_that_did_not_land_or_belongs_to_another_project_or_is_older_than_since_is_not_listed(self):
+        listed = lambda result: [line.split(":")[0] for line in result.stdout.splitlines() if line.startswith("#")]
+        self.assertEqual(listed(self.pick()), ["#101", "#102", "#103", "#104", "#105"])  # not #106 (proj-other) or #107 (before 2026-11-07)
+        self.assertEqual(listed(self.pick("--since", "2026-11-01"))[0], "#107")
+        self.assertEqual(listed(self.pick("--since", "2026-11-12")), ["#103", "#104", "#105"])
+
+    def test_iterations_are_the_verifier_dispatches_even_without_an_iteration_number(self):
+        self.assertIn("#107: steps 2, iterations 2, test runs 2, browser commands 2", self.pick("--since", "2026-11-01").stdout)  # s-h: Verify Iteration 1 and a reduced verify
+        agent = lambda role: {"role": role, "test_runs": 0, "browser_commands": 0, "step": None, "steps": 0, "iteration": None}
+        iterations = lambda *roles: pick_specs.row_of({"issue": 1, "cwd": "", "agents": [agent(r) for r in roles]}).counts[1]
+        self.assertEqual(iterations("implementer", "reviewer", "verifier", "verifier", "verifier"), 3)
+        self.assertEqual(iterations("implementer", "reviewer", "reviewer", "verifier"), 1)
+        self.assertEqual(iterations("implementer", "reviewer", "reviewer"), 2)  # no Verifier dispatch: the Reviewer dispatches
+        self.assertEqual(iterations("implementer"), 1)
+
+    def test_the_reader_keeps_the_issue_the_cwd_and_the_verifiers_counts(self):
+        runs = {r["session"]: r for r in compaction_logs.read_runs(self.root, float("inf"))}
+        self.assertEqual((runs["s-b"]["issue"], runs["s-b"]["cwd"], runs["s-f"]["issue"]), (102, str(self.repo), None))
+        counts = lambda run: {a["role"] + str(a["iteration"] or a["step"]): (a["test_runs"], a["browser_commands"]) for a in run["agents"]}
+        self.assertEqual(counts(runs["s-b"]), {
+            "implementer1": (1, 1), "implementer2": (0, 0), "implementer3": (0, 0), "implementer4": (0, 0),
+            "reviewer1": (1, 1), "reviewer2": (1, 1), "verifier1": (2, 3), "verifier2": (2, 3)})
+
+    def test_a_start_commit_that_cannot_be_resolved_prints_unresolved_and_the_pick_goes_on(self):
+        self.assertIsNone(compaction_logs.landing_parent(self.norepo, 103))  # no repo
+        self.assertIsNone(compaction_logs.landing_parent(self.repo, 999))  # no commit lands it
+        self.assertIsNone(compaction_logs.landing_parent(None, 102))
+        self.assertEqual(compaction_logs.landing_parent(self.repo, 102), self.base_of_102)
+        result = self.pick()
+        self.assertIn("90th-percentile pick: #103, started from unresolved", result.stdout)
+        self.assertEqual(result.returncode, 0)
+
+    def test_a_landing_commit_with_no_parent_is_unresolved(self):
+        subprocess.run(["git", "init", "-q"], cwd=self.norepo, check=True, capture_output=True)
+        self.commit(self.norepo, "f.txt", "Add s-c\n\nCloses #103", "2026-11-01T10:00:00Z")
+        self.assertIsNone(compaction_logs.landing_parent(self.norepo, 103))
+
+    def test_an_empty_root_or_one_with_no_mvdmio_suite_run_exits_with_a_message(self):
+        empty = self.root.parent / "empty"
+        empty.mkdir()
+        shutil.rmtree(self.root / "proj-mvdmio-suite")  # only proj-other is left
+        for root in (empty, self.root.parent / "missing", self.root):
+            result = self.pick(root=root)
+            self.assertEqual((result.returncode, result.stdout), (1, ""))
+            self.assertEqual(result.stderr, f"no landed mvdmio-suite run since 2026-11-07 under {root}\n")
+
+    def test_a_since_that_is_not_a_date_is_refused(self):
+        result = self.pick("--since", "last week")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("invalid _date value: 'last week'", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def row(self, issue, *counts):
+        return pick_specs.Row(issue, "", counts)
+
+    def test_the_distance_divides_each_gap_by_the_median_and_a_zero_median_by_one(self):
+        self.assertAlmostEqual(pick_specs.distance(self.row(1, 2, 1, 2, 3), (4, 2, 4, 5), (4, 2, 4, 5)), 1.9)
+        self.assertEqual(pick_specs.distance(self.row(1, 3, 0), (1, 1), (4, 0)), 0.5 + 1)
+
+    def test_a_run_with_no_browser_command_is_never_picked_even_when_it_is_nearest(self):
+        # counts: steps, iterations, test runs, browser commands; pick_specs.BROWSER is the last
+        rows = [self.row(1, 4, 2, 4, 0), self.row(2, 9, 3, 9, 9)]
+        self.assertEqual(pick_specs.pick(rows, (4, 2, 4, 0), (4, 2, 4, 1)).issue, 2)
+        self.assertIsNone(pick_specs.pick(rows[:1], (4, 2, 4, 0), (4, 2, 4, 1)))
+
+    def test_a_tie_goes_to_the_earlier_run_and_a_taken_run_is_left_out(self):
+        rows = [self.row(1, 3, 3, 3, 3), self.row(2, 5, 3, 3, 3)]  # both one away from 4 on the steps
+        target, medians = (4, 3, 3, 3), (1, 1, 1, 1)
+        self.assertEqual(pick_specs.pick(rows, target, medians).issue, 1)
+        self.assertEqual(pick_specs.pick(rows[::-1], target, medians).issue, 2)
+        self.assertEqual(pick_specs.pick(rows, target, medians, taken=[rows[0]]).issue, 2)
+
+
+class RecordTests(unittest.TestCase):
+    PASSING = f'"{sys.executable}" -c "print(\'Passed!  - Failed: 0, Passed: 2, Skipped: 0, Total: 2\')"'
+    NO_TESTS = f'"{sys.executable}" -c "print(\'Passed!  - Failed: 0, Passed: 0, Skipped: 0, Total: 0\')"'
+    SEEDABLE = f'"{sys.executable}" "{HERE / "fixtures" / "seed_check.py"}"'  # fails test_a once the run's a.txt change is reverted
+
+    def record_with_the_fake_claude(self, tests=SEEDABLE):
+        """Run run_one in record mode against the fake claude; (score, clone, base, bench folder, git)."""
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        git = lambda cwd, *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a], cwd=cwd,
+                                             capture_output=True, text=True, check=True).stdout.strip()
+        origin, clone = tmp / "origin.git", tmp / "clone"
+        git(tmp, "init", "-q", "--bare", str(origin))
+        clone.mkdir()
+        git(clone, "init", "-q", "-b", "main")
+        (clone / "a.txt").write_text("one\n")
+        git(clone, "add", "."), git(clone, "commit", "-q", "-m", "base")
+        git(clone, "remote", "add", "origin", str(origin))
+        base = git(clone, "rev-parse", "HEAD")
+        spec = {"id": "s", "repo": "o/r", "issue": 7, "base": base, "landing_lines": 4, "build": [self.PASSING], "tests": [tests]}
+        settings = run.Settings("sonnet", "high", "record s", claude_cmd=[sys.executable, str(HERE / "fixtures" / "fake_claude.py")],
+                                timeout=120, clone=clone, record=True)
+        (tmp / "plugin").mkdir()
+        old = {k: os.environ.get(k) for k in ("CLAUDE_CONFIG_DIR", "FAKE_PUSH_TARGET")}
+        os.environ.update(CLAUDE_CONFIG_DIR=str(tmp / "cfg"), FAKE_PUSH_TARGET=str(origin))
+        saved = (run.HERE, collect.HERE, run.spec_hash)
+        run.HERE = collect.HERE = tmp / "bench"
+        run.spec_hash = lambda spec: "hash"
+        try:
+            s = run.run_one("record", "a" * 40, tmp / "plugin", spec, 1, settings)
+        finally:
+            run.HERE, collect.HERE, run.spec_hash = saved
+            for k, v in old.items():
+                os.environ.pop(k, None) if v is None else os.environ.__setitem__(k, v)
+        self.assertEqual(git(origin, "for-each-ref"), "")  # nothing reached the remote
+        return s, clone, base, tmp / "bench", git
+
+    def test_a_recorded_run_keeps_each_dispatch_with_its_commit_cost_and_verdict(self):
+        s, clone, base, bench, git = self.record_with_the_fake_claude()
+        self.assertTrue(s["valid"], s["invalid_reasons"])
+        recorded = json.loads((Path(s["recorded"]) / "recorded.json").read_text(encoding="utf-8"))
+        landed = git(clone, "rev-parse", f"refs/recorded/{recorded['run_id']}/landed")
+        self.assertEqual((recorded["spec"], recorded["skills_sha"], recorded["model"], recorded["effort"], recorded["base"]),
+                         ("s", "a" * 40, "sonnet", "high", base))
+        self.assertEqual(recorded["landed"], landed)
+        self.assertNotEqual(landed, base)
+        self.assertEqual([(d["n"], d["role"], d["agent"], d["prompt"], d["start"]) for d in recorded["dispatches"]],
+                         [(1, "implementer", "skills:implementer", "Build step 01", base),
+                          (2, "verifier", "skills:verifier", "Verify the run", landed)])
+        implementer, verifier = recorded["dispatches"]
+        self.assertEqual(implementer["cost"]["by_model"]["claude-sonnet-5"], {
+            "input": 100, "output": 200, "cache_write_5m": 1000, "cache_write_1h": 2000, "cache_read": 5000, "cost_usd": 0.02055})
+        self.assertAlmostEqual(verifier["cost"]["cost_usd"], 0.0006, places=6)
+        self.assertEqual(implementer["verdict"], {"status": "done", "findings": []})
+        self.assertEqual(verifier["verdict"], {"status": "failed", "findings": [
+            "Spec line 2 is missing: no --foo flag", "test `a` fails: expected 1, got 2"]})
+        meta = json.loads(next((bench / "runs").glob("*/meta.json")).read_text(encoding="utf-8"))
+        self.assertEqual(recorded["session_id"], meta["session_id"])
+        self.assertAlmostEqual(recorded["main_cost"]["cost_usd"], 0.006345, places=6)
+        self.assertEqual(recorded["main_cost"]["by_model"]["claude-sonnet-5"]["cache_write_5m"], 1000)
+        self.assertTrue((Path(s["recorded"]) / "transcripts").is_dir())
+
+    def test_a_recorded_run_keeps_a_seeded_verify_dispatch_beside_its_own(self):
+        s, clone, base, bench, git = self.record_with_the_fake_claude()
+        recorded = json.loads((Path(s["recorded"]) / "recorded.json").read_text(encoding="utf-8"))
+        seeded_commit = git(clone, "rev-parse", f"refs/recorded/{recorded['run_id']}/seeded")
+        seeded = recorded["seeded_dispatch"]
+        self.assertEqual([d["n"] for d in recorded["dispatches"]], [1, 2])  # the seeded one is not among them
+        self.assertEqual((seeded["role"], seeded["agent"], seeded["prompt"], seeded["start"], seeded["seeded"], seeded["failing_test"]),
+                         ("verifier", "skills:verifier", "Verify the run", seeded_commit, True, "test_a"))
+        self.assertEqual((seeded["cost"], seeded["verdict"], seeded["hunk"]["path"]), (None, None, "a.txt"))
+        self.assertIn("+three", seeded["hunk"]["patch"])
+        self.assertEqual(git(clone, "show", f"{seeded_commit}:a.txt"), "one")  # the landed change with its a.txt hunk reverted
+        self.assertEqual(git(clone, "show", f"{seeded_commit}:tests/names.txt"), "test_a")
+        self.assertEqual(git(clone, "rev-parse", f"{seeded_commit}^"), recorded["landed"])
+        self.assertEqual(git(clone, "worktree", "list", "--porcelain").count("worktree "), 1)
+
+    def test_a_run_that_cannot_be_seeded_is_refused_and_leaves_no_trace(self):
+        s, clone, base, bench, git = self.record_with_the_fake_claude(tests=self.PASSING)  # no test fails when the hunk is reverted
+        self.assertFalse((bench / "work" / "recorded").exists())
+        self.assertEqual(git(clone, "for-each-ref", "refs/recorded/"), "")
+        self.assertIsNone(s["recorded"])
+        self.assertEqual(s["refused"], "reverting any one of 1 non-test hunk(s) fails no test the run added")
+        with unittest.mock.patch.multiple(run, run_one=lambda *a: s, load_specs=lambda ids: [{"id": ids[0], "repo": "o/r"}],
+                                          skills_checkout=lambda ref: ("c" * 40, Path("/skills")), target_clone=lambda *a: Path("/clone")):
+            with self.assertRaises(SystemExit) as refused:
+                run.main(["--record", "s"])
+        self.assertEqual(str(refused.exception), "Refused as a Recorded run, it cannot be seeded: "
+                                                 "reverting any one of 1 non-test hunk(s) fails no test the run added")
+
+    def test_the_commits_outlive_the_run_branch(self):
+        s, clone, base, bench, git = self.record_with_the_fake_claude()
+        self.assertEqual(git(clone, "branch", "--format=%(refname:short)"), "main")  # the run's branch and worktree are gone
+        run_id = Path(s["recorded"]).name
+        refs = git(clone, "for-each-ref", "--format=%(refname)", "refs/recorded/").splitlines()
+        self.assertEqual(refs, [f"refs/recorded/{run_id}/{n}" for n in ("1", "2", "landed", "seeded")])
+        for ref in refs:
+            git(clone, "cat-file", "-e", f"{ref}^{{commit}}")
+        self.assertEqual(git(clone, "rev-parse", refs[0]), base)
+
+    def test_every_run_captures_the_weekly_limit_through_its_status_line(self):
+        s, clone, base, bench, git = self.record_with_the_fake_claude()
+        capture = bench / "runs" / Path(s["recorded"]).name / "usage.log"
+        self.assertEqual(usage_share.read_values(capture), [40.0, 43.0])
+        self.assertEqual(usage_share.share([capture]), 3.0)
+
+    def test_a_run_the_scorer_finds_invalid_is_not_recorded(self):
+        s, clone, base, bench, git = self.record_with_the_fake_claude(tests=self.NO_TESTS)
+        self.assertFalse(s["valid"])
+        self.assertEqual(s["invalid_reasons"], ["the Spec's tests ran no tests"])
+        self.assertFalse((bench / "work" / "recorded").exists())
+        self.assertEqual(git(clone, "for-each-ref", "refs/recorded/"), "")
+
+    def test_record_mode_runs_at_once_on_defaults_and_refuses_an_invalid_run(self):
+        seen = {}
+
+        def fake_run_one(side, sha, plugin_dir, spec, index, settings):
+            seen.update(side=side, spec=spec["id"], model=settings.model, effort=settings.effort, record=settings.record)
+            return {"valid": False, "invalid_reasons": ["no commit landed", "no subagent ran"]}
+
+        with unittest.mock.patch.multiple(run, run_one=fake_run_one, load_specs=lambda ids: [{"id": ids[0], "repo": "o/r"}],
+                                          skills_checkout=lambda ref: ("c" * 40, Path("/skills")), target_clone=lambda *a: Path("/clone")):
+            with self.assertRaises(SystemExit) as refused:
+                run.main(["--record", "s"])
+        self.assertEqual(seen, {"side": "record", "spec": "s", "model": "sonnet", "effort": "high", "record": True})
+        self.assertEqual(str(refused.exception), "Refused as a Recorded run, the run is invalid: no commit landed; no subagent ran")
+
+    def test_the_full_rerun_still_needs_its_arguments(self):
+        with self.assertRaises(SystemExit) as refused, unittest.mock.patch("sys.stderr"):
+            run.main(["--baseline", "a"])
+        self.assertEqual(refused.exception.code, 2)
+
+    def test_the_hook_exits_zero_and_keeps_what_it_can(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            file = Path(tmp) / "dispatches.jsonl"
+            for stdin in ("not json", "[]", json.dumps({"cwd": tmp, "tool_input": {"subagent_type": "skills:verifier", "prompt": "p"}})):
+                r = subprocess.run([sys.executable, str(HERE / "record.py"), "hook", str(file), "r1"], input=stdin, text=True, capture_output=True)
+                self.assertEqual(r.returncode, 0)
+            # only the last input carries a dispatch; its cwd is no repo, so it keeps no start commit and no ref
+            self.assertEqual(record.read_dispatches(file), [{"n": 1, "agent": "skills:verifier", "prompt": "p", "start": None}])
+
+    def test_hooks_that_fire_together_number_their_dispatches_one_after_the_other_and_a_stale_lock_is_taken_over(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            file = Path(tmp) / "dispatches.jsonl"
+            stdin = json.dumps({"cwd": tmp, "tool_input": {"subagent_type": "skills:reviewer", "prompt": "p"}})
+            with record._locked(file):  # another hook is between reading its number and writing it
+                hooked = threading.Thread(target=record.hook, args=(str(file), "r1", stdin))
+                hooked.start()
+                hooked.join(0.3)
+                self.assertTrue(hooked.is_alive())
+                self.assertFalse(file.exists())
+            hooked.join(5)
+            self.assertEqual([d["n"] for d in record.read_dispatches(file)], [1])
+            self.assertFalse(Path(f"{file}.lock").exists())
+            Path(f"{file}.lock").write_text("")  # a hook that crashed left its lock
+            with unittest.mock.patch.object(record, "LOCK_WAIT", 0.1):
+                record.hook(str(file), "r1", stdin)
+            self.assertEqual([d["n"] for d in record.read_dispatches(file)], [1, 2])
+            self.assertFalse(Path(f"{file}.lock").exists())
+
+    def test_a_reviewer_verdict_holds_every_hard_violation_and_judgement_call_word_for_word(self):
+        text = ("Findings\n- Hard violation: run.py:12 breaks the rule `[hard] no inline paths`: `Path('x')`\n"
+                "**Judgement call:** possible Boundary discipline breach in `main`\n  Judgement call: a second one\n"
+                "Standards: 1 hard violations, 2 judgement calls")
+        self.assertEqual(record.verdict("reviewer", text), {"status": None, "findings": [
+            "Hard violation: run.py:12 breaks the rule `[hard] no inline paths`: `Path('x')`",
+            "Judgement call:** possible Boundary discipline breach in `main`",
+            "Judgement call: a second one"]})
+        self.assertEqual(record.verdict("reviewer", "Standards: 0 hard violations, 0 judgement calls")["findings"], [])
+
+    def test_a_verifier_verdict_holds_every_finding_and_none_is_no_finding(self):
+        report = ("status: failed\ndeviations: none\nfindings:\n- Spec line 4 is missing\n  and wraps onto a second line\n"
+                  "- Hand check 2 failed twice\nstop: none")
+        self.assertEqual(record.verdict("verifier", report), {"status": "failed", "findings": [
+            "Spec line 4 is missing\n  and wraps onto a second line", "Hand check 2 failed twice"]})
+        self.assertEqual(record.verdict("verifier", "status: passed\nfindings:\n- none\nstop: none"), {"status": "passed", "findings": []})
+        self.assertEqual(record.verdict("verifier", "status: passed\nfindings: none"), {"status": "passed", "findings": []})
+        self.assertEqual(record.verdict("planner", "status: done\nfindings:\n- x"), {"status": "done", "findings": []})
+
+    def test_equal_prompts_join_their_transcripts_in_order(self):
+        raw = [{"n": 1, "agent": "skills:verifier", "prompt": "same", "start": "s1"},
+               {"n": 2, "agent": "skills:verifier", "prompt": "same", "start": "s2"}]
+        subagents = [("agent-a", "same", "status: passed"), ("agent-b", "same", "status: failed\nfindings:\n- x")]
+        by_agent = {"agent-a": {"m": {"cost_usd": 1.0}}, "agent-b": {"m": {"cost_usd": 2.0}}}
+        rows = record.join(raw, subagents, by_agent)
+        self.assertEqual([(r["n"], r["cost"]["cost_usd"], r["verdict"]["status"]) for r in rows], [(1, 1.0, "passed"), (2, 2.0, "failed")])
+        self.assertIsNone(record.join(raw[:1], [], by_agent)[0]["cost"])
+
+
+class SeedTests(unittest.TestCase):
+    PAD = "".join(f"# pad {i}\n" for i in range(8))  # keeps the three changes in three separate hunks
+    BASE_LIB = f"A = 1\n{PAD}OLD = 1\n{PAD}NEW = 1\n"
+    LANDED_LIB = f"A = 2\n{PAD}OLD = 2\n{PAD}NEW = 3\n"
+    CHECK = ("import os, sys\nsys.dont_write_bytecode = True\nsys.path.insert(0, os.getcwd())\nimport lib\n"
+             "def test_old(): assert lib.OLD == 2  # at the base already; the run's change to OLD fixes it\n")
+    CHECK_WITH_NEW = CHECK + "def test_new(): assert lib.NEW == 3\n"
+    RUNNER = ("for name in sorted(n for n in dir() if n.startswith('test_')):\n"
+              "    try: globals()[name]()\n    except AssertionError: print('FAILED', name)\n")
+    TESTS = [f'"{sys.executable}" tests/check.py']
+
+    def repo(self, landing):
+        """A clone with a base commit and a landed commit that writes the files of `landing`; (clone, base, landed, git, scratch)."""
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        git = lambda cwd, *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a], cwd=cwd,
+                                             capture_output=True, text=True, check=True).stdout.strip()
+        clone = tmp / "clone"
+        clone.mkdir()
+        git(clone, "init", "-q", "-b", "main")
+        (clone / "tests").mkdir()
+        (clone / "lib.py").write_text(self.BASE_LIB)
+        (clone / "tests" / "check.py").write_text(self.CHECK + self.RUNNER)
+        git(clone, "add", "."), git(clone, "commit", "-q", "-m", "base")
+        base = git(clone, "rev-parse", "HEAD")
+        for path, text in landing.items():
+            (clone / path).parent.mkdir(parents=True, exist_ok=True)
+            (clone / path).write_text(text)
+        git(clone, "add", "."), git(clone, "commit", "-q", "-m", "landed")
+        return clone, base, git(clone, "rev-parse", "HEAD"), git, tmp
+
+    def seed(self, clone, base, landed, scratch, run_id="r1"):
+        return seed.seed(clone, run_id, base, landed, self.TESTS, scratch / "seed", scratch / "tests.log")
+
+    def test_the_first_hunk_whose_revert_fails_a_test_the_run_added_is_seeded(self):
+        clone, base, landed, git, scratch = self.repo({"lib.py": self.LANDED_LIB, "tests/check.py": self.CHECK_WITH_NEW + self.RUNNER})
+        found = self.seed(clone, base, landed, scratch)
+        # reverting A breaks no test, reverting OLD breaks test_old which the run did not add, reverting NEW breaks test_new
+        self.assertEqual((found["failing_test"], found["hunk"]["path"]), ("test_new", "lib.py"))
+        self.assertIn("+NEW = 3", found["hunk"]["patch"])
+        self.assertEqual(git(clone, "rev-parse", "refs/recorded/r1/seeded"), found["commit"])
+        self.assertEqual(git(clone, "show", f"{found['commit']}:lib.py"), f"A = 2\n{self.PAD}OLD = 2\n{self.PAD}NEW = 1")
+        self.assertEqual(git(clone, "rev-parse", f"{found['commit']}^"), landed)
+        self.assertEqual(git(clone, "diff", landed, found["commit"], "--", "tests"), "")  # a test file hunk is never reverted
+        self.assertEqual(git(clone, "worktree", "list", "--porcelain").count("worktree "), 1)
+        self.assertFalse((scratch / "seed").exists())
+
+    def test_seeding_twice_leaves_one_seeded_ref_and_no_worktree(self):
+        clone, base, landed, git, scratch = self.repo({"lib.py": self.LANDED_LIB, "tests/check.py": self.CHECK_WITH_NEW + self.RUNNER})
+        first = self.seed(clone, base, landed, scratch)
+        git(clone, "update-ref", "refs/recorded/r1/seeded", base)  # what an attempt that stopped partway left behind
+        git(clone, "worktree", "add", "-q", "--detach", str(scratch / "seed"), base)
+        second = self.seed(clone, base, landed, scratch)
+        self.assertEqual(second["failing_test"], first["failing_test"])
+        self.assertEqual(git(clone, "for-each-ref", "--format=%(refname)", "refs/recorded/"), "refs/recorded/r1/seeded")
+        self.assertEqual(git(clone, "show", f"{git(clone, 'rev-parse', 'refs/recorded/r1/seeded')}:lib.py"),
+                         f"A = 2\n{self.PAD}OLD = 2\n{self.PAD}NEW = 1")
+        self.assertEqual(git(clone, "worktree", "list", "--porcelain").count("worktree "), 1)
+
+    def test_a_failing_test_the_run_did_not_add_qualifies_no_hunk(self):
+        clone, base, landed, git, scratch = self.repo({"lib.py": f"A = 2\n{self.PAD}OLD = 2\n{self.PAD}NEW = 1\n"})
+        with self.assertRaises(seed.Refused) as refused:
+            self.seed(clone, base, landed, scratch)
+        self.assertEqual(str(refused.exception), "reverting any one of 2 non-test hunk(s) fails no test the run added")
+        self.assertEqual(git(clone, "for-each-ref", "refs/recorded/"), "")
+        self.assertEqual(git(clone, "worktree", "list", "--porcelain").count("worktree "), 1)
+
+    def test_a_landing_of_test_and_bookkeeping_files_has_no_hunk_to_revert(self):
+        clone, base, landed, git, scratch = self.repo({"tests/check.py": self.CHECK_WITH_NEW + self.RUNNER,
+                                                       ".agents/runs/7-x/01.md": "Status: done\n"})
+        with self.assertRaises(seed.Refused) as refused:
+            self.seed(clone, base, landed, scratch)
+        self.assertEqual(str(refused.exception), "no hunk of a non-test file landed, so none can be reverted")
+
+    def test_hunks_split_per_file_and_say_which_are_tests(self):
+        clone, base, landed, git, scratch = self.repo({"lib.py": self.LANDED_LIB, "tests/check.py": self.CHECK_WITH_NEW + self.RUNNER})
+        hunks = seed.split_hunks(seed.landing_diff(clone, base, landed))
+        self.assertEqual([(h["path"], h["test"]) for h in hunks],
+                         [("lib.py", False), ("lib.py", False), ("lib.py", False), ("tests/check.py", True)])
+        self.assertEqual(hunks[3]["added"], "def test_new(): assert lib.NEW == 3\n")
+
+    def test_failing_tests_are_the_names_after_a_line_that_starts_with_failed(self):
+        output = ("  Failed Ns.Class.Method(x: 1) [4 ms]\nFAILED tests/test_a.py::test_b - boom\nFAIL: test_c (mod.Class)\n"
+                  "Failed!  - Failed: 1, Passed: 2\n  not Failed here\nFAIL\n")
+        self.assertEqual(seed.failing_tests(output), ["Ns.Class.Method(x:", "tests/test_a.py::test_b", "test_c"])
+
+    def test_a_run_without_a_verify_dispatch_is_refused(self):
+        rows = [{"n": 1, "role": "implementer", "agent": "skills:implementer", "prompt": "p", "start": "s"}]
+        with self.assertRaises(seed.Refused) as refused:
+            record.seed_dispatch(rows, Path("/clone"), Path("/run"), {"run_id": "r1"}, {"base": "b", "tests": []}, "l")
+        self.assertEqual(str(refused.exception), "the run has no Verify dispatch to seed")
+
+
+class ReplayTests(unittest.TestCase):
+    FINDINGS = ["Spec line 2 is missing: no --foo flag", "test `a` fails: expected 1, got 2"]
+    FAILED = "status: failed\ndeviations: none\nfindings:\n- Spec line 2 has no --foo flag\n- test a fails with 2, not 1\nstop: none"
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
+        self.git = lambda cwd, *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a], cwd=cwd,
+                                                  capture_output=True, text=True, check=True).stdout.strip()
+        self.clone = self.tmp / "clone"
+        self.clone.mkdir()
+        self.git(self.clone, "init", "-q", "-b", "main")
+        (self.clone / "a.txt").write_text("one\n")
+        self.git(self.clone, "add", "."), self.git(self.clone, "commit", "-q", "-m", "base")
+        (self.clone / "a.txt").write_text("one\ntwo\n")
+        self.git(self.clone, "commit", "-q", "-am", "landed")
+        self.landed = self.git(self.clone, "rev-parse", "HEAD")
+        self.skills = self.tmp / "skills"
+        (self.skills / "agents").mkdir(parents=True)
+        (self.skills / "agents" / "verifier.md").write_text("---\nname: verifier\nmodel: sonnet\neffort: high\n---\nbody\n", encoding="utf-8")
+        self.bench = self.tmp / "bench"
+        row = {"n": 2, "role": "verifier", "agent": "skills:verifier", "prompt": "Verify the run", "start": self.landed,
+               "cost": {"cost_usd": 0.5, "by_model": {}}, "verdict": {"status": "failed", "findings": self.FINDINGS}}
+        recorded = {"run_id": "run-1", "spec": "s", "dispatches": [row],
+                    "seeded_dispatch": {**row, "cost": None, "verdict": None, "seeded": True}}
+        (self.bench / "work" / "recorded" / "run-1").mkdir(parents=True)
+        (self.bench / "work" / "recorded" / "run-1" / "recorded.json").write_text(json.dumps(recorded), encoding="utf-8")
+        self.fake = [sys.executable, str(HERE / "fixtures" / "fake_replay_claude.py")]
+
+    def replay(self, report, judge_reply="1: yes\n2: yes", dispatch="2", claude_cmd=None, on_spend=None):
+        """Replay `dispatch` of the recorded run on the fake claude; (result, what the fake saw)."""
+        env = dict(CLAUDE_CONFIG_DIR=str(self.tmp / "cfg"), FAKE_REPORT=report, FAKE_JUDGE_REPLY=judge_reply,
+                   FAKE_ARGV_FILE=str(self.tmp / "argv.json"))
+        old = {k: os.environ.get(k) for k in env}
+        os.environ.update(env)
+        saved = run.HERE, run.load_specs
+        run.HERE, run.load_specs = self.bench, lambda ids: [{"id": "s", "repo": "o/clone", "issue": 7}]
+        try:
+            result = replay.replay("run-1", dispatch, self.skills, claude_cmd or self.fake, self.clone, on_spend=on_spend)
+        finally:
+            run.HERE, run.load_specs = saved
+            for k, v in old.items():
+                os.environ.pop(k, None) if v is None else os.environ.__setitem__(k, v)
+        seen = self.tmp / "argv.json"
+        return result, json.loads(seen.read_text(encoding="utf-8")) if seen.exists() else None
+
+    def test_the_replay_runs_the_recorded_prompt_as_the_agent_on_the_recorded_commit_under_every_guard(self):
+        result, seen = self.replay(self.FAILED)
+        argv = seen["argv"]
+        value = lambda flag: argv[argv.index(flag) + 1]
+        self.assertEqual((value("-p"), value("--agent"), value("--model"), value("--effort")), ("Verify the run", "skills:verifier", "sonnet", "high"))
+        self.assertEqual(Path(value("--plugin-dir")), self.skills.resolve())
+        self.assertEqual(value("--permission-mode"), "bypassPermissions")
+        self.assertEqual(value("--append-system-prompt"), run.BENCH_PROMPT)
+        self.assertIn("--strict-mcp-config", argv)
+        self.assertEqual(argv[argv.index("--disallowedTools") + 1:], guards.DENIED_TOOLS)
+        self.assertEqual(json.loads(Path(value("--mcp-config")).read_text(encoding="utf-8")), {"mcpServers": {}})
+        settings = json.loads(Path(value("--settings")).read_text(encoding="utf-8"))
+        self.assertIn("usage_share.py", settings["statusLine"]["command"])
+        self.assertIn("enabledPlugins", settings)
+        self.assertNotIn("hooks", settings)
+        self.assertEqual((seen["env"]["SKILLS_BENCHMARK"], seen["env"]["GIT_CONFIG_COUNT"]), ("1", "3"))
+        self.assertEqual(seen["head"], self.landed)
+        self.assertEqual(Path(seen["cwd"]), self.bench / "work" / "replay-w")
+        self.assertEqual(self.git(self.clone, "worktree", "list", "--porcelain").count("worktree "), 1)  # its worktree is gone
+
+    def test_a_checkout_whose_agent_file_lacks_model_or_effort_refuses_before_any_claude_call(self):
+        agent = self.skills / "agents" / "verifier.md"
+        for header, missing in (("---\nname: verifier\nmodel: sonnet\n---\n", "effort"), ("---\nname: verifier\neffort: high\n---\n", "model"),
+                                ("no header\n", "model or effort")):
+            agent.write_text(header, encoding="utf-8")
+            with self.assertRaises(SystemExit) as refused:
+                self.replay(self.FAILED, claude_cmd=[sys.executable, "-c", "raise SystemExit('claude was called')"])
+            self.assertEqual(str(refused.exception), f"{agent} has no {missing} in its header: the Replay would not know what to run it on")
+        agent.unlink()
+        with self.assertRaises(SystemExit) as refused:
+            self.replay(self.FAILED)
+        self.assertIn("verifier.md does not exist", str(refused.exception))
+        self.assertFalse((self.bench / "runs").exists())
+
+    def test_it_reports_the_cost_by_model_the_judges_cost_apart_and_the_weekly_limit_it_saw(self):
+        result, _ = self.replay(self.FAILED)
+        self.assertEqual(result["cost"]["by_model"]["claude-sonnet-5"], {
+            "input": 100, "output": 200, "cache_write_5m": 1000, "cache_write_1h": 2000, "cache_read": 5000, "cost_usd": 0.02055})
+        self.assertAlmostEqual(result["cost"]["cost_usd"], 0.02055, places=6)
+        self.assertEqual((result["recorded_cost"], result["judge_cost"]), (0.5, 0.02))
+        self.assertEqual((result["limit_values"], result["limit_share"], result["agent"]), (2, 2.0, "skills:verifier"))
+        saved = json.loads(next((self.bench / "runs").glob("replay-*/result.json")).read_text(encoding="utf-8"))
+        self.assertEqual((saved["limit_values"], saved["agent"], saved["passed"]), (2, "skills:verifier", True))
+        self.assertEqual(replay.result_line(result),
+                         "run-1 dispatch 2 (verifier): passed; cost $0.0205 (recorded $0.5000); judge $0.0200; "
+                         "2 weekly-limit value(s), 2.0% of the weekly limit (upper bound); agent skills:verifier")
+
+    def test_it_reports_each_cost_as_it_is_known_so_a_replay_that_fails_after_its_session_still_reports_it(self):
+        spent = []
+        self.replay(self.FAILED, on_spend=spent.append)
+        self.assertEqual(spent, [0.02055, 0.02])
+        spent.clear()
+        real = run.read_stream
+        errored = lambda path: (lambda read: (read[0], {**(read[1] or {}), "is_error": True}))(real(path))
+        with unittest.mock.patch.object(run, "read_stream", errored), self.assertRaises(SystemExit) as refused:
+            self.replay(self.FAILED, on_spend=spent.append)
+        self.assertIn("claude exited with an error", str(refused.exception))
+        self.assertEqual(spent, [0.02055])
+
+    def test_a_judge_that_times_out_fails_the_replay_as_an_unreadable_reply_instead_of_crashing_it(self):
+        real = subprocess.run
+
+        def slow_judge(argv, *a, **k):
+            if "A reviewer or verifier reported" in " ".join(argv):
+                raise subprocess.TimeoutExpired(argv, k["timeout"])
+            return real(argv, *a, **k)
+        spent = []
+        with unittest.mock.patch.object(subprocess, "run", slow_judge):
+            result, _ = self.replay(self.FAILED, on_spend=spent.append)
+        self.assertEqual((result["passed"], result["reason"], result["judge_cost"]), (False, "the judge's reply was unreadable", 0.0))
+        self.assertEqual(spent, [0.02055, 0.0])
+        self.assertTrue(result["judge_timed_out"])
+        self.assertIn("judge $0.0000 (the judge timed out: a session ran and its cost is not counted);", replay.result_line(result))
+
+    def test_a_reply_missing_one_recorded_finding_fails_and_names_it(self):
+        result, _ = self.replay(self.FAILED, judge_reply="1: yes\n2: no")
+        self.assertFalse(result["passed"])
+        self.assertEqual(result["reason"], f"missed findings: {self.FINDINGS[1]}")
+
+    def test_a_reply_that_raises_every_finding_passes_even_with_an_extra_one(self):
+        result, _ = self.replay(self.FAILED + "\n- a third problem the recording lacks")
+        self.assertTrue(result["passed"], result["reason"])
+        self.assertEqual(result["raised"], [True, True])
+
+    def test_an_unreadable_judge_reply_fails_the_replay_and_says_so(self):
+        for reply in ("1: yes", "both are raised", "1: yes\n2: maybe", "1: yes\n2: yes\n3: yes"):
+            result, _ = self.replay(self.FAILED, judge_reply=reply)
+            self.assertEqual((result["passed"], result["reason"]), (False, "the judge's reply was unreadable"), reply)
+
+    def test_a_different_status_fails_even_when_every_finding_is_raised_and_the_judge_is_not_asked(self):
+        result, _ = self.replay(self.FAILED.replace("status: failed", "status: blocked"))
+        self.assertEqual((result["passed"], result["reason"], result["judge_cost"]), (False, "status mismatch: recorded failed, replay blocked", 0.0))
+
+    def test_the_seeded_dispatch_needs_a_status_other_than_passed_and_a_finding_and_calls_no_judge(self):
+        cases = (("status: failed\nfindings:\n- test a fails\nstop: none", None),
+                 ("status: passed\nfindings:\n- test a fails\nstop: none", "status passed on the seeded dispatch"),
+                 ("status: failed\nfindings:\n- none\nstop: none", "no finding on the seeded dispatch"))
+        for report, reason in cases:
+            result, _ = self.replay(report, dispatch="seeded")
+            self.assertEqual((result["reason"], result["judge_cost"], result["raised"], result["recorded_cost"]), (reason, 0.0, None, None), report)
+
+    def test_an_unknown_dispatch_or_one_without_a_recorded_verdict_refuses(self):
+        with self.assertRaises(SystemExit) as refused:
+            self.replay(self.FAILED, dispatch="9")
+        self.assertEqual(str(refused.exception), "run-1 has no dispatch 9")
+        path = self.bench / "work" / "recorded" / "run-1" / "recorded.json"
+        recorded = json.loads(path.read_text(encoding="utf-8"))
+        recorded["dispatches"][0]["verdict"] = None
+        path.write_text(json.dumps(recorded), encoding="utf-8")
+        with self.assertRaises(SystemExit) as refused:
+            self.replay(self.FAILED)
+        self.assertIn("dispatch 2 of run-1 has no recorded verdict", str(refused.exception))
+
+    def test_a_worktree_a_crashed_replay_left_does_not_get_in_the_way(self):
+        leftover = self.bench / "work" / "replay-w"
+        self.git(self.clone, "-c", "core.longpaths=true", "worktree", "add", "-q", "--detach", str(leftover), "HEAD")
+        (leftover / "crash.txt").write_text("half done")
+        result, seen = self.replay(self.FAILED)
+        self.assertTrue(result["passed"], result["reason"])
+        self.assertEqual(seen["head"], self.landed)
+        self.assertEqual(self.git(self.clone, "worktree", "list", "--porcelain").count("worktree "), 1)
+
+    def test_the_exit_code_is_0_for_a_pass_1_for_a_fail_and_2_when_it_could_not_run(self):
+        passed = {"passed": True, "reason": None, "run": "r", "dispatch": "2", "role": "verifier", "recorded_cost": None, "cost": {"cost_usd": 0.0},
+                  "judge_cost": 0.0, "limit_values": 0, "limit_share": None, "agent": None}
+        with unittest.mock.patch.object(replay, "replay", side_effect=[passed, {**passed, "passed": False, "reason": "x"}, SystemExit("no clone")]), \
+                unittest.mock.patch("builtins.print") as printed, unittest.mock.patch("sys.stderr"):
+            codes = [replay.main(["r", "2", "--skills", "/s"]) for _ in range(3)]
+        self.assertEqual(codes, [0, 1, 2])
+        self.assertEqual(printed.call_args_list[0].args[0],
+                         "r dispatch 2 (verifier): passed; cost $0.0000 (recorded n/a); judge $0.0000; 0 weekly-limit value(s), "
+                         "no weekly-limit share; agent not named")
+
+    def test_the_judge_reads_one_yes_or_no_line_per_finding_in_any_case_and_numbering_style(self):
+        self.assertEqual(judge.parse_reply("1: Yes\n2) no\n3. YES", 3), [True, False, True])
+        self.assertEqual(judge.parse_reply("Here you go:\n1: no", 1), [False])
+        for reply in ("", None, "1: yes", "2: yes\n3: no", "1: yes\n1: no", "yes\nno"):
+            self.assertIsNone(judge.parse_reply(reply, 2), reply)
+        prompt = judge.build_prompt(["first", "second"], "the report")
+        self.assertIn("1. first\n2. second", prompt)
+        self.assertIn("Report:\nthe report", prompt)
+
+
+class UsageShareTests(unittest.TestCase):
+    def capture(self, file, stdin):
+        return subprocess.run([sys.executable, str(HERE / "usage_share.py"), "capture", str(file)], input=stdin, text=True, capture_output=True)
+
+    def test_the_share_is_the_last_value_minus_the_first_across_the_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            one, two = Path(tmp) / "one.log", Path(tmp) / "two.log"
+            one.write_text("2026-11-23T10:00:00\t41.5\n2026-11-23T10:05:00\t43.0\n", encoding="utf-8")
+            two.write_text("2026-11-23T10:10:00\t44.0\n2026-11-23T10:20:00\t47.5\n", encoding="utf-8")
+            self.assertEqual(usage_share.share([one]), 1.5)
+            self.assertEqual(usage_share.share([one, two]), 6.0)
+
+    def test_a_missing_file_or_one_with_no_value_yields_no_share(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            good, empty = Path(tmp) / "good.log", Path(tmp) / "empty.log"
+            good.write_text("2026-11-23T10:00:00\t41.5\n", encoding="utf-8")
+            empty.write_text("", encoding="utf-8")
+            self.assertEqual(usage_share.share([good]), 0.0)
+            self.assertIsNone(usage_share.share([Path(tmp) / "missing.log"]))
+            self.assertIsNone(usage_share.share([empty]))
+            self.assertIsNone(usage_share.share([good, empty]))
+            self.assertIsNone(usage_share.share([]))
+
+    def test_the_status_line_command_appends_only_an_input_that_carries_the_value(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            file = Path(tmp) / "usage.log"
+            for stdin in ('{"model": {}}', "not json", '{"rate_limits": {"seven_day": {"used_percentage": "x"}}}'):
+                self.assertEqual(self.capture(file, stdin).returncode, 0)
+            self.assertFalse(file.exists())
+            self.capture(file, '{"rate_limits": {"seven_day": {"used_percentage": 12.5}}}')
+            self.capture(file, '{"rate_limits": {"five_hour": {"used_percentage": 99}}}')
+            self.assertEqual(usage_share.read_values(file), [12.5])
+
+
+class McpConfigTests(unittest.TestCase):
+    def worktree(self, servers):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        if servers is not None:
+            (tmp / ".mcp.json").write_text(json.dumps({"mcpServers": servers}), encoding="utf-8")
+        return tmp
+
+    def test_a_spec_naming_servers_loads_only_those_from_the_worktrees_mcp_json(self):
+        tree = self.worktree({"playwright": {"command": "npx"}, "postgres": {"command": "prod"}, "stripe": {"command": "live"}})
+        self.assertEqual(run.mcp_config({"id": "s", "mcp_servers": ["playwright"]}, tree), {"mcpServers": {"playwright": {"command": "npx"}}})
+
+    def test_a_spec_naming_none_keeps_the_empty_config(self):
+        tree = self.worktree({"playwright": {"command": "npx"}})
+        self.assertEqual(run.mcp_config({"id": "s"}, tree), {"mcpServers": {}})
+        self.assertEqual(run.mcp_config({"id": "s"}, self.worktree(None)), {"mcpServers": {}})
+
+    def test_a_name_the_mcp_json_lacks_refuses_the_run(self):
+        with self.assertRaises(SystemExit) as refused:
+            run.mcp_config({"id": "s", "mcp_servers": ["playwright", "browser"]}, self.worktree({"playwright": {}}))
+        self.assertEqual(str(refused.exception), "Spec s names MCP server(s) its .mcp.json at the base lacks: browser")
+        with self.assertRaises(SystemExit) as refused:
+            run.mcp_config({"id": "s", "mcp_servers": ["playwright"]}, self.worktree(None))
+        self.assertEqual(str(refused.exception), "Spec s names MCP server(s) its .mcp.json at the base lacks: playwright")
+
+    def test_the_argv_keeps_the_strict_config_whatever_the_spec_names(self):
+        settings = run.Settings("sonnet", "high", "claim", claude_cmd=["claude"])
+        for spec in ({"issue": 1}, {"issue": 1, "mcp_servers": ["playwright"]}):
+            argv = run.build_argv(settings, spec, "/skills", "sid", "/mcp.json", "/settings.json")
+            self.assertEqual(argv[argv.index("--mcp-config") - 1], "--strict-mcp-config")
+
+    def test_every_run_settings_file_carries_a_status_line_and_only_a_recorded_run_the_hook(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            full, recorded = run.run_settings(tmp, tmp), run.run_settings(tmp, tmp, "run-1")
+            self.assertIn(" capture ", full["statusLine"]["command"])
+            self.assertEqual(recorded["statusLine"], full["statusLine"])
+            self.assertNotIn("hooks", full)
+            self.assertEqual(recorded["hooks"]["PreToolUse"][0]["matcher"], "Agent")
+            self.assertIn(" hook ", recorded["hooks"]["PreToolUse"][0]["hooks"][0]["command"])
+
+
+def load_measure():
+    """The frozen measure script of the implement-run-cost Hillclimb, loaded by its path."""
+    path = HERE.parent / ".agents" / "hillclimbs" / "implement-run-cost" / "measure.py"
+    spec = importlib.util.spec_from_file_location("implement_run_cost_measure", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class MeasureTests(unittest.TestCase):
+    """measure.py on two skills checkouts that are real git worktrees, with a Replay and a run.py that are stand-ins."""
+
+    def setUp(self):
+        self.m = load_measure()
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
+        self.git = lambda cwd, *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a], cwd=cwd,
+                                                  capture_output=True, text=True, check=True).stdout.strip()
+        self.before, self.after = self.tmp / "before", self.tmp / "after"
+        self.before.mkdir()
+        self.git(self.before, "init", "-q", "-b", "main")
+        for name in ("agents/verifier.md", "agents/reviewer.md", "agents/implementer.md", "skills/code-review/SKILL.md", "benchmark/x.py", ".agents/n.md"):
+            (self.before / name).parent.mkdir(parents=True, exist_ok=True)
+            (self.before / name).write_text("one\n")
+        (self.before / ".gitignore").write_text("*.log\n")
+        self.git(self.before, "add", "."), self.git(self.before, "commit", "-q", "-m", "base")
+        self.git(self.before, "worktree", "add", "-q", "--detach", str(self.after))
+        self.patches = [unittest.mock.patch.object(self.m, name, value) for name, value in (
+            ("SCRATCH", self.tmp / "scratch"), ("RECORDED", self.tmp / "recorded"), ("RESULTS", self.tmp / "results"), ("RUNS", self.tmp / "runs"))]
+        for patch in self.patches:
+            patch.start(), self.addCleanup(patch.stop)
+
+    def record(self, run_id, spec):
+        verdict = {"status": "passed", "findings": []}
+        row = lambda n, role, cost: {"n": n, "role": role, "agent": f"skills:{role}", "prompt": "p", "start": "c",
+                                     "cost": {"cost_usd": cost, "by_model": {}}, "verdict": verdict}
+        recorded = {"run_id": run_id, "spec": spec, "main_cost": {"cost_usd": 1.0, "by_model": {}},
+                    "dispatches": [row(1, "implementer", 2.0), row(2, "verifier", 3.0), row(3, "reviewer", 1.5)],
+                    "seeded_dispatch": {**row(2, "verifier", 0), "cost": None, "verdict": None, "seeded": True}}
+        (self.tmp / "recorded" / run_id).mkdir(parents=True)
+        (self.tmp / "recorded" / run_id / "recorded.json").write_text(json.dumps(recorded), encoding="utf-8")
+
+    def measure(self, *args):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = self.m.main([str(a) for a in args])
+        return code, out.getvalue().splitlines()
+
+    def edit(self, *names, untracked=()):
+        for name in names:
+            (self.after / name).write_text("two\n")
+        for name in untracked:
+            (self.after / name).parent.mkdir(parents=True, exist_ok=True)
+            (self.after / name).write_text("new\n")
+
+    def fake_replay(self, costs, share=0.5, seeded_passes=False, fail=()):
+        """A stand-in for replay.replay: the cost of each call by checkout, 0.1 for the seeded dispatch; the calls made per
+        (checkout, run, dispatch). A call listed in `fail` exits as a Replay that could not run does, after its session
+        spent 0.03; every other call reports its session's cost and the judge's 0.02 through on_spend as it goes."""
+        calls = {}
+
+        def replay(run_id, dispatch, checkout, claude, on_spend):
+            side = Path(checkout).name
+            n = calls[(side, run_id, dispatch)] = calls.get((side, run_id, dispatch), -1) + 1
+            if (side, run_id, dispatch, n) in fail:
+                on_spend(0.03)
+                raise SystemExit("the session timed out")
+            ok = dispatch != "seeded" or not seeded_passes
+            cost = 0.1 if dispatch == "seeded" else costs[side][n % len(costs[side])]
+            on_spend(cost), on_spend(0.02)
+            return {"passed": ok, "reason": None if ok else "status passed on the seeded dispatch",
+                    "cost": {"cost_usd": cost, "by_model": {}}, "judge_cost": 0.02, "limit_share": share}
+        patch = unittest.mock.patch.object(self.m.replay, "replay", replay)
+        patch.start(), self.addCleanup(patch.stop)
+        return calls
+
+    def test_the_path_is_chosen_from_the_changed_files(self):
+        for changed, expected in (
+            (["agents/verifier.md"], ("replay", ("verifier",))),
+            (["agents/reviewer.md"], ("replay", ("reviewer",))),
+            (["agents/reviewer.md", "agents/verifier.md"], ("replay", ("reviewer", "verifier"))),
+            (["agents/verifier.md", "benchmark/run.py", ".agents/runs/x.md"], ("replay", ("verifier",))),
+            (["agents/implementer.md"], ("rerun", ())),
+            (["skills/code-review/SKILL.md"], ("rerun", ())),
+            (["agents/verifier.md", "skills/implement/SKILL.md"], ("rerun", ())),
+            (["benchmark/run.py", ".agents/hillclimbs/x/log.md"], ("nothing", ())),
+            ([], ("nothing", ())),
+        ):
+            self.assertEqual(self.m.choose(changed), expected, changed)
+
+    def test_the_changed_files_are_the_tracked_and_the_untracked_changes_of_after_against_the_commit_before_is_at(self):
+        self.assertEqual(self.m.changed_files(self.before, self.after), [])
+        self.edit("agents/verifier.md", "benchmark/x.py", untracked=["skills/new.md", "debug.log"])
+        (self.after / "agents" / "reviewer.md").write_text("staged\n")
+        self.git(self.after, "add", "agents/reviewer.md")
+        self.assertEqual(self.m.changed_files(self.before, self.after),
+                         ["agents/reviewer.md", "agents/verifier.md", "benchmark/x.py", "skills/new.md"])
+
+    def test_a_throwaway_commit_holds_the_working_tree_on_top_of_head_and_leaves_the_checkout_as_it_was(self):
+        self.edit("agents/verifier.md", untracked=["skills/new.md", "debug.log"])
+        state = lambda: (self.git(self.after, "status", "--porcelain"), self.git(self.after, "branch", "--list"),
+                         self.git(self.after, "rev-parse", "HEAD"), self.git(self.after, "diff", "--cached", "--name-only"))
+        before_state = state()
+        sha = self.m.throwaway_commit(self.after)
+        self.assertEqual(state(), before_state)
+        self.assertEqual(self.git(self.after, "rev-parse", f"{sha}^"), before_state[2])
+        self.assertEqual(self.git(self.after, "diff", "--name-only", "HEAD", sha).splitlines(), ["agents/verifier.md", "skills/new.md"])
+
+    def test_without_a_recorded_run_it_refuses_and_says_to_record_first(self):
+        self.edit("agents/verifier.md")
+        with self.assertRaises(SystemExit) as refused:
+            self.measure(self.before, self.after)
+        self.assertEqual(str(refused.exception), f"no Recorded run under {self.tmp / 'recorded'}: record one first, with "
+                                                 "`python benchmark/run.py --record <spec-id>`")
+
+    def test_the_newest_recorded_run_of_each_spec_is_the_one_measured(self):
+        for run_id, spec in (("20260101-aaa-a-1", "a"), ("20260301-bbb-a-1", "a"), ("20260201-ccc-b-1", "b")):
+            self.record(run_id, spec)
+        self.assertEqual([r["run_id"] for r in self.m.recorded_runs()], ["20260301-bbb-a-1", "20260201-ccc-b-1"])
+
+    def test_a_diff_that_touches_nothing_under_agents_or_skills_measures_nothing_and_needs_no_recorded_run(self):
+        self.edit("benchmark/x.py")
+        self.assertEqual(self.measure(self.before, self.after), (0, ["plan: measure nothing: no file under agents/ or skills/ changed"]))
+        self.assertFalse((self.tmp / "scratch").exists())
+
+    def test_a_verifier_diff_replays_each_verifier_dispatch_and_the_seeded_one_and_prints_a_line_per_side(self):
+        self.record("20260101-aaa-a-1", "a"), self.record("20260101-bbb-b-1", "b")
+        self.edit("agents/verifier.md")
+        self.fake_replay({"before": [0.4, 0.5, 0.9], "after": [0.2, 0.2, 0.2]})
+        code, lines = self.measure(self.before, self.after)
+        self.assertEqual(code, 0)
+        self.assertEqual(lines, [
+            "before: $10.00 per run summed over the Recorded runs (range $9.80-$10.80), 3 runs, work 12, errors 0; "
+            "main $2.00, implementer $4.00, reviewer $3.00, verifier $1.00, planner $0.00; 6.0% of the weekly limit (upper bound); "
+            "total spent $6.48; guard: passed",
+            "after: $9.40 per run summed over the Recorded runs (range $9.40-$9.40), 3 runs, work 12, errors 0; "
+            "main $2.00, implementer $4.00, reviewer $3.00, verifier $0.40, planner $0.00; 6.0% of the weekly limit (upper bound); "
+            "total spent $6.48; guard: passed"])
+
+    def test_a_reviewer_diff_replays_the_reviewer_only_and_a_single_checkout_replays_both_roles(self):
+        self.record("20260101-aaa-a-1", "a")
+        self.edit("agents/reviewer.md")
+        seen = []
+        patch = unittest.mock.patch.object(self.m.replay, "replay", lambda run_id, n, checkout, claude, on_spend: seen.append(n) or {
+            "passed": True, "reason": None, "cost": {"cost_usd": 1.0, "by_model": {}}, "judge_cost": 0.0, "limit_share": 0.1})
+        patch.start(), self.addCleanup(patch.stop)
+        self.measure(self.before, self.after, 1)
+        self.assertEqual(seen, ["3", "3"])
+        seen.clear()
+        code, lines = self.measure(self.before, 1)
+        self.assertEqual(sorted(set(seen)), ["2", "3", "seeded"])
+        self.assertEqual(len(lines), 1)
+        self.assertTrue(lines[0].startswith("checkout: $"), lines[0])
+
+    def test_the_running_total_persists_across_calls_and_a_plan_neither_spends_nor_writes_it(self):
+        self.record("20260101-aaa-a-1", "a")
+        self.edit("agents/verifier.md")
+        calls = self.fake_replay({"before": [0.5] * 3, "after": [0.5] * 3})
+        totals = lambda: [l.split("total spent ")[1].split(";")[0] for l in self.measure(self.before, self.after)[1]]
+        self.assertEqual(totals(), ["$3.84", "$3.84"])
+        self.assertEqual(totals(), ["$7.68", "$7.68"])
+        self.assertEqual((self.tmp / "scratch" / ".gitignore").read_text(), "*\n")
+        done = dict(calls)
+        code, lines = self.measure(self.before, self.after, "--plan")
+        self.assertEqual(calls, done)
+        self.assertAlmostEqual(self.m.spent_so_far(), 7.68)
+        self.assertEqual(lines, ["plan: replay the verifier dispatches (20260101-aaa-a-1: 1 verifier + 1 seeded), 3 time(s) per side: 12 Replays in all"])
+
+    def test_a_plan_of_a_rerun_names_the_specs_and_the_number_of_runs_and_writes_no_scratch(self):
+        self.record("20260101-aaa-a-1", "a"), self.record("20260101-bbb-b-1", "b")
+        self.edit("agents/implementer.md")
+        self.assertEqual(self.measure(self.before, self.after, 2, "--plan")[1],
+                         ["plan: rerun a, b in full: 2 run(s) of each per side, 8 /implement runs in all, through benchmark/run.py with --yes"])
+        self.assertFalse((self.tmp / "scratch").exists())
+
+    def test_a_seeded_replay_that_passes_fails_the_guard_and_counts_as_errors(self):
+        self.record("20260101-aaa-a-1", "a")
+        self.edit("agents/verifier.md")
+        self.fake_replay({"before": [0.5] * 3, "after": [0.5] * 3}, seeded_passes=True)
+        code, lines = self.measure(self.before, self.after)
+        self.assertEqual([l.split("; guard: ")[1] for l in lines],
+                         ["FAILED (3 of 6 Replays failed: status passed on the seeded dispatch)"] * 2)
+        self.assertTrue(all("errors 3;" in l for l in lines))
+
+    def test_a_replay_that_could_not_run_is_an_error_and_its_dispatch_keeps_the_median_of_the_others(self):
+        self.record("20260101-aaa-a-1", "a")
+        self.edit("agents/verifier.md")
+        self.fake_replay({"before": [0.4, 0.5, 0.9], "after": [0.2] * 3}, fail={("before", "20260101-aaa-a-1", "2", 1)})
+        code, lines = self.measure(self.before, self.after)
+        self.assertIn("$5.15 per run", lines[0])  # 1.0 + 2.0 + 1.5 + median(0.4, 0.9) = 0.65
+        self.assertIn("work 6, errors 1;", lines[0])
+        self.assertTrue(lines[0].endswith("guard: FAILED (1 of 6 Replays failed: could not run: the session timed out)"), lines[0])
+        self.assertTrue(lines[1].endswith("guard: passed"), lines[1])
+        # the failed Replay's session cost counts: 0.4 + 0.9 + 0.03 (before), 0.6 (after), 0.6 (seeded), 0.02 for each of the 11 judges
+        self.assertAlmostEqual(self.m.spent_so_far(), 0.4 + 0.9 + 0.03 + 0.6 + 0.6 + 11 * 0.02, places=6)
+
+    def test_without_a_weekly_limit_capture_the_share_is_absent_and_the_error_count_rises_by_one(self):
+        self.record("20260101-aaa-a-1", "a")
+        self.edit("agents/verifier.md")
+        self.fake_replay({"before": [0.5] * 3, "after": [0.5] * 3}, share=None)
+        code, lines = self.measure(self.before, self.after)
+        self.assertTrue(all("errors 1; " in l and "no weekly-limit share" in l and "guard: passed" in l for l in lines), lines)
+
+    def rows(self, label, costs, valid=None, tests_ok=None):
+        """The CSV rows of one side's rerun, and a weekly-limit capture for each run but one of `after`."""
+        out = []
+        for spec, per_run in costs.items():
+            for i, cost in enumerate(per_run, 1):
+                row = dict.fromkeys(collect.COLUMNS, "")
+                row.update(run_id=f"{label}-{spec}-{i}", spec=spec, index=i, valid=(valid or {}).get((spec, i), "True"), failed="False",
+                           cost_usd=cost, cost_main=1.0, cost_implementer=cost - 1, build_ok="True", verify="passed",
+                           tests_ok=(tests_ok or {}).get((spec, i), "True"), blocked_writes=0, api_errors=0)
+                out.append(row)
+                if label != "after" or (spec, i) != ("a", 3):
+                    (self.tmp / "runs" / row["run_id"]).mkdir(parents=True, exist_ok=True)
+                    (self.tmp / "runs" / row["run_id"] / "usage.log").write_text("t\t10.0\nt\t10.5\n", encoding="utf-8")
+        return out
+
+    def run_py(self, before_rows, after_rows, code=0, unscored=None):
+        """Stand in for the call of benchmark/run.py: it writes the two CSVs a real run leaves; the dict holds its command."""
+        real, seen = subprocess.run, {}
+
+        def fake(argv, *a, **k):
+            if Path(argv[1]).name != "run.py":
+                return real(argv, *a, **k)
+            seen["argv"] = argv
+            (self.tmp / "results").mkdir(exist_ok=True)
+            for flag, tokens in (unscored or {}).items():  # a run that spent money, then died before its score.json
+                folder = self.tmp / "runs" / f"unscored{flag}"
+                (folder / "transcripts").mkdir(parents=True)
+                (folder / "meta.json").write_text(json.dumps({"skills_sha": argv[argv.index(flag) + 1]}), encoding="utf-8")
+                (folder / "transcripts" / "s.jsonl").write_text(json.dumps({"type": "assistant", "message": {
+                    "id": "m", "model": "sonnet", "usage": {"output_tokens": tokens}, "content": []}}) + "\n", encoding="utf-8")
+            for flag, rows in (("--baseline", before_rows), ("--candidate", after_rows)):
+                with open(self.tmp / "results" / f"{argv[argv.index(flag) + 1][:12]}.csv", "w", encoding="utf-8", newline="") as f:
+                    writer = csv.DictWriter(f, collect.COLUMNS)
+                    writer.writeheader(), writer.writerows(rows)
+            return types.SimpleNamespace(returncode=code)
+        patch = unittest.mock.patch.object(subprocess, "run", fake)
+        patch.start(), self.addCleanup(patch.stop)
+        return seen
+
+    def test_a_diff_outside_the_two_roles_reruns_both_specs_on_throwaway_commits_with_yes(self):
+        self.record("20260101-aaa-a-1", "a"), self.record("20260101-bbb-b-1", "b")
+        self.edit("agents/implementer.md", "agents/verifier.md", untracked=["skills/implement/SKILL.md"])
+        status, branches = self.git(self.after, "status", "--porcelain"), self.git(self.after, "branch", "--list")
+        seen = self.run_py(self.rows("before", {"a": [10, 12, 14], "b": [20, 22, 24]}), self.rows("after", {"a": [8, 9, 10], "b": [15, 16, 17]}))
+        code, lines = self.measure(self.before, self.after)
+        argv = seen["argv"]
+        value = lambda flag: argv[argv.index(flag) + 1]
+        self.assertEqual((value("--runs"), value("--specs"), value("--model"), value("--effort")), ("3", "a,b", "sonnet", "high"))
+        self.assertIn("--yes", argv)
+        self.assertTrue(value("--claim"))
+        base, cand = value("--baseline"), value("--candidate")
+        self.assertEqual(self.git(self.before, "rev-parse", f"{base}^"), self.git(self.before, "rev-parse", "HEAD"))
+        self.assertEqual(self.git(self.before, "diff", "--name-only", "HEAD", cand).splitlines(),
+                         ["agents/implementer.md", "agents/verifier.md", "skills/implement/SKILL.md"])
+        self.assertEqual(self.git(self.after, "status", "--porcelain"), status)
+        self.assertEqual(self.git(self.after, "branch", "--list"), branches)
+        self.assertEqual(lines, [
+            "before: $34.00 per run summed over the Recorded runs (range $30.00-$38.00), 3 runs, work 6, errors 0; "
+            "main $2.00, implementer $32.00, reviewer $0.00, verifier $0.00, planner $0.00; 3.0% of the weekly limit (upper bound); "
+            "total spent $177.00; guard: passed",
+            "after: $25.00 per run summed over the Recorded runs (range $23.00-$27.00), 3 runs, work 6, errors 1; "
+            "main $2.00, implementer $23.00, reviewer $0.00, verifier $0.00, planner $0.00; no weekly-limit share; "
+            "total spent $177.00; guard: passed"])
+
+    def test_a_rerun_that_exits_with_an_error_still_adds_the_cost_of_the_runs_that_finished(self):
+        self.record("20260101-aaa-a-1", "a")
+        self.edit("agents/implementer.md")
+        self.run_py(self.rows("before", {"a": [10, 12]}), self.rows("after", {"a": [8]}), code=1)
+        with self.assertRaises(SystemExit) as refused:
+            self.measure(self.before, self.after)
+        self.assertIn("run.py exited 1", str(refused.exception))
+        self.assertAlmostEqual(self.m.spent_so_far(), 30.0)
+        with unittest.mock.patch.object(self.m.compare, "load_rows", side_effect=SystemExit("no CSV")), self.assertRaises(SystemExit) as refused:
+            self.measure(self.before, self.after)  # run.py died before it wrote a CSV
+        self.assertIn("run.py exited 1", str(refused.exception))
+        self.assertAlmostEqual(self.m.spent_so_far(), 30.0)
+
+    def test_a_failed_rerun_counts_one_sides_runs_when_the_other_has_no_csv_and_the_runs_with_no_score(self):
+        self.record("20260101-aaa-a-1", "a")
+        self.edit("agents/implementer.md")
+        seen = self.run_py(self.rows("before", {"a": [10, 12]}), self.rows("after", {"a": [8]}), code=1,
+                           unscored={"--baseline": 200000, "--candidate": 100000})  # $3.00 and $1.50 of output tokens
+        real = self.m.compare.load_rows
+
+        def load(arg, results):
+            if arg == seen["argv"][seen["argv"].index("--candidate") + 1][:12]:
+                raise SystemExit("no CSV")  # only the candidate's CSV is missing
+            return real(arg, results)
+        with unittest.mock.patch.object(self.m.compare, "load_rows", load), self.assertRaises(SystemExit) as refused:
+            self.measure(self.before, self.after)
+        self.assertIn("run.py exited 1", str(refused.exception))
+        self.assertAlmostEqual(self.m.spent_so_far(), 22 + 3.0 + 1.5)
+
+    def test_a_rerun_with_an_invalid_run_or_a_quality_regression_fails_the_guard(self):
+        self.record("20260101-aaa-a-1", "a")
+        self.edit("agents/implementer.md")
+        before = self.rows("before", {"a": [10, 12, 14]})
+        self.run_py(before, self.rows("after", {"a": [8, 9, 10]}, tests_ok={("a", 2): "False"}))
+        code, lines = self.measure(self.before, self.after)
+        self.assertTrue(lines[0].endswith("guard: passed"), lines[0])
+        self.assertTrue(lines[1].endswith("guard: FAILED (tests passed on 2 of 3 valid candidate runs, against 3 of 3 baseline runs)"), lines[1])
+        self.run_py(before, self.rows("after", {"a": [8, 9, 10]}, valid={("a", 3): "False"}))
+        code, lines = self.measure(self.before, self.after)
+        self.assertIn("guard: FAILED (1 of 3 runs invalid or failed", lines[1])
+        self.assertIn("errors 2;", lines[1])  # the invalid run, and its missing weekly-limit capture
 
 
 if __name__ == "__main__":

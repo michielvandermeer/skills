@@ -1,0 +1,5 @@
+{"type": "user", "timestamp": "2026-11-13T10:01:00.000Z", "message": {"role": "user", "content": "Verify Iteration 1 of 3 PROMPT"}}
+{"type": "assistant", "timestamp": "2026-11-13T10:01:01.000Z", "message": {"id": "v0", "role": "assistant", "content": [{"type": "tool_use", "name": "Bash", "input": {"command": "dotnet test A.csproj --filter X"}}]}}
+{"type": "assistant", "timestamp": "2026-11-13T10:01:02.000Z", "message": {"id": "v1", "role": "assistant", "content": [{"type": "tool_use", "name": "Bash", "input": {"command": "npm run test"}}]}}
+{"type": "assistant", "timestamp": "2026-11-13T10:01:03.000Z", "message": {"id": "v2", "role": "assistant", "content": [{"type": "tool_use", "name": "Bash", "input": {"command": "git status"}}]}}
+{"type": "assistant", "timestamp": "2026-11-13T10:01:06.000Z", "message": {"id": "vend", "role": "assistant", "content": [{"type": "text", "text": "Status: passed"}]}}

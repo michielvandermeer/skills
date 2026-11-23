@@ -19,6 +19,7 @@ PRICES = {
     "sonnet": (3.0, 15.0, 3.75, 6.0, 0.30),
     "haiku": (1.0, 5.0, 1.25, 2.0, 0.10),
 }
+TOKEN_KINDS = ("input", "output", "cache_write_5m", "cache_write_1h", "cache_read")
 ROLES = ["main", "implementer", "reviewer", "verifier", "planner"]
 TEST_RE = re.compile(r"\b(dotnet\s+test|run-tests\.mjs|bun\s+(run\s+)?test|vitest|npm\s+(run\s+)?test|pytest|cargo\s+test|go\s+test)\b")
 VERIFIER_STATUS_RE = re.compile(r"^\s*status:\s*(passed|held|failed|blocked)\b", re.I | re.M)
@@ -126,7 +127,7 @@ def _add_call(calls, o, message, usage, role, agent):
 
 def _summarise(out, calls, files, times):
     totals = {"input": 0, "cache_write": 0, "cache_read": 0, "output": 0, "cost_usd": 0.0, "max_context": 0, "calls": 0}
-    by_model, by_role = {}, {}
+    by_model, by_role, by_agent = {}, {}, {}
     for c in calls:
         cost = call_cost(c["model"], c)
         write = c["cache_write_5m"] + c["cache_write_1h"]
@@ -140,10 +141,14 @@ def _summarise(out, calls, files, times):
             bucket["max_context"] = max(bucket["max_context"], context)
             bucket["calls"] += 1
         by_role[c["role"]].setdefault("agents", set()).add(c["agent"])
+        spent = by_agent.setdefault(c["agent"] or "main", {}).setdefault(c["model"], {**dict.fromkeys(TOKEN_KINDS, 0), "cost_usd": 0.0})
+        for kind in TOKEN_KINDS:
+            spent[kind] += c[kind]
+        spent["cost_usd"] += cost
     for role in by_role.values():
         role["agents"] = len(role["agents"])
     out.update(totals)
-    out.update(by_model=by_model, by_role=by_role,
+    out.update(by_model=by_model, by_role=by_role, by_agent=by_agent,
                subagents=sum(1 for _, role, _ in files if role != "main"),
                wall_s=round(max(times) - min(times), 1) if times else 0.0,
                unpriced_models=sorted(m for m in by_model if not family(m)))

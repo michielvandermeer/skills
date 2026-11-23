@@ -5,6 +5,9 @@
 # landing_lines is additions + deletions of the landing commit. build and tests are the commands the
 # scorer runs from the repo root of the finished run; tests must run at least one test.
 # A field that reads TODO is unknown, and the runner refuses to run that Spec.
+# mcp_servers (optional) lists the names of servers in the target repo's .mcp.json, read from the run's worktree at the
+# base, that the repo's Verify skill needs to drive the browser. A run loads those servers only, in place of the empty MCP
+# config; a name the .mcp.json lacks refuses the run before it starts.
 defaults:
   repo: michielvandermeer/mvdmio-suite
 

@@ -35,7 +35,7 @@ Throwaway code built to answer one design question — whether a state model hol
 _Avoid_: spike, POC, demo, mockup
 
 **Hillclimb**:
-One effort to push one measured number in one direction by trying changes one at a time and keeping each only when the measurement shows it helped and the tests still pass. It starts once the number, its target, a minimum number of **Attempts**, and any time limit are agreed, works in its own worktree, and ends by landing on the **Base branch**. Hillclimbs on the same number share one folder at `.agents/hillclimbs/<slug>/` (`.agents/hillclimbs/<context>/<slug>/` in a multi-context repo).
+One effort to push one measured number in one direction by trying changes one at a time and keeping each only when the measurement shows it helped and the tests still pass. It starts once the number, its target, a minimum number of **Attempts**, any time limit, and a **Spend limit** when its measurement runs Claude sessions are agreed, works in its own worktree, and ends by landing on the **Base branch**. Hillclimbs on the same number share one folder at `.agents/hillclimbs/<slug>/` (`.agents/hillclimbs/<context>/<slug>/` in a multi-context repo).
 _Avoid_: optimization run, perf drive, benchmark loop
 
 **Attempt**:
@@ -45,6 +45,10 @@ _Avoid_: iteration, experiment, trial
 **Attempt log**:
 The record of every **Attempt** on one measured number, in that number's **Hillclimb** folder beside its measurement script: one row per Attempt with its idea, its change, the number before and after, and whether it was kept or reverted. Committed and kept across Hillclimbs, so the reverted rows tell the next one which ideas are proven not to help.
 _Avoid_: decision log (that is an ADR), decision.tsv, experiment log
+
+**Spend limit**:
+The most list-price dollars a **Hillclimb** may use on Claude sessions before it stops, agreed beside its time limit. Required, with no default, when the measuring command runs Claude sessions, as a benchmark or a **Replay** does. Checked after each measurement, the baseline included, against the measure script's running total, so one measurement always completes.
+_Avoid_: budget, cost cap, usage limit (that is the plan's weekly limit)
 
 **Spec**:
 The body an **Issue** carries once its status is `ready-for-agent` or `ready-for-human` — problem, solution, **Hand checks**, user stories, implementation and testing decisions, and any **Stop rules** — replacing whatever the Issue said before. Its problem, solution, Hand checks, and user stories are written for the **Product reader**; the rest is written for a developer new to the repo. The input to `/implement`, held to the **Planning principles** so one run can build it with no one to ask. Written only when there is a change to implement; its Issue is blocked by another Issue when that one must land first. Work we will not do is not a Spec.
